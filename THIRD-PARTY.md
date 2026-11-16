@@ -114,7 +114,7 @@ and its JavaScript API Reference, and PDFKit.
 | MinVer | Apache-2.0 | versioning from git tags |
 | Microsoft.CodeAnalysis (Roslyn) | MIT | repository tooling |
 
-## 7. Sample applications only
+## 7. Test fixtures
 
-Fluent.Ribbon, Blazor WebAssembly,
-Serilog (+ sinks). Open Sans 1.10 (Apache 2.0, © Google) is a test fixture only, its licence beside it in `tests/Tetitulz.Pdf.Base.Tests/Fixtures/OpenSans`.
+Open Sans 1.10 (Apache 2.0, © Google) is a test fixture only, its licence beside it in `tests/Tetitulz.Pdf.Base.Tests/Fixtures/OpenSans`.
+The apps' own components are listed in [tetitulz.pdf-apps](https://github.com/tetitu/tetitulz.pdf-apps).

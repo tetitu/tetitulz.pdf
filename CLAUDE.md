@@ -19,7 +19,7 @@ not published (closed work leaves it); history: git.
 | `src/features/` | `HtmlToPdf`, `DocxToPdf`, `Builder`, `Accessibility`, `Printing` |
 | `src/plugins/` | the plugin ring |
 | `tests/` | One test project per production project; no cross-project test dependencies |
-| `apps/`, `demo/` | Never packed (`IsPackable` is false outside `src/`) |
+| — | The apps and demos are a separate repository, `tetitulz.pdf-apps`, that takes this one as a submodule |
 | `benchmarks/`, `tools/` | Developer-local, not in the published repository; never packed |
 | `docs/` | Index only — [`docs/README.md`](docs/README.md) |
 
@@ -33,7 +33,7 @@ PostScript, Renderers, SignatureVerify, Svg, Templating, Text). **Both claims ar
 
 - Every `src/` project: `net10.0;netstandard2.0`, except `WinForms.PdfViewer`: `net462;net10.0-windows`, and `Printing`:
   `net10.0-windows` alone (its pipe must be the first instance, which only a P/Invoke reaches on .NET Framework).
-  Tests: `net10.0`. Apps: `net10.0-windows*` (`Splitter`, `StampSign`: `net48`; `SignCli`: `net48;net10.0`; `BatchRenderer`, `WasmSign`: `net10.0`).
+  Tests: `net10.0`.
 - **A .NET Framework host can reach every package but `Printing`.** On netstandard2.0 use `Core.Text.Latin1Text`
   (`Encode`/`Decode`) — not `Encoding.Latin1` (which is .NET 5+ and does not compile) and not
   `Encoding.GetEncoding("iso-8859-1")` (which compiles but throws on a .NET Core netstandard2.0 host
@@ -1018,8 +1018,8 @@ the shared checkout**: do not edit or read a source file it names while it runs,
 
 Three jobs: `build-test` (Windows, full solution, packing gate), `linux-verify` (Ubuntu) and
 `macos-verify` (macOS), the last two on `tetitulz.pdf.portable.slnf`; a `v*` tag adds `release`, which
-attaches the packages and two zipped apps to a GitHub release once the three are green. **Six guard steps — none may
-be relaxed to go green**: every `src/` and `apps/` project in the `.sln`; every `src/` library has a test
+attaches the packages to a GitHub release once the three are green. **Six guard steps — none may
+be relaxed to go green**: every `src/` project in the `.sln`; every `src/` library has a test
 project (empty `KnownGaps`); every portable project in the `.slnf`; only `src/` libraries packed; no
 `TODO_` metadata in a `.nuspec`; **the test run actually completed**. Plus a vulnerability audit and the coverage ratchet; the
 restore-the-packed-`.nupkg`s check and the benchmarks' `-- verify` are run locally. Actions are

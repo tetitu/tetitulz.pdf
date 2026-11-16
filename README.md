@@ -10,8 +10,10 @@ There are **29 packages**. All but two multi-target `net10.0` and `netstandard2.
 assemblies serve modern .NET and .NET Framework hosts; the WinForms viewer targets
 `net462;net10.0-windows` and `Printing`, which drives the Windows spooler, `net10.0-windows` alone.
 
-> **Status.** The packages and two zipped apps are attached to each
+> **Status.** The packages are attached to each
 > [GitHub release](https://github.com/tetitu/tetitulz.pdf/releases); they are not on nuget.org yet.
+> The desktop apps built on the library are in
+> [tetitulz.pdf-apps](https://github.com/tetitu/tetitulz.pdf-apps).
 > The API is not frozen. See [Versioning](#versioning).
 
 ---
@@ -198,7 +200,7 @@ producer's placeholder. `XfaLayout` lays the `template` packet out with the `dat
 | **Windows** x64, x86, arm64 | Supported. The full solution builds, tests and packs here. |
 | **Linux** x64, arm64 (glibc and musl) | Supported. Rendering and standard-14 substitution are verified on Ubuntu by pixel assertion; the portable subset (`tetitulz.pdf.portable.slnf`) builds and tests green. |
 | **macOS** | Native assets ship and the code is platform-neutral, but no run has been recorded yet. Treat it as unverified. |
-| Windows-only by construction | `Tetitulz.Pdf.WinForms.PdfViewer`, and everything under `apps/` and `demo/`. Nothing in the library depends on them. |
+| Windows-only by construction | `Tetitulz.Pdf.WinForms.PdfViewer` and `Tetitulz.Pdf.Printing`. Nothing else in the library depends on them. |
 
 `Tetitulz.Pdf.Core` has no native dependency at all. `Tetitulz.Pdf.Base` references SkiaSharp's
 native assets for all three desktop platforms; there is no GDI+, DirectWrite or WIC anywhere. The
@@ -297,9 +299,11 @@ src/plugins/         19 plugins: CertStoreSign, CMap, Conformance, Docx, Ethereu
                      Html, HtmlBrowser, HtmlScript, JavaScript, Maintenance, Ocr, PageEdits,
                      PostScript, Renderers, SignatureVerify, Svg, Templating, Text
 tests/               One test project per production assembly, plus TestHelpers
-apps/, demo/         Sample hosts and diagnostic tools (never packed)
 docs/                The documentation index
 ```
+
+The apps and diagnostic tools built on the library are a separate repository,
+[tetitulz.pdf-apps](https://github.com/tetitu/tetitulz.pdf-apps), which takes this one as a submodule.
 
 The project graph is a directed acyclic graph with `Core` at the bottom: the object model, parsing,
 filters, writing and the signing primitives, with no SkiaSharp. `Base` adds the operations and the
@@ -329,8 +333,7 @@ proved by mutating the code it covers. [`tests/README.md`](tests/README.md) expl
 ## Versioning
 
 Versions come from git tags through MinVer; an untagged build is a prerelease. A `v*` tag that
-passes CI on Windows, Linux and macOS becomes a GitHub release with the packages and the zipped WPF
-viewer and SignCli attached. A minor version may still break the API: defects are still surfacing at
+passes CI on Windows, Linux and macOS becomes a GitHub release with the packages attached. A minor version may still break the API: defects are still surfacing at
 a steady rate. `dotnet pack tetitulz.pdf.sln -c Release -o artifacts` produces all 29 packages;
 none is on nuget.org.
 
@@ -363,7 +366,8 @@ contributions alone:
 
 - **Claude usage.** Development leans on Claude, paid for from a personal account whose limits set
   the pace. Sponsoring a larger plan or API credit buys directly more reviewed, tested work.
-- **A code-signing certificate.** The Windows apps and installers are unsigned, so Windows warns
+- **A code-signing certificate.** The Windows apps and installers in
+  [tetitulz.pdf-apps](https://github.com/tetitu/tetitulz.pdf-apps) are unsigned, so Windows warns
   before running them. A certificate, or the cost of one, lets the releases be signed.
 - **The PDF/A and PDF/X standards.** The conformance checkers are written against ISO 19005
   (PDF/A) and ISO 15930 (PDF/X), which are sold per part. Funding licensed copies of the parts not

@@ -50,16 +50,11 @@ Every shipping package has a README beside its project, with its own contract an
 [`Templating`](../src/plugins/Tetitulz.Pdf.Plugins.Templating/README.md) (template filling, RTL included) ·
 [`Text`](../src/plugins/Tetitulz.Pdf.Plugins.Text/README.md)
 
-**The apps** (`apps/`, never packed):
-[`WpfViewer`](../apps/Tetitulz.Pdf.WpfViewer/README.md) (the desktop editor) ·
-[`StampSign`](../apps/Tetitulz.Pdf.StampSign/README.md) (stamps and a smart-card signature) ·
-[`Splitter`](../apps/Tetitulz.Pdf.Splitter/README.md) ·
-[`SignCli`](../apps/Tetitulz.Pdf.SignCli/README.md) (sign and verify from the command line) ·
-[`BatchRenderer`](../apps/Tetitulz.Pdf.BatchRenderer/README.md) ·
-[`CompareViewer`](../apps/Tetitulz.Pdf.CompareViewer/README.md) (beside Acrobat Reader) ·
-[`VirtualPrinter`](../apps/Tetitulz.Pdf.VirtualPrinter/README.md) and its [`PrinterTray`](../apps/Tetitulz.Pdf.PrinterTray/README.md) ·
-[`WasmSign`](../apps/Tetitulz.Pdf.WasmSign/README.md) (signing in the browser) ·
-[`installers`](../apps/installers/README.md) (the MSIs)
+**The apps and demos** live in their own repository,
+[tetitulz.pdf-apps](https://github.com/tetitu/tetitulz.pdf-apps), which builds them against this
+one: the WPF viewer (the desktop editor), StampSign (stamps and a smart-card signature), the
+Splitter, SignCli (sign and verify from the command line), BatchRenderer, CompareViewer, the
+virtual printer and its tray app, WasmSign (signing in the browser) and the installers.
 
 `VerifyNetzerWebPdf` lives outside this repository, where it consumes the compiled `Tetitulz.Pdf.Core` package.
 
@@ -75,7 +70,7 @@ dotnet test  tetitulz.pdf.sln          # CI is the authority on the count
 ```
 
 Requirements: the **.NET 10 SDK** (`global.json` pins the feature band), and Windows for the full
-solution, which builds `net10.0-windows` apps and the `net462` viewer. Everything portable builds and
+solution, which builds the `net462` and `net10.0-windows` viewer and `Printing`. Everything portable builds and
 tests on Linux through `tetitulz.pdf.portable.slnf`, the `linux-verify` CI job.
 
 Optional, each reported as **Skipped** when absent: a PDF corpus through `TETITULZ_PDF_CORPUS` and

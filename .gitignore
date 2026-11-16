@@ -5,7 +5,7 @@ obj/
 # any folder of that name at any depth — and case-insensitively on Windows — so the Accessibility
 # feature's Artifacts/ source folder was never committed, and a fresh clone did not build.
 /artifacts/
-# build.bat's output: the libraries and apps, ~2 GB. Anchored like /artifacts/.
+# build.bat's output, ~2 GB. Anchored like /artifacts/.
 /dist/
 BenchmarkDotNet.Artifacts/
 
@@ -73,7 +73,3 @@ tests/ApiSnapshots/*.actual
 
 # Work logs and assistant notes stay local
 /local-notes/
-
-# The installers' outputs and work files (apps/installers/build.ps1).
-/apps/installers/out/
-/apps/installers/obj/

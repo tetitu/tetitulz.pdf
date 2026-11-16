@@ -48,6 +48,7 @@ third-party components below, each under its own licence.
 | **Microsoft.CSharp** | MIT (© .NET Foundation) | The `dynamic` binder, on `Tetitulz.Pdf.DocxToPdf`'s `netstandard2.0` leg only, for `WordComConverter`'s late-bound COM calls. <br>https://github.com/dotnet/runtime |
 | **System.Net.Http**, **System.Text.RegularExpressions** | MIT (© .NET Foundation) | **Not referenced and not distributed** as of 2026-08-27 — on `net10.0` both ship in the shared framework, so the four test projects that pinned them no longer reference them and neither package appears in any project's dependency graph. Their `PackageVersion` entries stay in `Directory.Packages.props` as a **dormant transitive pin** (central transitive pinning is on), so that if a future dependency ever drags one in it resolves to the safe version rather than the vulnerable one (GHSA-7jgj-8wvc-jh57, GHSA-cmhx-cq75-c4mj). Listed here for that reason, not as a shipped component. |
 | **Microsoft.NETFramework.ReferenceAssemblies.net462** | MIT (© .NET Foundation) | Reference assemblies for the `net462` target of the WinForms viewer. |
+| **Serilog** | Apache 2.0 (© Serilog Contributors) | The logging API of `Tetitulz.Pdf.Printing`; the host chooses the sinks. <br>https://github.com/serilog/serilog |
 
 ## Embedded data
 
@@ -61,13 +62,8 @@ third-party components below, each under its own licence.
 | **Unicode Character Database 18.0.0** — derived tables | Unicode License v3 (© 1991–2026 Unicode, Inc.): permission to use, copy, modify, merge, publish, distribute and sell, provided the copyright and permission notice appears with all copies or in associated documentation — it appears here, and whole in `tests/Tetitulz.Pdf.Core.Tests/Fixtures/Unicode/LICENSE-Unicode.txt` | Tables generated from the data files, compiled into `Tetitulz.Pdf.Core` — Bidi_Class (`Text/UnicodeBidi.Classes.cs`, from `extracted/DerivedBidiClass.txt`), Bidi_Paired_Bracket (`Text/UnicodeBidi.Brackets.cs`, from `BidiBrackets.txt` and `UnicodeData.txt`), Script (`Text/UnicodeScripts.Table.cs`) — and the ISO-8859 tables of `Tetitulz.Pdf.Base` (`Operations/Barcodes/Iso8859Tables.cs`, from the Consortium's mapping files), each by its script under `tools/`. <br>https://www.unicode.org/Public/UCD/ · https://www.unicode.org/license.txt |
 | **Adobe Core14 AFM files** (Helvetica, Helvetica-Bold, Times-Roman, Times-Bold, Times-Italic, Times-BoldItalic) | "This file and the 14 PostScript(R) AFM files it accompanies may be used, copied, and distributed for any purpose and without charge, with or without modification, provided that all copyright notices are retained; that the AFM files are not distributed without this file; …" (© 1985–1997 Adobe Systems Incorporated) | Embedded as assembly resources of `Tetitulz.Pdf.Core` (`Fonts/Afm/`), gzipped and otherwise unmodified, copyright lines kept, with Adobe's `MustRead.html` beside them; their `KPX` pairs kern a standard-14 run (`Standard14Kerning`). Fetched by `tools/standard14-afm/pack.ps1`, which checks Apache PDFBox's copy against PDFKit's. |
 
-## Used by the sample applications only (not by any shipped library)
-
-| Component | License | Used for |
-|---|---|---|
-| **Fluent.Ribbon** | MIT (© Bastian Schmidt) | Office-style ribbon in the WPF viewer app. |
-| **Microsoft.AspNetCore.Components.WebAssembly** (+ `.Server`) | MIT (© .NET Foundation) | The Blazor WebAssembly signing sample (`apps/Tetitulz.Pdf.WasmSign`) and its host. |
-| **Serilog** (+ Console/Debug/File sinks) | Apache 2.0 (© Serilog Contributors) | Logging in the sample apps. |
+The apps built on the library, and the components only they use, are in
+[tetitulz.pdf-apps](https://github.com/tetitu/tetitulz.pdf-apps) with their own notice.
 
 ## Used by the test projects only
 

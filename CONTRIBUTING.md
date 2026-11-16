@@ -21,7 +21,7 @@ and history in git.
 | `src/features/` | `HtmlToPdf`, `DocxToPdf`, `Builder`, `Accessibility`, `Printing` |
 | `src/plugins/` | the plugin ring, enumerated in `CLAUDE.md` |
 | `tests/` | One test project per production project. No cross-project test dependencies. |
-| `apps/`, `demo/` | Sample hosts. Never packed (`IsPackable` is false outside `src/`). |
+| — | The apps and demos are a separate repository, `tetitulz.pdf-apps`, that takes this one as a submodule and builds against its sources. |
 | `benchmarks/`, `tools/` | Developer-local, not in the published repository: the BenchmarkDotNet harness; fuzzing, the corpus scorecard and fetcher, the package-consumption check, the audit harnesses, the Unicode table generators. |
 | `docs/` | Index only — [`docs/README.md`](docs/README.md). |
 
@@ -42,7 +42,6 @@ One library `.nupkg` per project under `src/`. `IsPackable` defaults to false re
 | `WinForms.PdfViewer` (a `UserControl` cannot be netstandard) | `net462;net10.0-windows` |
 | `Printing` (the printer's port is a pipe this process must make first — `PipeOptions.FirstPipeInstance`, which .NET Framework's `NamedPipeServerStream` refuses and only a P/Invoke reaches there, and library code carries none; a `net462` leg would serve the printer without that guarantee) | `net10.0-windows` |
 | Test projects | `net10.0` |
-| Apps | `net10.0-windows*` (`Splitter`, `StampSign` are `net48`; `SignCli` builds `net48` and `net10.0`; `BatchRenderer` and `WasmSign` are `net10.0`) |
 
 **A .NET Framework host can reach every package but `Printing`**, so three constructs missing on the legacy leg each
 have an in-repo answer: `Core.Text.Latin1Text` for `Encoding.Latin1` and `Encoding.GetEncoding("iso-8859-1")`,
@@ -1966,11 +1965,11 @@ after flushing its reply; a worker pool waiting on thread-pool threads under con
 
 ## CI
 
-Three jobs: `build-test` on `windows-latest` (the full solution, which alone builds net462, net48 and
+Three jobs: `build-test` on `windows-latest` (the full solution, which alone builds net462 and
 `net10.0-windows`, plus the packing gate), `linux-verify` on `ubuntu-latest` and `macos-verify` on
 `macos-latest`, the last two on `tetitulz.pdf.portable.slnf`. A `v*` tag adds a fourth, `release`: once
-the three are green it attaches the tag's `.nupkg`s and the zipped WPF viewer and SignCli to a GitHub
-release, through the runner's GitHub CLI. It is the one job whose token writes (`contents: write`), and
+the three are green it attaches the tag's `.nupkg`s to a GitHub release, through the runner's GitHub
+CLI. The apps are built, tested and released by `tetitulz.pdf-apps`' own workflow. It is the one job whose token writes (`contents: write`), and
 it pushes to no package feed. All in [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 **The workflow's own settings**: a read-only token outside `release`, a timeout on every job, every action pinned by
@@ -1985,7 +1984,7 @@ a certificate), an SBOM step on it.
 
 | Guard | What it checks |
 |---|---|
-| every `src/` and `apps/` project is in `tetitulz.pdf.sln` | otherwise `dotnet pack` never produces a library, and nothing compiles an app a library change breaks |
+| every `src/` project is in `tetitulz.pdf.sln` | otherwise `dotnet pack` never produces the library |
 | every `src/` library has a `tests/<name>.Tests/` project | its `KnownGaps` list is self-cleaning and empty; do not re-populate it |
 | every portable `src/` project is in `tetitulz.pdf.portable.slnf` | the filter is hand-maintained |
 | only `src/` libraries were packed | an allow-list derived from the tree, not a denylist of app names |

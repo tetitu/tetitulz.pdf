@@ -161,17 +161,10 @@
     <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
 
-  <ItemGroup Label="Applications (WPF / WinForms / CLI / Blazor)">
-    <PackageVersion Include="Fluent.Ribbon" Version="11.0.2" />
-    <!-- apps/Tetitulz.Pdf.WasmSign (browser-wasm client) and its .Host. The two move together.
-         10.0.14 is the first .Server without GHSA-g27p-qf6j-c96c (remote code execution, every
-         10.0.x before it); `dotnet list package -vulnerable` is what says so. -->
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.15" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.15" />
+  <ItemGroup Label="Logging">
+    <!-- Tetitulz.Pdf.Printing logs through the Serilog API; the host chooses the sinks. The apps
+         (tetitulz.pdf-apps) import this file and add their own packages beside it. -->
     <PackageVersion Include="Serilog" Version="4.4.0" />
-    <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
-    <PackageVersion Include="Serilog.Sinks.Debug" Version="3.0.0" />
-    <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup Label="Test infrastructure (converged — was three different sets)">

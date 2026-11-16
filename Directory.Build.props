@@ -22,8 +22,8 @@
   <PropertyGroup Label="Packaging defaults">
     <!--
       Nothing packs unless it opts in. src/Directory.Build.props flips this to
-      true for the library assemblies; apps/, demo/ and tests/ stay false, so a
-      solution-wide `dotnet pack` cannot accidentally publish an application.
+      true for the library assemblies; tests/ stays false, so a solution-wide
+      `dotnet pack` cannot publish a test project.
     -->
     <IsPackable>false</IsPackable>
     <!--

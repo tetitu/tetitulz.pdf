@@ -25,8 +25,8 @@ namespace Tetitulz.Pdf.Core.Tests.Document;
 /// of any kind. They were candidates for deletion alongside <c>PdfResources</c>, and they are
 /// kept for a reason worth writing down: <b>for a library, "no caller under <c>src/</c>" is weak
 /// evidence of deadness.</b> These members exist to be called by consumers, and the neighbouring
-/// ones are — <c>Title</c>, <c>Author</c> and <c>CreationDate</c> are read by <c>demo/</c> and
-/// <c>apps/</c>. <c>ModDate</c> is <c>CreationDate</c>'s symmetric partner and the two
+/// ones are — <c>Title</c>, <c>Author</c> and <c>CreationDate</c> are read by the apps and demos
+/// (tetitulz.pdf-apps). <c>ModDate</c> is <c>CreationDate</c>'s symmetric partner and the two
 /// <c>…Parsed</c> properties are the typed forms of that documented pair, so removing three of the
 /// four would leave an API that is smaller but arbitrary. <c>PdfResources</c> — <b>since removed</b>,
 /// and named here only as the contrast — was the opposite case: an entire type, no member used

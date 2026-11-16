@@ -30,9 +30,9 @@ env:
 
 jobs:
   build-test:
-    # windows-latest is required for the FULL solution, not a preference: it builds net462 /
-    # net48 / net10.0-windows targets (the WinForms viewer, the WPF viewer, the CLI apps) that
-    # cannot build anywhere else. This job stays the packing and release gate.
+    # windows-latest is required for the FULL solution, not a preference: it builds the net462 and
+    # net10.0-windows targets (the WinForms viewer, Printing) that cannot build anywhere else. This
+    # job stays the packing and release gate. The apps and demos live in tetitulz.pdf-apps.
     #
     # Rendering itself is no longer Windows-bound — see the linux-verify job below.
     runs-on: windows-latest
@@ -61,15 +61,12 @@ jobs:
             Directory.Packages.props
             **/*.csproj
 
-      - name: Verify every src/ and apps/ project is in the solution
+      - name: Verify every src/ project is in the solution
         shell: pwsh
         run: |
-          # The .sln is the manifest of what ships and of what is built: a src/ library missing
-          # from it is never packed, and an app missing from it is compiled by nothing, so a
-          # library change that breaks it goes unseen. Membership never packs an app: the pack
-          # guard below derives its allow-list from src/.
+          # The .sln is the manifest of what ships: a src/ library missing from it is never packed.
           $missing = @()
-          Get-ChildItem -Path src, apps -Recurse -Filter *.csproj |
+          Get-ChildItem -Path src -Recurse -Filter *.csproj |
               Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' } | ForEach-Object {
               $name = $_.Name
               if (-not (Select-String -Path tetitulz.pdf.sln -SimpleMatch -Quiet -Pattern $name)) {
@@ -77,11 +74,11 @@ jobs:
               }
           }
           if ($missing.Count -gt 0) {
-              Write-Host "::error::Projects under src/ or apps/ are missing from tetitulz.pdf.sln:"
+              Write-Host "::error::Projects under src/ are missing from tetitulz.pdf.sln:"
               $missing | ForEach-Object { Write-Host "::error::  $_" }
               exit 1
           }
-          Write-Host "All src/ and apps/ projects are present in the solution."
+          Write-Host "All src/ projects are present in the solution."
 
       - name: Verify every shipping library has a test project
         shell: pwsh
@@ -319,10 +316,8 @@ jobs:
         run: |
           # IsPackable defaults to false (Directory.Build.props) and is opted into under src/.
           #
-          # ALLOWLIST, not a denylist. A denylist of app names silently missed anything not on
-          # it (demo/Viewer and apps/CompareViewer are both in-solution WinExe projects), while
-          # naming projects that are not even in the .sln. Deriving the permitted set from the
-          # actual src/ tree cannot drift.
+          # ALLOWLIST, not a denylist: deriving the permitted set from the actual src/ tree cannot
+          # drift, whatever else the solution comes to hold.
           $allowed = Get-ChildItem -Path src -Recurse -Filter *.csproj |
                      ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_.Name) }
           $unexpected = @()
@@ -332,7 +327,7 @@ jobs:
               if ($allowed -notcontains $id) { $unexpected += $_.Name }
           }
           if ($unexpected.Count -gt 0) {
-              Write-Host "::error::Packages produced from outside src/ (apps, demo or tests must not pack):"
+              Write-Host "::error::Packages produced from outside src/ (tests must not pack):"
               $unexpected | ForEach-Object { Write-Host "::error::  $_" }
               exit 1
           }
@@ -371,34 +366,10 @@ jobs:
           path: artifacts/*.nupkg
           retention-days: 30
 
-      - name: Publish the apps for a release
-        # A v* tag alone: the release job below attaches these beside the packages.
-        if: startsWith(github.ref, 'refs/tags/v')
-        shell: pwsh
-        run: |
-          dotnet publish apps/Tetitulz.Pdf.WpfViewer/Tetitulz.Pdf.WpfViewer.csproj -c Release --no-build -o release/WpfViewer
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          dotnet publish apps/Tetitulz.Pdf.SignCli/Tetitulz.Pdf.SignCli.csproj -c Release -f net10.0 --no-build -o release/SignCli
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          foreach ($app in 'WpfViewer', 'SignCli') {
-              # Every redistribution carries the licence texts and notices (Apache 2.0 section 4).
-              Copy-Item LICENSE, NOTICE, NOTICE.md, THIRD-PARTY.md -Destination "release/$app"
-              Copy-Item licenses -Destination "release/$app/licenses" -Recurse
-              Compress-Archive -Path "release/$app/*" -DestinationPath "release/Tetitulz.Pdf.$app-${{ github.ref_name }}-windows.zip"
-          }
-
-      - name: Upload the apps
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: apps
-          path: release/*.zip
-          retention-days: 30
-
   linux-verify:
     # Proves the claim the packages now make: rendering runs off Windows. Builds and tests the
     # TFM-portable subset — tetitulz.pdf.portable.slnf is the full solution minus the WinForms
-    # viewer, the apps and the demos, all of which are Windows-only by construction.
+    # viewer and Printing, which are Windows-only by construction.
     #
     # A solution filter rather than a `dotnet build` exclusion pattern: the filter is an explicit
     # in-repo list, so adding a project that cannot build on Linux is a visible edit rather than a
@@ -619,8 +590,8 @@ jobs:
           retention-days: 14
 
   release:
-    # A v* tag alone, and only after all three jobs above are green: the tag's packages and apps
-    # become a GitHub release. Nothing is pushed to a package feed.
+    # A v* tag alone, and only after all three jobs above are green: the tag's packages become a
+    # GitHub release. Nothing is pushed to a package feed. The apps release from tetitulz.pdf-apps.
     #
     # The one job whose token writes: `contents: write` creates the release, `actions: read` lets
     # the GitHub CLI fetch this run's artifacts. The CLI ships on the runner, so no further action
@@ -637,10 +608,8 @@ jobs:
       GH_REPO: ${{ github.repository }}
 
     steps:
-      - name: Download what build-test packed and published
-        run: |
-          gh run download "${{ github.run_id }}" --name nupkg --dir release
-          gh run download "${{ github.run_id }}" --name apps --dir release
+      - name: Download what build-test packed
+        run: gh run download "${{ github.run_id }}" --name nupkg --dir release
 
       - name: Create the GitHub release
         run: |
