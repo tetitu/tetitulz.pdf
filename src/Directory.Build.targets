@@ -12,8 +12,8 @@
     ===================================================================================
 
     WHY: on 2026-08-28 the nullable family went from ~2 000 warnings to ZERO across every
-    src/ project that carries annotations — Builder, HtmlToPdf, Signing, WinForms.PdfViewer
-    and Plugins.{Text,Svg,Docx,Html,Ocr}. Nothing prevented that from silently coming back,
+    src/ project that carries annotations — Builder, HtmlToPdf, Signing and
+    Plugins.{Text,Svg,Docx,Html,Ocr}, and the packages of tetitulz.pdf-apps, which import this file. Nothing prevented that from silently coming back,
     and a warning nobody heeds is the state the work existed to end: the annotations then
     assert something the compiler is telling you is false.
 

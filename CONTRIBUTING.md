@@ -17,11 +17,11 @@ and history in git.
 
 | Path | Contents |
 |---|---|
-| `src/tetitulz.pdf/` | `Core`, `Base`, `Encryption`, `Signing`, `WinForms.PdfViewer` |
-| `src/features/` | `HtmlToPdf`, `DocxToPdf`, `Builder`, `Accessibility`, `Printing` |
+| `src/tetitulz.pdf/` | `Core`, `Base`, `Encryption`, `Signing` |
+| `src/features/` | `HtmlToPdf`, `DocxToPdf`, `Builder`, `Accessibility` |
 | `src/plugins/` | the plugin ring, enumerated in `CLAUDE.md` |
 | `tests/` | One test project per production project. No cross-project test dependencies. |
-| — | The apps and demos are a separate repository, `tetitulz.pdf-apps`, that takes this one as a submodule and builds against its sources. |
+| — | The Windows-only packages (the WinForms viewer control, `Printing`), the apps and the demos are a separate repository, `tetitulz.pdf-apps`, that takes this one as a submodule and builds against its sources. |
 | `benchmarks/`, `tools/` | Developer-local, not in the published repository: the BenchmarkDotNet harness; fuzzing, the corpus scorecard and fetcher, the package-consumption check, the audit harnesses, the Unicode table generators. |
 | `docs/` | Index only — [`docs/README.md`](docs/README.md). |
 
@@ -38,12 +38,10 @@ One library `.nupkg` per project under `src/`. `IsPackable` defaults to false re
 
 | Project group | TFM |
 |---|---|
-| Every `src/` project but the viewer and `Printing` | `net10.0;netstandard2.0` |
-| `WinForms.PdfViewer` (a `UserControl` cannot be netstandard) | `net462;net10.0-windows` |
-| `Printing` (the printer's port is a pipe this process must make first — `PipeOptions.FirstPipeInstance`, which .NET Framework's `NamedPipeServerStream` refuses and only a P/Invoke reaches there, and library code carries none; a `net462` leg would serve the printer without that guarantee) | `net10.0-windows` |
+| Every `src/` project | `net10.0;netstandard2.0` |
 | Test projects | `net10.0` |
 
-**A .NET Framework host can reach every package but `Printing`**, so three constructs missing on the legacy leg each
+**A .NET Framework host can reach every package**, so three constructs missing on the legacy leg each
 have an in-repo answer: `Core.Text.Latin1Text` for `Encoding.Latin1` and `Encoding.GetEncoding("iso-8859-1")`,
 `!double.IsNaN(x) && !double.IsInfinity(x)` for `double.IsFinite`, and `Core.Objects.PdfReferenceEquality`
 for `ReferenceEqualityComparer`.
@@ -810,13 +808,13 @@ suffices (`SanitizerReferenceChainTests`).
 
 The project-reference graph is a DAG with `Core` at the bottom: Core (object model, parsing, filters,
 writing primitives, signing crypto; no SkiaSharp, no UI), Base (operations and rendering; may use
-SkiaSharp), features (each depending only on Core and Base, with three sanctioned exceptions).
+SkiaSharp), features (each depending only on Core and Base, with two sanctioned exceptions).
 
 1. **`Builder` never references another feature.** It owns the code-first document model, so `DocxToPdf`
    and `HtmlToPdf` may reference it.
 2. **`Conformance` never references a feature.** `Accessibility → Plugins.Conformance` is sanctioned.
-3. **`PostScript` never references a feature.** `Printing → Plugins.PostScript` is sanctioned: a print job
-   is PostScript, and the virtual printer converts it through the plugin rather than duplicating it.
+3. **`PostScript` never references a feature.** `Printing`, in `tetitulz.pdf-apps`, references it: a print
+   job is PostScript, and the virtual printer converts it through the plugin rather than duplicating it.
 4. **`Core`, `Base`, `Signing` and `Encryption` reference no plugin.**
 5. **Plugin → plugin is banned outright.** There is always a downward home for shared code:
    `Plugins.PostScript` and `Plugins.CMap` share `Core.Fonts.PredefinedCMapRegistry`.
@@ -1532,7 +1530,7 @@ before reading the next component for it.**
 **`<Nullable>` is deliberately not set repo-wide.** With no annotations written, `annotations` mode
 marks every reference type non-nullable in metadata, which would tell consumers the documented
 "returns null on failure" methods never return null. Opted in and at zero: `Builder`, `HtmlToPdf`,
-`Signing`, `WinForms.PdfViewer`, `Plugins.{Text,Svg,Docx,Html,Ocr}` (`EthereumSign` is `annotations`);
+`Signing`, `Plugins.{Text,Svg,Docx,Html,Ocr}` (`EthereumSign` is `annotations`);
 `Core`, `Base` and `Encryption` remain oblivious.
 
 `src/Directory.Build.targets` makes thirteen nullable codes errors in any project that sets
@@ -1763,16 +1761,6 @@ against a multiple of the file.
   fixture builds its certificate inside `RsaTestKeys.Shared(...)`, or a later test can be handed the
   same key.
 - **Do not record a test count anywhere.** CI is the single source of truth.
-- **A viewer test runs its body through `tests/Tetitulz.Pdf.WinForms.PdfViewer.Tests/StaThread.Run`.**
-  WinForms needs a single-threaded apartment, and an exception a window procedure raises there — a
-  layout, a paint, a message handler — is outside the body's `try`: WinForms answers it with its
-  thread-exception dialog, which nothing in a test host dismisses, so the test sat for ten minutes
-  with a few seconds of CPU and no message. The helper sets the thread's exception mode to catch and
-  rethrows that exception as the test's failure, after the body's own when both occurred. **A test
-  that shows a window** (`form.Show()`, `DrawToBitmap` of a shown control) **carries `[DesktopFact]`**:
-  its one-time probe shows a form holding a `SplitContainer` off-screen, and where that throws
-  (GDI+ refuses to paint a shown window on a locked screen or in a service session) the test is
-  skipped with the reason, since no change to the control can prevent it.
 
 ### Three banned patterns — all fail the build
 
@@ -1965,8 +1953,8 @@ after flushing its reply; a worker pool waiting on thread-pool threads under con
 
 ## CI
 
-Three jobs: `build-test` on `windows-latest` (the full solution, which alone builds net462 and
-`net10.0-windows`, plus the packing gate), `linux-verify` on `ubuntu-latest` and `macos-verify` on
+Three jobs: `build-test` on `windows-latest` (the full solution with coverage, plus the packing
+gate), `linux-verify` on `ubuntu-latest` and `macos-verify` on
 `macos-latest`, the last two on `tetitulz.pdf.portable.slnf`. A `v*` tag adds a fourth, `release`: once
 the three are green it attaches the tag's `.nupkg`s to a GitHub release, through the runner's GitHub
 CLI. The apps are built, tested and released by `tetitulz.pdf-apps`' own workflow. It is the one job whose token writes (`contents: write`), and
@@ -2141,8 +2129,6 @@ Each row carries the contract its component keeps. Read a row before editing the
 | Markdown → HTML → PDF (inside `HtmlToPdf`, because a `MarkdownToPdf` feature would need a banned feature→feature edge). **No pass reads another's markup**: each image and link is rendered into a placeholder restored after the later passes — a link pass reading the image pass's output finds a `[` inside a generated `alt` and writes its own quotes there, closing the attribute and opening one of the source's (`onerror`). A target holding a placeholder, or a scheme no document link uses (`Core.Writing.LinkTargets.IsSafe`: `javascript:`, `data:`), renders its label alone, and the placeholder mark in the source is replaced (`MarkdownHostileInlineTests`) | [`HtmlToPdf/Markdown/MarkdownToHtml.cs`](src/features/Tetitulz.Pdf.HtmlToPdf/Markdown/MarkdownToHtml.cs) |
 | HtmlToPdf's fillable forms — **opt-in, and only through `ConvertHtmlWithFormFields`**: the ordinary entry points cannot turn it on, because a placeholder nothing makes into a field is an empty box. A control maps to a run of **no-break spaces in Courier** — one token, so it cannot wrap, and 0.6 em per character, so its width is exact without the mapper restating the exporter's missing-glyph rule. Nothing inherited may change that width (letter-spacing, caps, super/subscript) or draw on it (underline, a link). Names: `name`, else `id`, else the kind; a period becomes an underscore and a repeat gets a suffix, both reported. **Radios sharing a `name` are one group** — the first claims the field name (so a text field already called `size` pushes the group to `size_2`), a value that repeats or is `Off` gets a suffix, and the last `checked` wins; the plugin gathers a group's placements into one `FormRadioGroupField`, locked only when *every* button is disabled | [`HtmlToBuilderMapper.FormControls.cs`](src/features/Tetitulz.Pdf.HtmlToPdf/HtmlToBuilderMapper.FormControls.cs), [`HtmlFillableForms.cs`](src/plugins/Tetitulz.Pdf.Plugins.Html/HtmlFillableForms.cs) |
 | HtmlToPdf's remote subresources — **one path, `LoadRemote`, for all four kinds** (image, background, stylesheet, `@font-face`), carrying the per-conversion cache, the `MaxRemoteResources` budget and the reason text; a stylesheet's relative `url()`s — fetched **or local** — are rebased onto **its own location** before its rules are extracted, because nothing downstream knows which sheet a declaration came from (a local sheet's become `file:` URIs, which still reach the disk only through `ResolveLocalPath`'s containment check). **A fetched sheet names no local file by any route**: a `url()` of its that is not `http(s)` or `data:` — a `file:` URL, a drive path `Uri` reads as one — becomes one that names nothing, and its `@import` of anything not remote is declined, since either would be read from inside `BasePath` (`AdversarialRemoteStylesheet_NamingALocalFile_ReadsNothing`). **The `url()` values are found by a scan, as the readers find them** (`RebaseRemoteCssUrls`: comments stripped, the closing parenthesis by `ClosingParen`, unquoted and trimmed) — a pattern missed a space inside the quotes, a comment before the parenthesis and a `url()` held in a custom property, and a sheet it timed out on came back whole; a `var()`, `env()` or `attr()` inside `url()` names nothing. No loader means no network I/O, and the long-standing "declined" report | [`HtmlToBuilderMapper.Remote.cs`](src/features/Tetitulz.Pdf.HtmlToPdf/HtmlToBuilderMapper.Remote.cs), [`IRemoteResourceLoader.cs`](src/features/Tetitulz.Pdf.HtmlToPdf/IRemoteResourceLoader.cs), [`GuardedRemoteResourceLoader.cs`](src/features/Tetitulz.Pdf.HtmlToPdf/GuardedRemoteResourceLoader.cs) |
-| WinForms viewer control | [`WinForms.PdfViewer/PdfViewerControl.cs`](src/tetitulz.pdf/Tetitulz.Pdf.WinForms.PdfViewer/PdfViewerControl.cs) |
-| PDF→pixel overlay mapper | [`WinForms.PdfViewer/PdfPixelMapper.cs`](src/tetitulz.pdf/Tetitulz.Pdf.WinForms.PdfViewer/PdfPixelMapper.cs) |
 | Build-failing test guards (banned patterns 1–3, `PdfName`, CMYK, layering, doc references, API baselines, **exception hierarchy**) + their shared scanner | [`tests/Tetitulz.Pdf.Base.Tests/TestInfrastructure/`](tests/Tetitulz.Pdf.Base.Tests/TestInfrastructure/TestSourceScanner.cs) |
 | Visible-skip attributes — corpus, host fonts, repo sources (never an early `return`) | [`CorpusFactAttribute.cs`](tests/Tetitulz.Pdf.TestHelpers/CorpusFactAttribute.cs) (shared by every test project; adds `Category=Corpus`), [`SystemFontFactAttribute.cs`](tests/Tetitulz.Pdf.Base.Tests/TestInfrastructure/SystemFontFactAttribute.cs), [`RepoSourceFactAttribute.cs`](tests/Tetitulz.Pdf.Base.Tests/TestInfrastructure/RepoSourceFactAttribute.cs) |
 | Corpus smoke tests — each correlates output against an independent second opinion | [`Rendering/CorpusRenderSmokeTests.cs`](tests/Tetitulz.Pdf.Base.Tests/Rendering/CorpusRenderSmokeTests.cs), [`CorpusExtractionSmokeTests.cs`](tests/Tetitulz.Pdf.Base.Tests/CorpusExtractionSmokeTests.cs), [`CorpusFormSmokeTests.cs`](tests/Tetitulz.Pdf.Base.Tests/CorpusFormSmokeTests.cs) |

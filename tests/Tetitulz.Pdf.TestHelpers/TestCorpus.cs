@@ -22,7 +22,9 @@ namespace Tetitulz.Pdf.TestHelpers;
 /// Resolution order for each root:
 ///   1. the <c>TETITULZ_PDF_CORPUS</c> / <c>TETITULZ_PDF_RAW</c> environment variable, if set;
 ///   2. <c>&lt;repo&gt;/tests/pdf</c> and <c>&lt;repo&gt;/raw</c>, where the repo root is found
-///      by walking up from the test assembly until <c>tetitulz.pdf.sln</c> is seen.
+///      by walking up from the test assembly until <c>tetitulz.pdf.sln</c> is seen — or
+///      <c>tetitulz.pdf-apps.sln</c>, the apps' repository, which runs these helpers from its
+///      submodule against its own <c>tests/ApiSnapshots</c>.
 ///
 /// There are no hardcoded absolute paths anywhere in this type, by design: the
 /// NoHardcodedPathsTests guard in Tetitulz.Pdf.Base.Tests fails the build if an
@@ -137,7 +139,10 @@ public static class TestCorpus
         return null;
     }
 
-    /// <summary>The repository root (the directory holding <c>tetitulz.pdf.sln</c>), or null.</summary>
+    /// <summary>
+    /// The repository root (the directory holding <c>tetitulz.pdf.sln</c> or <c>tetitulz.pdf-apps.sln</c>,
+    /// whichever is nearer the test assembly), or null.
+    /// </summary>
     public static string? RepoRoot => _repoRoot.Value;
 
     private static string? Resolve(string envVar, string repoRelative)
@@ -158,7 +163,7 @@ public static class TestCorpus
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         for (int i = 0; i < 12 && dir != null; i++, dir = dir.Parent)
         {
-            if (dir.EnumerateFiles("tetitulz.pdf.sln").Any())
+            if (dir.EnumerateFiles("tetitulz.pdf.sln").Any() || dir.EnumerateFiles("tetitulz.pdf-apps.sln").Any())
                 return dir.FullName;
         }
         return null;

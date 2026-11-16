@@ -32,12 +32,6 @@ namespace Tetitulz.Pdf.Base.Tests.TestInfrastructure;
 /// <para><b>It scans the loaded assemblies rather than the source</b>, so a type added in any
 /// package is covered without this file naming it, and a rename cannot make the guard stop
 /// matching.</para>
-///
-/// <para><b>One package is out of reach, and says so rather than being quietly missed:</b>
-/// <c>WinForms.PdfViewer</c> targets <c>net462</c> / <c>net10.0-windows</c>, so this
-/// <c>net10.0</c> project cannot reference it and the sweep never loads it.
-/// <c>PdfPasswordRequiredException</c> is asserted in that package's own test project instead.
-/// A guard with a hole is only dangerous when the hole is undocumented.</para>
 /// </remarks>
 public class ExceptionHierarchyTests
 {

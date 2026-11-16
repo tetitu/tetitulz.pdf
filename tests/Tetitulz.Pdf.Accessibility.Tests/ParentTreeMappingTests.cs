@@ -626,9 +626,11 @@ public class ParentTreeMappingTests
     /// <summary>
     /// Wall-clock budget for the adversarial audit. Generous on purpose: the assertion that
     /// actually proves the guard exists is the diagnostic below, and the timeout is only there so
-    /// an unbounded walk fails the test instead of hanging the run.
+    /// an unbounded walk fails the test instead of hanging the run. The audit takes about a second
+    /// alone and over a minute beside a whole solution's test hosts, so the bound is ten minutes:
+    /// a walk the guard no longer stops still fails the diagnostic assertion, whatever the clock says.
     /// </summary>
-    private const int FormScanBudgetMs = 60_000;
+    private const int FormScanBudgetMs = 600_000;
 
     /// <summary>
     /// <b>The quadratic document.</b> <paramref name="count"/> pages that all share <em>one</em>

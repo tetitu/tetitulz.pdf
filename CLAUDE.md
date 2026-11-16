@@ -15,15 +15,15 @@ not published (closed work leaves it); history: git.
 
 | Path | Contents |
 |---|---|
-| `src/tetitulz.pdf/` | `Core`, `Base`, `Encryption`, `Signing`, `WinForms.PdfViewer` |
-| `src/features/` | `HtmlToPdf`, `DocxToPdf`, `Builder`, `Accessibility`, `Printing` |
+| `src/tetitulz.pdf/` | `Core`, `Base`, `Encryption`, `Signing` |
+| `src/features/` | `HtmlToPdf`, `DocxToPdf`, `Builder`, `Accessibility` |
 | `src/plugins/` | the plugin ring |
 | `tests/` | One test project per production project; no cross-project test dependencies |
-| — | The apps and demos are a separate repository, `tetitulz.pdf-apps`, that takes this one as a submodule |
+| — | The WinForms viewer control, `Printing`, the apps and the demos are a separate repository, `tetitulz.pdf-apps`, that takes this one as a submodule |
 | `benchmarks/`, `tools/` | Developer-local, not in the published repository; never packed |
 | `docs/` | Index only — [`docs/README.md`](docs/README.md) |
 
-There are **29** library `.nupkg`s — one per project under `src/`.
+There are **27** library `.nupkg`s — one per project under `src/`.
 They include the 19 plugins under `src/plugins/` (CertStoreSign, CMap, Conformance, Docx,
 EthereumSign, Fonts, Html, HtmlBrowser, HtmlScript, JavaScript, Maintenance, Ocr, PageEdits,
 PostScript, Renderers, SignatureVerify, Svg, Templating, Text). **Both claims are guarded** by
@@ -31,10 +31,8 @@ PostScript, Renderers, SignatureVerify, Svg, Templating, Text). **Both claims ar
 
 ### Target frameworks
 
-- Every `src/` project: `net10.0;netstandard2.0`, except `WinForms.PdfViewer`: `net462;net10.0-windows`, and `Printing`:
-  `net10.0-windows` alone (its pipe must be the first instance, which only a P/Invoke reaches on .NET Framework).
-  Tests: `net10.0`.
-- **A .NET Framework host can reach every package but `Printing`.** On netstandard2.0 use `Core.Text.Latin1Text`
+- Every `src/` project: `net10.0;netstandard2.0`. Tests: `net10.0`.
+- **A .NET Framework host can reach every package.** On netstandard2.0 use `Core.Text.Latin1Text`
   (`Encode`/`Decode`) — not `Encoding.Latin1` (which is .NET 5+ and does not compile) and not
   `Encoding.GetEncoding("iso-8859-1")` (which compiles but throws on a .NET Core netstandard2.0 host
   with no CodePages provider); `!double.IsNaN(x) && !double.IsInfinity(x)` (not `double.IsFinite`), and
@@ -315,11 +313,11 @@ PostScript, Renderers, SignatureVerify, Svg, Templating, Text). **Both claims ar
 
 The project graph is a **DAG with `Core` at the bottom**. Core: object model, parsing, filters,
 writing, signing crypto — no SkiaSharp, no UI. Base: operations and rendering, may use SkiaSharp.
-Features depend on Core/Base only, with three sanctioned exceptions.
+Features depend on Core/Base only, with two sanctioned exceptions.
 
 1. **`Builder` references no other feature**; `DocxToPdf` and `HtmlToPdf` may reference it.
 2. **`Conformance` references no feature**; `Accessibility → Plugins.Conformance` is sanctioned.
-3. **`PostScript` references no feature**; `Printing → Plugins.PostScript` is sanctioned (a print job is PostScript).
+3. **`PostScript` references no feature**: `Printing` (in `tetitulz.pdf-apps`) references it, a print job being PostScript.
 4. **`Core` / `Base` / `Signing` / `Encryption` reference no plugin.**
 5. **Plugin → plugin is banned** — share downward (`Core.Fonts.PredefinedCMapRegistry` is the model).
 
@@ -763,7 +761,7 @@ most `MaxRenderReportsPerKindPerPage` times a page** (the scope both operator lo
 ### Nullable reference types — per-project, and enforced
 
 - **`<Nullable>` is not set repo-wide — do not turn it on globally.** Opted in at zero: `Builder`,
-  `HtmlToPdf`, `Signing`, `WinForms.PdfViewer`, `Plugins.{Text,Svg,Docx,Html,Ocr}`
+  `HtmlToPdf`, `Signing`, `Plugins.{Text,Svg,Docx,Html,Ocr}`
   (`EthereumSign`: `annotations`). `Core`, `Base`, `Encryption` stay oblivious.
 - `src/Directory.Build.targets` / `.props` make nullable and doc-tag codes errors. A new project starts
   with `<NullableWarningsAreErrors>false</NullableWarningsAreErrors>` and a tracking comment — **never
@@ -949,10 +947,6 @@ substring match and misses `Assert.True(png.Length > 100)` — a green guard is 
 - **When behaviour changes, rename the test or restore the behaviour** — never edit the assertion and
   leave the name.
 - **A refusal test must refuse for the reason in its name**; pair refusals with an acceptance control.
-- **A viewer test runs its body through `StaThread.Run`** (a window procedure's exception becomes
-  the test's failure, never WinForms' error dialog, which hangs the host); **a test that shows a
-  window carries `[DesktopFact]`**, which skips with the reason on a desktop a shown window cannot
-  paint on (a locked screen).
 
 ### Three blind spots no assertion about the *answer* can reach
 

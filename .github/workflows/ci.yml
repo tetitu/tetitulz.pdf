@@ -9,9 +9,9 @@ on:
   workflow_dispatch:
 
 # A force-push to a PR used to leave the superseded run burning a windows-latest runner to
-# completion — and this workflow's Windows job is the long one, because it alone can build the
-# net462 / net48 / net10.0-windows targets. Cancel only for pull_request: a push to main or a
-# release tag must finish, since that job is the packing and release gate.
+# completion — and this workflow's Windows job is the long one, running the full solution with
+# coverage. Cancel only for pull_request: a push to main or a release tag must finish, since that job
+# is the packing and release gate.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -30,9 +30,8 @@ env:
 
 jobs:
   build-test:
-    # windows-latest is required for the FULL solution, not a preference: it builds the net462 and
-    # net10.0-windows targets (the WinForms viewer, Printing) that cannot build anywhere else. This
-    # job stays the packing and release gate. The apps and demos live in tetitulz.pdf-apps.
+    # The FULL solution, coverage and the packing and release gate. The Windows-only packages (the
+    # WinForms viewer control, Printing), the apps and the demos live in tetitulz.pdf-apps.
     #
     # Rendering itself is no longer Windows-bound — see the linux-verify job below.
     runs-on: windows-latest
@@ -368,8 +367,8 @@ jobs:
 
   linux-verify:
     # Proves the claim the packages now make: rendering runs off Windows. Builds and tests the
-    # TFM-portable subset — tetitulz.pdf.portable.slnf is the full solution minus the WinForms
-    # viewer and Printing, which are Windows-only by construction.
+    # TFM-portable subset — tetitulz.pdf.portable.slnf is the full solution minus the CertStoreSign
+    # tests. Every src/ project is in it.
     #
     # A solution filter rather than a `dotnet build` exclusion pattern: the filter is an explicit
     # in-repo list, so adding a project that cannot build on Linux is a visible edit rather than a
@@ -416,15 +415,12 @@ jobs:
         shell: pwsh
         run: |
           # The filter is hand-maintained, so a new project under src/ would otherwise never be
-          # built on Linux and its portability would go unverified. Two are legitimately absent,
-          # each Windows-only by its target framework: the WinForms viewer (net462,
-          # net10.0-windows) and Printing (net10.0-windows alone: the Windows spooler and its pipe).
-          $windowsOnly = 'Tetitulz.Pdf.WinForms.PdfViewer.csproj', 'Tetitulz.Pdf.Printing.csproj'
+          # built on Linux and its portability would go unverified. None is exempt: the Windows-only
+          # packages live in tetitulz.pdf-apps.
           $filter = Get-Content tetitulz.pdf.portable.slnf -Raw
           $missing = @()
           Get-ChildItem -Path src -Recurse -Filter *.csproj | ForEach-Object {
               $name = $_.Name
-              if ($windowsOnly -contains $name) { return }
               if (-not $filter.Contains($name)) { $missing += $name }
           }
           if ($missing.Count -gt 0) {

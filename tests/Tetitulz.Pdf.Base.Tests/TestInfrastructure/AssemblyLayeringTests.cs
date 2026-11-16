@@ -167,7 +167,7 @@ public class AssemblyLayeringTests
     /// The hard invariants that keep the sanctioned exceptions from becoming cycles:
     /// <c>Builder</c> references no other feature; <c>Plugins.Conformance</c> references no feature
     /// (because <c>Accessibility</c> → <c>Conformance</c> already exists); <c>Plugins.PostScript</c>
-    /// references no feature (because <c>Printing</c> → <c>PostScript</c> already exists).
+    /// references no feature (because <c>Printing</c>, in tetitulz.pdf-apps, references it).
     /// </summary>
     [RepoSourceFact]
     public void Sanctioned_exceptions_keep_their_hard_invariants()
@@ -194,7 +194,7 @@ public class AssemblyLayeringTests
         foreach (var r in postScript!.ProjectRefs)
             if (byName.TryGetValue(r, out var t) && t.Ring == "feature")
                 offences.Add($"PostScript -> {r}: PostScript must never reference a feature " +
-                             "(Printing -> PostScript exists, so this would cycle).");
+                             "(Printing, in tetitulz.pdf-apps, references PostScript).");
 
         Assert.True(offences.Count == 0, string.Join("\n  ", offences));
     }

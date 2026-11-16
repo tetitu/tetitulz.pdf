@@ -1,6 +1,6 @@
 # tests/ — how this suite is put together, and the guards that police it
 
-This directory holds **28 test projects** plus one non-test helper library (`tests/Tetitulz.Pdf.TestHelpers/`), 29 `.csproj` in all. All but one are in `tetitulz.pdf.portable.slnf` and run on the Linux CI job; the only one absent is `tests/Tetitulz.Pdf.WinForms.PdfViewer.Tests/`, which targets `net10.0-windows`. CI enforces the shape rather than trusting it: one step fails the build if a library under `src/` has no `tests/&lt;name&gt;.Tests/&lt;name&gt;.Tests.csproj`, and its `KnownGaps` exemption list is **empty** — re-populating it is always the wrong fix.
+This directory holds **28 test projects** plus one non-test helper library (`tests/Tetitulz.Pdf.TestHelpers/`), 29 `.csproj` in all. All but one are in `tetitulz.pdf.portable.slnf` and run on the Linux and macOS CI jobs; the only one absent is `tests/Tetitulz.Pdf.Plugins.CertStoreSign.Tests/`. CI enforces the shape rather than trusting it: one step fails the build if a library under `src/` has no `tests/&lt;name&gt;.Tests/&lt;name&gt;.Tests.csproj`, and its `KnownGaps` exemption list is **empty** — re-populating it is always the wrong fix.
 
 The rules that change what you write are in `CLAUDE.md`; this file explains the machinery those rules run on.
 

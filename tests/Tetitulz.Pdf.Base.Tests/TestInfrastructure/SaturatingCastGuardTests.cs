@@ -30,10 +30,9 @@ namespace Tetitulz.Pdf.Base.Tests.TestInfrastructure;
 /// assemblies, this test's own output and each project's NuGet compile assets; every cast whose
 /// target is an integer type and whose operand is a <c>float</c> or <c>double</c> is a finding.
 /// A constant the compiler folds (<c>(int)1.5</c>) is not: it can sit where only a constant may.</para>
-/// <para><b>A cast whose operand's type the compilation cannot name is counted too</b> and held to a
-/// ceiling — none where the Windows desktop framework is installed: an unresolved reference hides a
-/// float cast as an unknown one. Without that framework five of the viewer's casts
-/// (<c>(int)e.Graphics.DpiX</c>, <c>(int)Math.Round(bmp.Width * scale)</c>) go unseen.</para>
+/// <para><b>A cast whose operand's type the compilation cannot name is counted too</b> and held to
+/// none, on every platform: an unresolved reference hides a float cast as an unknown one. Nothing
+/// under <c>src/</c> needs the Windows desktop framework, so none is referenced.</para>
 /// <para><b>A project whose packages are not restored here is not judged here.</b> Running this
 /// project's tests alone restores only its own graph, so a plugin's package types (Nethereum's) have
 /// no compile assets; that project's untypeable casts are named in the output, not counted. The
@@ -64,7 +63,7 @@ public sealed class SaturatingCastGuardTests
     };
 
     private sealed record Scan(List<string> Findings, int HelperCasts, int CastsToIntegers, List<string> Unresolved,
-                               List<string> NotRestored, bool HasDesktop);
+                               List<string> NotRestored);
 
     private static readonly Lazy<Scan> Result = new(Run);
 
@@ -84,9 +83,7 @@ public sealed class SaturatingCastGuardTests
         Scan scan = Result.Value;
         foreach (string line in scan.NotRestored) _output.WriteLine("not judged here (packages not restored): " + line);
         Assert.True(scan.CastsToIntegers > 1000, $"only {scan.CastsToIntegers} casts to an integer type were seen");
-        // With the Windows desktop framework present every operand is typed; without it (Linux, macOS)
-        // the viewer's System.Drawing operands are not, and the ceiling leaves room for them alone.
-        Assert.True(scan.Unresolved.Count <= (scan.HasDesktop ? 0 : 25),
+        Assert.True(scan.Unresolved.Count == 0,
             $"{scan.Unresolved.Count} casts to an integer type have an operand the compilation cannot type " +
             "(a reference is missing, so a float cast could hide among them):\n" + string.Join("\n", scan.Unresolved.Take(40)));
     }
@@ -118,14 +115,6 @@ public sealed class SaturatingCastGuardTests
             foreach (var dll in CompileAssets(assets))
                 references.TryAdd(Path.GetFileName(dll), dll);
         }
-        // The WinForms viewer's types: the Windows desktop shared framework beside the runtime's own.
-        string runtimeDir = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
-        string desktopDir = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(runtimeDir)!)!,
-                                         "Microsoft.WindowsDesktop.App", Path.GetFileName(runtimeDir));
-        bool hasDesktop = Directory.Exists(desktopDir);
-        if (hasDesktop)
-            foreach (var dll in Directory.EnumerateFiles(desktopDir, "*.dll"))
-                references.TryAdd(Path.GetFileName(dll), dll);
         var metadata = references.Values.Where(File.Exists).Select(p => MetadataReference.CreateFromFile(p)).ToList();
 
         var findings = new SortedSet<string>(StringComparer.Ordinal);
@@ -160,7 +149,7 @@ public sealed class SaturatingCastGuardTests
                 }
             }
         }
-        return new Scan(findings.ToList(), helperCasts, castsToIntegers, unresolved.ToList(), notRestored.ToList(), hasDesktop);
+        return new Scan(findings.ToList(), helperCasts, castsToIntegers, unresolved.ToList(), notRestored.ToList());
     }
 
     /// <summary>Every compile-time assembly a restored project's packages supply, from its <c>project.assets.json</c>.</summary>

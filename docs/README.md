@@ -20,8 +20,7 @@ Every shipping package has a README beside its project, with its own contract an
 [`Core`](../src/tetitulz.pdf/Tetitulz.Pdf.Core/README.md) ·
 [`Base`](../src/tetitulz.pdf/Tetitulz.Pdf.Base/README.md) ·
 [`Encryption`](../src/tetitulz.pdf/Tetitulz.Pdf.Encryption/README.md) ·
-[`Signing`](../src/tetitulz.pdf/Tetitulz.Pdf.Signing/README.md) ·
-[`WinForms.PdfViewer`](../src/tetitulz.pdf/Tetitulz.Pdf.WinForms.PdfViewer/README.md)
+[`Signing`](../src/tetitulz.pdf/Tetitulz.Pdf.Signing/README.md)
 
 **Features** (`src/features/`):
 [`Builder`](../src/features/Tetitulz.Pdf.Builder/README.md) (the code-first document model every converter targets; the XFA importers) ·
@@ -50,9 +49,10 @@ Every shipping package has a README beside its project, with its own contract an
 [`Templating`](../src/plugins/Tetitulz.Pdf.Plugins.Templating/README.md) (template filling, RTL included) ·
 [`Text`](../src/plugins/Tetitulz.Pdf.Plugins.Text/README.md)
 
-**The apps and demos** live in their own repository,
+**The Windows-only packages, the apps and the demos** live in their own repository,
 [tetitulz.pdf-apps](https://github.com/tetitu/tetitulz.pdf-apps), which builds them against this
-one: the WPF viewer (the desktop editor), StampSign (stamps and a smart-card signature), the
+one: the WinForms viewer control and `Printing` (a virtual PDF printer's machinery), both packages;
+the WPF viewer (the desktop editor), StampSign (stamps and a smart-card signature), the
 Splitter, SignCli (sign and verify from the command line), BatchRenderer, CompareViewer, the
 virtual printer and its tray app, WasmSign (signing in the browser) and the installers.
 
@@ -69,9 +69,9 @@ dotnet build tetitulz.pdf.sln          # 0 errors, every target framework
 dotnet test  tetitulz.pdf.sln          # CI is the authority on the count
 ```
 
-Requirements: the **.NET 10 SDK** (`global.json` pins the feature band), and Windows for the full
-solution, which builds the `net462` and `net10.0-windows` viewer and `Printing`. Everything portable builds and
-tests on Linux through `tetitulz.pdf.portable.slnf`, the `linux-verify` CI job.
+Requirements: the **.NET 10 SDK** (`global.json` pins the feature band). Every project builds on
+Windows, Linux and macOS; `tetitulz.pdf.portable.slnf`, which the `linux-verify` and `macos-verify` CI
+jobs run, is the whole solution but the CertStoreSign tests.
 
 Optional, each reported as **Skipped** when absent: a PDF corpus through `TETITULZ_PDF_CORPUS` and
 `TETITULZ_PDF_RAW`; the JPEG 2000 conformance data through `TETITULZ_JPX_CORPUS`. No outside program is

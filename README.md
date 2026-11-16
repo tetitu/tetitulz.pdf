@@ -6,9 +6,10 @@ SkiaSharp; everything that reads or writes a PDF is managed code this repository
 JPEG 2000, JBIG2 and CCITT codecs, the PostScript interpreter, the ICC evaluator and the OpenType
 shaper.
 
-There are **29 packages**. All but two multi-target `net10.0` and `netstandard2.0`, so the same
-assemblies serve modern .NET and .NET Framework hosts; the WinForms viewer targets
-`net462;net10.0-windows` and `Printing`, which drives the Windows spooler, `net10.0-windows` alone.
+There are **27 packages**. Every one multi-targets `net10.0` and `netstandard2.0`, so the same
+assemblies serve modern .NET and .NET Framework hosts. The Windows-only packages built on them, the
+WinForms viewer control and `Printing` (a virtual PDF printer's machinery), are in
+[tetitulz.pdf-apps](https://github.com/tetitu/tetitulz.pdf-apps).
 
 > **Status.** The packages are attached to each
 > [GitHub release](https://github.com/tetitu/tetitulz.pdf/releases); they are not on nuget.org yet.
@@ -61,7 +62,6 @@ does not carry the crypto stack into every consumer.
 | Run document JavaScript in a sandbox | `PdfOperations.ExecuteJavaScript` | `Plugins.JavaScript` |
 | Fonts for a host that has none (Liberation, Noto Sans Hebrew and Arabic, OFL) | `BundledFonts.Register` | `Plugins.Fonts` |
 | Predefined CJK CMaps | `Plugins.CMap` | `Plugins.CMap` |
-| An embeddable WinForms viewer | `PdfViewerControl` | `WinForms.PdfViewer` |
 
 What the library does **not** do is stated in each package's README, beside its contract and limits.
 
@@ -200,7 +200,6 @@ producer's placeholder. `XfaLayout` lays the `template` packet out with the `dat
 | **Windows** x64, x86, arm64 | Supported. The full solution builds, tests and packs here. |
 | **Linux** x64, arm64 (glibc and musl) | Supported. Rendering and standard-14 substitution are verified on Ubuntu by pixel assertion; the portable subset (`tetitulz.pdf.portable.slnf`) builds and tests green. |
 | **macOS** | Native assets ship and the code is platform-neutral, but no run has been recorded yet. Treat it as unverified. |
-| Windows-only by construction | `Tetitulz.Pdf.WinForms.PdfViewer` and `Tetitulz.Pdf.Printing`. Nothing else in the library depends on them. |
 
 `Tetitulz.Pdf.Core` has no native dependency at all. `Tetitulz.Pdf.Base` references SkiaSharp's
 native assets for all three desktop platforms; there is no GDI+, DirectWrite or WIC anywhere. The
@@ -293,8 +292,8 @@ The threat model, what is in and out of scope, and how to report: [`SECURITY.md`
 ## Repository layout
 
 ```
-src/tetitulz.pdf/    Core, Base, Encryption, Signing, WinForms.PdfViewer
-src/features/        HtmlToPdf, DocxToPdf, Builder, Accessibility, Printing
+src/tetitulz.pdf/    Core, Base, Encryption, Signing
+src/features/        HtmlToPdf, DocxToPdf, Builder, Accessibility
 src/plugins/         19 plugins: CertStoreSign, CMap, Conformance, Docx, EthereumSign, Fonts,
                      Html, HtmlBrowser, HtmlScript, JavaScript, Maintenance, Ocr, PageEdits,
                      PostScript, Renderers, SignatureVerify, Svg, Templating, Text
@@ -302,7 +301,7 @@ tests/               One test project per production assembly, plus TestHelpers
 docs/                The documentation index
 ```
 
-The apps and diagnostic tools built on the library are a separate repository,
+The WinForms viewer control, `Printing`, the apps and the diagnostic tools built on the library are a separate repository,
 [tetitulz.pdf-apps](https://github.com/tetitu/tetitulz.pdf-apps), which takes this one as a submodule.
 
 The project graph is a directed acyclic graph with `Core` at the bottom: the object model, parsing,
@@ -334,7 +333,7 @@ proved by mutating the code it covers. [`tests/README.md`](tests/README.md) expl
 
 Versions come from git tags through MinVer; an untagged build is a prerelease. A `v*` tag that
 passes CI on Windows, Linux and macOS becomes a GitHub release with the packages attached. A minor version may still break the API: defects are still surfacing at
-a steady rate. `dotnet pack tetitulz.pdf.sln -c Release -o artifacts` produces all 29 packages;
+a steady rate. `dotnet pack tetitulz.pdf.sln -c Release -o artifacts` produces all 27 packages;
 none is on nuget.org.
 
 ---
@@ -385,7 +384,7 @@ Copyright (c) 2026 Tamir Mordo. Two licences, by package:
 
 | Packages | Licence |
 |---|---|
-| Everything except the three below: Core, Base, Signing, Encryption, the WinForms viewer, the features and sixteen of the plugins | [Apache License 2.0](LICENSE), with the credit in [`NOTICE`](NOTICE) |
+| Everything except the three below: Core, Base, Signing, Encryption, the features and sixteen of the plugins | [Apache License 2.0](LICENSE), with the credit in [`NOTICE`](NOTICE) |
 | `Plugins.PostScript`, `Plugins.Maintenance`, `Plugins.PageEdits` | [Tetitulz.Pdf Attribution License 1.0](LICENSE-ATTRIBUTION.txt) |
 
 **Apache 2.0.** Anyone distributing the library, or a work built from it, passes on [`NOTICE`](NOTICE), whose credit

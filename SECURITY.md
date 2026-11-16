@@ -80,7 +80,7 @@ Each is a deliberate decision, listed so an application can decide what it must 
 - **A host that acts on `UriRequested`, `LaunchRequested` or `FormActionRequested` without
   validating the target.** The library surfaces the action and does not perform it. A
   `javascript:`, `file:`, `data:` or `smb:` target is the handler's to refuse. (The WinForms viewer
-  opens `http`, `https` and `mailto` links only.)
+  control, in tetitulz.pdf-apps, opens `http`, `https` and `mailto` links only.)
 - **A host that displays `IsValid` as a trust indicator.** See the table above.
 - **Action chains.** `PdfActionRunner.RunAction(PdfAction)` runs one parsed action and never its
   `/Next` chain. The four trigger entry points (`RunCatalogOpenAction`, `RunCatalogAa`,
