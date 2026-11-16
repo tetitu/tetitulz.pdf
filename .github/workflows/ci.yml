@@ -144,6 +144,12 @@ jobs:
         run: dotnet build tetitulz.pdf.sln -c Release --no-restore
 
       - name: Test with coverage
+        env:
+          # vstest waits 90 seconds by default for each test host's coverage data collector to
+          # connect; with every assembly's host starting at once on a busy runner one can miss it,
+          # and that assembly's run is then cut off (the completeness check below fails it). The
+          # wait is a ceiling, not a delay: a collector that connects at once costs nothing more.
+          VSTEST_CONNECTION_TIMEOUT: 600
         run: >
           dotnet test tetitulz.pdf.sln -c Release --no-build
           --collect:"XPlat Code Coverage"
