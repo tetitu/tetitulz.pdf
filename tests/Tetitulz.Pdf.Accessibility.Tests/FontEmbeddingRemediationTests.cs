@@ -1227,19 +1227,17 @@ public class FontEmbeddingRemediationTests
 
         byte[] input = BuildPdf(bodies);
 
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         Run(input, new FontEmbeddingOptions { FontProvider = _ => MinimalTrueType.Build("Helo") },
             out FontEmbeddingResult result);
-        stopwatch.Stop();
 
         // The one shared font is examined once, not once per page.
         Assert.Equal(1, result.FontsExamined);
         Assert.Equal(1, result.FontsEmbedded);
 
-        // Deliberately loose: this asserts "not quadratic in the page count", not a speed. The
-        // per-page walk needs minutes for these numbers; one walk needs well under a second.
-        Assert.True(stopwatch.Elapsed < TimeSpan.FromSeconds(20),
-            "the shared resource graph was re-walked per page — it took " + stopwatch.Elapsed);
+        // The walk's evidence, not a clock: re-walking the graph from every page costs these
+        // numbers tens of millions of steps, past the walk's budget, and the remediator then says
+        // so in its warnings. One walk stays far inside it.
+        Assert.DoesNotContain(result.Warnings, w => w.Contains("traversal budget", StringComparison.Ordinal));
     }
 
     // =====================================================================
