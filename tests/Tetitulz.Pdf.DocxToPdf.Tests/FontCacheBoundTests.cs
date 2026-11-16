@@ -67,24 +67,50 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// whether or not the path was already cached, so this does not depend on test order — the trap
         /// GAPS §14 records, met here between two tests in one file.</para>
         /// </summary>
+        /// <remarks>
+        /// The fonts are <see cref="HostFonts"/>' generated set rather than the machine's, so the
+        /// figure is exact on every host: a Linux runner carries a fraction of a Windows machine's
+        /// fonts, and a bound sized for one says nothing on the other.
+        /// </remarks>
         [Fact]
         public void OneParagraph_RejectsFontsWithoutReadingThem()
         {
-            // U+12000 CUNEIFORM SIGN A: assigned, and essentially nothing ships a font for it, so
-            // neither the family-name match nor the coverage walk can short-circuit early — the walk
-            // reaches every installed font, and every one of them must be rejected cheaply.
+            // U+12000 CUNEIFORM SIGN A: none of the generated fonts maps it, so neither the
+            // family-name match nor the coverage walk can stop early — the walk reaches every font,
+            // and every one of them must be rejected cheaply.
             byte[] docx = OneParagraph("𒀀𒀁𒀂");
 
-            long before = FontResolver.ProbeRejections;
-            byte[] pdf = DocxToPdfConverter.ConvertToBytes(docx, new DocxToPdfOptions());
-            Assert.StartsWith("%PDF-", System.Text.Encoding.ASCII.GetString(pdf, 0, 5));
+            using var scratch = new ScratchDirectory();
+            string[] fonts = HostFonts(scratch.Path);
+            long rejected;
+            using (FontResolver.UseHostFontFilesForTest(fonts))
+            {
+                long before = FontResolver.ProbeRejections;
+                byte[] pdf = DocxToPdfConverter.ConvertToBytes(docx, new DocxToPdfOptions());
+                Assert.StartsWith("%PDF-", System.Text.Encoding.ASCII.GetString(pdf, 0, 5));
+                rejected = FontResolver.ProbeRejections - before;
+            }
 
-            long rejected = FontResolver.ProbeRejections - before;
-            Assert.True(rejected > 100,
-                $"the scan rejected only {rejected} fonts through FontCoverageProbe. Nothing on this " +
-                "host covers cuneiform, so the walk must reach every installed font and reject each " +
-                "from the sfnt directory plus one table. A figure this low means the probe is not " +
-                "consulted and the scan is back to a full read per candidate (GAPS §16 item 4a).");
+            Assert.True(rejected >= fonts.Length,
+                $"the scan rejected only {rejected} of {fonts.Length} fonts through FontCoverageProbe. " +
+                "None covers cuneiform, so the walk must reach every font and reject each from the sfnt " +
+                "directory plus one table. A figure below the count means the probe is not consulted and " +
+                "the scan is back to a full read per candidate (GAPS §16 item 4a).");
+        }
+
+        /// <summary>
+        /// Forty fonts in <paramref name="directory"/>, each mapping only <c>A</c> and <c>B</c>, each
+        /// named its own family; their file names match none of the resolver's preferred stems.
+        /// </summary>
+        private static string[] HostFonts(string directory)
+        {
+            var paths = new string[40];
+            for (int i = 0; i < paths.Length; i++)
+            {
+                paths[i] = Path.Combine(directory, "probe-face-" + i + ".ttf");
+                File.WriteAllBytes(paths[i], Tetitulz.Pdf.TestHelpers.MinimalTrueType.BuildNamed("AB", "Probe Face " + i));
+            }
+            return paths;
         }
 
         /// <summary>
@@ -103,6 +129,12 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// never reaches the feature, which is banned pattern 3 wearing a different hat. Hebrew forces
         /// the resolution, and a family this host cannot have forces the walk to run to completion
         /// instead of stopping at a match.</para>
+        ///
+        /// <para><b>The host's own fonts, counted.</b> The requested-family walk is the step a supplied
+        /// font list skips, so this one runs over the machine's fonts — and asks the probe itself how
+        /// many of them it can name, so the bound is exact wherever it runs: a Linux runner carries a
+        /// fraction of a Windows machine's fonts, and a fixed figure sized for one says nothing on the
+        /// other.</para>
         /// </summary>
         [Fact]
         public void AFamilyOutsideTheFilenameMap_IsMatchedFromTheNameTableAlone()
@@ -124,16 +156,22 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
                 main.Document.Save();
             }
 
+            // What the walk visits — the resolver's own enumeration — and how many of those the probe
+            // names from the `name` table alone.
+            int nameable = Tetitulz.Pdf.Core.Fonts.FontFileLocator.EnumerateFontFiles(includeOpenType: true)
+                .Count(p => Tetitulz.Pdf.Core.Fonts.FontCoverageProbe.FamilyName(p) != null);
+            Assert.True(nameable > 0, "this host has no font the probe can name, so the walk has nothing to show");
+
             long before = FontResolver.ProbeFamilyNames;
             byte[] pdf = DocxToPdfConverter.ConvertToBytes(ms.ToArray(), new DocxToPdfOptions());
             Assert.StartsWith("%PDF-", System.Text.Encoding.ASCII.GetString(pdf, 0, 5));
 
             long named = FontResolver.ProbeFamilyNames - before;
-            Assert.True(named > 100,
-                $"only {named} fonts were named from the `name` table. A family outside the 17-entry " +
-                "KnownFiles map has to be found by walking every installed font's family name, and " +
-                "FontCoverageProbe.FamilyName is what makes that cheap — a figure this low means the " +
-                "walk is back to a full read per candidate (GAPS §16 item 4a).");
+            Assert.True(named >= nameable,
+                $"only {named} of the {nameable} fonts the probe can name were named from the `name` table. " +
+                "A family outside the 17-entry KnownFiles map has to be found by walking every installed " +
+                "font's family name, and FontCoverageProbe.FamilyName is what makes that cheap — a figure " +
+                "below the count means the walk is back to a full read per candidate (GAPS §16 item 4a).");
         }
 
         /// <summary>
@@ -186,6 +224,20 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
             finally
             {
                 try { File.Delete(path); } catch { }
+            }
+        }
+
+        /// <summary>A fresh directory under the temp path, deleted with what it holds.</summary>
+        private sealed class ScratchDirectory : IDisposable
+        {
+            public string Path { get; } = System.IO.Path.Combine(
+                System.IO.Path.GetTempPath(), "tetitulz-fontprobe-" + Guid.NewGuid().ToString("N"));
+
+            public ScratchDirectory() => Directory.CreateDirectory(Path);
+
+            public void Dispose()
+            {
+                try { Directory.Delete(Path, recursive: true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
             }
         }
 
