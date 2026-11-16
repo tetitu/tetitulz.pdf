@@ -540,8 +540,14 @@ jobs:
         run: dotnet build tetitulz.pdf.portable.slnf -c Release --no-restore
 
       - name: Test
+        # --blame-hang stops a test host whose test runs past fifteen minutes and names the test it
+        # was running, so a hang is reported by name instead of spending the job's whole timeout;
+        # the aborted host's results then fail the completeness check below. Fifteen, above the
+        # longest budget a test sets itself (ParentTreeMappingTests' ten). No dump: the name is the
+        # evidence wanted, and a macOS runner need not be able to write one.
         run: >
           dotnet test tetitulz.pdf.portable.slnf -c Release --no-build
+          --blame-hang --blame-hang-timeout 15m --blame-hang-dump-type none
           --logger "trx;LogFilePrefix=macos-test-results"
           --results-directory ${{ github.workspace }}/TestResults
 
