@@ -188,10 +188,12 @@ public sealed class ScriptLimitTests
     public void AMemoryBombIsStoppedAtTheMemoryLimit()
     {
         var (text, reports) = ConvertBounded(
-            Page("var hoard = []; while (true) { hoard.push(new Array(100000).join('x')); }"),
-            // The time limit is a backstop, short on purpose: if the memory limit's forwarding is
-            // mutated away this test must fail by naming the wrong limit, not exhaust the machine.
-            Tight(l => { l.MaxMemoryBytesPerScript = 16L * 1024 * 1024; l.ScriptTimeout = TimeSpan.FromSeconds(3); }));
+            // The memory limit stops the hoard after about 80 strings of 200 KB. The loop's own count
+            // bounds what it can take without that limit (2000 strings, some 400 MB), so a mutated
+            // forwarding fails the test by naming no memory limit rather than exhausting the
+            // machine, and the time limit stays the generous one a loaded host needs.
+            Page("var hoard = []; for (var i = 0; i < 2000; i++) { hoard.push(new Array(100000).join('x')); }"),
+            Tight(l => l.MaxMemoryBytesPerScript = 16L * 1024 * 1024));
 
         Assert.Contains(reports, r => r.Contains("memory limit", StringComparison.Ordinal));
         Assert.Contains("AFTER", text, StringComparison.Ordinal);
