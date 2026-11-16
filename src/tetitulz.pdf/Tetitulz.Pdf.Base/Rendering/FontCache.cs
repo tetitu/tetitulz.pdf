@@ -748,13 +748,22 @@ namespace Tetitulz.Pdf.Base.Rendering
 
                     if (data == null || data.Length < 4) continue;
 
-                    // First try SkiaSharp — handles TrueType, OpenType, and most CFF.
+                    // First try SkiaSharp, for an sfnt alone: TrueType, or CFF-flavoured OpenType.
+                    // A bare CFF or a raw Type 1 program goes to the library's own route below on
+                    // every platform. Skia's font managers on Linux (FreeType) and macOS (CoreText)
+                    // read them directly where Windows' reads neither, and that typeface carries no CFF source,
+                    // no Type 1 hinting-cost check and no non-finite advance guard, so the two
+                    // platforms would draw one file differently — the SVG export not at all.
                     // Require at least one glyph: Skia occasionally returns a non-null
                     // typeface for a truncated/corrupt program that has no usable glyphs,
                     // which would render as blanks; fall through to our own parser instead.
-                    SKTypeface tf;
-                    using (var skData = SKData.CreateCopy(data))
-                        tf = SKTypeface.FromData(skData);
+                    bool bareProgram = nameKey == PdfName.FontFile || (isCff && !IsOpenTypeCff(data));
+                    SKTypeface tf = null;
+                    if (!bareProgram)
+                    {
+                        using (var skData = SKData.CreateCopy(data))
+                            tf = SKTypeface.FromData(skData);
+                    }
                     if (tf != null && tf.GlyphCount > 0)
                     {
                         // Skia will run this program's charstrings itself, under no budget of ours:
