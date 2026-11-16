@@ -140,7 +140,7 @@
          tools/package-consumption/Consumer; a different assembly version there produced a
          FileLoadException on .NET Framework, so keep the two in step. -->
     <PackageVersion Include="System.Memory" Version="4.6.3" />
-    <PackageVersion Include="System.Text.Encoding.CodePages" Version="10.0.11" />
+    <PackageVersion Include="System.Text.Encoding.CodePages" Version="11.0.0" />
     <!-- Transitive-vulnerability overrides: GHSA-7jgj-8wvc-jh57, GHSA-cmhx-cq75-c4mj.
 
          KEPT ON PURPOSE, AND NO LONGER FOR THE ORIGINAL REASON. Four test projects used to carry
