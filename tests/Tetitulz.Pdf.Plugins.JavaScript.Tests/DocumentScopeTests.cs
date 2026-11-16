@@ -85,18 +85,21 @@ public class DocumentScopeTests
 
     /// <summary>
     /// A field object costs an object, not its members: the field objects share one prototype, so a
-    /// script calling <c>getField</c> twenty thousand times stays inside the per-execution memory limit
-    /// (each object carrying its own ninety closures spent the limit in a few hundred calls).
+    /// script calling <c>getField</c> five thousand times stays inside the per-execution memory limit
+    /// (each object carrying its own ninety closures spent the limit in a few hundred calls). Five
+    /// thousand is ten times that, and a quarter of a second alone: the engine's five-second time
+    /// limit is fixed, and a longer loop beside a whole solution's tests reaches it first and fails
+    /// naming time, not memory.
     /// </summary>
     [Fact]
     public void AdversarialGetFieldLoops_StayInsideTheMemoryLimit()
     {
         var ctx = new PdfJsExecutionContext();
         ctx.FieldValues["a"] = "1";
-        PdfJsEngine.Execute("var n = 0; for (var i = 0; i < 20000; i++) n += this.getField('a').value; event.value = '' + n;", ctx);
+        PdfJsEngine.Execute("var n = 0; for (var i = 0; i < 5000; i++) n += this.getField('a').value; event.value = '' + n;", ctx);
 
         Assert.True(ctx.Error == null, ctx.Error?.Message);
-        Assert.Equal("20000", ctx.EventValue);
+        Assert.Equal("5000", ctx.EventValue);
     }
 
     /// <summary>The bridge and the engine's two event functions are gone before a document script runs.</summary>
