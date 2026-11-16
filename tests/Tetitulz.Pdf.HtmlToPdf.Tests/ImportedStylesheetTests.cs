@@ -174,6 +174,25 @@ public class ImportedStylesheetTests
         Assert.Contains("outside.css", report, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// Under a long base directory the report still names the file: the location is shortened in its
+    /// middle, so a resolved URL some hundred characters long keeps <c>outside.css</c> at its end (a
+    /// macOS temp folder alone is fifty characters).
+    /// </summary>
+    [Fact]
+    public void AnImportOutsideALongBaseDirectory_IsReportedByItsFileName()
+    {
+        using var dir = NewScratchDir();
+        string deep = new string('d', 70);
+        dir.Write(deep + "/css/site.css", Encoding.UTF8.GetBytes("@import url(../../outside.css);"));
+
+        var (content, reports) = Convert(Page, o => o.BasePath = System.IO.Path.Combine(dir.Path, deep));
+
+        Assert.DoesNotContain(Green, content, StringComparison.Ordinal);
+        string report = Assert.Single(reports);
+        Assert.Contains("outside.css", report, StringComparison.Ordinal);
+    }
+
     /// <summary>A chain of imports deeper than the nesting cap stops there, reported; the rules above the cap still apply.</summary>
     [Fact]
     public void AChainDeeperThanTheNestingCap_IsReported()

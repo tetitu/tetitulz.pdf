@@ -817,9 +817,23 @@ namespace Tetitulz.Pdf.HtmlToPdf
             => ReportDiagnostic(
                 what == "stylesheet" || what == "script" ? BuilderDiagnosticKind.ContentApproximated
                                      : BuilderDiagnosticKind.ImageDecodeFailed,
-                "The " + what + " '" + Excerpt(url) + "' was not loaded: this engine reads local " +
+                "The " + what + " '" + LocationExcerpt(url) + "' was not loaded: this engine reads local " +
                 "files only inside HtmlToPdfOptions.BasePath, and this one is outside it, missing, " +
                 "or no base directory is set. It is absent from the output.");
+
+        /// <summary>
+        /// A long location shortened in its middle: its start, then its end, where the file's name is.
+        /// <see cref="Excerpt"/> keeps a value's head, which for a resolved <c>file:</c> URL under a long
+        /// directory (a macOS temp folder is some fifty characters before anything of the document's)
+        /// is the directory alone — a report naming no file.
+        /// </summary>
+        private static string LocationExcerpt(string url)
+        {
+            if (string.IsNullOrEmpty(url)) return "";
+            string s = url.Replace('\n', ' ').Replace('\r', ' ');
+            const int Head = 20, Tail = 40;
+            return s.Length <= Head + Tail ? s : s.Substring(0, Head) + "…" + s.Substring(s.Length - Tail);
+        }
 
         private readonly Dictionary<string, byte[]?> _localImageBytes = new(StringComparer.Ordinal);
 

@@ -47,13 +47,24 @@ public class CffFontSetSplitSkiaTests
     }
 
     /// <summary>
-    /// The control: the set itself, wrapped the same way, does not load — the reader takes no
-    /// OpenType CFF table holding three fonts, which is what the split answers.
+    /// The control: the set itself, wrapped the same way, is never its second or third font, which
+    /// is what the split answers. FreeType and DirectWrite take no OpenType CFF table holding three
+    /// fonts; CoreText takes it as its first font, so where it loads at all it draws the first
+    /// font's advance — the others are reached only through the split.
     /// </summary>
     [Fact]
-    public void TheWholeSet_IsNotOneFontToSkia()
+    public void TheWholeSet_IsAtMostItsFirstFontToSkia()
     {
         using var typeface = Load(Set);
-        Assert.Null(typeface);
+        float? advance = null;
+        if (typeface != null)
+        {
+            using var skFont = new SKFont(typeface, 1000);
+            advance = skFont.GetGlyphWidths(new ushort[] { 1 })[0];
+        }
+
+        Assert.True(advance == null || System.Math.Abs(advance.Value - 600f) < 0.5f,
+            $"the whole set loaded as a font whose 'A' advances {advance}, not the first font's 600: " +
+            "the reader took a later font of the set, which only the split may hand it");
     }
 }
