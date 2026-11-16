@@ -53,7 +53,7 @@ namespace Tetitulz.Pdf.Base.Rendering
             if (_cache.TryGetValue(gid, out var cached)) return cached;
 
             var outline = Type2CharstringEvaluator.Evaluate(_font, gid);
-            if (outline.CutByBudget || outline.Steps > PdfLimits.MaxCharstringStepsForHinting) _heavy = true;
+            if (CharstringWork.TooHeavyForSkia(outline.Steps, outline.CutByBudget)) _heavy = true;
             if (outline.CutByBudget)
             {
                 // Not the glyph's outline, so neither drawn nor kept: a later page may draw it whole.

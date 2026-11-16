@@ -60,6 +60,20 @@ namespace Tetitulz.Pdf.Core.Fonts
             return allowed < PdfLimits.MaxCharstringSteps && steps > allowed;
         }
 
+        /// <summary>
+        /// Whether a glyph our evaluator ran is too heavy to hand to Skia, which runs a program's
+        /// charstrings under no budget of ours: a budget cut it short (<paramref name="cutByBudget"/>),
+        /// it ran past <see cref="PdfLimits.MaxCharstringStepsForHinting"/>, or it stopped at the
+        /// per-glyph cap (a stopped glyph counts one step past its limit) — its real cost is then
+        /// unknown, and a host that sets the cap below the hinting threshold would otherwise have
+        /// every abandoned glyph judged light and run whole by the platform's engine. The CFF and the
+        /// Type 1 glyph sources both ask it.
+        /// </summary>
+        internal static bool TooHeavyForSkia(int steps, bool cutByBudget)
+            => cutByBudget
+               || steps > PdfLimits.MaxCharstringStepsForHinting
+               || steps > PdfLimits.MaxCharstringSteps;
+
         /// <summary>True the first time it is asked inside the open scope: the refusal is reported once a page.</summary>
         internal static bool FirstRefusal()
         {

@@ -133,6 +133,58 @@ public sealed class CharstringPageBudgetTests
         finally { PdfLimits.ResetToDefaults(); }
     }
 
+    /// <summary>
+    /// A glyph stopped at the per-glyph cap is too heavy for Skia whatever the cap: with
+    /// <see cref="PdfLimits.MaxCharstringSteps"/> set below <see cref="PdfLimits.MaxCharstringStepsForHinting"/>,
+    /// a bomb glyph stops at the cap, under the hinting threshold — and was judged light, so the
+    /// platform's engine ran it whole (CoreText for hours). The control: boxes under the same cap are light.
+    /// </summary>
+    [Fact]
+    public void AGlyphStoppedAtThePerGlyphCap_IsTooHeavyForSkia_WhateverTheCap()
+    {
+        try
+        {
+            PdfLimits.MaxCharstringSteps = 10_000;
+            Assert.True(PdfLimits.MaxCharstringSteps < PdfLimits.MaxCharstringStepsForHinting);
+
+            using var bombs = new CffGlyphSource(Font(3, BombGlyph));
+            using var boxes = new CffGlyphSource(Font(3, BoxGlyph));
+            Assert.True(bombs.IsTooHeavyForHinting(new ushort[] { 0, 1, 2 }));
+            Assert.False(boxes.IsTooHeavyForHinting(new ushort[] { 0, 1, 2 }));
+        }
+        finally { PdfLimits.ResetToDefaults(); }
+    }
+
+    /// <summary>The Type 1 program's form of the same rule: a glyph stopped at the cap makes the program heavy.</summary>
+    [Fact]
+    public void AType1GlyphStoppedAtThePerGlyphCap_MakesTheProgramTooHeavyForSkia()
+    {
+        try
+        {
+            PdfLimits.MaxCharstringSteps = 10_000;
+            var subrs = new List<byte[]>();
+            for (int i = 0; i < 8; i++)
+            {
+                var s = new List<byte>();
+                for (int k = 0; k < K; k++) { s.Add((byte)(i + 1 + 139)); s.Add(10); }
+                s.Add(11);
+                subrs.Add(s.ToArray());
+            }
+            subrs.Add(new byte[] { 11 });
+            var encoding = new string[256];
+            encoding[65] = "A";
+            var bomb = new Type1Font(encoding,
+                new Dictionary<string, byte[]> { ["A"] = new byte[] { 139, 139, 13, 139, 10, 14 } }, subrs);
+            var box = new Type1Font(encoding,
+                new Dictionary<string, byte[]> { ["A"] = new byte[] { 139, 239, 13, 239, 239, 21, 14 } },
+                new List<byte[]>());
+
+            Assert.True(Type1GlyphSource.IsTooHeavyForHinting(bomb));
+            Assert.False(Type1GlyphSource.IsTooHeavyForHinting(box));
+        }
+        finally { PdfLimits.ResetToDefaults(); }
+    }
+
     /// <summary>The control: real glyphs on a page under the budget are all drawn and nothing is said.</summary>
     [Fact]
     public void RealGlyphsUnderThePageBudget_AreAllDrawn()

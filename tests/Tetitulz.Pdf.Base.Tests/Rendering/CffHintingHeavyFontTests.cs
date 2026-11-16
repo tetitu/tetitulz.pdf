@@ -36,6 +36,27 @@ public sealed class CffHintingHeavyFontTests
         14,                    // endchar
     };
 
+    /// <summary>
+    /// The box, then a call two levels from the bomb's leaf (<c>callgsubr 6</c>: 64 × 64 calls), then
+    /// endchar — a glyph that finishes, in a known number of steps under a 20 000 cap. A glyph stopped
+    /// at the cap is too heavy for Skia whatever the thresholds, so a boundary is measured on this one.
+    /// </summary>
+    internal static readonly byte[] BoxThenNest =
+    {
+        248, 136,              // width 500
+        239, 239, 21,          // 100 100 rmoveto
+        248, 136, 139, 5,      // 500 0 rlineto
+        139, 248, 136, 5,      // 0 500 rlineto
+        252, 136, 139, 5,      // -500 0 rlineto
+        38, 29,                // callgsubr 6 (6 − the bias 107 = −101, encoded 38)
+        14,                    // endchar
+    };
+
+    /// <summary>The steps <paramref name="glyph"/> runs, evaluated alone over the bomb's subroutines.</summary>
+    private static int StepsOf(byte[] glyph) =>
+        Type2CharstringEvaluator.Evaluate(new CffFont(new[] { glyph }, Array.Empty<byte[]>(),
+            CharstringPageBudgetTests.BombSubrs(), new Dictionary<int, int>(), 0f, 0f), 0).Steps;
+
     /// <summary>The box alone.</summary>
     internal static readonly byte[] Box = { 248, 136, 239, 239, 21, 248, 136, 139, 5, 139, 248, 136, 5, 252, 136, 139, 5, 14 };
 
@@ -89,9 +110,11 @@ public sealed class CffHintingHeavyFontTests
         {
             PdfLimits.MaxCharstringSteps = 20_000;
             PdfLimits.MaxCharstringStepsForHinting = 1_000_000;
-            using var source = Source(BoxThenBomb);
+            int steps = StepsOf(BoxThenNest);
+            Assert.InRange(steps, 1, PdfLimits.MaxCharstringSteps - 1);   // finishes under the cap
+            using var source = Source(BoxThenNest);
             bool heavy;
-            using (CharstringWork.SpendFrom(new WorkBudget(30_000, "page")))
+            using (CharstringWork.SpendFrom(new WorkBudget(steps + steps / 2, "page")))   // a glyph and a half
             {
                 Assert.False(source.IsTooHeavyForHinting(Codes(0)));
                 heavy = source.IsTooHeavyForHinting(Codes(1));
@@ -109,17 +132,15 @@ public sealed class CffHintingHeavyFontTests
         try
         {
             PdfLimits.MaxCharstringSteps = 20_000;
-            using var probe = Source(BoxThenBomb);
-            probe.GetOutline(0);
-            int steps = Type2CharstringEvaluator.Evaluate(new CffFont(new[] { BoxThenBomb }, Array.Empty<byte[]>(),
-                CharstringPageBudgetTests.BombSubrs(), new Dictionary<int, int>(), 0f, 0f), 0).Steps;
+            int steps = StepsOf(BoxThenNest);
+            Assert.InRange(steps, 1, PdfLimits.MaxCharstringSteps - 1);   // finishes under the cap
 
             PdfLimits.MaxCharstringStepsForHinting = steps;
-            using (var atTheCeiling = Source(BoxThenBomb))
+            using (var atTheCeiling = Source(BoxThenNest))
                 Assert.False(atTheCeiling.IsTooHeavyForHinting(Codes(0)));
 
             PdfLimits.MaxCharstringStepsForHinting = steps - 1;
-            using (var past = Source(BoxThenBomb))
+            using (var past = Source(BoxThenNest))
                 Assert.True(past.IsTooHeavyForHinting(Codes(0)));
         }
         finally { PdfLimits.ResetToDefaults(); }
@@ -266,6 +287,7 @@ public sealed class CffHintingHeavyFontTests
     }
 
     private static readonly byte[] Type1Bomb = { 139, 139, 13, 139, 10, 14 };     // 0 0 hsbw; callsubr 0; endchar
+    private static readonly byte[] Type1Nest = { 139, 139, 13, 145, 10, 14 };     // 0 0 hsbw; callsubr 6 (64 × 64 calls); endchar
     private static readonly byte[] Type1Plain = { 139, 139, 13, 139, 139, 21, 14 }; // 0 0 hsbw; 0 0 rmoveto; endchar
 
     /// <summary>A program with one heavy glyph is too heavy; the real fixture program is not.</summary>
@@ -293,13 +315,16 @@ public sealed class CffHintingHeavyFontTests
     {
         try
         {
-            PdfLimits.MaxCharstringSteps = 5_000;
+            PdfLimits.MaxCharstringSteps = 20_000;
             PdfLimits.MaxCharstringStepsForHinting = 1_000_000;
-            PdfLimits.MaxCharstringStepsPerFont = 40_000;
-            Assert.True(Type1GlyphSource.IsTooHeavyForHinting(Type1(10, Type1Bomb)));
+            int steps = Type1CharstringEvaluator.Evaluate(Type1(1, Type1Nest), "g0").Steps;
+            Assert.InRange(steps, 1, PdfLimits.MaxCharstringSteps - 1);   // each glyph finishes under the cap
 
-            PdfLimits.MaxCharstringStepsPerFont = 60_000;
-            Assert.False(Type1GlyphSource.IsTooHeavyForHinting(Type1(10, Type1Bomb)));
+            PdfLimits.MaxCharstringStepsPerFont = 10L * steps - steps / 2;   // nine and a half glyphs
+            Assert.True(Type1GlyphSource.IsTooHeavyForHinting(Type1(10, Type1Nest)));
+
+            PdfLimits.MaxCharstringStepsPerFont = 11L * steps;
+            Assert.False(Type1GlyphSource.IsTooHeavyForHinting(Type1(10, Type1Nest)));
         }
         finally { PdfLimits.ResetToDefaults(); }
     }

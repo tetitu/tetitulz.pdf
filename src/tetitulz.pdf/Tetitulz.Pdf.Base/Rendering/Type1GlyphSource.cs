@@ -109,7 +109,7 @@ namespace Tetitulz.Pdf.Base.Rendering
                     {
                         var outline = Type1CharstringEvaluator.Evaluate(font, name);
                         outline.Path?.Dispose();
-                        if (outline.CutByBudget || outline.Steps > PdfLimits.MaxCharstringStepsForHinting) return true;
+                        if (Core.Fonts.CharstringWork.TooHeavyForSkia(outline.Steps, outline.CutByBudget)) return true;
                     }
             }
             catch (Core.Util.WorkBudgetExceededException) { return true; }
