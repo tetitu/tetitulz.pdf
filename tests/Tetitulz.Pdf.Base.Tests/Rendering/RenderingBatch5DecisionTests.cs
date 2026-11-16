@@ -253,23 +253,26 @@ public class RenderingBatch5DecisionTests
     private static int U16(byte[] b, int o) => (b[o] << 8) | b[o + 1];
 
     /// <summary>
-    /// CW01 and CW02: the exported font's <c>hmtx</c> carries each glyph's width, the default width
-    /// where none was extracted (NaN); CW03: its <c>maxp</c> is version 0.5, the only one a CFF font
-    /// may carry (OpenType <c>maxp</c>), read from the raw bytes since a parser would accept either.
+    /// CW01 and CW02: the exported font's <c>hmtx</c> carries each glyph's width as its charstring
+    /// declares it — the width operand added to <c>nominalWidthX</c>, the default width where the
+    /// charstring sets none — since FreeType and CoreText take a CFF glyph's advance from <c>hmtx</c>;
+    /// CW03: its <c>maxp</c> is version 0.5, the only one a CFF font may carry (OpenType
+    /// <c>maxp</c>), read from the raw bytes since a parser would accept either.
     /// </summary>
     [Fact]
     public void TheWrappedFontCarriesItsWidthsAndACffMaxp()
     {
-        var font = new CffFont(new[] { new byte[] { 14 }, new byte[] { 14 }, new byte[] { 14 } },
-            Array.Empty<byte[]>(), Array.Empty<byte[]>(), new Dictionary<int, int>(), 600f, 0f);
-        font.GlyphWidths[1] = 450f;
+        // 247 242 is the Type 2 operand 350 (108 + (247 − 247) × 256 + 242); with nominalWidthX 100
+        // the middle glyph is 450 wide. The other two are a bare endchar: defaultWidthX, 600.
+        var font = new CffFont(new[] { new byte[] { 14 }, new byte[] { 247, 242, 14 }, new byte[] { 14 } },
+            Array.Empty<byte[]>(), Array.Empty<byte[]>(), new Dictionary<int, int>(), 600f, 100f);
 
         byte[] otf = CffOtfWrapper.TryBuild(new byte[] { 1, 0, 4, 1 }, font);
         Assert.NotNull(otf);
 
         byte[] hmtx = Table(otf, "hmtx");
-        Assert.Equal(600, U16(hmtx, 0));      // NaN → the default width
-        Assert.Equal(450, U16(hmtx, 4));
+        Assert.Equal(600, U16(hmtx, 0));      // no width operand → the default width
+        Assert.Equal(450, U16(hmtx, 4));      // 350 + nominalWidthX
         Assert.Equal(600, U16(hmtx, 8));
 
         byte[] maxp = Table(otf, "maxp");

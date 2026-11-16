@@ -149,10 +149,13 @@ namespace Tetitulz.Pdf.Base.Rendering
         {
             int ng = font.Charstrings.Count;
             var b  = new byte[ng * 4]; // 4 bytes per glyph: advanceWidth (u16) + lsb (s16)
+            // Each glyph's own advance, read from its charstring: FreeType and CoreText take a CFF
+            // glyph's advance from hmtx, so a table of defaultWidthX gives every glyph that sets its
+            // own width the wrong one there (DirectWrite reads the charstring, which hides it on Windows).
+            // The head table's unitsPerEm is 1000, the units TryGetAdvance answers in.
             for (int i = 0; i < ng; i++)
             {
-                float w = font.GlyphWidths[i];
-                if (float.IsNaN(w)) w = font.DefaultWidthX;
+                double w = font.TryGetAdvance(i, out double advance) ? advance : font.DefaultWidthX;
                 ushort aw = (ushort)Math.Min(Math.Max(SaturatingCast.ToInt(Math.Round(w)), 0), 65535);
                 W16(b, i * 4,     aw);
                 // lsb (offset i*4+2): 0
