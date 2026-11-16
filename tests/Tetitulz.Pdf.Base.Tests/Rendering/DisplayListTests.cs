@@ -149,6 +149,31 @@ public sealed class DisplayListTests
     }
 
     /// <summary>
+    /// A stroked run drawn as a Skia text blob (<c>DrawTextBlob</c>, the glyph-ID route) pads its
+    /// bound by <c>StrokeCullMargin</c>, as <c>DrawGlyphPath</c> pads a stroked outline: the same
+    /// run filled and stroked differ by exactly the margin on every side. A font program the
+    /// platform's font manager loads takes this route (TrueType everywhere, a Type 1 program on
+    /// FreeType), the library's own outline route otherwise.
+    /// </summary>
+    [Fact]
+    public void AStrokedTextBlobRun_PadsItsBoundByTheSameMarginStrokePathUses()
+    {
+        var filled = Assert.Single(BuildDisplayList(
+            "BT\n/F1 12 Tf\n4 w\n20 20 Td\n(A) Tj\nET\n", resources: FixtureResources.Font));
+        var stroked = Assert.Single(BuildDisplayList(
+            "BT\n/F1 12 Tf\n1 Tr\n4 w\n20 20 Td\n(A) Tj\nET\n", resources: FixtureResources.Font));
+
+        // StrokeCullMargin: max(4 × CTM scale 1, 1) × max(1, the default miter limit 10) × 0.5 + 1.
+        const float margin = 21f;
+        SKRect f = filled.PageBounds, s = stroked.PageBounds;
+        Assert.True(f.Width > 0f && f.Height > 0f, $"empty glyph bound: {f}");
+        Assert.Equal(f.Left - margin, s.Left, 3);
+        Assert.Equal(f.Top - margin, s.Top, 3);
+        Assert.Equal(f.Right + margin, s.Right, 3);
+        Assert.Equal(f.Bottom + margin, s.Bottom, 3);
+    }
+
+    /// <summary>
     /// <c>DrawGlyphPath</c> — the outline-based glyph paint method both Type 1 and CFF fonts
     /// share (<c>DrawTextBlob</c>'s test above only reaches the glyph-ID path, TrueType/system
     /// fonts) — reports its glyph's bound too.

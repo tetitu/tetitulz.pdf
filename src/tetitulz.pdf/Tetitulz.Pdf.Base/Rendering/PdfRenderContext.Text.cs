@@ -397,9 +397,20 @@ namespace Tetitulz.Pdf.Base.Rendering
             // lines up in DrawGlyphRunWithWidths) — UnscaleByDpi converts that back to the
             // page-point space FillPath/StrokePath/DrawGlyphPath/DrawBitmap all report in. Both of
             // DrawGlyphRunWithWidths's callers (the embedded run, the system-font fallback run)
-            // reach painting only through here, so one hook covers both.
-            if (HiddenContentDepth == 0)
-                PaintBoundsRecorder?.Invoke(UnscaleByDpi(screenMatrix.MapRect(blob.Bounds)));
+            // reach painting only through here, so one hook covers both. A stroked run pads by
+            // StrokeCullMargin, in page points, exactly as DrawGlyphPath pads a stroked outline:
+            // the same glyph reports the same bound whichever route the platform's font manager
+            // gives it.
+            if (PaintBoundsRecorder != null && HiddenContentDepth == 0)
+            {
+                SKRect runBounds = UnscaleByDpi(screenMatrix.MapRect(blob.Bounds));
+                if (doStroke)
+                {
+                    float margin = StrokeCullMargin();
+                    runBounds.Inflate(margin, margin);
+                }
+                PaintBoundsRecorder(runBounds);
+            }
 
             // See PaintSuppressed's remarks. DrawGlyphRunWithWidths has already computed and
             // returned the run's text-position advance by the time it calls here, so suppressing

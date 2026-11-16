@@ -12,6 +12,26 @@ using Xunit;
 
 namespace Tetitulz.Pdf.Base.Tests.Operations;
 
+/// <summary>Runs on Windows, where a bare <c>NUL</c> is a device; skips visibly elsewhere.</summary>
+public sealed class WindowsDeviceNamesFactAttribute : FactAttribute
+{
+    public WindowsDeviceNamesFactAttribute()
+    {
+        if (!OperatingSystem.IsWindows())
+            Skip = "Reserved device names are a Windows path rule; off Windows NUL is an ordinary file name.";
+    }
+}
+
+/// <summary>Runs where no file name is a device (Linux, macOS); skips visibly on Windows.</summary>
+public sealed class NoWindowsDeviceNamesFactAttribute : FactAttribute
+{
+    public NoWindowsDeviceNamesFactAttribute()
+    {
+        if (OperatingSystem.IsWindows())
+            Skip = "On Windows a bare NUL is the null device; ABareNulNameIsRefusedRatherThanDiscarded covers it.";
+    }
+}
+
 /// <summary>
 /// <see cref="PdfAttachmentManager.SanitizeFilename"/> and the containment check above it — the
 /// path an attacker-supplied name takes on its way to <c>File.WriteAllBytes</c>.
@@ -219,9 +239,11 @@ public class AttachmentFilenameContainmentTests
     /// The one reserved name that still resolves to a device. <c>Path.GetFullPath</c> turns
     /// <c>&lt;dir&gt;\NUL</c> into <c>\\.\NUL</c>, which is outside the target directory — so the
     /// second layer catches what the first deliberately does not rename. Measured, then asserted:
-    /// writing to that path really does discard the bytes, which is why the refusal matters.
+    /// writing to that path really does discard the bytes, which is why the refusal matters. A
+    /// Windows path rule, so the test runs on Windows; elsewhere the name is an ordinary one
+    /// (<see cref="OffWindowsABareNulNameIsAnOrdinaryFileInsideTheDirectory"/>).
     /// </remarks>
-    [Fact]
+    [WindowsDeviceNamesFact]
     public void ABareNulNameIsRefusedRatherThanDiscarded()
     {
         using var scratch = new ScratchDirectory();
@@ -233,6 +255,22 @@ public class AttachmentFilenameContainmentTests
 
         Assert.Contains("escapes target directory", ex.Message);
         Assert.Empty(Directory.GetFiles(scratch.Path));
+    }
+
+    /// <summary>
+    /// Off Windows no file name is a device: <c>NUL</c> resolves inside the target directory, so the
+    /// containment check lets it through and the attachment is written there, whole.
+    /// </summary>
+    [NoWindowsDeviceNamesFact]
+    public void OffWindowsABareNulNameIsAnOrdinaryFileInsideTheDirectory()
+    {
+        using var scratch = new ScratchDirectory();
+
+        using var input = new MemoryStream(WithAttachment("NUL", "kept"));
+        string written = PdfAttachmentManager.ExtractAttachmentToDirectory(input, "NUL", scratch.Path);
+
+        Assert.Equal(Path.Combine(scratch.Path, "NUL"), written);
+        Assert.Equal("kept", File.ReadAllText(written));
     }
 
     /// <summary>Asking for an attachment that is not there yields null rather than an empty file.</summary>
