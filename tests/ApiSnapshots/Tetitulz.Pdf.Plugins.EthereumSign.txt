@@ -1,0 +1,57 @@
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters::.ctor()
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters::ChainId : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters::ExpectedSignerAddress : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters::GasLimit : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters::GetNetworkName() : System.String
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters::NetworkName : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters::PrivateKey : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters::RpcUrl : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainProof::.ctor()
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainProof::BlockNumber : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainProof::DocumentHash : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainProof::Network : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainProof::SignerAddress : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainProof::Timestamp : System.DateTime { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainProof::TransactionHash : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainSignatureProvider::.ctor()
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainSignatureProvider::ClearClientCache() : System.Void
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainSignatureProvider::RecordHashAsync(System.Byte[], Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters, System.Threading.CancellationToken = default) : System.Threading.Tasks.Task<Tetitulz.Pdf.Plugins.EthereumSign.BlockchainProof>
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainSignatureProvider::VerifyHashAsync(System.Byte[], Tetitulz.Pdf.Plugins.EthereumSign.BlockchainProof, Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters, System.Threading.CancellationToken = default) : System.Threading.Tasks.Task<Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult>
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::.ctor()
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::BlockNumber : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::ComputedHash : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::Error : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::HashMatches : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::IsLastRevision : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::IsValid : System.Boolean { get }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::OnChainHash : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::SignerMatches : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::SignerOnChain : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::TransactionFound : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::TransactionHash : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult::Warning : System.String { get; set }
+Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin::.ctor(Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters)
+Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin::ComputeDigest(System.String, System.Byte[]) : System.Byte[]
+Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin::LastAnchorError : System.String { get }
+Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin::OnAfterSign(System.Byte[], Tetitulz.Pdf.Signing.Models.SignatureParameters) : System.Byte[]
+Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin::OnBeforeSign(Tetitulz.Pdf.Signing.Models.SignatureParameters) : System.Void
+Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin::WrapSignature(System.Byte[], Tetitulz.Pdf.Signing.Models.SignatureParameters) : System.Byte[]
+Tetitulz.Pdf.Plugins.EthereumSign.PdfBlockchainSigner::.ctor()
+Tetitulz.Pdf.Plugins.EthereumSign.PdfBlockchainSigner::EmbedBlockchainProof(System.Byte[], Tetitulz.Pdf.Plugins.EthereumSign.BlockchainProof) : System.Byte[]
+Tetitulz.Pdf.Plugins.EthereumSign.PdfBlockchainSigner::SignAsync(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Signing.Models.SignatureParameters, Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters, System.Threading.CancellationToken = default) : System.Threading.Tasks.Task
+Tetitulz.Pdf.Plugins.EthereumSign.PdfBlockchainSigner::SignAsync(System.String, System.String, Tetitulz.Pdf.Signing.Models.SignatureParameters, Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters, System.Threading.CancellationToken = default) : System.Threading.Tasks.Task
+Tetitulz.Pdf.Plugins.EthereumSign.PdfBlockchainVerifier::.ctor()
+Tetitulz.Pdf.Plugins.EthereumSign.PdfBlockchainVerifier::VerifyAsync(System.String, Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters, System.Threading.CancellationToken = default) : System.Threading.Tasks.Task<Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult>
+Tetitulz.Pdf.Plugins.EthereumSign.PdfBlockchainVerifier::VerifyAsync(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters, System.Threading.CancellationToken = default) : System.Threading.Tasks.Task<Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult>
+class Tetitulz.Pdf.Plugins.EthereumSign.BlockchainParameters
+class Tetitulz.Pdf.Plugins.EthereumSign.BlockchainProof
+class Tetitulz.Pdf.Plugins.EthereumSign.BlockchainSignatureProvider
+class Tetitulz.Pdf.Plugins.EthereumSign.BlockchainVerificationResult
+class Tetitulz.Pdf.Plugins.EthereumSign.EthereumSignPlugin
+class Tetitulz.Pdf.Plugins.EthereumSign.PdfBlockchainSigner
+class Tetitulz.Pdf.Plugins.EthereumSign.PdfBlockchainVerifier

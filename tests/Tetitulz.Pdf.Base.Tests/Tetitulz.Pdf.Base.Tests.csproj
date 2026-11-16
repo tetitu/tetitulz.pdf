@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="SkiaSharp" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <!-- Security: override a vulnerable transitive Newtonsoft.Json (GHSA-5crp-9r3c-p9vr).
+         System.Net.Http and System.Text.RegularExpressions were pinned alongside it for
+         GHSA-7jgj-8wvc-jh57 / GHSA-cmhx-cq75-c4mj; on net10.0 both live in the shared framework,
+         so the package reference was redundant (NU1510) — the framework assembly is what loads
+         either way, and the out-of-band package cannot re-enter the graph. -->
+    <PackageReference Include="Newtonsoft.Json" />
+    <!-- SaturatingCastGuardTests: the compiler's types, not a text search. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tetitulz.Pdf.TestHelpers\Tetitulz.Pdf.TestHelpers.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Encryption\Tetitulz.Pdf.Encryption.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Signing\Tetitulz.Pdf.Signing.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.Maintenance\Tetitulz.Pdf.Plugins.Maintenance.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.PageEdits\Tetitulz.Pdf.Plugins.PageEdits.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.Conformance\Tetitulz.Pdf.Plugins.Conformance.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.Docx\Tetitulz.Pdf.Plugins.Docx.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.Html\Tetitulz.Pdf.Plugins.Html.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.CMap\Tetitulz.Pdf.Plugins.CMap.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.PostScript\Tetitulz.Pdf.Plugins.PostScript.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The PDF Association's PDF 2.0 examples, CC BY-SA 4.0 (Fixtures/pdf20examples/README.md), read by Pdf20ExamplesTests. -->
+    <None Include="Fixtures\pdf20examples\*.pdf" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Independent renderers' answers, recorded (IndependentImageRender). -->
+    <None Include="Fixtures\IndependentRenders\*.gz" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Fixtures\WriterCheck\*.pdf" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Open Sans 1.10, Apache 2.0 (the licence beside it), read by SvgGlyphOutlineTests. -->
+    <None Include="Fixtures\OpenSans\*" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Inputs the coverage-guided fuzzer found, kept as regression fixtures (RenderPaintBudgetTests). -->
+    <None Include="Fixtures\Fuzz\*.pdf" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- The local re-recording kit (the git-ignored oracle-tests folder): compiled here when present,
+       absent from a clone. No test needs it. -->
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)..\..\oracle-tests\Tetitulz.Pdf.Base.Tests')">
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\oracle-tests\Tetitulz.Pdf.Base.Tests\**\*.cs" LinkBase="Oracles" />
+  </ItemGroup>
+
+</Project>

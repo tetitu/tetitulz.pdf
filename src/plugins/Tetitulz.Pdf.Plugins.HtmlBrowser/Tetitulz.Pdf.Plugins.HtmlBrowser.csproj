@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Browser-backed HTML to PDF for Tetitulz.Pdf, for pages that need a real layout engine and script execution. Isolates Microsoft.Playwright from the core package graph.</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.HtmlBrowser</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.HtmlBrowser</AssemblyName>
+    <!-- Headless-browser HTML->PDF rendering, backed by Microsoft.Playwright. This lives in a
+         plugin so Tetitulz.Pdf.HtmlToPdf does not put Playwright - and with it a ~100 MB browser
+         download installed out-of-band by `playwright install` - into the package graph of every
+         consumer, for an engine that stopped being the default on 2026-08-17. Larger case than the
+         Jint one that produced Plugins.JavaScript. See IHtmlBrowserPlugin. -->
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+  </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Plugins.HtmlBrowser.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Playwright" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- HtmlToPdf, not Base: the contract IHtmlBrowserPlugin and its HtmlBrowserRequest live in
+         Tetitulz.Pdf.HtmlToPdf because they name HtmlToPdfOptions, and Core cannot reference it.
+         plugin -> feature is a sanctioned edge (see CLAUDE.md, "The reference invariant is
+         acyclicity, not direction") and matches Plugins.Html -> HtmlToPdf, which already exists:
+         HtmlToPdf references no plugin, so no cycle can form. -->
+    <ProjectReference Include="..\..\features\Tetitulz.Pdf.HtmlToPdf\Tetitulz.Pdf.HtmlToPdf.csproj" />
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,2 @@
+# A PDF is bytes: no line-ending conversion, whatever core.autocrlf says.
+*.pdf binary

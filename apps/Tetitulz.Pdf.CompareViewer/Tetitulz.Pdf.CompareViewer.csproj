@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>TetitulzPdfCompare</AssemblyName>
+    <RootNamespace>Tetitulz.Pdf.CompareViewer</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Serilog.Sinks.Debug" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.WinForms.PdfViewer\Tetitulz.Pdf.WinForms.PdfViewer.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.CMap\Tetitulz.Pdf.Plugins.CMap.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can convert HTML with the managed
+      engine. AngleSharp ships the leg already; what blocked this was Builder (NU1201), then three
+      of its own: Math.Clamp, Path.GetRelativePath and System.Index.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Converts HTML (and Markdown) to PDF for Tetitulz.Pdf, laid out onto the Builder document model.</Description>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.HtmlToPdf</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.HtmlToPdf</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- For the shared SSRF guard (PrivateAddressGuard) used to block subresource
+         requests to loopback/private/metadata addresses. -->
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <!-- Builder is a "foundational feature": the managed (non-Playwright) engine maps
+         HTML to a Builder.Document and exports via Builder. Acyclic; Builder never
+         references HtmlToPdf back. See CLAUDE.md architecture note. -->
+    <ProjectReference Include="..\Tetitulz.Pdf.Builder\Tetitulz.Pdf.Builder.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.HtmlToPdf.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <!-- The browser plugin needs HtmlToPdfOptions.DefaultNavigationTimeoutMs, the shared fallback
+         for a non-positive NavigationTimeoutMs. Granting access keeps that constant single-sourced;
+         copying the literal into the plugin is the second copy this repo bans. -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Plugins.HtmlBrowser</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

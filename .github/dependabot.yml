@@ -1,0 +1,38 @@
+# Dependabot keeps two things current: the NuGet graph (Directory.Packages.props is the one lock
+# surface, so one PR per package) and the GitHub Actions the workflows pin by commit SHA.
+#
+# Weekly, grouped: a security advisory still opens its own PR immediately. The vulnerability audit
+# step in ci.yml is the gate; this is what keeps the gate from being the first to notice.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    groups:
+      # SkiaSharp and its native assets move together (CLAUDE.md: keep the entries in lockstep).
+      skiasharp:
+        patterns: ["SkiaSharp*"]
+      # The test stack: xunit, the runner, the SDK, coverlet.
+      test-stack:
+        patterns: ["xunit*", "Microsoft.NET.Test.Sdk", "coverlet.*"]
+    ignore:
+      # Deliberately pinned: a major of Nethereum or BouncyCastle is reviewed by hand.
+      - dependency-name: "Nethereum.*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "BouncyCastle.Cryptography"
+        update-types: ["version-update:semver-major"]
+      # The HTML engine's depth and selector bounds are measured against the pinned AngleSharp, and
+      # Plugins.HtmlScript compiles AngleSharp.Js 1.1.0's source, written against AngleSharp 1.8.x:
+      # the three move together, by hand, with the adversarial markup tests re-run.
+      - dependency-name: "AngleSharp"
+      - dependency-name: "AngleSharp.Css"
+      - dependency-name: "AngleSharp.Js"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday

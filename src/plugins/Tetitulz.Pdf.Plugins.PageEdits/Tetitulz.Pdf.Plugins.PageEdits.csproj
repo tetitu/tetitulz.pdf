@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can split and merge. Core and Base
+      already ship that leg for the same reason, and this plugin references nothing else; the one
+      construct that did not compile there was Encoding.Latin1 (.NET 5+), now routed through
+      Core.Text.Latin1Text.Decode, which exists precisely for this.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Page-level editing for Tetitulz.Pdf: merge, split, and true redaction that removes content rather than covering it.</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.PageEdits</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.PageEdits</AssemblyName>
+    <!-- Under the Tetitulz.Pdf Attribution License (/LICENSE-ATTRIBUTION.txt), not Apache-2.0. -->
+    <TetitulzAttributionLicense>true</TetitulzAttributionLicense>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+    <!--
+      AcroFormPageFilter and PdfSplitter.LastFormWarning are internal, and the guard evidence a
+      /Kids cycle produces is only assertable through them. Same arrangement as
+      Plugins.PostScript and Plugins.Conformance, and it adds nothing to the exported surface the
+      checked-in API baseline pins.
+    -->
+    <InternalsVisibleTo Include="Tetitulz.Pdf.Plugins.PageEdits.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+</Project>

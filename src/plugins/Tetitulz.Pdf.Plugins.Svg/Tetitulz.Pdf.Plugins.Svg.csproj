@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can use this plugin. It references
+      only Core/Base, which already ship that leg, and needed no source change.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Exposes Tetitulz.Pdf's vector SVG page export as an export plugin.</Description>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.Svg</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.Svg</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+    <!-- So the id-namespacing and page-stacking logic can be driven from a hand-written pair of
+         page documents, which is the only way to assert what happens to a colour literal such as
+         fill="#ff0000" without depending on the renderer choosing to emit one. -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Plugins.Svg.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+</Project>

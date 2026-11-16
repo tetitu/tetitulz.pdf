@@ -1,0 +1,114 @@
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Attributes.DomConstructorFunctionAttribute::.ctor(System.String)
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Attributes.DomConstructorFunctionAttribute::OfficialName : System.String { get }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Console::.ctor(AngleSharp.Dom.IWindow)
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Console::Log(System.Object[]) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.DomParser::.ctor(AngleSharp.Dom.IWindow)
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.DomParser::Parse(System.String, System.String) : AngleSharp.Dom.IDocument
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::AddContextMenu(AngleSharp.Dom.IElement, AngleSharp.Dom.DomEventHandler) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::AddFocusIn(AngleSharp.Dom.IElement, AngleSharp.Dom.DomEventHandler) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::AddFocusOut(AngleSharp.Dom.IElement, AngleSharp.Dom.DomEventHandler) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::AddUnload(AngleSharp.Dom.IElement, AngleSharp.Dom.DomEventHandler) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetClientHeight(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetClientLeft(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetClientTop(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetClientWidth(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetOffsetHeight(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetOffsetLeft(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetOffsetTop(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetOffsetWidth(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetScrollHeight(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetScrollLeft(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetScrollTop(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::GetScrollWidth(AngleSharp.Dom.IElement) : System.Double
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::RemoveContextMenu(AngleSharp.Dom.IElement, AngleSharp.Dom.DomEventHandler) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::RemoveFocusIn(AngleSharp.Dom.IElement, AngleSharp.Dom.DomEventHandler) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::RemoveFocusOut(AngleSharp.Dom.IElement, AngleSharp.Dom.DomEventHandler) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions::RemoveUnload(AngleSharp.Dom.IElement, AngleSharp.Dom.DomEventHandler) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Screen::.ctor()
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Screen::AvailableHeight : System.Int32 { get }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Screen::AvailableWidth : System.Int32 { get }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Screen::ColorDepth : System.UInt32 { get }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Screen::Height : System.Int32 { get }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Screen::PixelDepth : System.UInt32 { get }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Screen::Width : System.Int32 { get }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.WindowBase64::Atob(AngleSharp.Dom.IWindow, System.String) : System.String
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.WindowBase64::Btoa(AngleSharp.Dom.IWindow, System.String) : System.String
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.WindowExtensions::Console(AngleSharp.Dom.IWindow) : Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Console
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.WindowExtensions::Image(AngleSharp.Dom.IWindow, System.Nullable<System.Int32> = default, System.Nullable<System.Int32> = default) : AngleSharp.Html.Dom.IHtmlImageElement
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.WindowExtensions::Parent(AngleSharp.Dom.IWindow) : AngleSharp.Dom.IWindow
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.WindowExtensions::PostMessage(AngleSharp.Dom.IWindow, System.String, System.String = default, System.Object = default) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.WindowExtensions::Top(AngleSharp.Dom.IWindow) : AngleSharp.Dom.IWindow
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Worker::.ctor(AngleSharp.Dom.IWindow, System.String)
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Worker::Message : AngleSharp.Dom.DomEventHandler (event)
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Worker::PostMessage(System.Object) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Worker::Terminate() : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.IConsoleLogger::Log(System.Object[]) : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsApiExtensions::ExecuteScript(AngleSharp.Dom.IDocument, System.String, System.String = default, System.String = default) : System.Object
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsConfigurationExtensions::WithConsoleLogger(AngleSharp.IConfiguration, System.Func<AngleSharp.IBrowsingContext, Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.IConsoleLogger>) : AngleSharp.IConfiguration
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsConfigurationExtensions::WithEventLoop(AngleSharp.IConfiguration) : AngleSharp.IConfiguration
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsConfigurationExtensions::WithEventLoop(AngleSharp.IConfiguration, AngleSharp.Browser.IEventLoop) : AngleSharp.IConfiguration
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsConfigurationExtensions::WithEventLoop(AngleSharp.IConfiguration, System.Func<AngleSharp.IBrowsingContext, AngleSharp.Browser.IEventLoop>) : AngleSharp.IConfiguration
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsConfigurationExtensions::WithJs(AngleSharp.IConfiguration) : AngleSharp.IConfiguration
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsConfigurationExtensions::WithJs(AngleSharp.IConfiguration, Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingOptions) : AngleSharp.IConfiguration
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsDocumentExtensions::Then(AngleSharp.Dom.IDocument, System.Action<AngleSharp.Dom.IDocument>) : System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsDocumentExtensions::Then(AngleSharp.Dom.IDocument, System.String) : System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsDocumentExtensions::Then(System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>, System.Action<AngleSharp.Dom.IDocument>) : System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsDocumentExtensions::Then(System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>, System.String) : System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsDocumentExtensions::WaitUntilAvailable(AngleSharp.Dom.IDocument, System.Threading.CancellationToken = default) : System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsDocumentExtensions::WaitUntilAvailable(System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>, System.Threading.CancellationToken = default) : System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsDocumentExtensions::WhenStable(AngleSharp.Dom.IDocument) : System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsDocumentExtensions::WhenStable(System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>) : System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsEventLoop::.ctor()
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsEventLoop::.ctor(AngleSharp.IBrowsingContext)
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsEventLoop::.ctor(System.Int32)
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsNavigationHandler::.ctor(Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingService)
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsNavigationHandler::NavigateAsync(AngleSharp.Io.DocumentRequest, System.Threading.CancellationToken) : System.Threading.Tasks.Task<AngleSharp.Dom.IDocument>
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsNavigationHandler::SupportsProtocol(System.String) : System.Boolean
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingOptions::.ctor()
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingOptions::ConfigureEngine : System.Action<Jint.Options> { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingOptions::MaxCallStackDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingOptions::PrepareEngine : System.Action<Jint.Engine> { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingOptions::RegexTimeout : System.Nullable<System.TimeSpan> { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingService::.ctor()
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingService::.ctor(Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingOptions)
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingService::EvaluateScript(AngleSharp.Dom.IDocument, System.String, System.String, System.String) : System.Object
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingService::EvaluateScriptAsync(AngleSharp.Io.IResponse, AngleSharp.Scripting.ScriptOptions, System.Threading.CancellationToken) : System.Threading.Tasks.Task
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingService::External : System.Collections.Generic.IDictionary<System.String, System.Object> { get }
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingService::GetOrCreateJint(AngleSharp.Dom.IDocument) : Jint.Engine
+Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingService::Type : System.String { get }
+Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits::.ctor()
+Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits::Default : Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits { get }
+Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits::MaxCallStackDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits::MaxDocumentDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits::MaxMemoryBytesPerPage : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits::MaxMemoryBytesPerScript : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits::MaxStatementsPerScript : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits::PageTimeout : System.TimeSpan { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits::ScriptTimeout : System.TimeSpan { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits::TimerSettleTime : System.TimeSpan { get; set }
+Tetitulz.Pdf.Plugins.HtmlScript.JintHtmlScriptPlugin::.ctor()
+Tetitulz.Pdf.Plugins.HtmlScript.JintHtmlScriptPlugin::.ctor(Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits)
+Tetitulz.Pdf.Plugins.HtmlScript.JintHtmlScriptPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.HtmlScript.JintHtmlScriptPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.JintHtmlScriptPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.HtmlScript.JintHtmlScriptPlugin::RunScripts(Tetitulz.Pdf.HtmlToPdf.HtmlScriptRequest) : System.String
+Tetitulz.Pdf.Plugins.HtmlScript.JintHtmlScriptPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.HtmlScript.JintHtmlScriptPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Attributes.DomConstructorFunctionAttribute
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Console
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.DomParser
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.ElementPseudoExtensions
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Screen
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.WindowBase64
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.WindowExtensions
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Dom.Worker
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsApiExtensions
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsConfigurationExtensions
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsDocumentExtensions
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsEventLoop
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsNavigationHandler
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingOptions
+class Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.JsScriptingService
+class Tetitulz.Pdf.Plugins.HtmlScript.HtmlScriptLimits
+class Tetitulz.Pdf.Plugins.HtmlScript.JintHtmlScriptPlugin
+interface Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.IConsoleLogger

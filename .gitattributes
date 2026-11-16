@@ -1,0 +1,19 @@
+# Every file is checked out byte for byte as committed, whatever core.autocrlf says. Tests hold
+# multi-line string literals that are matched against a PDF's own bytes, so a checkout that turns a
+# source file's LF into CRLF (Git for Windows' default) fails them.
+* -text
+
+# Font programs are binary: never subject to end-of-line conversion, whatever core.autocrlf says.
+*.ttf binary
+*.otf binary
+*.ttc binary
+*.bin binary
+
+# Embedded data kept byte for byte as published (hyph-utf8's patterns, Adobe's Core14 AFM notice): no end-of-line conversion.
+*.tex -text
+src/tetitulz.pdf/Tetitulz.Pdf.Core/Fonts/Afm/MustRead.html -text
+*.gz binary
+
+# PDF fixtures are binary too: an uncompressed one holds no NUL byte, so without this git would take
+# it for text and convert its line ends on checkout, moving every cross-reference offset.
+*.pdf binary

@@ -1,0 +1,40 @@
+Tetitulz.Pdf.Plugins.Templating.PdfTemplateFiller::Fill(System.IO.Stream, System.IO.Stream, System.Collections.Generic.IDictionary<System.String, System.String>, Tetitulz.Pdf.Plugins.Templating.TemplateOptions = default) : Tetitulz.Pdf.Plugins.Templating.TemplateFillReport
+Tetitulz.Pdf.Plugins.Templating.TemplateFillReport::.ctor()
+Tetitulz.Pdf.Plugins.Templating.TemplateFillReport::ChangedAnything : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Templating.TemplateFillReport::FilledFields : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Templating.TemplateFillReport::FilledTokens : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Templating.TemplateFillReport::NeedAppearances : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Templating.TemplateFillReport::NotDrawn : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Templating.TemplateFillReport::NotEditableKeys : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Templating.TemplateFillReport::UnmatchedKeys : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Templating.TemplateFillReport::UnverifiedKeys : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Templating.TemplateFillReport::Warnings : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Templating.TemplateFit::KeepSlot : Tetitulz.Pdf.Plugins.Templating.TemplateFit = 0
+Tetitulz.Pdf.Plugins.Templating.TemplateFit::Natural : Tetitulz.Pdf.Plugins.Templating.TemplateFit = 1
+Tetitulz.Pdf.Plugins.Templating.TemplateFit::value__ : System.Int32
+Tetitulz.Pdf.Plugins.Templating.TemplateOptions::.ctor()
+Tetitulz.Pdf.Plugins.Templating.TemplateOptions::AllowSystemFontSubstitution : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Templating.TemplateOptions::BaseDirection : Tetitulz.Pdf.Core.Text.BaseDirection { get; set }
+Tetitulz.Pdf.Plugins.Templating.TemplateOptions::Fit : Tetitulz.Pdf.Plugins.Templating.TemplateFit { get; set }
+Tetitulz.Pdf.Plugins.Templating.TemplateOptions::FontProvider : System.Func<System.String, System.Byte[]> { get; set }
+Tetitulz.Pdf.Plugins.Templating.TemplateOptions::GenerateAppearances : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Templating.TemplateOptions::Sources : Tetitulz.Pdf.Plugins.Templating.TemplateSources { get; set }
+Tetitulz.Pdf.Plugins.Templating.TemplateOptions::TokenClose : System.String { get; set }
+Tetitulz.Pdf.Plugins.Templating.TemplateOptions::TokenOpen : System.String { get; set }
+Tetitulz.Pdf.Plugins.Templating.TemplateOptions::VerifyErasure : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Templating.TemplateSources::All : Tetitulz.Pdf.Plugins.Templating.TemplateSources = 3
+Tetitulz.Pdf.Plugins.Templating.TemplateSources::FormFields : Tetitulz.Pdf.Plugins.Templating.TemplateSources = 1
+Tetitulz.Pdf.Plugins.Templating.TemplateSources::PageTokens : Tetitulz.Pdf.Plugins.Templating.TemplateSources = 2
+Tetitulz.Pdf.Plugins.Templating.TemplateSources::value__ : System.Int32
+Tetitulz.Pdf.Plugins.Templating.TemplatingPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Templating.TemplatingPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Templating.TemplatingPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Templating.TemplatingPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Templating.TemplatingPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Templating.TemplatingPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.Templating.PdfTemplateFiller
+class Tetitulz.Pdf.Plugins.Templating.TemplateFillReport
+class Tetitulz.Pdf.Plugins.Templating.TemplateOptions
+class Tetitulz.Pdf.Plugins.Templating.TemplatingPlugin
+enum Tetitulz.Pdf.Plugins.Templating.TemplateFit
+enum Tetitulz.Pdf.Plugins.Templating.TemplateSources

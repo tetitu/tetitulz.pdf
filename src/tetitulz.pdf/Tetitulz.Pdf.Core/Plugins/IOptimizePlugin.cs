@@ -1,0 +1,32 @@
+// Copyright (c) 2026 Tamir Mordo
+// Licensed under the Apache License, Version 2.0. See LICENSE and NOTICE at the repository root.
+// SPDX-License-Identifier: Apache-2.0
+
+// The plugin contracts moved here from Tetitulz.Pdf.Plugins.SDK, whose csproj set
+// <Nullable>annotations</Nullable>. Core does not enable nullable globally (that would mark
+// its ~1000 existing public members non-nullable in metadata, which is not true), so the
+// setting is preserved per-file instead.
+#nullable enable annotations
+
+using System.IO;
+
+namespace Tetitulz.Pdf.Core.Plugins
+{
+    /// <summary>Plugin that optimises a PDF stream.</summary>
+    /// <remarks>
+    /// <b>Discovery contract — the library does not dispatch this automatically.</b>
+    /// Nothing inside Tetitulz.Pdf calls IOptimizePlugin; it exists so a host application that
+    /// references only the plugin SDK can discover and invoke the capability without taking a
+    /// compile-time dependency on the assembly that implements it. Resolve it yourself:
+    /// <code>
+    ///   var p = PdfPluginHost.Instance.GetFirstPlugin&lt;IOptimizePlugin&gt;();
+    ///   if (p != null) { /* use it */ }
+    /// </code>
+    /// If you want the built-in behaviour instead, call the concrete implementation directly
+    /// (e.g. <c>PdfSanitizer.Sanitize</c>) — registering a plugin does not replace it.
+    /// </remarks>
+    public interface IOptimizePlugin : IPdfPlugin
+    {
+        void Optimize(Stream input, Stream output);
+    }
+}

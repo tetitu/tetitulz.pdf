@@ -1,0 +1,17 @@
+# id	reason	[Acrobat's answer] — a case this engine answers otherwise than Acrobat does in the second probe round (README.md). A * matches any run of characters; a third column limits a row to the cases where Acrobat answered so. Each row is a choice: Acrobat is the baseline, and where it fails this engine is tolerant. Only shrinks.
+F.*	tolerant: a property the field's type lacks answers its default (Acrobat throws InvalidGetError)	throw:InvalidGetError:*
+M.fromRotated(this,2)	tolerant: a page the document lacks answers the identity (Acrobat throws)
+D.printd(''day' d')	better: a letter that starts no token is copied (Acrobat drops a lone y)
+D.printd('\\ d')	better: an escaped backslash is a backslash (Acrobat writes nothing)
+D.scand('HH:MM','13:05')	tolerant: a time-only format reads today at that time (Acrobat answers null)
+D.scand('h:MM tt','1:05 pm')	tolerant: as above
+P.tooFew	tolerant: an item without an argument writes nothing (Acrobat throws InvalidArgsError)
+P.%x -255	better: a negative %x is its 32-bit two's complement (Acrobat writes "!")
+P.%d '12abc'	tolerant: a value that is not a number is 0 (Acrobat writes -2147483648)
+P.%f 'x'	tolerant: as above (Acrobat writes 1.#QNAN0)
+S.SUM(missing)	tolerant: a field the document lacks is passed over (Acrobat stops the script)
+A.replaceAlert	tolerant: a script may replace app.alert (Acrobat ignores the assignment)
+A.range(*)	follows from A.replaceAlert: the replaced alert sees the message, Acrobat's showed it on screen
+A.dateKeystroke	follows from A.replaceAlert
+A.specialKeystroke	follows from A.replaceAlert
+I.modDate	the fixture: Acrobat reported the run's moment, and its save a minute later wrote that into /ModDate

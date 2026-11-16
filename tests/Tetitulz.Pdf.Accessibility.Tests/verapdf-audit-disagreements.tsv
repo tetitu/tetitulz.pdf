@@ -1,0 +1,3 @@
+# veraPDF PDF/UA-1 files whose verdict PdfAccessibility.Audit does not yet match, each with its reason.
+# "miss": a rule neither checker has (the file passes though it should fail). "stricter": deliberate.
+7.1-t01-pass-b.pdf	stricter UA14: the structure tree names MCID 0, which the page content never defines (the plugin's UA50 likewise)

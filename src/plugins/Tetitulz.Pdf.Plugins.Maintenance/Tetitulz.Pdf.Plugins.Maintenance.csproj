@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can use this plugin.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Document maintenance for Tetitulz.Pdf: size optimisation, image recompression, linearisation and sanitising.</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.Maintenance</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.Maintenance</AssemblyName>
+    <!-- Under the Tetitulz.Pdf Attribution License (/LICENSE-ATTRIBUTION.txt), not Apache-2.0. -->
+    <TetitulzAttributionLicense>true</TetitulzAttributionLicense>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--
+      Declared, not inherited. PdfOptimizer.cs has `using SkiaSharp;` and compiled only because
+      Base flows it transitively; that breaks the day Base marks Skia PrivateAssets, and until
+      then the dependency is invisible to the CI vulnerability audit.
+    -->
+    <PackageReference Include="SkiaSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Font subsetting splits into a usage scanner and a glyph pruner, and the assertions that
+         matter are about their internals: that a pruned font keeps a used glyph's outline
+         byte-identical, that an unused glyph becomes a zero-length loca range, and that numGlyphs
+         never moves. Asserted through Optimize() alone, all of that collapses into "the file got
+         smaller" — which a subsetter that deletes the wrong glyphs also satisfies. -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Plugins.Maintenance.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+</Project>

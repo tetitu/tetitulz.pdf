@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.PostScript\Tetitulz.Pdf.Plugins.PostScript.csproj" />
+    <!-- The CMap plugin embeds ~700 genuine Adobe PostScript resources. They are read through
+         Assembly.GetManifestResourceStream, so the scanner gets a large real-world corpus without
+         any test reading from disk. -->
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.CMap\Tetitulz.Pdf.Plugins.CMap.csproj" />
+    <!-- TestCorpus resolves the developer-local .ps/.eps samples the shakedown skips without. -->
+    <ProjectReference Include="..\Tetitulz.Pdf.TestHelpers\Tetitulz.Pdf.TestHelpers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,4 @@
+# id	reason	[Acrobat's answer] — a case this engine answers otherwise than Acrobat does in the first probe round (README.md). A * matches any run of characters; a third column limits a row to the cases where Acrobat answered so. Each row is a choice: Acrobat is the baseline, and where it fails this engine is tolerant. Only shrinks.
+A.field.*	tolerant: a property the field's type lacks answers its default (Acrobat throws InvalidGetError)	throw:InvalidGetError:*
+A.doc.creationDate	the fixture: Acrobat ran the probe on a file without /Info, and its save wrote one
+A.doc.modDate	the fixture: as above

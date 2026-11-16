@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <!-- The app is a net48 window; its window-free files are compiled in here. -->
+  <ItemGroup>
+    <Compile Include="..\..\apps\Tetitulz.Pdf.StampSign\Placement.cs" Link="App\Placement.cs" />
+    <Compile Include="..\..\apps\Tetitulz.Pdf.StampSign\UprightImage.cs" Link="App\UprightImage.cs" />
+    <Compile Include="..\..\apps\Tetitulz.Pdf.StampSign\ShownPage.cs" Link="App\ShownPage.cs" />
+    <Compile Include="..\..\apps\Tetitulz.Pdf.StampSign\StampWriter.cs" Link="App\StampWriter.cs" />
+    <Compile Include="..\..\apps\Tetitulz.Pdf.StampSign\AppSettings.cs" Link="App\AppSettings.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\Tetitulz.Pdf.TestHelpers\Tetitulz.Pdf.TestHelpers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

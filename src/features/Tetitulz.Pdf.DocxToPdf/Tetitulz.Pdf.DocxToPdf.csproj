@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can convert DOCX. OpenXml ships the
+      leg already; the blockers were Builder (NU1201), then ZLibStream, a span overload, `dynamic`
+      and ProcessStartInfo.ArgumentList.
+
+      The LibreOffice engine works on BOTH legs. ProcessStartInfo.ArgumentList does not exist on
+      netstandard2.0, so that leg builds the command line through Engines/ProcessArgumentEscaper.cs
+      instead; net10.0 keeps ArgumentList. See the remarks on
+      LibreOfficeConverter.AddConversionArguments.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Converts DOCX to PDF for Tetitulz.Pdf, through a hand-written mapper onto the Builder document model or an external LibreOffice engine.</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.DocxToPdf</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.DocxToPdf</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" />
+  </ItemGroup>
+
+  <!-- The `dynamic` binder for WordComConverter's late-bound COM calls. net10.0 has it in the
+       shared framework; netstandard2.0 needs the package or `dynamic` fails with CS0656. -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <!-- Builder is a "foundational feature": converters may depend on it (acyclic).
+         Builder must NEVER reference a converter back. See CLAUDE.md architecture note. -->
+    <ProjectReference Include="..\Tetitulz.Pdf.Builder\Tetitulz.Pdf.Builder.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.DocxToPdf.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

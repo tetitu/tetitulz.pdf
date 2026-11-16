@@ -1,0 +1,69 @@
+<Project>
+
+  <!--
+    Repo-wide defaults. Imported automatically before every .csproj under this
+    directory, so anything set here can be overridden by the project itself.
+
+    Scope note: this file deliberately carries only metadata and packaging
+    defaults. It does NOT set <Nullable> — see src/Directory.Build.props for why.
+  -->
+
+  <PropertyGroup Label="Identity">
+    <!--
+      The owning identity. /LICENSE carries the same holder; the CI guard that
+      refuses TODO_ metadata in a .nuspec exists to keep them from drifting apart.
+    -->
+    <Authors>Tamir Mordo</Authors>
+    <Company>Tamir Mordo</Company>
+    <Copyright>Copyright (c) 2026 Tamir Mordo</Copyright>
+    <Product>Tetitulz.Pdf</Product>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Packaging defaults">
+    <!--
+      Nothing packs unless it opts in. src/Directory.Build.props flips this to
+      true for the library assemblies; apps/, demo/ and tests/ stay false, so a
+      solution-wide `dotnet pack` cannot accidentally publish an application.
+    -->
+    <IsPackable>false</IsPackable>
+    <!--
+      Apache-2.0 for every package. A project carrying third-party material under its own licence
+      widens the expression itself (CMap, Fonts, HtmlScript); a project setting
+      TetitulzAttributionLicense switches to /LICENSE-ATTRIBUTION.txt in src/Directory.Build.targets.
+    -->
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>pdf;pdf-generation;pdf-parsing;pdf-signing;docx;html;managed</PackageTags>
+    <!--
+      The repository: SourceLink stamps the commit into the PDBs so a debugger finds the exact
+      sources a binary came from, and PackageProjectUrl is the home page a consumer opens from
+      the package.
+    -->
+    <PackageProjectUrl>https://github.com/tetitu/tetitulz.pdf</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/tetitu/tetitulz.pdf</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Reproducibility">
+    <Deterministic>true</Deterministic>
+    <!-- Set by CI (see .github/workflows/ci.yml) so paths in the PDB are normalized. -->
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Versioning">
+    <!--
+      Versions come from git tags via MinVer. Previously nothing set <Version> anywhere, so
+      every assembly in every build stamped 1.0.0.0 — indistinguishable builds, and no way to
+      say which code a binary came from. Tag `v0.1.0` to cut the first release; until then
+      builds carry a 0.0.0-alpha.0.N prerelease version.
+    -->
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <MinVerDefaultPreReleaseIdentifiers>alpha.0</MinVerDefaultPreReleaseIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup Label="Versioning">
+    <!-- Build-time only: never becomes a dependency of the produced package. -->
+    <PackageReference Include="MinVer" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
+  </ItemGroup>
+
+</Project>

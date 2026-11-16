@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.StampSign</RootNamespace>
+    <AssemblyName>tetitulz-stampsign</AssemblyName>
+    <!-- An AnyCPU .NET Framework exe defaults to Prefer32Bit; the renderer wants a 64-bit address space. -->
+    <Prefer32Bit>false</Prefer32Bit>
+    <ApplicationIcon>stampsign.ico</ApplicationIcon>
+    <Description>.NET Framework 4.8 WinForms app: open a PDF, place transparent PNG stamps by drag and drop, and sign it visibly with a smart-card certificate.</Description>
+  </PropertyGroup>
+
+  <!-- WinForms on .NET Framework is GAC references, NOT <UseWindowsForms> (a .NET Core/5+ property
+       that is inert here). Same arrangement as Tetitulz.Pdf.Splitter. System.Security carries the
+       certificate store types. -->
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <!-- Supplies the IPdfDecryptor. Referencing it is not enough: Program.Main calls
+         PdfEncryptionOperations.Register(), or an encrypted document renders as garbage. -->
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Encryption\Tetitulz.Pdf.Encryption.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Signing\Tetitulz.Pdf.Signing.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.WinForms.PdfViewer\Tetitulz.Pdf.WinForms.PdfViewer.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.CertStoreSign\Tetitulz.Pdf.Plugins.CertStoreSign.csproj" />
+  </ItemGroup>
+
+</Project>

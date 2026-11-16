@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\features\Tetitulz.Pdf.Accessibility\Tetitulz.Pdf.Accessibility.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <!-- Test-only: EncryptedRemediationRoundTripTests proves the accessibility pipeline is
+         reachable for an encrypted document via PdfEncryptedRoundTrip. The Accessibility
+         ASSEMBLY still does not reference Encryption \u2014 that edge would drag BouncyCastle
+         into its package graph. -->
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Encryption\Tetitulz.Pdf.Encryption.csproj" />
+    <ProjectReference Include="..\Tetitulz.Pdf.TestHelpers\Tetitulz.Pdf.TestHelpers.csproj" />
+  </ItemGroup>
+
+</Project>

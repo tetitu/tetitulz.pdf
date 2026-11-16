@@ -1,0 +1,122 @@
+<Window x:Class="Tetitulz.Pdf.CompareViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+        Title="PDF Compare — Tetitulz vs Acrobat Reader"
+        Height="900" Width="1500" WindowState="Maximized"
+        Closing="OnWindowClosing">
+
+    <Window.Resources>
+        <Style x:Key="ToolBtn" TargetType="Button">
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="Margin" Value="2,0"/>
+            <Setter Property="Background" Value="#3E3E42"/>
+            <Setter Property="Foreground" Value="#DCDCDC"/>
+            <Setter Property="BorderBrush" Value="#555"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style x:Key="PanelHeader" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#DCDCDC"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel Background="#1E1E1E">
+
+        <!-- ── Toolbar ── -->
+        <Border DockPanel.Dock="Top" Background="#2D2D30" Padding="8,5" BorderThickness="0,0,0,1" BorderBrush="#444">
+            <StackPanel Orientation="Horizontal">
+
+                <Button Style="{StaticResource ToolBtn}" Content="📂 Open Folder" Click="OnOpenFolder" ToolTip="Choose a folder containing PDFs"/>
+
+                <Separator Background="#555" Margin="6,0"/>
+
+                <!-- PDF file navigation -->
+                <TextBlock Text="PDF:" Foreground="#999" VerticalAlignment="Center" Margin="4,0"/>
+                <Button Style="{StaticResource ToolBtn}" Content="◀" Click="OnPrevFile" ToolTip="Previous PDF"/>
+                <TextBlock x:Name="FileIndexText" Text="— / —" Foreground="#DCDCDC" VerticalAlignment="Center"
+                           Margin="6,0" MinWidth="80" TextAlignment="Center"/>
+                <Button Style="{StaticResource ToolBtn}" Content="▶" Click="OnNextFile" ToolTip="Next PDF"/>
+
+                <Separator Background="#555" Margin="6,0"/>
+
+                <!-- Page navigation -->
+                <TextBlock Text="Page:" Foreground="#999" VerticalAlignment="Center" Margin="4,0"/>
+                <Button Style="{StaticResource ToolBtn}" Content="◀" Click="OnPrevPage" ToolTip="Previous page (Left arrow)"/>
+                <TextBlock x:Name="PageIndexText" Text="— / —" Foreground="#DCDCDC" VerticalAlignment="Center"
+                           Margin="6,0" MinWidth="60" TextAlignment="Center"/>
+                <Button Style="{StaticResource ToolBtn}" Content="▶" Click="OnNextPage" ToolTip="Next page (Right arrow)"/>
+
+            </StackPanel>
+        </Border>
+
+        <!-- ── Current PDF path bar ── -->
+        <Border DockPanel.Dock="Top" Background="#252526" Padding="10,4" BorderThickness="0,0,0,1" BorderBrush="#333">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Path: " Foreground="#666" FontSize="11" VerticalAlignment="Center"/>
+                <TextBox x:Name="CurrentPathBox" Text="No PDF loaded"
+                         IsReadOnly="True" Background="Transparent" BorderThickness="0"
+                         Foreground="#4EC9B0" FontFamily="Cascadia Code, Consolas" FontSize="11"
+                         VerticalAlignment="Center" MinWidth="400"/>
+                <Button Content="📋 Copy" Click="OnCopyPath" Style="{StaticResource ToolBtn}"
+                        Margin="8,0,0,0" FontSize="11" ToolTip="Copy path to clipboard"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ── Status bar ── -->
+        <Border DockPanel.Dock="Bottom" Background="#007ACC" Padding="10,3">
+            <Grid>
+                <TextBlock x:Name="StatusText" Text="Ready — open a folder to begin"
+                           Foreground="White" FontSize="11" HorizontalAlignment="Left"/>
+                <TextBlock x:Name="RenderStatusText" Text=""
+                           Foreground="#FFFACD" FontSize="11" HorizontalAlignment="Right"/>
+            </Grid>
+        </Border>
+
+        <!-- ── Main two-panel area ── -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="300"/>
+                <ColumnDefinition Width="4"/>
+                <ColumnDefinition Width="*" MinWidth="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT: the library's own viewer (Tetitulz.Pdf.WinForms.PdfViewer), forms fillable -->
+            <DockPanel Grid.Column="0">
+                <Border DockPanel.Dock="Top" Background="#1E1E1E" Padding="10,5"
+                        BorderThickness="0,0,0,1" BorderBrush="#333">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="10" Height="10" Fill="#4EC9B0" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Tetitulz PDF Viewer" Style="{StaticResource PanelHeader}"/>
+                    </StackPanel>
+                </Border>
+                <wfi:WindowsFormsHost x:Name="ViewerHost" Background="#404040"/>
+            </DockPanel>
+
+            <!-- Splitter -->
+            <GridSplitter Grid.Column="1" Background="#444"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+            <!-- RIGHT: Adobe Acrobat Reader (its ActiveX viewer, hosted through Windows Forms) -->
+            <DockPanel Grid.Column="2">
+                <Border DockPanel.Dock="Top" Background="#1E1E1E" Padding="10,5"
+                        BorderThickness="0,0,0,1" BorderBrush="#333">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="10" Height="10" Fill="#DCDCAA" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Adobe Acrobat Reader" Style="{StaticResource PanelHeader}"/>
+                        <TextBlock x:Name="RightStatusText" Text="" Foreground="#888"
+                                   FontSize="11" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+                <Grid Background="#404040">
+                    <wfi:WindowsFormsHost x:Name="AcrobatHost"/>
+                    <TextBlock x:Name="AcrobatUnavailableText" Visibility="Collapsed"
+                               Foreground="#DCDCDC" FontSize="13" TextWrapping="Wrap" Margin="24"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</Window>

@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can use this package. It references
+      only Core, which already ships that leg.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Bundled fonts for Tetitulz.Pdf: Liberation Sans, Serif and Mono (the metric-compatible stand-ins for the standard 14) and Noto Sans Hebrew and Arabic, under the SIL Open Font License. The mechanism lives in Core (FontSearchPath); this package carries the font files and registers the directory it extracts them to, so a host with no fonts installed renders predictably.</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.Fonts</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.Fonts</AssemblyName>
+    <Nullable>enable</Nullable>
+    <!-- License: SIL Open Font License 1.1 for every font — see Licenses/ (packed beside the package's own Apache-2.0 license). -->
+    <PackageLicenseExpression>Apache-2.0 AND OFL-1.1</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Plugins.Fonts.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <!-- The font files and their licences are embedded as assembly resources and written to a directory on first use. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Fonts\**\*.ttf" />
+    <EmbeddedResource Include="Licenses\*.txt" />
+  </ItemGroup>
+  <!--
+    The fonts are redistributed unmodified under the OFL, whose notice must travel with them: the
+    three licence texts (each carries its family's copyright and Reserved Font Names) are packed
+    into the .nupkg under distinct names, so they are not confused with the package's own
+    Apache-2.0 license.
+  -->
+  <ItemGroup>
+    <None Include="Licenses\LICENSE-Liberation-OFL.txt" Pack="true" PackagePath="LICENSE-Liberation-OFL.txt" />
+    <None Include="Licenses\LICENSE-NotoSansHebrew-OFL.txt" Pack="true" PackagePath="LICENSE-NotoSansHebrew-OFL.txt" />
+    <None Include="Licenses\LICENSE-NotoSansArabic-OFL.txt" Pack="true" PackagePath="LICENSE-NotoSansArabic-OFL.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+</Project>

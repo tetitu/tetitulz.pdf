@@ -1,0 +1,38 @@
+Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions::.ctor()
+Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions::EmbedImages : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions::ImageDpi : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions::IncludeText : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions::MaxEmbeddedImageBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions::Title : System.String { get; set }
+Tetitulz.Pdf.Plugins.Html.HtmlExportPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Html.HtmlExportPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Html.HtmlExportPlugin::Export(Tetitulz.Pdf.Core.Document.PdfDocument, System.IO.Stream, Tetitulz.Pdf.Core.Plugins.ExportOptions) : System.Void
+Tetitulz.Pdf.Plugins.Html.HtmlExportPlugin::FormatKey : System.String { get }
+Tetitulz.Pdf.Plugins.Html.HtmlExportPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Html.HtmlExportPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Html.HtmlExportPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Html.HtmlExportPlugin::TargetMimeType : System.String { get }
+Tetitulz.Pdf.Plugins.Html.HtmlExportPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Html.HtmlFillableForms::ConvertHtmlToFillablePdf(System.String, Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions = default) : System.Byte[]
+Tetitulz.Pdf.Plugins.Html.HtmlImportPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Html.HtmlImportPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Html.HtmlImportPlugin::FormatKey : System.String { get }
+Tetitulz.Pdf.Plugins.Html.HtmlImportPlugin::Import(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Core.Plugins.ImportOptions) : System.Void
+Tetitulz.Pdf.Plugins.Html.HtmlImportPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Html.HtmlImportPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Html.HtmlImportPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Html.HtmlImportPlugin::SourceMimeType : System.String { get }
+Tetitulz.Pdf.Plugins.Html.HtmlImportPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Html.PdfHtmlConverter::ConvertToHtml(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions = default) : System.Void
+Tetitulz.Pdf.Plugins.Html.PdfHtmlConverter::ConvertToHtml(System.IO.Stream, Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions = default) : System.String
+Tetitulz.Pdf.Plugins.Html.PdfHtmlConverter::ConvertToHtml(System.String, Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions = default) : System.String
+Tetitulz.Pdf.Plugins.Html.PdfHtmlConverter::ConvertToHtmlFiles(System.String, System.String, Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions = default) : System.Void
+Tetitulz.Pdf.Plugins.Html.PdfHtmlConverter::ConvertToLayoutHtml(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions = default) : System.Void
+Tetitulz.Pdf.Plugins.Html.PdfHtmlConverter::ConvertToLayoutHtml(System.IO.Stream, Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions = default) : System.String
+Tetitulz.Pdf.Plugins.Html.PdfHtmlConverter::ConvertToLayoutHtml(System.String, Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions = default) : System.String
+Tetitulz.Pdf.Plugins.Html.PdfHtmlConverter::LastConversionWarning : System.String { get }
+class Tetitulz.Pdf.Plugins.Html.HtmlConversionOptions
+class Tetitulz.Pdf.Plugins.Html.HtmlExportPlugin
+class Tetitulz.Pdf.Plugins.Html.HtmlFillableForms
+class Tetitulz.Pdf.Plugins.Html.HtmlImportPlugin
+class Tetitulz.Pdf.Plugins.Html.PdfHtmlConverter

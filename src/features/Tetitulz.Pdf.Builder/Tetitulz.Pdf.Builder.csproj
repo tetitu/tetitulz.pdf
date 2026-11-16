@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can use the code-first document model.
+      Builder is the ROOT of the legacy-leg dependency chain: DocxToPdf, HtmlToPdf and through them
+      Plugins.{Docx,Html,HtmlBrowser} all failed with NU1201 pointing here, not at their own code.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Code-first document creation for Tetitulz.Pdf: build a document once and export it as PDF, DOCX, HTML or ODT.</Description>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Tetitulz.Pdf.Builder</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Builder</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" />
+  </ItemGroup>
+
+  <!-- Nullable-analysis attributes that netstandard2.0's reference assemblies lack. Excluded from
+       net10.0, where the real BCL types exist, so neither leg sees two types of the same name. -->
+  <ItemGroup>
+    <Compile Remove="Compatibility\NullableAttributes.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <Compile Include="Compatibility\NullableAttributes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- So a guard test can assert the REAL cap (PdfExporter.MaxBackgroundTiles) rather than a
+         copy of the number, which is how a test comes to pass against a cap that has moved. -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Builder.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,210 @@
+<Project>
+
+  <!--
+    Central Package Management: every PackageReference version lives here, and the .csproj
+    files carry only <PackageReference Include="..." /> with no Version attribute.
+
+    Why: the same package was pinned at three different versions across the test projects
+    (xunit 2.5.3 / 2.6.2 / 2.9.0, xunit.runner.visualstudio 2.5.3 / 2.5.4 / 2.8.2,
+    Microsoft.NET.Test.Sdk 17.8.0 / 17.12.0), and coverlet.collector was missing from two of
+    them — so any coverage figure silently excluded those projects. One version per package
+    removes that whole class of drift.
+  -->
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Fail the build if a project tries to pin its own version without VersionOverride. -->
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup Label="Rendering / text shaping">
+    <!--
+      Stable line. This was pinned to 4.147.0-preview.3.1 until 2026-08-04; the 4.147 line never
+      shipped a stable release, so a published package forced prerelease resolution on every
+      consumer. 4.148.0 was the first stable, and 4.151.0 is current. Keep the SkiaSharp entries
+      in lockstep.
+
+      Native assets are referenced for all three desktop platforms, so the published packages do
+      not force a Windows-only dependency graph on consumers. Only Win32 was referenced until
+      2026-08-04, which is what made the library Windows-only in practice; macOS was already
+      arriving transitively, so Linux was the sole real gap.
+    -->
+    <PackageVersion Include="SkiaSharp" Version="4.156.1" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Win32" Version="4.156.1" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="4.156.1" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.macOS" Version="4.156.1" />
+    <!--
+      DO NOT ADD HARFBUZZ BACK, and in particular not "to support Arabic/Hebrew". SkiaSharp.HarfBuzz
+      and HarfBuzzSharp.NativeAssets.{Linux,macOS} were removed on 2026-08-07 along with their only
+      consumer, Base/Rendering/TextShaper.cs, which had no callers anywhere in the tree.
+
+      Why not: a PDF *reader* must not shape. The producer already chose the glyphs, and a
+      non-embedded Arabic file stores presentation forms (U+FE70-FEFF) that a second shaping pass
+      would corrupt. The producer side (Builder, DocxToPdf, AcroForm appearances) shapes through the
+      pure-managed Core.Text.OpenTypeShaper, which needs no native library. See CLAUDE.md and the
+      CHANGELOG entry for 2026-08-07.
+
+      If they ever do return, the versioning trap that justified them is this: HarfBuzzSharp
+      versions on its own line - 14.2.1, NOT SkiaSharp's 4.151.0 - and it ships libHarfBuzzSharp
+      separately from libSkiaSharp, so referencing SkiaSharp.HarfBuzz without the two NativeAssets
+      packages yields a package that restores cleanly and dies at the first shaped run.
+    -->
+  </ItemGroup>
+
+  <ItemGroup Label="Cryptography">
+    <!--
+      2.7.0, and the reason it was previously refused is now understood and fixed rather than
+      worked around. The earlier round measured 361/0 -> 308/53 under 2.7.0, dominated by
+      `Org.BouncyCastle.Cms.CmsException: Exception reading content`, and recorded that it was
+      "not obviously the whole cause". It was the whole cause.
+
+      **2.7.0 refuses trailing bytes after the ASN.1 object, and a PDF /Contents is always
+      padded.** PdfSigner writes the CMS into a fixed SigningDefaults.SignatureReserveBytes hole
+      and right-pads the hex with '0', so every signature this library produces is followed by
+      thousands of zero bytes; 2.6.2 ignores them and 2.7.0 answers
+      `IOException: extra data found after object`. The four failing areas were exactly the four
+      call sites handing PdfString.RawBytes to a CMS or token parser. "The signature did not
+      verify over the signed byte range" was a PARSE failure wearing a verification failure's
+      clothes.
+
+      Fixed by SigningDefaults.TrimToAsn1Object at all four. Measured before taking this bump:
+      the full solution is 10959/0/12 on 2.6.2 AND on 2.7.0, identical; the Encryption suite is
+      green on both; the weak-algorithm mutations still kill on both; and a signature produced
+      under either version verifies under the other, tested in both directions.
+
+      **If you are bisecting a signature problem, revert this line to 2.6.2 first** - it is the
+      one-line experiment, and the trim is correct under both versions. GAPS.md §20c carries the
+      measurements and what is still open (a non-zero /Contents tail is unsigned and is still not
+      refused - that is a policy decision, not an oversight).
+    -->
+    <PackageVersion Include="BouncyCastle.Cryptography" Version="2.7.0" />
+    <!--
+      SignedCms / CmsSigner, for Plugins.CertStoreSign. NOT in-box on any leg: on .NET it lives in
+      a separate System.Security.Cryptography.Pkcs assembly that must be referenced explicitly.
+      It is the only way to build a CMS with a key that stays on a smart card, which BouncyCastle
+      cannot do — it needs an AsymmetricKeyParameter, and a non-exportable CNG key cannot produce
+      one. Referenced by that plugin alone, which is why the plugin exists rather than the code
+      living in Tetitulz.Pdf.Signing.
+      10.0.13 (2026-10-15): 10.0.0-10.0.12 carry GHSA-846f-f764-76mx (CVE-2026-84008, high: quadratic
+      CPU in SignedCms.CheckSignature on attacker-supplied certificates) and GHSA-2fmv-rv2c-59x7
+      (CVE-2026-70162, moderate: quadratic work in EnvelopedCms.Decode on Windows); NuGet's audit
+      flagged both on restore.
+    -->
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+    <!-- netstandard2.0/net462 compile-time only; assets excluded so it never ships at runtime. -->
+    <PackageVersion Include="Portable.BouncyCastle" Version="1.9.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Document formats">
+    <!-- 1.8.x because the AngleSharp.Js 1.1.0 source Plugins.HtmlScript vendors (Wave 16) is
+         written against [1.8.0, 2.0.0). -->
+    <PackageVersion Include="AngleSharp" Version="1.8.2" />
+    <!-- Plugins.HtmlScript only. AngleSharp.Css supplies element.style (the CSSOM): without it
+         jQuery 1.x throws in its own feature detection and 3.x drops every .css() silently. -->
+    <PackageVersion Include="AngleSharp.Css" Version="1.1.2" />
+    <!-- Tests only (Plugins.HtmlScript.Tests): the official package, beside the plugin's vendored
+         copy, proves a host can reference both - same source version as the vendored one. -->
+    <PackageVersion Include="AngleSharp.Js" Version="1.1.0" />
+    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
+    <!-- 1.64.1 at least: Plugins.HtmlBrowser routes a page's WebSockets through its address
+         guard, and up to 1.62.0 the .NET client reads a close code the browser may omit, so one
+         routed socket fails every later call on the connection (KeyNotFoundException). -->
+    <PackageVersion Include="Microsoft.Playwright" Version="1.64.1" />
+    <PackageVersion Include="Tesseract" Version="5.2.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Scripting / blockchain">
+    <!--
+      Jint belongs to Tetitulz.Pdf.Plugins.JavaScript ONLY (moved there 2026-08-12, GAPS.md §15b).
+      It was a Tetitulz.Pdf.Base PackageReference reached from a single 449-line file, which put a
+      full ECMAScript interpreter into the package graph of every consumer of Base - all four
+      feature DLLs, most plugins, and the WinForms viewer's net462 leg. Do NOT add it back to Base
+      to spare a caller the plugin registration; AssemblyLayeringTests fails the build if you do.
+    -->
+    <!-- Also Plugins.HtmlScript (Wave 16), which vendors AngleSharp.Js 1.1.0 (it wants Jint
+         [4.15.3, 5.0.0)) - see that plugin's VENDORED.md before moving this pin. -->
+    <PackageVersion Include="Jint" Version="4.18.0" />
+    <PackageVersion Include="Nethereum.Web3" Version="6.1.0" />
+    <!-- Pinned to 13.0.3 to avoid GHSA-5crp-9r3c-p9vr in older transitive versions. -->
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+  <ItemGroup Label="Runtime / BCL">
+    <!-- The `dynamic` binder. Referenced ONLY by Tetitulz.Pdf.DocxToPdf's netstandard2.0 leg, for
+         WordComConverter's late-bound COM calls: net10.0 carries the binder in the shared framework,
+         netstandard2.0 does not, and without it `dynamic` fails to compile with CS0656. -->
+    <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageVersion Include="Microsoft.NETFramework.ReferenceAssemblies.net462" Version="1.0.3" />
+    <!-- Span<T> / MemoryExtensions for netstandard2.0 legs. Referenced explicitly by
+         Plugins.PostScript, which was relying on it arriving transitively through
+         Core -> System.Text.Encoding.CodePages. 4.6.3 matches the pin in
+         tools/package-consumption/Consumer; a different assembly version there produced a
+         FileLoadException on .NET Framework, so keep the two in step. -->
+    <PackageVersion Include="System.Memory" Version="4.6.3" />
+    <PackageVersion Include="System.Text.Encoding.CodePages" Version="10.0.11" />
+    <!-- Transitive-vulnerability overrides: GHSA-7jgj-8wvc-jh57, GHSA-cmhx-cq75-c4mj.
+
+         KEPT ON PURPOSE, AND NO LONGER FOR THE ORIGINAL REASON. Four test projects used to carry
+         a direct PackageReference to each of these purely to force a safe version; on net10.0 both
+         ship in the shared framework, so NuGet prunes the out-of-band package and warned about it
+         (NU1510). Those references are gone (2026-08-27), and a transitive package listing now
+         finds neither package anywhere in the tree.
+
+         These two lines are not the leftovers of that — they are the guard that outlives it.
+         CentralPackageTransitivePinningEnabled is true above, so a PackageVersion with no
+         PackageReference is inert *until* some future dependency drags the package in
+         transitively, at which point it pins the safe version instead of the vulnerable one.
+         Deleting them would remove a guard that costs nothing and currently has no prey.
+
+         Do not re-add a PackageReference for either: that is what NU1510 was complaining about. -->
+    <PackageVersion Include="System.Net.Http" Version="4.3.4" />
+    <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup Label="Applications (WPF / WinForms / CLI / Blazor)">
+    <PackageVersion Include="Fluent.Ribbon" Version="11.0.2" />
+    <!-- apps/Tetitulz.Pdf.WasmSign (browser-wasm client) and its .Host. The two move together.
+         10.0.14 is the first .Server without GHSA-g27p-qf6j-c96c (remote code execution, every
+         10.0.x before it); `dotnet list package -vulnerable` is what says so. -->
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.15" />
+    <PackageVersion Include="Serilog" Version="4.4.0" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageVersion Include="Serilog.Sinks.Debug" Version="3.0.0" />
+    <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Test infrastructure (converged — was three different sets)">
+    <PackageVersion Include="coverlet.collector" Version="10.1.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
+    <!-- The compiler's semantic model, for a guard that must see types a text search cannot:
+         SaturatingCastGuardTests (Base.Tests) finds every float-to-integer cast in src/. -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.12.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Benchmarking">
+    <!--
+      Used only by benchmarks/Tetitulz.Pdf.Benchmarks, which is outside src/ so it never
+      packs and none of the four CI guards apply to it. It is in tetitulz.pdf.sln (so it
+      cannot rot) but deliberately NOT in tetitulz.pdf.portable.slnf, so the Linux CI job
+      does not spend time building a harness it never runs.
+    -->
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
+  </ItemGroup>
+
+  <ItemGroup Label="Fuzzing">
+    <!--
+      Used only by tools/fuzz/Tetitulz.Pdf.Fuzz, the coverage-guided harness (GAPS.md section 7c),
+      which is outside src/ and not in either solution file: its assemblies are instrumented in
+      place by the sharpfuzz tool and run under libfuzzer-dotnet, never shipped.
+    -->
+    <PackageVersion Include="SharpFuzz" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Build-time only">
+    <PackageVersion Include="MinVer" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>

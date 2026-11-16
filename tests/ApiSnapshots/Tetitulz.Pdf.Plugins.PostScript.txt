@@ -1,0 +1,180 @@
+Tetitulz.Pdf.Plugins.PostScript.EpsImportPlugin::.ctor()
+Tetitulz.Pdf.Plugins.PostScript.EpsImportPlugin::.ctor(Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions)
+Tetitulz.Pdf.Plugins.PostScript.EpsImportPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.EpsImportPlugin::FormatKey : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.EpsImportPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptAutoRotate::None : Tetitulz.Pdf.Plugins.PostScript.PostScriptAutoRotate = 0
+Tetitulz.Pdf.Plugins.PostScript.PostScriptAutoRotate::PageByPage : Tetitulz.Pdf.Plugins.PostScript.PostScriptAutoRotate = 1
+Tetitulz.Pdf.Plugins.PostScript.PostScriptAutoRotate::value__ : System.Int32
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversion::ConvertDocument(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions = default) : Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversion::ConvertFragment(System.Byte[], Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions = default) : Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions::.ctor()
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions::AllowImages : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions::AllowText : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions::AutoRotatePages : Tetitulz.Pdf.Plugins.PostScript.PostScriptAutoRotate { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions::BaseMatrix : System.Double[] { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions::Default : Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions::MaxCompositeAllocationBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions::MaxEmittedContentBytes : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions::MaxTotalOps : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions::OutlineFontProvider : System.Func<System.String, System.Byte[]> { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions::ShowPage : Tetitulz.Pdf.Plugins.PostScript.ShowPageBehavior { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult::.ctor()
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult::BoundingBox : System.Double[] { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult::BudgetExhausted : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult::Content : System.Byte[] { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult::ContentTruncated : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult::DiagnosticCount : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult::IsClean : System.Boolean { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult::LastError : System.String { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult::Resources : Tetitulz.Pdf.Core.Objects.PdfDictionary { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult::SkippedBinarySection : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult::UnimplementedOperators : System.Collections.Generic.IReadOnlyList<System.String> { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDiagnostics::Clear() : System.Void
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDiagnostics::LastError : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDiagnostics::OnEvent : System.Action<System.String> (event)
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDiagnostics::ReportCount : System.Int32 { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDiagnostics::UnimplementedOperators : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::.ctor()
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::BlankPageOnly : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::BudgetExhausted : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::DeclaredBoundingBox : System.Double[] { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::DiagnosticCount : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::IsClean : System.Boolean { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::IsEps : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::LastError : System.String { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::PageCount : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::PageLimitReached : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::SkippedBinarySection : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult::UnimplementedOperators : System.Collections.Generic.IReadOnlyList<System.String> { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPlugin::.ctor()
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPlugin::.ctor(Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions)
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPlugin::FormatKey : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPluginBase::.ctor()
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPluginBase::.ctor(Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions)
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPluginBase::Description : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPluginBase::FormatKey : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPluginBase::Import(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Core.Plugins.ImportOptions) : System.Void
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPluginBase::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPluginBase::Name : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPluginBase::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPluginBase::SourceMimeType : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPluginBase::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptXObjectPlugin::.ctor()
+Tetitulz.Pdf.Plugins.PostScript.PostScriptXObjectPlugin::.ctor(Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions)
+Tetitulz.Pdf.Plugins.PostScript.PostScriptXObjectPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptXObjectPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.PostScript.PostScriptXObjectPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.PostScript.PostScriptXObjectPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.PostScript.PostScriptXObjectPlugin::TryConvertToPdfContent(Tetitulz.Pdf.Core.Plugins.PostScriptContentRequest, out Tetitulz.Pdf.Core.Plugins.PostScriptContentResult&) : System.Boolean
+Tetitulz.Pdf.Plugins.PostScript.PostScriptXObjectPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxArcSegmentDegrees : System.Double = 90
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxArcSegments : System.Int32 = 8
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxArcSweepDegrees : System.Double = 360
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxBinarySkipBytes : System.Int32 = 16777216
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxCMapEntries : System.Int32 = 65536
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxCMapNameChars : System.Int32 = 64
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxCapturedFontPrograms : System.Int32 = 64
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxColorSpaceResources : System.Int32 = 256
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxCompositeAllocationBytes : System.Int64 = 67108864
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxDashArrayEntries : System.Int32 = 64
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxDeviceNColorants : System.Int32 = 64
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxDeviceParameterStates : System.Int32 = 256
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxDictStackDepth : System.Int32 = 64
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxEmittedContentBytes : System.Int32 = 8388608
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxEmittedDocumentBytes : System.Int64 = 33554432
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxExecStackDepth : System.Int32 = 1000
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxFilterChainDepth : System.Int32 = 32
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxFontResources : System.Int32 = 256
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxFormContentBytes : System.Int32 = 262144
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxFormNestingDepth : System.Int32 = 4
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxForms : System.Int32 = 256
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxImageXObjects : System.Int32 = 256
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxNameChars : System.Int32 = 4096
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxNumericTokenChars : System.Int32 = 256
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxOperandStackDepth : System.Int32 = 10000
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxPages : System.Int32 = 5000
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxParseNestingDepth : System.Int32 = 100
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxPathSegments : System.Int32 = 100000
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxPatternCellContentBytes : System.Int32 = 262144
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxPatternNestingDepth : System.Int32 = 4
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxPatterns : System.Int32 = 256
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxRecordedUnimplemented : System.Int32 = 256
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxReportsPerConversion : System.Int32 = 1000
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxShadingFunctions : System.Int32 = 64
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxShadings : System.Int32 = 4096
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxSingleArrayLength : System.Int32 = 1000000
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxSingleStringLength : System.Int32 = 1000000
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxSyntheticGlyphFonts : System.Int32 = 256
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxTintTransformSamples : System.Int32 = 4096
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxTotalOps : System.Int64 = 20000000
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxTransferFunctions : System.Int32 = 256
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxType3GlyphContentBytes : System.Int32 = 262144
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxType3Glyphs : System.Int32 = 1024
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxType3NestingDepth : System.Int32 = 4
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMaxType3TotalGlyphBytes : System.Int64 = 16777216
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::DefaultMinMatrixDeterminant : System.Double = 1E-09
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxArcSegmentDegrees : System.Double { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxArcSegments : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxArcSweepDegrees : System.Double { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxBinarySkipBytes : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxCMapEntries : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxCMapNameChars : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxCapturedFontPrograms : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxColorSpaceResources : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxCompositeAllocationBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxDashArrayEntries : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxDeviceNColorants : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxDeviceParameterStates : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxDictStackDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxEmittedContentBytes : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxEmittedDocumentBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxExecStackDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxFilterChainDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxFontResources : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxFormContentBytes : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxFormNestingDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxForms : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxImageXObjects : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxNameChars : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxNumericTokenChars : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxOperandStackDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxPages : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxParseNestingDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxPathSegments : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxPatternCellContentBytes : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxPatternNestingDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxPatterns : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxRecordedUnimplemented : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxReportsPerConversion : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxShadingFunctions : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxShadings : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxSingleArrayLength : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxSingleStringLength : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxSyntheticGlyphFonts : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxTintTransformSamples : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxTotalOps : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxTransferFunctions : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxType3GlyphContentBytes : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxType3Glyphs : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxType3NestingDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MaxType3TotalGlyphBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::MinMatrixDeterminant : System.Double { get; set }
+Tetitulz.Pdf.Plugins.PostScript.PsLimits::ResetToDefaults() : System.Void
+Tetitulz.Pdf.Plugins.PostScript.ShowPageBehavior::NewPage : Tetitulz.Pdf.Plugins.PostScript.ShowPageBehavior = 1
+Tetitulz.Pdf.Plugins.PostScript.ShowPageBehavior::ResetOnly : Tetitulz.Pdf.Plugins.PostScript.ShowPageBehavior = 0
+Tetitulz.Pdf.Plugins.PostScript.ShowPageBehavior::value__ : System.Int32
+class Tetitulz.Pdf.Plugins.PostScript.EpsImportPlugin
+class Tetitulz.Pdf.Plugins.PostScript.PostScriptConversion
+class Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionOptions
+class Tetitulz.Pdf.Plugins.PostScript.PostScriptConversionResult
+class Tetitulz.Pdf.Plugins.PostScript.PostScriptDiagnostics
+class Tetitulz.Pdf.Plugins.PostScript.PostScriptDocumentResult
+class Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPlugin
+class Tetitulz.Pdf.Plugins.PostScript.PostScriptImportPluginBase
+class Tetitulz.Pdf.Plugins.PostScript.PostScriptXObjectPlugin
+class Tetitulz.Pdf.Plugins.PostScript.PsLimits
+enum Tetitulz.Pdf.Plugins.PostScript.PostScriptAutoRotate
+enum Tetitulz.Pdf.Plugins.PostScript.ShowPageBehavior

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <!-- A library the test projects share, not a test project. The xunit reference below (for the
+         corpus attributes) otherwise makes `dotnet test` on the solution launch a testhost for this
+         assembly, which aborts the run ("Test Run Aborted", exit 1). -->
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp" />
+    <!-- For CorpusFactAttribute / CorpusTheoryAttribute, shared by every test project. -->
+    <PackageReference Include="xunit" />
+    <!-- For RsaTestKeys, the key pool every test project's certificate helpers draw from. -->
+    <PackageReference Include="BouncyCastle.Cryptography" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- For HebrewFontProbe, which asks the production SystemFontResolver. -->
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+
+</Project>

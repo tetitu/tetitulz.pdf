@@ -1,0 +1,651 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A force-push to a PR used to leave the superseded run burning a windows-latest runner to
+# completion — and this workflow's Windows job is the long one, because it alone can build the
+# net462 / net48 / net10.0-windows targets. Cancel only for pull_request: a push to main or a
+# release tag must finish, since that job is the packing and release gate.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# The token can read the checkout and nothing else. No step outside the release job writes to the
+# repository, opens an issue or publishes a package; the release job asks for exactly what it needs.
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # Picked up by Directory.Build.props to set ContinuousIntegrationBuild.
+  CI: true
+
+jobs:
+  build-test:
+    # windows-latest is required for the FULL solution, not a preference: it builds net462 /
+    # net48 / net10.0-windows targets (the WinForms viewer, the WPF viewer, the CLI apps) that
+    # cannot build anywhere else. This job stays the packing and release gate.
+    #
+    # Rendering itself is no longer Windows-bound — see the linux-verify job below.
+    runs-on: windows-latest
+    # A hung test host used to be able to hold a runner for six hours; the whole job, coverage
+    # included, has to finish well inside this.
+    timeout-minutes: 120
+
+    steps:
+      # Actions are pinned by commit SHA (the tag beside each is what the SHA was resolved from):
+      # a tag can be moved, a SHA cannot, and this repository ships cryptography. Dependabot
+      # (.github/dependabot.yml) proposes the moves.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # MinVer derives the version from tags, so it needs full history, not a shallow clone.
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          # global.json pins the feature band; the SDK installed here is the one it names.
+          global-json-file: global.json
+          # Central package management means one lock surface, so the cache key is stable and the
+          # restore is the same set on every run.
+          cache: true
+          cache-dependency-path: |
+            Directory.Packages.props
+            **/*.csproj
+
+      - name: Verify every src/ and apps/ project is in the solution
+        shell: pwsh
+        run: |
+          # The .sln is the manifest of what ships and of what is built: a src/ library missing
+          # from it is never packed, and an app missing from it is compiled by nothing, so a
+          # library change that breaks it goes unseen. Membership never packs an app: the pack
+          # guard below derives its allow-list from src/.
+          $missing = @()
+          Get-ChildItem -Path src, apps -Recurse -Filter *.csproj |
+              Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' } | ForEach-Object {
+              $name = $_.Name
+              if (-not (Select-String -Path tetitulz.pdf.sln -SimpleMatch -Quiet -Pattern $name)) {
+                  $missing += $_.FullName
+              }
+          }
+          if ($missing.Count -gt 0) {
+              Write-Host "::error::Projects under src/ or apps/ are missing from tetitulz.pdf.sln:"
+              $missing | ForEach-Object { Write-Host "::error::  $_" }
+              exit 1
+          }
+          Write-Host "All src/ and apps/ projects are present in the solution."
+
+      - name: Verify every shipping library has a test project
+        shell: pwsh
+        run: |
+          # Eight shipping assemblies once had no test project of their own — including
+          # Tetitulz.Pdf.Signing and Tetitulz.Pdf.Encryption, which hold every line of
+          # cryptography in the repo. Nothing detected that, because "is it covered?" was only
+          # ever asked of the code that already had tests. This asks it of the shipping list.
+          #
+          # KnownGaps shrinks and never grows: adding a name here to go green defeats the point,
+          # exactly as it would in the unfalsifiable-assertion guard. The second check below makes
+          # the list self-cleaning — an entry that names a project which now HAS tests fails too,
+          # so the list cannot rot into a permanent exemption.
+          #
+          # It shipped with six entries and reached EMPTY the same day, so the rule below is now
+          # absolute: every library under src/ has a test project. Re-populating this list is
+          # always the wrong fix.
+          $knownGaps = @()
+
+          $untested = @()
+          $staleGaps = @()
+          Get-ChildItem -Path src -Recurse -Filter *.csproj | ForEach-Object {
+              $name = $_.BaseName
+              $hasTests = Test-Path "tests/$name.Tests/$name.Tests.csproj"
+              if ($hasTests -and $knownGaps -contains $name) { $staleGaps += $name }
+              if (-not $hasTests -and $knownGaps -notcontains $name) { $untested += $name }
+          }
+
+          if ($untested.Count -gt 0) {
+              Write-Host "::error::Shipping libraries with no test project:"
+              $untested | ForEach-Object { Write-Host "::error::  $_ (expected tests/$_.Tests/)" }
+          }
+          if ($staleGaps.Count -gt 0) {
+              Write-Host "::error::These are listed in KnownGaps but now have tests - remove them:"
+              $staleGaps | ForEach-Object { Write-Host "::error::  $_" }
+          }
+          if ($untested.Count -gt 0 -or $staleGaps.Count -gt 0) { exit 1 }
+
+          Write-Host "Every shipping library has a test project, or is a declared gap ($($knownGaps.Count) left)."
+
+      - name: Restore
+        run: dotnet restore tetitulz.pdf.sln
+
+      - name: Audit dependencies for known vulnerabilities
+        shell: pwsh
+        run: |
+          # This repo ships crypto (signing, encryption); a vulnerable transitive package is a
+          # release blocker, not a warning.
+          $out = dotnet list tetitulz.pdf.sln package --vulnerable --include-transitive 2>&1 | Out-String
+          $code = $LASTEXITCODE
+          Write-Host $out
+          # Two independent gates: the command's own exit code, and the report text. Matching on
+          # one English sentence alone is a false-negative risk if the wording or locale changes.
+          if ($code -ne 0) {
+              Write-Host "::error::dotnet list package --vulnerable failed (exit $code)."
+              exit 1
+          }
+          if ($out -match 'has the following vulnerable packages') {
+              Write-Host "::error::Vulnerable packages detected."
+              exit 1
+          }
+
+      - name: Build (Release, all target frameworks)
+        run: dotnet build tetitulz.pdf.sln -c Release --no-restore
+
+      - name: Test with coverage
+        run: >
+          dotnet test tetitulz.pdf.sln -c Release --no-build
+          --collect:"XPlat Code Coverage"
+          --logger "trx;LogFilePrefix=test-results"
+          --results-directory ${{ github.workspace }}/TestResults
+
+      - name: Verify the test run actually completed
+        if: always()
+        shell: pwsh
+        run: |
+          # A truncated test run reports SUCCESS. `dotnet test` prints "Passed!" for the tests that
+          # finished and says nothing about the ones that never ran, so an assembly that loses part
+          # of its suite — a crashed test host, an aborted run, a stale binary — is indistinguishable
+          # from a clean pass unless somebody counts.
+          #
+          # This is not hypothetical here. CLAUDE.md records a type-initialization crash that
+          # reported `Passed!` while silently dropping ~190 tests, and a stack overflow that printed
+          # "Passed! - Total: 2700" against an assembly total of 3040. Both were caught by a human
+          # noticing the number, which is why the guide says "a green run is not evidence; a green
+          # run WITH THE SAME COUNT is". Nothing enforced that until now, and a run observed on
+          # 2026-08-30 dropped 345 of Base.Tests' 3078 tests, exited 1, and listed no failure at all.
+          #
+          # The .trx the test step already writes carries the evidence and nothing read it. No
+          # baseline file and no maintained number — a completeness check compares a run against
+          # ITSELF, so it cannot go stale and never needs updating when tests are added or removed.
+          #
+          # It counts RESULT ROWS against the run's own `total`, and does NOT use the `executed`
+          # counter. That distinction was found by running this against a real 26-assembly result
+          # set rather than trusting a synthetic one: `executed` excludes skipped tests, so
+          # `total != executed` fired on Signing (2 skips), PostScript (3) and Base (7) — three
+          # false positives on a perfectly clean run, which is the "a guard that fires on
+          # conformant input is one you learn to ignore" failure this repo keeps recording. A skip
+          # is a NotExecuted result ROW and is legitimate; a lost test produces no row at all.
+          $expected = (Get-ChildItem tests -Recurse -Filter '*.Tests.csproj').Count
+          $trx = Get-ChildItem -Path TestResults -Recurse -Filter *.trx -ErrorAction SilentlyContinue
+          if (-not $trx) {
+              Write-Host "::error::No .trx files in TestResults - the test step reported nothing."
+              exit 1
+          }
+
+          $bad = 0
+          foreach ($f in $trx) {
+              $x = [xml](Get-Content $f.FullName)
+              $summary = $x.TestRun.ResultSummary
+              [int]$total = $summary.Counters.total
+              $rows = @($x.TestRun.Results.UnitTestResult)
+              $broken = @($rows | Where-Object { $_.outcome -in 'Aborted', 'Error', 'Timeout', 'NotRunnable' })
+
+              # 'Failed' is NOT an incompleteness signal — an ordinary red build reports it, and the
+              # test step above has already failed for that. Measured on a deliberately failing
+              # probe: outcome='Failed', rows == total, no aborted rows. Treating it as incomplete
+              # would bolt a misleading "the run did not complete" error onto every real test
+              # failure, which is how a guard trains people to ignore it. Only the outcomes that
+              # mean the run stopped early count here.
+              if ($summary.outcome -in 'Aborted', 'Timeout', 'Error', 'Inconclusive') {
+                  $bad++
+                  Write-Host "::error::$($f.Name): the run outcome is '$($summary.outcome)' - it did not finish."
+              } elseif ($rows.Count -ne $total) {
+                  $bad++
+                  Write-Host "::error::$($f.Name): $($rows.Count) result rows for $total discovered tests - $($total - $rows.Count) produced no result."
+              } elseif ($broken.Count -gt 0) {
+                  $bad++
+                  Write-Host "::error::$($f.Name): $($broken.Count) test(s) ended Aborted/Error/Timeout/NotRunnable."
+              } else {
+                  Write-Host ("  ok    {0,6} tests   {1}" -f $total, $f.Name)
+              }
+          }
+
+          # An assembly that produced no .trx at all never ran, and the loop above cannot see it.
+          # The expected count comes from the tree rather than a literal, so adding a test project
+          # does not need this step edited.
+          if ($trx.Count -ne $expected) {
+              $bad++
+              Write-Host "::error::$($trx.Count) result file(s) for $expected test project(s) - an assembly produced no results at all."
+          }
+
+          if ($bad -gt 0) {
+              Write-Host "The test run did not complete, so the result above is not evidence of anything."
+              exit 1
+          }
+          Write-Host "All $($trx.Count) test assemblies ran to completion."
+
+      - name: Coverage summary
+        if: always()
+        shell: pwsh
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool 2>&1 | Out-Null
+          $reports = Get-ChildItem -Path TestResults -Recurse -Filter coverage.cobertura.xml -ErrorAction SilentlyContinue
+          if (-not $reports) { Write-Host "No coverage reports found."; exit 0 }
+          reportgenerator `
+            -reports:"TestResults/**/coverage.cobertura.xml" `
+            -targetdir:"TestResults/coverage-report" `
+            -reporttypes:"MarkdownSummaryGithub;Cobertura"
+          if (Test-Path "TestResults/coverage-report/SummaryGithub.md") {
+              Get-Content "TestResults/coverage-report/SummaryGithub.md" >> $env:GITHUB_STEP_SUMMARY
+          }
+
+      - name: Coverage must not regress
+        shell: pwsh
+        run: |
+          # Coverage was COLLECTED and SUMMARISED here for months and never gated, so it could
+          # fall indefinitely and the only signal was a number in a step summary nobody diffs.
+          #
+          # A ratchet, not a target. There is deliberately NO minimum to reach: a fixed threshold
+          # invites writing tests that touch lines rather than assert behaviour, which is the
+          # failure this repository's banned-pattern-3 guard exists to stop. What this asserts is
+          # only that a change does not take coverage DOWN.
+          #
+          # Rises are not failures and do not have to be ratcheted in the same PR — the summary
+          # above reports them. Update tests/coverage-baseline.json deliberately, as its own
+          # change, when a real gain should be locked in.
+          $merged = "TestResults/coverage-report/Cobertura.xml"
+          if (-not (Test-Path $merged)) {
+              Write-Host "::error::No merged Cobertura report at $merged - the coverage step did not run."
+              exit 1
+          }
+
+          [xml]$xml = Get-Content $merged
+          $line   = [double]$xml.coverage.'line-rate'   * 100
+          $branch = [double]$xml.coverage.'branch-rate' * 100
+
+          $baselinePath = "tests/coverage-baseline.json"
+          if (-not (Test-Path $baselinePath)) {
+              Write-Host "::error::$baselinePath is missing. It is the ratchet; do not delete it."
+              exit 1
+          }
+          $baseline = Get-Content $baselinePath -Raw | ConvertFrom-Json
+
+          # 0.5pp absorbs the genuine run-to-run variation (a skipped corpus test, a host-font
+          # SystemFontFact skipping on a runner without Arial) without absorbing a real drop.
+          $tolerance = 0.5
+          $lineFloor   = $baseline.lineRate   - $tolerance
+          $branchFloor = $baseline.branchRate - $tolerance
+
+          Write-Host ("line   {0:N2}%  (baseline {1:N2}%, floor {2:N2}%)" -f $line,   $baseline.lineRate,   $lineFloor)
+          Write-Host ("branch {0:N2}%  (baseline {1:N2}%, floor {2:N2}%)" -f $branch, $baseline.branchRate, $branchFloor)
+
+          $failed = $false
+          if ($line -lt $lineFloor) {
+              Write-Host ("::error::Line coverage fell to {0:N2}% from a baseline of {1:N2}%." -f $line, $baseline.lineRate)
+              $failed = $true
+          }
+          if ($branch -lt $branchFloor) {
+              Write-Host ("::error::Branch coverage fell to {0:N2}% from a baseline of {1:N2}%." -f $branch, $baseline.branchRate)
+              $failed = $true
+          }
+          if ($failed) {
+              Write-Host "::error::Add tests for what this change touched, or - if the drop is correct, e.g. dead code deleted - lower tests/coverage-baseline.json in the same commit with the reason."
+              exit 1
+          }
+
+          if ($line -gt $baseline.lineRate + 1.0) {
+              Write-Host ("::notice::Line coverage is {0:N2}%, {1:N2}pp above the baseline. Consider ratcheting tests/coverage-baseline.json." -f $line, ($line - $baseline.lineRate))
+          }
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-results
+          path: TestResults/
+          retention-days: 14
+
+      - name: Pack
+        run: dotnet pack tetitulz.pdf.sln -c Release --no-build -o ${{ github.workspace }}/artifacts
+
+      - name: Verify only src/ libraries were packed
+        shell: pwsh
+        run: |
+          # IsPackable defaults to false (Directory.Build.props) and is opted into under src/.
+          #
+          # ALLOWLIST, not a denylist. A denylist of app names silently missed anything not on
+          # it (demo/Viewer and apps/CompareViewer are both in-solution WinExe projects), while
+          # naming projects that are not even in the .sln. Deriving the permitted set from the
+          # actual src/ tree cannot drift.
+          $allowed = Get-ChildItem -Path src -Recurse -Filter *.csproj |
+                     ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_.Name) }
+          $unexpected = @()
+          Get-ChildItem artifacts -Filter *.nupkg | ForEach-Object {
+              # Strip the trailing version to recover the package id.
+              $id = $_.Name -replace '\.\d+\.\d+\.\d+.*\.nupkg$', ''
+              if ($allowed -notcontains $id) { $unexpected += $_.Name }
+          }
+          if ($unexpected.Count -gt 0) {
+              Write-Host "::error::Packages produced from outside src/ (apps, demo or tests must not pack):"
+              $unexpected | ForEach-Object { Write-Host "::error::  $_" }
+              exit 1
+          }
+          Get-ChildItem artifacts -Filter *.nupkg | ForEach-Object { Write-Host "packed: $($_.Name)" }
+
+      - name: Verify no placeholder metadata reached a package
+        shell: pwsh
+        run: |
+          # Directory.Build.props still carries TODO_COPYRIGHT_HOLDER for Authors/Company/
+          # Copyright pending a decision on the owning identity. Publishing that would be worse
+          # than not publishing, so fail the build rather than rely on remembering.
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $bad = @()
+          Get-ChildItem artifacts -Filter *.nupkg | ForEach-Object {
+              $zip = [IO.Compression.ZipFile]::OpenRead($_.FullName)
+              try {
+                  $nuspec = $zip.Entries | Where-Object { $_.FullName -like '*.nuspec' } | Select-Object -First 1
+                  if ($nuspec) {
+                      $reader = New-Object IO.StreamReader($nuspec.Open())
+                      try { $text = $reader.ReadToEnd() } finally { $reader.Dispose() }
+                      if ($text -match 'TODO_') { $bad += $_.Name }
+                  }
+              } finally { $zip.Dispose() }
+          }
+          if ($bad.Count -gt 0) {
+              Write-Host "::error::Packages contain placeholder metadata (TODO_*). Set the real identity in Directory.Build.props before publishing:"
+              $bad | ForEach-Object { Write-Host "::error::  $_" }
+              exit 1
+          }
+          Write-Host "No placeholder metadata found."
+
+      - name: Upload packages
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: nupkg
+          path: artifacts/*.nupkg
+          retention-days: 30
+
+      - name: Publish the apps for a release
+        # A v* tag alone: the release job below attaches these beside the packages.
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          dotnet publish apps/Tetitulz.Pdf.WpfViewer/Tetitulz.Pdf.WpfViewer.csproj -c Release --no-build -o release/WpfViewer
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet publish apps/Tetitulz.Pdf.SignCli/Tetitulz.Pdf.SignCli.csproj -c Release -f net10.0 --no-build -o release/SignCli
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          foreach ($app in 'WpfViewer', 'SignCli') {
+              # Every redistribution carries the licence texts and notices (Apache 2.0 section 4).
+              Copy-Item LICENSE, NOTICE, NOTICE.md, THIRD-PARTY.md -Destination "release/$app"
+              Copy-Item licenses -Destination "release/$app/licenses" -Recurse
+              Compress-Archive -Path "release/$app/*" -DestinationPath "release/Tetitulz.Pdf.$app-${{ github.ref_name }}-windows.zip"
+          }
+
+      - name: Upload the apps
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: apps
+          path: release/*.zip
+          retention-days: 30
+
+  linux-verify:
+    # Proves the claim the packages now make: rendering runs off Windows. Builds and tests the
+    # TFM-portable subset — tetitulz.pdf.portable.slnf is the full solution minus the WinForms
+    # viewer, the apps and the demos, all of which are Windows-only by construction.
+    #
+    # A solution filter rather than a `dotnet build` exclusion pattern: the filter is an explicit
+    # in-repo list, so adding a project that cannot build on Linux is a visible edit rather than a
+    # silent pass.
+    #
+    # This was run to completion on Ubuntu 24.04 before being added: all 13 assemblies green.
+    # Base.Tests reports 1135 passed / 10 skipped there against 1141 / 7 on Windows — the delta is
+    # exactly the six PostScript-name tests that need Arial / Times New Roman / Courier New, which
+    # SystemFontFact/SystemFontTheory skip visibly when the family is absent. xunit collapses the
+    # skipped four-row theory into a single entry, which is why the totals differ by three.
+    #
+    # If a font-related test fails here rather than skipping, the fix is a visible skip or a
+    # fixture that embeds its own font — NOT a looser assertion (CLAUDE.md banned pattern 3).
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+          # Central package management means one lock surface, so the cache key is stable and the
+          # restore is the same set on every run.
+          cache: true
+          cache-dependency-path: |
+            Directory.Packages.props
+            **/*.csproj
+
+      - name: Install native rendering prerequisites
+        run: |
+          # libfontconfig1: SkiaSharp.NativeAssets.Linux links against it — without it
+          #   SKTypeface.FromFamilyName can never resolve a system font.
+          # fonts-liberation: metric-compatible stand-ins for Arial / Times New Roman /
+          #   Courier New, which is what Core.Fonts.FontFileLocator maps the standard 14 onto.
+          #   With no fonts installed the renderer still runs, but every non-embedded font
+          #   falls back to whatever Skia has left.
+          sudo apt-get update
+          sudo apt-get install -y libfontconfig1 fonts-liberation
+      - name: Verify the portable filter covers every portable project
+        shell: pwsh
+        run: |
+          # The filter is hand-maintained, so a new project under src/ would otherwise never be
+          # built on Linux and its portability would go unverified. Two are legitimately absent,
+          # each Windows-only by its target framework: the WinForms viewer (net462,
+          # net10.0-windows) and Printing (net10.0-windows alone: the Windows spooler and its pipe).
+          $windowsOnly = 'Tetitulz.Pdf.WinForms.PdfViewer.csproj', 'Tetitulz.Pdf.Printing.csproj'
+          $filter = Get-Content tetitulz.pdf.portable.slnf -Raw
+          $missing = @()
+          Get-ChildItem -Path src -Recurse -Filter *.csproj | ForEach-Object {
+              $name = $_.Name
+              if ($windowsOnly -contains $name) { return }
+              if (-not $filter.Contains($name)) { $missing += $name }
+          }
+          if ($missing.Count -gt 0) {
+              Write-Host "::error::Projects under src/ are missing from tetitulz.pdf.portable.slnf:"
+              $missing | ForEach-Object { Write-Host "::error::  $_" }
+              exit 1
+          }
+          Write-Host "Portable filter covers all portable src/ projects."
+
+      - name: Restore
+        run: dotnet restore tetitulz.pdf.portable.slnf
+
+      - name: Build (Release)
+        run: dotnet build tetitulz.pdf.portable.slnf -c Release --no-restore
+
+      - name: Test
+        run: >
+          dotnet test tetitulz.pdf.portable.slnf -c Release --no-build
+          --logger "trx;LogFilePrefix=linux-test-results"
+          --results-directory ${{ github.workspace }}/TestResults
+
+      - name: Verify the test run actually completed
+        if: always()
+        shell: pwsh
+        run: |
+          # The same completeness check as the Windows job — see the long comment there for why a
+          # truncated run reports success, and for why this counts result ROWS rather than the
+          # `executed` counter (which excludes skips and produced three false positives on a clean
+          # run). The assembly-count half is deliberately omitted: this job runs the portable
+          # filter, which is a SUBSET of tests/, so counting .trx files against every test project
+          # in the tree would fail on the projects the filter correctly excludes.
+          $trx = Get-ChildItem -Path TestResults -Recurse -Filter *.trx -ErrorAction SilentlyContinue
+          if (-not $trx) {
+              Write-Host "::error::No .trx files in TestResults - the test step reported nothing."
+              exit 1
+          }
+
+          $bad = 0
+          foreach ($f in $trx) {
+              $x = [xml](Get-Content $f.FullName)
+              $summary = $x.TestRun.ResultSummary
+              [int]$total = $summary.Counters.total
+              $rows = @($x.TestRun.Results.UnitTestResult)
+              $broken = @($rows | Where-Object { $_.outcome -in 'Aborted', 'Error', 'Timeout', 'NotRunnable' })
+
+              # 'Failed' is NOT an incompleteness signal — an ordinary red build reports it, and the
+              # test step above has already failed for that. Measured on a deliberately failing
+              # probe: outcome='Failed', rows == total, no aborted rows. Treating it as incomplete
+              # would bolt a misleading "the run did not complete" error onto every real test
+              # failure, which is how a guard trains people to ignore it. Only the outcomes that
+              # mean the run stopped early count here.
+              if ($summary.outcome -in 'Aborted', 'Timeout', 'Error', 'Inconclusive') {
+                  $bad++
+                  Write-Host "::error::$($f.Name): the run outcome is '$($summary.outcome)' - it did not finish."
+              } elseif ($rows.Count -ne $total) {
+                  $bad++
+                  Write-Host "::error::$($f.Name): $($rows.Count) result rows for $total discovered tests - $($total - $rows.Count) produced no result."
+              } elseif ($broken.Count -gt 0) {
+                  $bad++
+                  Write-Host "::error::$($f.Name): $($broken.Count) test(s) ended Aborted/Error/Timeout/NotRunnable."
+              } else {
+                  Write-Host ("  ok    {0,6} tests   {1}" -f $total, $f.Name)
+              }
+          }
+
+          if ($bad -gt 0) {
+              Write-Host "The test run did not complete, so the result above is not evidence of anything."
+              exit 1
+          }
+          Write-Host "All $($trx.Count) test assemblies ran to completion."
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: linux-test-results
+          path: TestResults/
+          retention-days: 14
+
+  macos-verify:
+    # The README has said "macOS: expected to work; not verified" since the native assets were
+    # added. This job is the verification: the same portable filter the Linux job builds and tests,
+    # on the one platform no developer machine here runs. Apple ships Helvetica, Times and Courier
+    # with macOS, and Core.Fonts.FontFileLocator probes /System/Library/Fonts and its Supplemental
+    # folder, so no font install is needed.
+    #
+    # It is a separate job rather than a matrix entry so a macOS failure is attributable at a glance
+    # and so its runner minutes (macOS runners are billed at a multiple) can be dropped on a branch
+    # without touching the Linux evidence.
+    runs-on: macos-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: |
+            Directory.Packages.props
+            **/*.csproj
+
+      - name: Restore
+        run: dotnet restore tetitulz.pdf.portable.slnf
+
+      - name: Build (Release)
+        run: dotnet build tetitulz.pdf.portable.slnf -c Release --no-restore
+
+      - name: Test
+        run: >
+          dotnet test tetitulz.pdf.portable.slnf -c Release --no-build
+          --logger "trx;LogFilePrefix=macos-test-results"
+          --results-directory ${{ github.workspace }}/TestResults
+
+      - name: Verify the test run actually completed
+        if: always()
+        shell: pwsh
+        run: |
+          # The Linux job's completeness check, verbatim — see its comment and the Windows job's.
+          $trx = Get-ChildItem -Path TestResults -Recurse -Filter *.trx -ErrorAction SilentlyContinue
+          if (-not $trx) {
+              Write-Host "::error::No .trx files in TestResults - the test step reported nothing."
+              exit 1
+          }
+
+          $bad = 0
+          foreach ($f in $trx) {
+              $x = [xml](Get-Content $f.FullName)
+              $summary = $x.TestRun.ResultSummary
+              [int]$total = $summary.Counters.total
+              $rows = @($x.TestRun.Results.UnitTestResult)
+              $broken = @($rows | Where-Object { $_.outcome -in 'Aborted', 'Error', 'Timeout', 'NotRunnable' })
+              if ($summary.outcome -in 'Aborted', 'Timeout', 'Error', 'Inconclusive') {
+                  $bad++
+                  Write-Host "::error::$($f.Name): the run outcome is '$($summary.outcome)' - it did not finish."
+              } elseif ($rows.Count -ne $total) {
+                  $bad++
+                  Write-Host "::error::$($f.Name): $($rows.Count) result rows for $total discovered tests - $($total - $rows.Count) produced no result."
+              } elseif ($broken.Count -gt 0) {
+                  $bad++
+                  Write-Host "::error::$($f.Name): $($broken.Count) test(s) ended Aborted/Error/Timeout/NotRunnable."
+              } else {
+                  Write-Host ("  ok    {0,6} tests   {1}" -f $total, $f.Name)
+              }
+          }
+
+          if ($bad -gt 0) {
+              Write-Host "The test run did not complete, so the result above is not evidence of anything."
+              exit 1
+          }
+          Write-Host "All $($trx.Count) test assemblies ran to completion."
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: macos-test-results
+          path: TestResults/
+          retention-days: 14
+
+  release:
+    # A v* tag alone, and only after all three jobs above are green: the tag's packages and apps
+    # become a GitHub release. Nothing is pushed to a package feed.
+    #
+    # The one job whose token writes: `contents: write` creates the release, `actions: read` lets
+    # the GitHub CLI fetch this run's artifacts. The CLI ships on the runner, so no further action
+    # is pinned here.
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build-test, linux-verify, macos-verify]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+
+    steps:
+      - name: Download what build-test packed and published
+        run: |
+          gh run download "${{ github.run_id }}" --name nupkg --dir release
+          gh run download "${{ github.run_id }}" --name apps --dir release
+
+      - name: Create the GitHub release
+        run: |
+          # A tag with a hyphen (v1.0.0-rc.1) is a prerelease, as MinVer versions it.
+          prerelease=""
+          case "${{ github.ref_name }}" in *-*) prerelease="--prerelease" ;; esac
+          gh release create "${{ github.ref_name }}" release/* \
+            --title "Tetitulz.Pdf ${{ github.ref_name }}" --generate-notes --verify-tag $prerelease

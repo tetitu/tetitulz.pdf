@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can use this plugin, as they can
+      every other one. AngleSharp.Js, AngleSharp.Css and Jint all ship netstandard2.0.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Runs a page's own JavaScript for the managed HTML-to-PDF engine, so the laid-out page is the one its scripts produced (jQuery ready handlers and the like). Sandboxed; isolates Jint and AngleSharp.Js from the core package graph.</Description>
+    <!-- Nullable is not enabled project-wide: Vendor/AngleSharp.Js is upstream source without
+         annotations and stays byte-for-byte (VENDORED.md). This plugin's own files opt in with
+         `#nullable enable`. -->
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.HtmlScript</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.HtmlScript</AssemblyName>
+    <!-- PLAN.md Wave 16. A plugin because Jint may not enter a feature (GAPS.md 15b): this keeps
+         Jint, AngleSharp.Js and AngleSharp.Css out of HtmlToPdf's package graph. Not folded into
+         Plugins.JavaScript, which runs a PDF's document JavaScript and must not drag HtmlToPdf
+         into every host that only wants that. -->
+    <!-- The vendored AngleSharp.Js compiled in below is MIT. -->
+    <PackageLicenseExpression>Apache-2.0 AND MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Plugins.HtmlScript.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Each declared here, not left to arrive transitively (AssemblyLayeringTests). AngleSharp.Js
+         is NOT a package reference: it is vendored under Vendor/ with one hook added (VENDORED.md),
+         because the package offers no way to bound a page script's time, statements or memory. -->
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="AngleSharp.Css" />
+    <PackageReference Include="Jint" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The vendored AngleSharp.Js is compiled into this assembly, so its MIT notice ships in the
+         package with it (MIT: "shall be included in all copies or substantial portions"). -->
+    <None Include="Vendor\AngleSharp.Js\LICENSE" Pack="true" PackagePath="licenses\AngleSharp.Js\" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Plugin -> feature is sanctioned (CLAUDE.md): the contract IHtmlScriptPlugin lives in
+         HtmlToPdf because it names HtmlToPdfOptions. -->
+    <ProjectReference Include="..\..\features\Tetitulz.Pdf.HtmlToPdf\Tetitulz.Pdf.HtmlToPdf.csproj" />
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+</Project>

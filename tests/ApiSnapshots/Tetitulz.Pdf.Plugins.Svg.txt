@@ -1,0 +1,10 @@
+Tetitulz.Pdf.Plugins.Svg.SvgExportPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Svg.SvgExportPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Svg.SvgExportPlugin::Export(Tetitulz.Pdf.Core.Document.PdfDocument, System.IO.Stream, Tetitulz.Pdf.Core.Plugins.ExportOptions) : System.Void
+Tetitulz.Pdf.Plugins.Svg.SvgExportPlugin::FormatKey : System.String { get }
+Tetitulz.Pdf.Plugins.Svg.SvgExportPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Svg.SvgExportPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Svg.SvgExportPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Svg.SvgExportPlugin::TargetMimeType : System.String { get }
+Tetitulz.Pdf.Plugins.Svg.SvgExportPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.Svg.SvgExportPlugin

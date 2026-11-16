@@ -1,0 +1,80 @@
+Tetitulz.Pdf.Plugins.PageEdits.MergePlugin::.ctor()
+Tetitulz.Pdf.Plugins.PageEdits.MergePlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.MergePlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.MergePlugin::Merge(System.IO.Stream, System.Collections.Generic.IReadOnlyList<System.IO.Stream>) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.MergePlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.MergePlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.MergePlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfMerger::LastFormWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfMerger::LastNameTreeWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfMerger::LastObjectWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfMerger::LastOptionalContentWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfMerger::LastOutputIntentWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfMerger::LastPageLabelWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfMerger::LastStructureWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfMerger::LastXfaWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfMerger::Merge(System.IO.Stream, System.IO.Stream[]) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.PdfMerger::Merge(System.String, System.String[]) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.PdfRedactor::CoverRegions(System.IO.Stream, System.IO.Stream, System.Collections.Generic.IEnumerable<Tetitulz.Pdf.Core.Plugins.RedactionRegion>) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.PdfRedactor::FindTextMatches(System.IO.Stream, System.Collections.Generic.IEnumerable<System.String>, Tetitulz.Pdf.Base.Operations.Documents.TextRedactionOptions = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Documents.TextRedactionMatch>
+Tetitulz.Pdf.Plugins.PageEdits.PdfRedactor::Redact(System.IO.Stream, System.IO.Stream, System.Collections.Generic.IEnumerable<Tetitulz.Pdf.Core.Plugins.RedactionRegion>) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.PdfRedactor::RedactRegions(System.IO.Stream, System.IO.Stream, System.Collections.Generic.IEnumerable<Tetitulz.Pdf.Core.Plugins.RedactionRegion>) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.PdfRedactor::RedactText(System.IO.Stream, System.IO.Stream, System.Collections.Generic.IEnumerable<System.String>, Tetitulz.Pdf.Base.Operations.Documents.TextRedactionOptions = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Documents.TextRedactionMatch>
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitPlanner::LastPlanWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitPlanner::PlanAtBookmarks(System.IO.Stream, System.Int32 = default) : System.Collections.Generic.IReadOnlyList<System.Collections.Generic.IReadOnlyList<System.Int32>>
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitPlanner::PlanEveryNPages(System.IO.Stream, System.Int32) : System.Collections.Generic.IReadOnlyList<System.Collections.Generic.IReadOnlyList<System.Int32>>
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitPlanner::PlanUnderByteCeiling(System.IO.Stream, System.Int64) : System.Collections.Generic.IReadOnlyList<System.Collections.Generic.IReadOnlyList<System.Int32>>
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::ExtractPages(System.IO.Stream, System.IO.Stream, System.Collections.Generic.IReadOnlyList<System.Int32>) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::ExtractPages(System.String, System.String, System.Collections.Generic.IReadOnlyList<System.Int32>) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::LastCatalogWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::LastCloneWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::LastFormWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::LastNameTreeWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::LastObjectWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::LastResourceWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::LastXfaWarning : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::Split(System.String, System.String) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::SplitRange(System.IO.Stream, System.IO.Stream, System.Int32, System.Int32) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter::SplitRange(System.String, System.String, System.Int32, System.Int32) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.PdfWatermarker::AddWatermark(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.PageEdits.WatermarkOptions) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.RedactorPlugin::.ctor()
+Tetitulz.Pdf.Plugins.PageEdits.RedactorPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.RedactorPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.RedactorPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.RedactorPlugin::Redact(System.IO.Stream, System.IO.Stream, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Plugins.RedactionRegion>) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.RedactorPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.RedactorPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.PageEdits.SplitPlugin::.ctor()
+Tetitulz.Pdf.Plugins.PageEdits.SplitPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.SplitPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.SplitPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.SplitPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.SplitPlugin::Split(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<System.Byte[]>
+Tetitulz.Pdf.Plugins.PageEdits.SplitPlugin::SplitRange(System.IO.Stream, System.Int32, System.Int32) : System.Byte[]
+Tetitulz.Pdf.Plugins.PageEdits.SplitPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkOptions::.ctor()
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkOptions::AngleDegrees : System.Double { get; set }
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkOptions::ColorB : System.Double { get; set }
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkOptions::ColorG : System.Double { get; set }
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkOptions::ColorR : System.Double { get; set }
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkOptions::FontName : System.String { get; set }
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkOptions::FontSize : System.Double { get; set }
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkOptions::Opacity : System.Double { get; set }
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkOptions::Text : System.String { get; set }
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkPlugin::.ctor()
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkPlugin::AddWatermark(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Core.Plugins.PluginWatermarkOptions) : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.PageEdits.WatermarkPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.PageEdits.MergePlugin
+class Tetitulz.Pdf.Plugins.PageEdits.PdfMerger
+class Tetitulz.Pdf.Plugins.PageEdits.PdfRedactor
+class Tetitulz.Pdf.Plugins.PageEdits.PdfSplitPlanner
+class Tetitulz.Pdf.Plugins.PageEdits.PdfSplitter
+class Tetitulz.Pdf.Plugins.PageEdits.PdfWatermarker
+class Tetitulz.Pdf.Plugins.PageEdits.RedactorPlugin
+class Tetitulz.Pdf.Plugins.PageEdits.SplitPlugin
+class Tetitulz.Pdf.Plugins.PageEdits.WatermarkOptions
+class Tetitulz.Pdf.Plugins.PageEdits.WatermarkPlugin

@@ -1,0 +1,8 @@
+Tetitulz.Pdf.Plugins.SignatureVerify.SignatureVerifyPlugin::.ctor()
+Tetitulz.Pdf.Plugins.SignatureVerify.SignatureVerifyPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.SignatureVerify.SignatureVerifyPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.SignatureVerify.SignatureVerifyPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.SignatureVerify.SignatureVerifyPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.SignatureVerify.SignatureVerifyPlugin::VerifyAll(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.SignatureVerificationResult>
+Tetitulz.Pdf.Plugins.SignatureVerify.SignatureVerifyPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.SignatureVerify.SignatureVerifyPlugin

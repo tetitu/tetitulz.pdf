@@ -1,0 +1,79 @@
+# Build output
+bin/
+obj/
+# Anchored to the root, where `dotnet pack -o artifacts` writes. Unanchored, the pattern matched
+# any folder of that name at any depth — and case-insensitively on Windows — so the Accessibility
+# feature's Artifacts/ source folder was never committed, and a fresh clone did not build.
+/artifacts/
+# build.bat's output: the libraries and apps, ~2 GB. Anchored like /artifacts/.
+/dist/
+BenchmarkDotNet.Artifacts/
+
+# IDE
+.vs/
+*.user
+*.suo
+
+# The agent's folder: the mutation harness and its sweep drivers, settings, notes, worktrees and
+# per-run backups. Developer-local, none of it published.
+/.claude/
+
+# The sample corpus is deliberately not committed (CLAUDE.md, "Testing"): it is developer-local and
+# resolved through TestCorpus / TETITULZ_PDF_CORPUS. Corpus-gated tests report Skipped without it.
+tests/pdf/
+# Anchored for the same reason as /artifacts/: unanchored, it also swallowed the Studio app's
+# Resources/Raw folder.
+/raw/
+# The JPEG 2000 corpus (PLAN.md Wave 15): a sparse clone of github.com/uclouvain/openjpeg-data,
+# resolved through TestCorpus.JpxRoot / TETITULZ_JPX_CORPUS. Not committed: that repository states
+# no licence.
+/tests/jpx/
+
+# Licensed standards, ~92 MB. These are reference copies obtained under a single-user licence whose
+# own pages read "Single user only, copying and networking prohibited", so they do not belong in a
+# history that might be pushed. They stay on disk: nothing builds or tests against them, and the
+# documentation guard checks paths that still resolve locally.
+#
+# Reverse this by deleting the line if the repository is and will remain private and you hold a
+# licence that permits it — but note that removing them from history afterwards is far harder than
+# adding them now.
+docs/iso/
+
+# A 236 MB source archive, not project source.
+*.7z
+
+# The API-surface guard writes "<baseline>.actual" beside a baseline only when the comparison FAILS
+# (or the baseline is missing): it is what you copy over the baseline to accept an intended change,
+# and it says nothing once a run is green. Three were committed from earlier red runs — a tracked
+# one is a failing run's leftovers sitting next to the file it is mistakable for.
+tests/ApiSnapshots/*.actual
+
+# The developer's harnesses: fuzzing, the corpus scorecard and fetcher, the package-consumption
+# check, the table generators, the BenchmarkDotNet project. Developer-local, not published.
+/tools/
+/benchmarks/
+
+# Security reviews are working records: the open items are GAPS.md's, the policy SECURITY.md's.
+/docs/security-review-*.md
+
+# The developer's own scripts: the local build, clean and helper batch files, and C# script files.
+*.bat
+*.csx
+
+# The developer's register of open work and the plans: not published.
+/GAPS.md
+/PLAN*.md
+
+# The owner's real invoices (GAPS.md §4a). Private: never committed, never a fixture; tests reach
+# them through TestCorpus like any other corpus.
+/private_invoices/
+
+# Oracle tests (outside tools as second opinions) stay local
+/oracle-tests/
+
+# Work logs and assistant notes stay local
+/local-notes/
+
+# The installers' outputs and work files (apps/installers/build.ps1).
+/apps/installers/out/
+/apps/installers/obj/

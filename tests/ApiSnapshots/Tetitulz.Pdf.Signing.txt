@@ -1,0 +1,334 @@
+Tetitulz.Pdf.Signing.Cms.CmsDeferredSignatureBuilder::AssembleDetachedSignature(System.Byte[], System.Byte[], Org.BouncyCastle.X509.X509Certificate, System.Collections.Generic.IList<Org.BouncyCastle.X509.X509Certificate>, System.String, System.Byte[], System.String = default, System.Byte[] = default) : System.Byte[]
+Tetitulz.Pdf.Signing.Cms.CmsDeferredSignatureBuilder::GetSignedAttributes(System.Byte[], Org.BouncyCastle.X509.X509Certificate, System.String, System.String = default) : System.Byte[]
+Tetitulz.Pdf.Signing.Cms.CmsDeferredSignatureBuilder::GetSignedAttributes(Tetitulz.Pdf.Signing.PreparedSignature, Org.BouncyCastle.X509.X509Certificate, System.String = default) : System.Byte[]
+Tetitulz.Pdf.Signing.Cms.CmsSignatureGenerator::GenerateDetachedSignature(System.Byte[], Org.BouncyCastle.Crypto.AsymmetricKeyParameter, Org.BouncyCastle.X509.X509Certificate, System.Collections.Generic.IList<Org.BouncyCastle.X509.X509Certificate>, System.String, System.Byte[] = default) : System.Byte[]
+Tetitulz.Pdf.Signing.Cms.CmsSignatureGenerator::GenerateDetachedSignatureWithAlgorithm(System.Byte[], Org.BouncyCastle.Crypto.AsymmetricKeyParameter, Org.BouncyCastle.X509.X509Certificate, System.Collections.Generic.IList<Org.BouncyCastle.X509.X509Certificate>, System.String, System.String, System.Byte[] = default) : System.Byte[]
+Tetitulz.Pdf.Signing.Models.DocMdpPermission::CommentAnnotations : Tetitulz.Pdf.Signing.Models.DocMdpPermission = 3
+Tetitulz.Pdf.Signing.Models.DocMdpPermission::FormsAndSignatures : Tetitulz.Pdf.Signing.Models.DocMdpPermission = 2
+Tetitulz.Pdf.Signing.Models.DocMdpPermission::NoChanges : Tetitulz.Pdf.Signing.Models.DocMdpPermission = 1
+Tetitulz.Pdf.Signing.Models.DocMdpPermission::None : Tetitulz.Pdf.Signing.Models.DocMdpPermission = 0
+Tetitulz.Pdf.Signing.Models.DocMdpPermission::value__ : System.Int32
+Tetitulz.Pdf.Signing.Models.DssEvidenceKind::Crl : Tetitulz.Pdf.Signing.Models.DssEvidenceKind = 1
+Tetitulz.Pdf.Signing.Models.DssEvidenceKind::OcspResponse : Tetitulz.Pdf.Signing.Models.DssEvidenceKind = 0
+Tetitulz.Pdf.Signing.Models.DssEvidenceKind::value__ : System.Int32
+Tetitulz.Pdf.Signing.Models.DssInventory::.ctor(System.Boolean, System.Int32, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssRevocationEntry>, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssRevocationEntry>, System.Collections.Generic.IReadOnlyList<System.String>, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssVriEvidence>, System.DateTime)
+Tetitulz.Pdf.Signing.Models.DssInventory::.ctor(System.Boolean, System.Int32, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssRevocationEntry>, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssRevocationEntry>, System.Collections.Generic.IReadOnlyList<System.String>, System.DateTime)
+Tetitulz.Pdf.Signing.Models.DssInventory::CertificateCount : System.Int32 { get }
+Tetitulz.Pdf.Signing.Models.DssInventory::Crls : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssRevocationEntry> { get }
+Tetitulz.Pdf.Signing.Models.DssInventory::EvaluatedAtUtc : System.DateTime { get }
+Tetitulz.Pdf.Signing.Models.DssInventory::HasDss : System.Boolean { get }
+Tetitulz.Pdf.Signing.Models.DssInventory::IsCurrent : System.Boolean { get }
+Tetitulz.Pdf.Signing.Models.DssInventory::OcspResponses : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssRevocationEntry> { get }
+Tetitulz.Pdf.Signing.Models.DssInventory::VriEvidence : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssVriEvidence> { get }
+Tetitulz.Pdf.Signing.Models.DssInventory::VriKeys : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Signing.Models.DssRevocationEntry::.ctor(Tetitulz.Pdf.Signing.Models.DssEvidenceKind, System.Int32, System.Nullable<System.DateTime>, System.Nullable<System.DateTime>, System.Boolean, System.String)
+Tetitulz.Pdf.Signing.Models.DssRevocationEntry::ByteLength : System.Int32 { get }
+Tetitulz.Pdf.Signing.Models.DssRevocationEntry::IsCurrent : System.Boolean { get }
+Tetitulz.Pdf.Signing.Models.DssRevocationEntry::Issue : System.String { get }
+Tetitulz.Pdf.Signing.Models.DssRevocationEntry::Kind : Tetitulz.Pdf.Signing.Models.DssEvidenceKind { get }
+Tetitulz.Pdf.Signing.Models.DssRevocationEntry::NextUpdate : System.Nullable<System.DateTime> { get }
+Tetitulz.Pdf.Signing.Models.DssRevocationEntry::ThisUpdate : System.Nullable<System.DateTime> { get }
+Tetitulz.Pdf.Signing.Models.DssVriEvidence::.ctor(System.String, System.Int32, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssRevocationEntry>, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssRevocationEntry>)
+Tetitulz.Pdf.Signing.Models.DssVriEvidence::CertificateCount : System.Int32 { get }
+Tetitulz.Pdf.Signing.Models.DssVriEvidence::Crls : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssRevocationEntry> { get }
+Tetitulz.Pdf.Signing.Models.DssVriEvidence::IsCurrent : System.Boolean { get }
+Tetitulz.Pdf.Signing.Models.DssVriEvidence::Key : System.String { get }
+Tetitulz.Pdf.Signing.Models.DssVriEvidence::OcspResponses : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.DssRevocationEntry> { get }
+Tetitulz.Pdf.Signing.Models.IExternalSigner::EstimatedSignatureSize : System.Int32 { get }
+Tetitulz.Pdf.Signing.Models.IExternalSigner::GetCertificateChain() : System.Collections.Generic.IList<System.Byte[]>
+Tetitulz.Pdf.Signing.Models.IExternalSigner::SignData(System.Byte[], System.String) : System.Byte[]
+Tetitulz.Pdf.Signing.Models.IExternalSigner::SignDigest(System.Byte[], System.String) : System.Byte[]
+Tetitulz.Pdf.Signing.Models.LtvEvidence::.ctor(System.Collections.Generic.IReadOnlyList<System.Byte[]> = default, System.Collections.Generic.IReadOnlyList<System.Byte[]> = default, System.Collections.Generic.IReadOnlyList<System.Byte[]> = default)
+Tetitulz.Pdf.Signing.Models.LtvEvidence::Certificates : System.Collections.Generic.IReadOnlyList<System.Byte[]> { get }
+Tetitulz.Pdf.Signing.Models.LtvEvidence::Crls : System.Collections.Generic.IReadOnlyList<System.Byte[]> { get }
+Tetitulz.Pdf.Signing.Models.LtvEvidence::IsEmpty : System.Boolean { get }
+Tetitulz.Pdf.Signing.Models.LtvEvidence::OcspResponses : System.Collections.Generic.IReadOnlyList<System.Byte[]> { get }
+Tetitulz.Pdf.Signing.Models.LtvRefreshOptions::.ctor()
+Tetitulz.Pdf.Signing.Models.LtvRefreshOptions::EvidenceProvider : System.Func<Org.BouncyCastle.X509.X509Certificate, System.Collections.Generic.IReadOnlyList<Org.BouncyCastle.X509.X509Certificate>, Tetitulz.Pdf.Signing.Models.LtvEvidence> { get; set }
+Tetitulz.Pdf.Signing.Models.LtvRefreshOptions::IncludeSignerChains : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.LtvRefreshOptions::Network : Tetitulz.Pdf.Signing.Models.SigningNetworkOptions { get; set }
+Tetitulz.Pdf.Signing.Models.LtvRefreshResult::.ctor(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Collections.Generic.IReadOnlyList<System.String>)
+Tetitulz.Pdf.Signing.Models.LtvRefreshResult::CertificatesAdded : System.Int32 { get }
+Tetitulz.Pdf.Signing.Models.LtvRefreshResult::CertificatesCarriedForward : System.Int32 { get }
+Tetitulz.Pdf.Signing.Models.LtvRefreshResult::CrlsAdded : System.Int32 { get }
+Tetitulz.Pdf.Signing.Models.LtvRefreshResult::CrlsCarriedForward : System.Int32 { get }
+Tetitulz.Pdf.Signing.Models.LtvRefreshResult::OcspAdded : System.Int32 { get }
+Tetitulz.Pdf.Signing.Models.LtvRefreshResult::OcspCarriedForward : System.Int32 { get }
+Tetitulz.Pdf.Signing.Models.LtvRefreshResult::Warnings : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Signing.Models.PadesBaseline::B_B : Tetitulz.Pdf.Signing.Models.PadesBaseline = 1
+Tetitulz.Pdf.Signing.Models.PadesBaseline::B_LT : Tetitulz.Pdf.Signing.Models.PadesBaseline = 3
+Tetitulz.Pdf.Signing.Models.PadesBaseline::B_LTA : Tetitulz.Pdf.Signing.Models.PadesBaseline = 4
+Tetitulz.Pdf.Signing.Models.PadesBaseline::B_T : Tetitulz.Pdf.Signing.Models.PadesBaseline = 2
+Tetitulz.Pdf.Signing.Models.PadesBaseline::None : Tetitulz.Pdf.Signing.Models.PadesBaseline = 0
+Tetitulz.Pdf.Signing.Models.PadesBaseline::value__ : System.Int32
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::Default : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 0
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::EcdsaSha256 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 5
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::EcdsaSha384 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 6
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::EcdsaSha512 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 7
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::Ed25519 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 8
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::Ed448 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 9
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::GostR3410_2012_256 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 13
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::GostR3410_2012_512 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 14
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::MlDsa44 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 10
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::MlDsa65 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 11
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::MlDsa87 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 12
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::RsaPssSha256 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 4
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::RsaSha256 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 1
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::RsaSha384 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 2
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::RsaSha512 : Tetitulz.Pdf.Signing.Models.SignatureAlgorithm = 3
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithm::value__ : System.Int32
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::EcdsaWithSha256 : System.String = "1.2.840.10045.4.3.2"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::EcdsaWithSha384 : System.String = "1.2.840.10045.4.3.3"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::EcdsaWithSha512 : System.String = "1.2.840.10045.4.3.4"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::Ed25519 : System.String = "1.3.101.112"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::Ed448 : System.String = "1.3.101.113"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::GostR3410_2012_256 : System.String = "1.2.643.7.1.1.1.1"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::GostR3410_2012_512 : System.String = "1.2.643.7.1.1.1.2"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::MlDsa44 : System.String = "2.16.840.1.101.3.4.3.17"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::MlDsa65 : System.String = "2.16.840.1.101.3.4.3.18"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::MlDsa87 : System.String = "2.16.840.1.101.3.4.3.19"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::RsaPss : System.String = "1.2.840.113549.1.1.10"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::RsaWithSha256 : System.String = "1.2.840.113549.1.1.11"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::RsaWithSha384 : System.String = "1.2.840.113549.1.1.12"
+Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids::RsaWithSha512 : System.String = "1.2.840.113549.1.1.13"
+Tetitulz.Pdf.Signing.Models.SignatureParameters::.ctor()
+Tetitulz.Pdf.Signing.Models.SignatureParameters::AllowCertificationInvalidation : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::ApplyPadesBaseline(Tetitulz.Pdf.Signing.Models.PadesBaseline, System.String = default) : Tetitulz.Pdf.Signing.Models.SignatureParameters
+Tetitulz.Pdf.Signing.Models.SignatureParameters::CertificatePassword : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::CertificatePath : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::CertificateStream : System.IO.Stream { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::ContactInfo : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::DigestAlgorithm : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::DocMdpPermission : Tetitulz.Pdf.Signing.Models.DocMdpPermission { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::EmbedLtv : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::EstimatedSignatureSize : System.Int32 { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::ExternalSigner : Tetitulz.Pdf.Signing.Models.IExternalSigner { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::Location : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::PadesBaselineLevel : Tetitulz.Pdf.Signing.Models.PadesBaseline { get }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::Reason : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::SignatureAlgorithmOid : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::SignatureFieldName : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::SigningTime : System.Nullable<System.DateTime> { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::TimestampAuthorityUrl : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::TimestampDigestAlgorithm : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::TimestampNetwork : Tetitulz.Pdf.Signing.Models.SigningNetworkOptions { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::UsageRights : Tetitulz.Pdf.Core.UsageRights { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::UseDocumentTimestampAuthority : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParameters::UseEtsiPadesSubFilter : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureParametersExtensions::UseAlgorithm(Tetitulz.Pdf.Signing.Models.SignatureParameters, Tetitulz.Pdf.Signing.Models.SignatureAlgorithm) : Tetitulz.Pdf.Signing.Models.SignatureParameters
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::.ctor()
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::CheckIntermediateRevocation : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::ClockSkew : System.TimeSpan { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::Default : Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions { get }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::MaxRevocationDataAge : System.TimeSpan { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::MinimumEcKeyBits : System.Int32 { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::MinimumRsaKeyBits : System.Int32 { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::Network : Tetitulz.Pdf.Signing.Models.SigningNetworkOptions { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::OnlineRevocation : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::RejectNonZeroContentsPadding : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::RejectWeakAlgorithms : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::RequireCurrentTimestampAuthority : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::RequireSignerKeyPurpose : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::RequireTrustedTimestamp : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::TimestampTrustAnchors : System.Collections.Generic.IEnumerable<Org.BouncyCastle.X509.X509Certificate> { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions::TrustAnchors : System.Collections.Generic.IEnumerable<Org.BouncyCastle.X509.X509Certificate> { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::.ctor()
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::AssessmentTime : System.Nullable<System.DateTime> { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::ByteRangeCoverageEnd : System.Int64 { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::CertificationPermission : System.Int32 { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::ChainStatus : Tetitulz.Pdf.Signing.PdfSignatureChainStatus { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::ClaimedSigningTime : System.Nullable<System.DateTime> { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::CoversEntireDocument : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::CoversRevision : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::DigestAlgorithm : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::FieldName : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::HasNonZeroContentsPadding : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::HasTrustedTimestamp : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::IsCertification : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::IsFullyTrusted : System.Boolean { get }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::IsIntegrityValid : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::IsValid : System.Boolean { get }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::Location : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::MdpViolations : System.Collections.Generic.List<System.String> { get }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::Reason : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::RevocationStatus : Tetitulz.Pdf.Signing.PdfRevocationStatus { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::SignerCommonName : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::SignerIssuer : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::SignerSubject : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::SigningTime : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::SubFilter : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::TimestampTime : System.Nullable<System.DateTime> { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::ValidationErrors : System.Collections.Generic.List<System.String> { get }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::Warnings : System.Collections.Generic.List<System.String> { get }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::WeakAlgorithm : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SignatureVerificationResult::WeakAlgorithmReason : System.String { get; set }
+Tetitulz.Pdf.Signing.Models.SigningNetworkOptions::.ctor()
+Tetitulz.Pdf.Signing.Models.SigningNetworkOptions::Credentials : System.Net.ICredentials { get; set }
+Tetitulz.Pdf.Signing.Models.SigningNetworkOptions::PreAuthenticate : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Models.SigningNetworkOptions::Proxy : System.Net.IWebProxy { get; set }
+Tetitulz.Pdf.Signing.Models.SigningNetworkOptions::Timeout : System.Nullable<System.TimeSpan> { get; set }
+Tetitulz.Pdf.Signing.PdfCounterSigner::AddCounterSignature(System.IO.Stream, System.IO.Stream, System.String, System.Byte[], System.String, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.PdfCounterSigner::AddCounterSignature(System.IO.Stream, System.IO.Stream, System.String, System.String, System.String, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.PdfCounterSigner::EstimateCmsSize(System.Byte[], System.Security.Cryptography.X509Certificates.X509Certificate2, System.Int32 = default) : System.Int32
+Tetitulz.Pdf.Signing.PdfDeferredSigner::Complete(System.IO.Stream, Tetitulz.Pdf.Signing.PreparedSignature, System.Byte[], System.IO.Stream) : System.Void
+Tetitulz.Pdf.Signing.PdfDeferredSigner::Prepare(System.IO.Stream, System.IO.Stream, System.Collections.Generic.IList<System.Byte[]>, Tetitulz.Pdf.Signing.Models.SignatureParameters) : Tetitulz.Pdf.Signing.PreparedSignature
+Tetitulz.Pdf.Signing.PdfLtvRefresher::AddVerificationInfo(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Signing.Models.LtvEvidence) : Tetitulz.Pdf.Signing.Models.LtvRefreshResult
+Tetitulz.Pdf.Signing.PdfLtvRefresher::RefreshVerificationInfo(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Signing.Models.LtvRefreshOptions = default) : Tetitulz.Pdf.Signing.Models.LtvRefreshResult
+Tetitulz.Pdf.Signing.PdfRevocationStatus::Good : Tetitulz.Pdf.Signing.PdfRevocationStatus = 2
+Tetitulz.Pdf.Signing.PdfRevocationStatus::NotChecked : Tetitulz.Pdf.Signing.PdfRevocationStatus = 0
+Tetitulz.Pdf.Signing.PdfRevocationStatus::Revoked : Tetitulz.Pdf.Signing.PdfRevocationStatus = 3
+Tetitulz.Pdf.Signing.PdfRevocationStatus::Unknown : Tetitulz.Pdf.Signing.PdfRevocationStatus = 1
+Tetitulz.Pdf.Signing.PdfRevocationStatus::value__ : System.Int32
+Tetitulz.Pdf.Signing.PdfSignatureChainStatus::Invalid : Tetitulz.Pdf.Signing.PdfSignatureChainStatus = 4
+Tetitulz.Pdf.Signing.PdfSignatureChainStatus::SelfSigned : Tetitulz.Pdf.Signing.PdfSignatureChainStatus = 2
+Tetitulz.Pdf.Signing.PdfSignatureChainStatus::Trusted : Tetitulz.Pdf.Signing.PdfSignatureChainStatus = 1
+Tetitulz.Pdf.Signing.PdfSignatureChainStatus::Unknown : Tetitulz.Pdf.Signing.PdfSignatureChainStatus = 0
+Tetitulz.Pdf.Signing.PdfSignatureChainStatus::UntrustedRoot : Tetitulz.Pdf.Signing.PdfSignatureChainStatus = 3
+Tetitulz.Pdf.Signing.PdfSignatureChainStatus::value__ : System.Int32
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::.ctor(System.Boolean, System.Boolean, System.String, System.String, System.Nullable<System.DateTime>, Tetitulz.Pdf.Signing.PdfSignatureChainStatus, System.Collections.Generic.IReadOnlyList<System.String>, System.String)
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::ChainStatus : Tetitulz.Pdf.Signing.PdfSignatureChainStatus { get }
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::ErrorMessage : System.String { get }
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::FieldName : System.String { get; set }
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::HasSignature : System.Boolean { get }
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::HasTrustedTimestamp : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::IsFullyTrusted : System.Boolean { get }
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::IsValid : System.Boolean { get }
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::RevocationStatus : Tetitulz.Pdf.Signing.PdfRevocationStatus { get; set }
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::SignedAt : System.Nullable<System.DateTime> { get }
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::SignerIssuer : System.String { get }
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::SignerSubject : System.String { get }
+Tetitulz.Pdf.Signing.PdfSignatureValidationResult::Warnings : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Signing.PdfSignatureValidator::Validate(System.IO.Stream, System.Collections.Generic.IEnumerable<Org.BouncyCastle.X509.X509Certificate> = default) : Tetitulz.Pdf.Signing.PdfSignatureValidationResult
+Tetitulz.Pdf.Signing.PdfSignatureValidator::Validate(System.IO.Stream, Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions) : Tetitulz.Pdf.Signing.PdfSignatureValidationResult
+Tetitulz.Pdf.Signing.PdfSignatureValidator::Validate(System.String, System.Collections.Generic.IEnumerable<Org.BouncyCastle.X509.X509Certificate> = default) : Tetitulz.Pdf.Signing.PdfSignatureValidationResult
+Tetitulz.Pdf.Signing.PdfSignatureValidator::ValidateAll(System.IO.Stream, Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.PdfSignatureValidationResult>
+Tetitulz.Pdf.Signing.PdfSignatureValidator::ValidateAll(System.String, Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.PdfSignatureValidationResult>
+Tetitulz.Pdf.Signing.PdfSignatureVerifier::.ctor()
+Tetitulz.Pdf.Signing.PdfSignatureVerifier::LastVerificationError : System.String { get }
+Tetitulz.Pdf.Signing.PdfSignatureVerifier::Verify(Tetitulz.Pdf.Core.Document.PdfDocument, System.String) : Tetitulz.Pdf.Signing.Models.SignatureVerificationResult
+Tetitulz.Pdf.Signing.PdfSignatureVerifier::Verify(Tetitulz.Pdf.Core.Document.PdfDocument, System.String, Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions) : Tetitulz.Pdf.Signing.Models.SignatureVerificationResult
+Tetitulz.Pdf.Signing.PdfSignatureVerifier::Verify(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Core.Document.PdfDocument, System.Func<System.Byte[], Tetitulz.Pdf.Core.Document.PdfDocument>, System.String, Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions) : Tetitulz.Pdf.Signing.Models.SignatureVerificationResult
+Tetitulz.Pdf.Signing.PdfSignatureVerifier::VerifyAll(Tetitulz.Pdf.Core.Document.PdfDocument) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.SignatureVerificationResult>
+Tetitulz.Pdf.Signing.PdfSignatureVerifier::VerifyAll(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Core.Document.PdfDocument, System.Func<System.Byte[], Tetitulz.Pdf.Core.Document.PdfDocument>, Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.SignatureVerificationResult>
+Tetitulz.Pdf.Signing.PdfSignatureVerifier::VerifyAll(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.SignatureVerificationResult>
+Tetitulz.Pdf.Signing.PdfSigner::.ctor()
+Tetitulz.Pdf.Signing.PdfSigner::Complete(Tetitulz.Pdf.Signing.SignaturePlan, System.IO.Stream) : System.Void
+Tetitulz.Pdf.Signing.PdfSigner::LastSignerWarning : System.String { get }
+Tetitulz.Pdf.Signing.PdfSigner::Plan(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, Tetitulz.Pdf.Signing.Models.SignatureParameters) : Tetitulz.Pdf.Signing.SignaturePlan
+Tetitulz.Pdf.Signing.PdfSigner::Sign(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Signing.Models.SignatureParameters) : System.Void
+Tetitulz.Pdf.Signing.PdfSigner::Sign(System.String, System.String, Tetitulz.Pdf.Signing.Models.SignatureParameters) : System.Void
+Tetitulz.Pdf.Signing.PdfSigningOperations::AddCounterSignature(System.IO.Stream, System.IO.Stream, System.String, System.Byte[], System.String, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.PdfSigningOperations::AddCounterSignature(System.IO.Stream, System.IO.Stream, System.String, System.String, System.String, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.PdfSigningOperations::AddDocumentTimestamp(System.IO.Stream, System.IO.Stream, System.String, System.String = default, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.PdfSigningOperations::GetDssInventory(System.IO.Stream) : Tetitulz.Pdf.Signing.Models.DssInventory
+Tetitulz.Pdf.Signing.PdfSigningOperations::GetDssInventory(System.IO.Stream, System.DateTime) : Tetitulz.Pdf.Signing.Models.DssInventory
+Tetitulz.Pdf.Signing.PdfSigningOperations::GetUnsignedSignatureFieldNames(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<System.String>
+Tetitulz.Pdf.Signing.PdfSigningOperations::SetSeedValueDigestMethods(System.IO.Stream, System.IO.Stream, System.String, System.Collections.Generic.IReadOnlyList<System.String>, System.Boolean = default) : System.Void
+Tetitulz.Pdf.Signing.PdfSigningOperations::Sign(System.IO.Stream, System.IO.Stream, System.String, System.String, System.String = default, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.PdfSigningOperations::Sign(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Signing.Models.SignatureParameters) : System.Void
+Tetitulz.Pdf.Signing.PdfSigningOperations::Sign(System.String, System.String, System.String, System.String, System.String = default, System.String = default, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.PdfSigningOperations::Sign(System.String, System.String, System.String, System.String, System.String, System.Boolean = default, System.String = default, System.String = default, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.PdfSigningOperations::Sign(System.String, System.String, Tetitulz.Pdf.Signing.Models.SignatureParameters) : System.Void
+Tetitulz.Pdf.Signing.PdfSigningOperations::SignWithImage(System.String, System.String, System.String, System.String, System.String, System.Int32 = default, System.Single = default, System.Single = default, System.Single = default, System.Single = default, System.String = default, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.PdfSigningOperations::VerifySignature(System.IO.Stream, System.String, Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions = default) : Tetitulz.Pdf.Signing.Models.SignatureVerificationResult
+Tetitulz.Pdf.Signing.PdfSigningOperations::VerifySignatures(System.IO.Stream, Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.SignatureVerificationResult>
+Tetitulz.Pdf.Signing.Plugins.ISignPlugin::ComputeDigest(System.String, System.Byte[]) : System.Byte[]
+Tetitulz.Pdf.Signing.Plugins.ISignPlugin::OnAfterSign(System.Byte[], Tetitulz.Pdf.Signing.Models.SignatureParameters) : System.Byte[]
+Tetitulz.Pdf.Signing.Plugins.ISignPlugin::OnBeforeSign(Tetitulz.Pdf.Signing.Models.SignatureParameters) : System.Void
+Tetitulz.Pdf.Signing.Plugins.ISignPlugin::WrapSignature(System.Byte[], Tetitulz.Pdf.Signing.Models.SignatureParameters) : System.Byte[]
+Tetitulz.Pdf.Signing.Plugins.ISignatureVerifyPlugin::VerifyAll(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.SignatureVerificationResult>
+Tetitulz.Pdf.Signing.PreparedSignature::ByteRange : System.Int64[] { get }
+Tetitulz.Pdf.Signing.PreparedSignature::ContentsEnd : System.Int64 { get }
+Tetitulz.Pdf.Signing.PreparedSignature::ContentsStart : System.Int64 { get }
+Tetitulz.Pdf.Signing.PreparedSignature::DigestAlgorithm : System.String { get }
+Tetitulz.Pdf.Signing.PreparedSignature::FieldName : System.String { get }
+Tetitulz.Pdf.Signing.PreparedSignature::ReservedBytes : System.Int32 { get }
+Tetitulz.Pdf.Signing.PreparedSignature::SignedBytes : System.Byte[] { get }
+Tetitulz.Pdf.Signing.PreparedSignature::SigningTime : System.Nullable<System.DateTimeOffset> { get }
+Tetitulz.Pdf.Signing.PreparedSignature::SubFilter : System.String { get }
+Tetitulz.Pdf.Signing.SignaturePlan::FieldName : System.String { get }
+Tetitulz.Pdf.Signing.SignaturePlan::NextObjectNumber : System.Int32 { get }
+Tetitulz.Pdf.Signing.SignaturePlan::Objects : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Writing.IndirectObject> { get }
+Tetitulz.Pdf.Signing.SignaturePlan::ReserveBytes : System.Int32 { get }
+Tetitulz.Pdf.Signing.SignaturePlan::SignatureObjectNumber : System.Int32 { get }
+Tetitulz.Pdf.Signing.SignatureSeedValue::BuildDigestMethodDictionary(System.Collections.Generic.IReadOnlyList<System.String>, System.Boolean = default) : Tetitulz.Pdf.Core.Objects.PdfDictionary
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::BuildDssDictionary(System.Collections.Generic.IList<System.Int32>) : Tetitulz.Pdf.Core.Objects.PdfDictionary
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::BuildDssDictionary(System.Collections.Generic.IList<System.Int32>, System.Collections.Generic.IList<System.Int32>) : Tetitulz.Pdf.Core.Objects.PdfDictionary
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::EmbedStaleOcspResponses : System.Boolean { get; set }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::LastAiaParseError : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::LastBlockedRedirect : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::LastCrlExtParseError : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::LastCrlFreshnessIssue : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::LastCrlSignatureIssue : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::LastCrlSignatureValid : System.Boolean { get }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::LastInsecureOcspUrl : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::LastOcspFreshnessIssue : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::LastOcspSignatureIssue : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::LastOcspSignatureValid : System.Boolean { get }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::LastOcspSubjectIssue : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::TryBuildDss(System.Collections.Generic.IList<Org.BouncyCastle.X509.X509Certificate>, Org.BouncyCastle.X509.X509Certificate, Tetitulz.Pdf.Signing.Models.SigningNetworkOptions, out System.Collections.Generic.List<System.Byte[]>&, out System.Collections.Generic.List<System.Byte[]>&, out System.Collections.Generic.List<System.String>&) : System.Boolean
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::TryBuildDss(System.Collections.Generic.IList<Org.BouncyCastle.X509.X509Certificate>, Org.BouncyCastle.X509.X509Certificate, out System.Collections.Generic.List<System.Byte[]>&, out System.Collections.Generic.List<System.Byte[]>&, out System.Collections.Generic.List<System.String>&) : System.Boolean
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::TryBuildDssAsync(System.Collections.Generic.IList<Org.BouncyCastle.X509.X509Certificate>, Org.BouncyCastle.X509.X509Certificate, System.Threading.CancellationToken = default) : System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, System.Collections.Generic.List<System.Byte[]>, System.Collections.Generic.List<System.Byte[]>, System.Collections.Generic.List<System.String>>>
+Tetitulz.Pdf.Signing.Timestamping.DssBuilder::TryBuildDssAsync(System.Collections.Generic.IList<Org.BouncyCastle.X509.X509Certificate>, Org.BouncyCastle.X509.X509Certificate, Tetitulz.Pdf.Signing.Models.SigningNetworkOptions, System.Threading.CancellationToken = default) : System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, System.Collections.Generic.List<System.Byte[]>, System.Collections.Generic.List<System.Byte[]>, System.Collections.Generic.List<System.String>>>
+Tetitulz.Pdf.Signing.Timestamping.PdfDocumentTimestamper::AddTimestamp(System.IO.Stream, System.IO.Stream, System.String, System.String = default, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.Timestamping.PdfDocumentTimestamper::AddTimestamp(System.IO.Stream, System.IO.Stream, System.String, Tetitulz.Pdf.Signing.Models.SigningNetworkOptions, System.String = default, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.Timestamping.TsaClient::GetHashOid(System.String) : System.String
+Tetitulz.Pdf.Signing.Timestamping.TsaClient::GetTimestampToken(System.Byte[], System.String, System.String) : System.Byte[]
+Tetitulz.Pdf.Signing.Timestamping.TsaClient::GetTimestampToken(System.Byte[], System.String, System.String, Tetitulz.Pdf.Signing.Models.SigningNetworkOptions) : System.Byte[]
+Tetitulz.Pdf.Signing.Timestamping.TsaClient::GetTimestampTokenWithFallback(System.Byte[], System.String, System.Collections.Generic.IEnumerable<System.String>) : System.Byte[]
+Tetitulz.Pdf.Signing.Timestamping.TsaClient::GetTimestampTokenWithFallback(System.Byte[], System.String, System.Collections.Generic.IEnumerable<System.String>, Tetitulz.Pdf.Signing.Models.SigningNetworkOptions) : System.Byte[]
+Tetitulz.Pdf.Signing.Timestamping.TsaClient::LastTokenSignatureIssue : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.TsaClient::LastTokenWeakAlgorithm : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.TsaClient::LastTsaCertSubject : System.String { get }
+Tetitulz.Pdf.Signing.Timestamping.TsaClient::LastVerifiedNonce : System.Byte[] { get }
+Tetitulz.Pdf.Signing.TrustAnchorLoader::FromDer(System.Collections.Generic.IEnumerable<System.Byte[]>) : System.Collections.Generic.IReadOnlyList<Org.BouncyCastle.X509.X509Certificate>
+Tetitulz.Pdf.Signing.TrustAnchorLoader::LastError : System.String { get }
+Tetitulz.Pdf.Signing.TrustAnchorLoader::Load(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<Org.BouncyCastle.X509.X509Certificate>
+Tetitulz.Pdf.Signing.TrustAnchorLoader::LoadDirectory(System.String, System.String = default) : System.Collections.Generic.IReadOnlyList<Org.BouncyCastle.X509.X509Certificate>
+Tetitulz.Pdf.Signing.TrustAnchorLoader::LoadFile(System.String) : System.Collections.Generic.IReadOnlyList<Org.BouncyCastle.X509.X509Certificate>
+Tetitulz.Pdf.Signing.VisualSignatureBuilder::.ctor()
+Tetitulz.Pdf.Signing.VisualSignatureBuilder::Sign(System.IO.Stream, System.IO.Stream, System.Byte[], Tetitulz.Pdf.Signing.Models.SignatureParameters, System.Int32, System.Single, System.Single, System.Single, System.Single) : System.Void
+Tetitulz.Pdf.Signing.VisualSignatureBuilder::Sign(System.IO.Stream, System.IO.Stream, System.String, System.String, System.Byte[], System.Int32 = default, System.Single = default, System.Single = default, System.Single = default, System.Single = default, System.String = default, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.VisualSignatureBuilder::Sign(System.IO.Stream, System.IO.Stream, System.String, System.String, Tetitulz.Pdf.Core.Writing.SignatureAppearanceOptions, System.Int32 = default, System.Single = default, System.Single = default, System.String = default, System.String = default) : System.Void
+Tetitulz.Pdf.Signing.VisualSignatureBuilder::Sign(System.IO.Stream, System.IO.Stream, System.String, System.String, Tetitulz.Pdf.Core.Writing.SignatureAppearanceOptions, Tetitulz.Pdf.Signing.Models.SignatureParameters, System.Int32 = default, System.Single = default, System.Single = default) : System.Void
+Tetitulz.Pdf.Signing.VisualSignatureBuilder::Sign(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Core.Writing.SignatureAppearanceOptions, Tetitulz.Pdf.Signing.Models.SignatureParameters, System.Int32, System.Single, System.Single) : System.Void
+Tetitulz.Pdf.Signing.VisualSignatureBuilder::Sign(System.String, System.String, System.String, System.String, System.String, System.Int32 = default, System.Single = default, System.Single = default, System.Single = default, System.Single = default, System.String = default, System.String = default) : System.Void
+class Tetitulz.Pdf.Signing.Cms.CmsDeferredSignatureBuilder
+class Tetitulz.Pdf.Signing.Cms.CmsSignatureGenerator
+class Tetitulz.Pdf.Signing.Models.DssInventory
+class Tetitulz.Pdf.Signing.Models.DssRevocationEntry
+class Tetitulz.Pdf.Signing.Models.DssVriEvidence
+class Tetitulz.Pdf.Signing.Models.LtvEvidence
+class Tetitulz.Pdf.Signing.Models.LtvRefreshOptions
+class Tetitulz.Pdf.Signing.Models.LtvRefreshResult
+class Tetitulz.Pdf.Signing.Models.SignatureAlgorithmOids
+class Tetitulz.Pdf.Signing.Models.SignatureParameters
+class Tetitulz.Pdf.Signing.Models.SignatureParametersExtensions
+class Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions
+class Tetitulz.Pdf.Signing.Models.SignatureVerificationResult
+class Tetitulz.Pdf.Signing.Models.SigningNetworkOptions
+class Tetitulz.Pdf.Signing.PdfCounterSigner
+class Tetitulz.Pdf.Signing.PdfDeferredSigner
+class Tetitulz.Pdf.Signing.PdfLtvRefresher
+class Tetitulz.Pdf.Signing.PdfSignatureValidationResult
+class Tetitulz.Pdf.Signing.PdfSignatureValidator
+class Tetitulz.Pdf.Signing.PdfSignatureVerifier
+class Tetitulz.Pdf.Signing.PdfSigner
+class Tetitulz.Pdf.Signing.PdfSigningOperations
+class Tetitulz.Pdf.Signing.PreparedSignature
+class Tetitulz.Pdf.Signing.SignaturePlan
+class Tetitulz.Pdf.Signing.SignatureSeedValue
+class Tetitulz.Pdf.Signing.Timestamping.DssBuilder
+class Tetitulz.Pdf.Signing.Timestamping.PdfDocumentTimestamper
+class Tetitulz.Pdf.Signing.Timestamping.TsaClient
+class Tetitulz.Pdf.Signing.TrustAnchorLoader
+class Tetitulz.Pdf.Signing.VisualSignatureBuilder
+enum Tetitulz.Pdf.Signing.Models.DocMdpPermission
+enum Tetitulz.Pdf.Signing.Models.DssEvidenceKind
+enum Tetitulz.Pdf.Signing.Models.PadesBaseline
+enum Tetitulz.Pdf.Signing.Models.SignatureAlgorithm
+enum Tetitulz.Pdf.Signing.PdfRevocationStatus
+enum Tetitulz.Pdf.Signing.PdfSignatureChainStatus
+interface Tetitulz.Pdf.Signing.Models.IExternalSigner
+interface Tetitulz.Pdf.Signing.Plugins.ISignPlugin
+interface Tetitulz.Pdf.Signing.Plugins.ISignatureVerifyPlugin

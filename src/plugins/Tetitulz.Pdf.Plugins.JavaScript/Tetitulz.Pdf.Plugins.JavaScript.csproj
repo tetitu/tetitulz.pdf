@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can use this plugin.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Runs a document's embedded JavaScript (form calculations, validation, actions) for Tetitulz.Pdf, sandboxed under memory, time and recursion limits. Isolates Jint from the core package graph.</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.JavaScript</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.JavaScript</AssemblyName>
+    <!-- Managed JavaScript execution for PDF form actions and calculations (ISO 32000-1
+         §12.6.4.16), backed by Jint. This lives in a plugin so Tetitulz.Pdf.Base does not put a
+         full ECMAScript interpreter into the package graph of every consumer - the same call
+         already made for PostScript, OCR, JPEG 2000 and the crypto stack. See GAPS.md §15b. -->
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Jint" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The form object model scripts run against, loaded into every engine (PdfJsEngine). -->
+    <EmbeddedResource Include="AcrobatObjectModel.js" LogicalName="Tetitulz.Pdf.Plugins.JavaScript.AcrobatObjectModel.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Base, not Core: the contract IJavaScriptPlugin and its PdfJsExecutionContext live in
+         Tetitulz.Pdf.Base.Scripting, because Core cannot reference Base. Same shape as
+         Signing's ISignPlugin. -->
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+</Project>

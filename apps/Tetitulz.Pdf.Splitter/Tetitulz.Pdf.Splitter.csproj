@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Splitter</RootNamespace>
+    <AssemblyName>tetitulz-splitter</AssemblyName>
+    <!-- An AnyCPU .NET Framework exe defaults to Prefer32Bit, and a letter page at 300 dpi is
+         33.7 MB of RGBA. Give the renderer a 64-bit address space. -->
+    <Prefer32Bit>false</Prefer32Bit>
+    <Description>.NET Framework 4.8 WinForms app that extracts a chosen set of pages from a PDF, using the netstandard2.0 builds of Tetitulz.Pdf.Base and Tetitulz.Pdf.Plugins.PageEdits.</Description>
+  </PropertyGroup>
+
+  <!-- WinForms on .NET Framework is GAC references, NOT <UseWindowsForms> (a .NET Core/5+ property
+       that is inert here). Same arrangement as Tetitulz.Pdf.WinForms.PdfViewer's net462 leg. -->
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <!-- Supplies the IPdfDecryptor. NOTE: referencing it is not enough — Program.Main must call
+         PdfEncryptionOperations.Register(), or the renderer passes encrypted content streams
+         through unchanged and every encrypted document looks like a wrong password. -->
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Encryption\Tetitulz.Pdf.Encryption.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.PageEdits\Tetitulz.Pdf.Plugins.PageEdits.csproj" />
+  </ItemGroup>
+
+</Project>

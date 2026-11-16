@@ -1,0 +1,446 @@
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail::.ctor(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Collections.Generic.IReadOnlyList<System.String>)
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail::ArtifactsMarked : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail::DocumentChanged : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail::PagesChanged : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail::PagesProcessed : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail::PagesSkipped : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail::PagesWithNothingToMark : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail::ToResult() : Tetitulz.Pdf.Accessibility.Models.ArtifactMarkResult
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail::Warnings : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkPlan::Describe(System.Boolean) : Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail
+Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkPlan::Objects : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Writing.IndirectObject> { get }
+Tetitulz.Pdf.Accessibility.Artifacts.PdfArtifactMarker::MarkHeadersAndFooters(System.IO.Stream, System.IO.Stream, System.Single = default, System.Single = default) : Tetitulz.Pdf.Accessibility.Models.ArtifactMarkResult
+Tetitulz.Pdf.Accessibility.Artifacts.PdfArtifactMarker::MarkHeadersAndFootersDetailed(System.IO.Stream, System.IO.Stream, System.Single = default, System.Single = default) : Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail
+Tetitulz.Pdf.Accessibility.Artifacts.PdfArtifactMarker::Plan(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, System.Single = default, System.Single = default) : Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkPlan
+Tetitulz.Pdf.Accessibility.AuditOptions::.ctor()
+Tetitulz.Pdf.Accessibility.AuditOptions::MaxDocumentContentBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Accessibility.AuditOptions::MaxPageContentBytes : System.Int32 { get; set }
+Tetitulz.Pdf.Accessibility.AuditOptions::Target : Tetitulz.Pdf.Accessibility.Models.PdfUaVersion { get; set }
+Tetitulz.Pdf.Accessibility.Checking.PdfDeepAccessibilityChecker::Check(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue>
+Tetitulz.Pdf.Accessibility.Checking.PdfDeepAccessibilityChecker::Check(System.IO.Stream, System.Int32, System.Int64) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue>
+Tetitulz.Pdf.Accessibility.Checking.PdfDeepAccessibilityChecker::Check(System.String) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue>
+Tetitulz.Pdf.Accessibility.Checking.PdfDeepAccessibilityChecker::Check(System.String, System.Int32, System.Int64) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue>
+Tetitulz.Pdf.Accessibility.Checking.PdfDeepAccessibilityChecker::ClassifyPageContent(Tetitulz.Pdf.Core.Document.PdfDocument) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.PageContentClassification>
+Tetitulz.Pdf.Accessibility.Checking.PdfDeepAccessibilityChecker::DefaultMaxDocumentContentBytes : System.Int64 = 134217728
+Tetitulz.Pdf.Accessibility.Checking.PdfDeepAccessibilityChecker::DefaultMaxPageContentBytes : System.Int32 = 8388608
+Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureChecker::LastValidationError : System.String { get }
+Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureChecker::Validate(System.IO.Stream) : Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureResult
+Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureChecker::Validate(System.String) : Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureResult
+Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureResult::IsConforming : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureResult::Violations : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureViolation> { get }
+Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureViolation::Code : System.String { get }
+Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureViolation::Message : System.String { get }
+Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureViolation::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfChecker::AccessibilityDeclarationUri : System.String = "http://pdfa.org/declarations/wtpdf/#accessibility1.0"
+Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfChecker::ReuseDeclarationUri : System.String = "http://pdfa.org/declarations/wtpdf/#reuse1.0"
+Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfChecker::Validate(System.IO.Stream) : Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfResult
+Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfChecker::Validate(System.String) : Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfResult
+Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfResult::DeclaredLevels : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Checking.Wtpdf.WtpdfConformanceLevel> { get }
+Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfResult::IsConforming : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfResult::JudgedLevel : Tetitulz.Pdf.Accessibility.Checking.Wtpdf.WtpdfConformanceLevel { get }
+Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfResult::Violations : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureViolation> { get }
+Tetitulz.Pdf.Accessibility.Checking.Wtpdf.WtpdfConformanceLevel::Accessibility : Tetitulz.Pdf.Accessibility.Checking.Wtpdf.WtpdfConformanceLevel = 1
+Tetitulz.Pdf.Accessibility.Checking.Wtpdf.WtpdfConformanceLevel::Reuse : Tetitulz.Pdf.Accessibility.Checking.Wtpdf.WtpdfConformanceLevel = 0
+Tetitulz.Pdf.Accessibility.Checking.Wtpdf.WtpdfConformanceLevel::value__ : System.Int32
+Tetitulz.Pdf.Accessibility.Editing.FigureAltTextPlan::Describe(System.Boolean) : Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
+Tetitulz.Pdf.Accessibility.Editing.FigureAltTextPlan::Failed : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Editing.FigureAltTextPlan::Objects : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Writing.IndirectObject> { get }
+Tetitulz.Pdf.Accessibility.Editing.FigureAltTextPlan::PlannedUpdates : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Editing.FigureAltTextPlan::Skipped : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Editing.FigureAltTextPlan::WouldChangeDocument : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::FixHeadingHierarchy(System.IO.Stream, System.IO.Stream) : System.Int32
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::LastWriteError : System.String { get }
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanActualText(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, System.String, System.Func<System.Int32, System.String, System.String>) : Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanDocumentLanguage(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, System.String) : Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanDocumentTitle(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, System.String) : Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanFieldTooltip(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, System.String, System.String) : Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanFigureAltText(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, System.Func<Tetitulz.Pdf.Accessibility.Models.FigureContext, System.String>) : Tetitulz.Pdf.Accessibility.Editing.FigureAltTextPlan
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanHeadingHierarchy(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32) : Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanStructureTabOrder(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32) : Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetActualText(System.IO.Stream, System.IO.Stream, System.String, System.Func<System.Int32, System.String, System.String>) : System.Int32
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetDocumentLanguage(System.IO.Stream, System.IO.Stream, System.String) : System.Boolean
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetDocumentTitle(System.IO.Stream, System.IO.Stream, System.String) : System.Boolean
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetFieldTooltip(System.IO.Stream, System.IO.Stream, System.String, System.String) : System.Boolean
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetFigureAltText(System.IO.Stream, System.IO.Stream, System.Func<Tetitulz.Pdf.Accessibility.Models.FigureContext, System.String>) : Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetFigureAltText(System.IO.Stream, System.IO.Stream, System.String) : Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetStructureTabOrder(System.IO.Stream, System.IO.Stream) : System.Int32
+Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan::Describe(System.Boolean) : System.Int32
+Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan::ItemsChanged : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan::NewInfoObjectNumber : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan::Objects : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Writing.IndirectObject> { get }
+Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan::WouldChangeDocument : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.EncryptedRevisionWriter::.ctor(System.Object, System.IntPtr)
+Tetitulz.Pdf.Accessibility.EncryptedRevisionWriter::BeginInvoke(System.IO.Stream, System.IO.Stream, System.Func<Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, Tetitulz.Pdf.Accessibility.PlannedRevision>, System.AsyncCallback, System.Object) : System.IAsyncResult
+Tetitulz.Pdf.Accessibility.EncryptedRevisionWriter::EndInvoke(System.IAsyncResult) : System.Void
+Tetitulz.Pdf.Accessibility.EncryptedRevisionWriter::Invoke(System.IO.Stream, System.IO.Stream, System.Func<Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, Tetitulz.Pdf.Accessibility.PlannedRevision>) : System.Void
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingOptions::.ctor()
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingOptions::AllowSystemFontSubstitution : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingOptions::FontProvider : System.Func<Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest, System.Byte[]> { get; set }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingOptions::SubsetEmbeddedFonts : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingPlan::Describe(System.Boolean) : Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingPlan::Objects : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Writing.IndirectObject> { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::.ctor()
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::BaseFont : System.String { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::IsStandard14 : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::IsSymbolic : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::PageIndex : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::ResourceName : System.String { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::Standard14Name : System.String { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::Subtype : System.String { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::UsedCharacterCodes : System.Collections.Generic.IReadOnlyList<System.Int32> { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::UsedText : System.String { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest::UsedTextIsComplete : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult::Changed : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult::EmbeddedFonts : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult::FontsAlreadyEmbedded : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult::FontsEmbedded : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult::FontsExamined : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult::FontsSkipped : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult::FontsSubsetted : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult::SkippedFonts : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingSkip> { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult::Warnings : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingSkip::BaseFont : System.String { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingSkip::PageIndex : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingSkip::Reason : System.String { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingSkip::ResourceName : System.String { get }
+Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingSkip::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Fonts.PdfFontEmbeddingRemediator::EmbedMissingFonts(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingOptions = default) : Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult
+Tetitulz.Pdf.Accessibility.Fonts.PdfFontEmbeddingRemediator::Plan(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingOptions = default) : Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingPlan
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::BuildPdfUaXmpPacket(System.String, System.Int32 = default, System.String = default, System.String = default, System.Nullable<System.DateTimeOffset> = default) : System.String
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::DublinCoreNamespace : System.String = "http://purl.org/dc/elements/1.1/"
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::LastCallAppendedRevision : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::LastError : System.String { get }
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::MaxExistingPacketBytes : System.Int32 = 2097152
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::MaxMergedPacketChars : System.Int32 = 4194304
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::MaxSearchDepth : System.Int32 = 64
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::PdfUaIdNamespace : System.String = "http://www.aiim.org/pdfua/ns/id/"
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::Plan(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, System.Int32 = default, System.String = default, System.String = default, System.Nullable<System.DateTimeOffset> = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Writing.IndirectObject>
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::RdfNamespace : System.String = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::SetPdfUaIdentifier(System.IO.Stream, System.IO.Stream, System.Int32 = default, System.String = default, System.String = default) : System.Boolean
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::SetPdfUaIdentifier(System.IO.Stream, System.IO.Stream, System.Int32, System.String, System.String, System.Nullable<System.DateTimeOffset>) : System.Boolean
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::SetPdfUaIdentifier(System.String, System.String, System.Int32 = default, System.String = default, System.String = default) : System.Boolean
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::SetPdfUaIdentifier(System.String, System.String, System.Int32, System.String, System.String, System.Nullable<System.DateTimeOffset>) : System.Boolean
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::XmpBasicNamespace : System.String = "http://ns.adobe.com/xap/1.0/"
+Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter::XmpMetaNamespace : System.String = "adobe:ns:meta/"
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::.ctor(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue>)
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::.ctor(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue>, Tetitulz.Pdf.Accessibility.Models.PdfUaVersion)
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::ByCategory : System.Collections.Generic.IReadOnlyDictionary<Tetitulz.Pdf.Accessibility.Models.IssueCategory, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue>> { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::ByCode : System.Collections.Generic.IReadOnlyDictionary<System.String, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue>> { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::ByMatterhornCheckpoint : System.Collections.Generic.IReadOnlyDictionary<System.String, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue>> { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::ByPage : System.Collections.Generic.IReadOnlyDictionary<System.Int32, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue>> { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::ByWcagCriterion : System.Collections.Generic.IReadOnlyDictionary<System.String, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue>> { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::ConformanceTarget : Tetitulz.Pdf.Accessibility.Models.PdfUaVersion { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::DocumentLevelIssues : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue> { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::ErrorCount : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::HasBlockingIssues : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::InfoCount : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::IsConforming : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::IsFullyConforming : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::Issues : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue> { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::PagesWithIssues : System.Collections.Generic.IReadOnlyList<System.Int32> { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::TotalInstanceCount : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport::WarningCount : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::.ctor(Tetitulz.Pdf.Accessibility.Models.IssueSeverity, System.String, System.String, System.String, Tetitulz.Pdf.Accessibility.Models.IssueCategory, System.Nullable<System.Int32> = default, Tetitulz.Pdf.Accessibility.Models.WcagLevel = default)
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::.ctor(Tetitulz.Pdf.Accessibility.Models.IssueSeverity, System.String, System.String, System.String, Tetitulz.Pdf.Accessibility.Models.IssueCategory, System.Nullable<System.Int32>, Tetitulz.Pdf.Accessibility.Models.WcagLevel, System.Nullable<System.Int32>, System.String, System.String, System.String, System.Nullable<System.Int32>)
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::Aggregating(System.Int32) : Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::AtObject(System.Int32, System.Nullable<System.Int32> = default) : Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::AtPage(System.Int32) : Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::Category : Tetitulz.Pdf.Accessibility.Models.IssueCategory { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::Code : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::InStruct(System.String) : Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::InstanceCount : System.Nullable<System.Int32> { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::LocationDescription : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::MappedTo(System.String, System.String = default) : Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::MatterhornCheckpoint : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::Message : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::ObjectNumber : System.Nullable<System.Int32> { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::PageNumber : System.Nullable<System.Int32> { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::Remediation : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::Severity : Tetitulz.Pdf.Accessibility.Models.IssueSeverity { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::StructPath : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::WcagCriterion : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::WcagLevel : Tetitulz.Pdf.Accessibility.Models.WcagLevel { get }
+Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue::With(System.Nullable<Tetitulz.Pdf.Accessibility.Models.IssueSeverity> = default, System.String = default, System.String = default, System.String = default, System.Nullable<Tetitulz.Pdf.Accessibility.Models.IssueCategory> = default, System.Nullable<System.Int32> = default, System.Nullable<Tetitulz.Pdf.Accessibility.Models.WcagLevel> = default, System.Nullable<System.Int32> = default, System.String = default, System.String = default, System.String = default, System.Nullable<System.Int32> = default) : Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue
+Tetitulz.Pdf.Accessibility.Models.ArtifactMarkResult::.ctor(System.Int32)
+Tetitulz.Pdf.Accessibility.Models.ArtifactMarkResult::ArtifactsMarked : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::.ctor()
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::CompressRewrittenStreams : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::DuplicateSharedFormXObjects : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::EmitActualText : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::FigureAlternateText : System.Func<Tetitulz.Pdf.Accessibility.Models.FigureCandidate, System.String> { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::H1Ratio : System.Single { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::H2Ratio : System.Single { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::H3Ratio : System.Single { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::HeaderFooterMargin : System.Single { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::HeadingLevelsBySize : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::InferLists : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::InferTables : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::Language : System.String { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::MaxConcatenatedContentBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::MaxPageContentBytes : System.Int32 { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::MergeIntoExistingTree : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::ParagraphGapThreshold : System.Single { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::RewriteContentStreams : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::TagHeadersFootersAsArtifacts : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::Target : Tetitulz.Pdf.Accessibility.Models.PdfUaVersion { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagOptions::Title : System.String { get; set }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::.ctor(System.Int32, System.Int32, System.Collections.Generic.IReadOnlyDictionary<System.Int32, System.Int32>, System.Int32, System.Int32, System.Collections.Generic.IReadOnlyList<System.String>)
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::.ctor(System.Int32, System.Int32, System.Collections.Generic.IReadOnlyDictionary<System.Int32, System.Int32>, System.Int32, System.Int32, System.Collections.Generic.IReadOnlyList<System.String>, System.Int32 = default, System.Int32 = default, System.Collections.Generic.IReadOnlyList<System.String> = default, System.Boolean = default, System.Int32 = default)
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::AnnotationsTagged : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::ArtifactCount : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::ContentMarked : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::ElementsAdded : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::FiguresDeclined : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::FiguresTagged : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::FormsTagged : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::HeadingsByLevel : System.Collections.Generic.IReadOnlyDictionary<System.Int32, System.Int32> { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::ListsInferred : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::McidCount : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::MergedIntoExistingTree : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::PagesAlreadyTagged : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::PagesPartiallyTagged : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::PagesProcessed : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::PagesSkipped : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::PagesTagged : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::ParagraphCount : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::SharedFormsDuplicated : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::SkippedPageReasons : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::TablesInferred : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Models.AutoTagResult::Warnings : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Accessibility.Models.FigureCandidate::.ctor(System.Int32, System.Collections.Generic.IReadOnlyList<System.Int32>, System.Int32, System.Int32, System.Int32)
+Tetitulz.Pdf.Accessibility.Models.FigureCandidate::.ctor(System.Int32, System.Collections.Generic.IReadOnlyList<System.Int32>, System.String, System.Int32, System.Int32)
+Tetitulz.Pdf.Accessibility.Models.FigureCandidate::.ctor(System.Int32, System.String, System.Int32, System.Int32)
+Tetitulz.Pdf.Accessibility.Models.FigureCandidate::InlineImageIndex : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.FigureCandidate::IsInlineImage : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.FigureCandidate::PageIndex : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.FigureCandidate::PageIndexes : System.Collections.Generic.IReadOnlyList<System.Int32> { get }
+Tetitulz.Pdf.Accessibility.Models.FigureCandidate::PixelHeight : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.FigureCandidate::PixelWidth : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.FigureCandidate::XObjectName : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.FigureContext::.ctor(System.Int32, System.Int32, System.String)
+Tetitulz.Pdf.Accessibility.Models.FigureContext::ExistingAltText : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.FigureContext::FigureIndex : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.FigureContext::PageIndex : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Annotations : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 13
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Artifacts : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 11
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Color : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 4
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Fonts : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 12
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Forms : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 3
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Images : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 2
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Language : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 1
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Lists : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 10
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Metadata : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 6
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Navigation : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 8
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::ReadingOrder : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 5
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Structure : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 0
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Tables : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 9
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::Tagging : Tetitulz.Pdf.Accessibility.Models.IssueCategory = 7
+Tetitulz.Pdf.Accessibility.Models.IssueCategory::value__ : System.Int32
+Tetitulz.Pdf.Accessibility.Models.IssueSeverity::Error : Tetitulz.Pdf.Accessibility.Models.IssueSeverity = 0
+Tetitulz.Pdf.Accessibility.Models.IssueSeverity::Info : Tetitulz.Pdf.Accessibility.Models.IssueSeverity = 2
+Tetitulz.Pdf.Accessibility.Models.IssueSeverity::Warning : Tetitulz.Pdf.Accessibility.Models.IssueSeverity = 1
+Tetitulz.Pdf.Accessibility.Models.IssueSeverity::value__ : System.Int32
+Tetitulz.Pdf.Accessibility.Models.PageContentClassification::HasInlineImage : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.PageContentClassification::ImageXObjectInvocations : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.PageContentClassification::IsBlank : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.PageContentClassification::IsScanned : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.PageContentClassification::Kind : Tetitulz.Pdf.Accessibility.Models.PageContentKind { get }
+Tetitulz.Pdf.Accessibility.Models.PageContentClassification::PageNumber : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.PageContentClassification::PaintingOperators : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.PageContentClassification::TextShowingOperators : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.PageContentClassification::UndeterminedReason : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.PageContentKind::Blank : Tetitulz.Pdf.Accessibility.Models.PageContentKind = 1
+Tetitulz.Pdf.Accessibility.Models.PageContentKind::ImageOnly : Tetitulz.Pdf.Accessibility.Models.PageContentKind = 3
+Tetitulz.Pdf.Accessibility.Models.PageContentKind::Mixed : Tetitulz.Pdf.Accessibility.Models.PageContentKind = 5
+Tetitulz.Pdf.Accessibility.Models.PageContentKind::TextOnly : Tetitulz.Pdf.Accessibility.Models.PageContentKind = 2
+Tetitulz.Pdf.Accessibility.Models.PageContentKind::Undetermined : Tetitulz.Pdf.Accessibility.Models.PageContentKind = 0
+Tetitulz.Pdf.Accessibility.Models.PageContentKind::VectorOnly : Tetitulz.Pdf.Accessibility.Models.PageContentKind = 4
+Tetitulz.Pdf.Accessibility.Models.PageContentKind::value__ : System.Int32
+Tetitulz.Pdf.Accessibility.Models.PdfUaVersion::Auto : Tetitulz.Pdf.Accessibility.Models.PdfUaVersion = 2
+Tetitulz.Pdf.Accessibility.Models.PdfUaVersion::Ua1 : Tetitulz.Pdf.Accessibility.Models.PdfUaVersion = 0
+Tetitulz.Pdf.Accessibility.Models.PdfUaVersion::Ua2 : Tetitulz.Pdf.Accessibility.Models.PdfUaVersion = 1
+Tetitulz.Pdf.Accessibility.Models.PdfUaVersion::value__ : System.Int32
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::.ctor(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.ReadingOrderIssue>)
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::.ctor(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.ReadingOrderIssue>, System.Boolean, System.String)
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::.ctor(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.ReadingOrderIssue>, System.Boolean, System.String, System.Int32, System.Int32)
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::Analyzed : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::ElementsPlaced : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::ElementsTotal : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::IsOrdered : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::IsPartial : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::Issues : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.ReadingOrderIssue> { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::NotAnalyzed(System.String) : Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::NotAnalyzedReason : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderFixResult::.ctor(System.Int32)
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderFixResult::ElementsReordered : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderFixResult::Modified : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderIssue::.ctor(System.String, System.Int32, System.Int32, System.Int32)
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderIssue::ElementType : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderIssue::ExpectedVisualPosition : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderIssue::PageIndex : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderIssue::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Models.ReadingOrderIssue::TreePosition : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::.ctor(Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport, Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.RemediationStepResult>, System.Int64, System.Int64)
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::AfterAudit : Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::AllWarnings : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::AppliedSteps : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.RemediationStepResult> { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::BeforeAudit : Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::ErrorsFixed : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::FailedSteps : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.RemediationStepResult> { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::HasFailedSteps : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::HasWarnings : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::InputLength : System.Int64 { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::IsConformingAfter : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::IsImproved : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::OutputLength : System.Int64 { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::SkippedSteps : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.RemediationStepResult> { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::Steps : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.RemediationStepResult> { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::ToDetailedString() : System.String
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::TotalItemsChanged : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationReport::WarningsFixed : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::.ctor(System.String, System.Boolean, System.Boolean, System.String, System.Int32, System.Collections.Generic.IReadOnlyList<System.String>)
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::Applied : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::Fail(System.String, System.String) : Tetitulz.Pdf.Accessibility.Models.RemediationStepResult
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::Failed : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::ItemsChanged : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::Name : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::Ran(System.String, System.Int32 = default, System.Collections.Generic.IReadOnlyList<System.String> = default) : Tetitulz.Pdf.Accessibility.Models.RemediationStepResult
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::Skip(System.String, System.String) : Tetitulz.Pdf.Accessibility.Models.RemediationStepResult
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::SkipReason : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::Skipped : System.Boolean { get }
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::ToString() : System.String
+Tetitulz.Pdf.Accessibility.Models.RemediationStepResult::Warnings : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Accessibility.Models.SetAltTextResult::.ctor(System.Int32, System.Int32, System.Int32)
+Tetitulz.Pdf.Accessibility.Models.SetAltTextResult::Failed : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.SetAltTextResult::Skipped : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.SetAltTextResult::Updated : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.WcagLevel::A : Tetitulz.Pdf.Accessibility.Models.WcagLevel = 0
+Tetitulz.Pdf.Accessibility.Models.WcagLevel::AA : Tetitulz.Pdf.Accessibility.Models.WcagLevel = 1
+Tetitulz.Pdf.Accessibility.Models.WcagLevel::AAA : Tetitulz.Pdf.Accessibility.Models.WcagLevel = 2
+Tetitulz.Pdf.Accessibility.Models.WcagLevel::None : Tetitulz.Pdf.Accessibility.Models.WcagLevel = 3
+Tetitulz.Pdf.Accessibility.Models.WcagLevel::value__ : System.Int32
+Tetitulz.Pdf.Accessibility.PdfAccessibility::AnalyzeReadingOrder(System.IO.Stream) : Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis
+Tetitulz.Pdf.Accessibility.PdfAccessibility::AnalyzeReadingOrder(System.String) : Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis
+Tetitulz.Pdf.Accessibility.PdfAccessibility::Audit(System.IO.Stream) : Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport
+Tetitulz.Pdf.Accessibility.PdfAccessibility::Audit(System.IO.Stream, System.Int32, System.Int64) : Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport
+Tetitulz.Pdf.Accessibility.PdfAccessibility::Audit(System.IO.Stream, Tetitulz.Pdf.Accessibility.AuditOptions) : Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport
+Tetitulz.Pdf.Accessibility.PdfAccessibility::Audit(System.String) : Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport
+Tetitulz.Pdf.Accessibility.PdfAccessibility::Audit(System.String, System.Int32, System.Int64) : Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport
+Tetitulz.Pdf.Accessibility.PdfAccessibility::Audit(System.String, Tetitulz.Pdf.Accessibility.AuditOptions) : Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport
+Tetitulz.Pdf.Accessibility.PdfAccessibility::AutoTag(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Accessibility.Models.AutoTagOptions = default) : Tetitulz.Pdf.Accessibility.Models.AutoTagResult
+Tetitulz.Pdf.Accessibility.PdfAccessibility::AutoTag(System.String, System.String, Tetitulz.Pdf.Accessibility.Models.AutoTagOptions = default) : Tetitulz.Pdf.Accessibility.Models.AutoTagResult
+Tetitulz.Pdf.Accessibility.PdfAccessibility::ClassifyPageContent(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.PageContentClassification>
+Tetitulz.Pdf.Accessibility.PdfAccessibility::ClassifyPageContent(System.String) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Models.PageContentClassification>
+Tetitulz.Pdf.Accessibility.PdfAccessibility::DiagnosticReported : System.Action<System.String> (event)
+Tetitulz.Pdf.Accessibility.PdfAccessibility::EmbedMissingFonts(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingOptions = default) : Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult
+Tetitulz.Pdf.Accessibility.PdfAccessibility::FixHeadingHierarchy(System.IO.Stream, System.IO.Stream) : System.Int32
+Tetitulz.Pdf.Accessibility.PdfAccessibility::FixReadingOrder(System.IO.Stream, System.IO.Stream) : Tetitulz.Pdf.Accessibility.Models.ReadingOrderFixResult
+Tetitulz.Pdf.Accessibility.PdfAccessibility::LastDiagnostic : System.String { get }
+Tetitulz.Pdf.Accessibility.PdfAccessibility::MarkHeadersAndFooters(System.IO.Stream, System.IO.Stream, System.Single = default, System.Single = default) : Tetitulz.Pdf.Accessibility.Models.ArtifactMarkResult
+Tetitulz.Pdf.Accessibility.PdfAccessibility::Remediate(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Accessibility.RemediationOptions = default) : Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport
+Tetitulz.Pdf.Accessibility.PdfAccessibility::RemediateWithReport(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Accessibility.RemediationOptions = default) : Tetitulz.Pdf.Accessibility.Models.RemediationReport
+Tetitulz.Pdf.Accessibility.PdfAccessibility::SetActualText(System.IO.Stream, System.IO.Stream, System.String, System.Func<System.Int32, System.String, System.String>) : System.Int32
+Tetitulz.Pdf.Accessibility.PdfAccessibility::SetDocumentLanguage(System.IO.Stream, System.IO.Stream, System.String) : System.Boolean
+Tetitulz.Pdf.Accessibility.PdfAccessibility::SetDocumentTitle(System.IO.Stream, System.IO.Stream, System.String) : System.Boolean
+Tetitulz.Pdf.Accessibility.PdfAccessibility::SetFieldTooltip(System.IO.Stream, System.IO.Stream, System.String, System.String) : System.Boolean
+Tetitulz.Pdf.Accessibility.PdfAccessibility::SetFigureAltText(System.IO.Stream, System.IO.Stream, System.Func<Tetitulz.Pdf.Accessibility.Models.FigureContext, System.String>) : Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
+Tetitulz.Pdf.Accessibility.PdfAccessibility::SetFigureAltText(System.IO.Stream, System.IO.Stream, System.String) : Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
+Tetitulz.Pdf.Accessibility.PdfAccessibility::SetPdfUaIdentifier(System.IO.Stream, System.IO.Stream, System.Int32 = default, System.String = default, System.String = default) : System.Boolean
+Tetitulz.Pdf.Accessibility.PdfAccessibility::SetStructureTabOrder(System.IO.Stream, System.IO.Stream) : System.Int32
+Tetitulz.Pdf.Accessibility.PlannedRevision::.ctor(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Writing.IndirectObject>, System.Int32 = default)
+Tetitulz.Pdf.Accessibility.PlannedRevision::NewInfoObjectNumber : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.PlannedRevision::Nothing : Tetitulz.Pdf.Accessibility.PlannedRevision { get }
+Tetitulz.Pdf.Accessibility.PlannedRevision::Objects : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Writing.IndirectObject> { get }
+Tetitulz.Pdf.Accessibility.ReadingOrder.PdfReadingOrderAnalyzer::Analyze(System.IO.Stream) : Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis
+Tetitulz.Pdf.Accessibility.ReadingOrder.PdfReadingOrderAnalyzer::Analyze(System.IO.Stream, System.String) : Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis
+Tetitulz.Pdf.Accessibility.ReadingOrder.PdfReadingOrderAnalyzer::Analyze(System.String) : Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis
+Tetitulz.Pdf.Accessibility.ReadingOrder.PdfReadingOrderAnalyzer::Fix(System.IO.Stream, System.IO.Stream) : Tetitulz.Pdf.Accessibility.Models.ReadingOrderFixResult
+Tetitulz.Pdf.Accessibility.ReadingOrder.PdfReadingOrderAnalyzer::LastError : System.String { get }
+Tetitulz.Pdf.Accessibility.ReadingOrder.PdfReadingOrderAnalyzer::Plan(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32) : Tetitulz.Pdf.Accessibility.ReadingOrder.ReadingOrderPlan
+Tetitulz.Pdf.Accessibility.ReadingOrder.ReadingOrderPlan::Describe(System.Boolean) : Tetitulz.Pdf.Accessibility.Models.ReadingOrderFixResult
+Tetitulz.Pdf.Accessibility.ReadingOrder.ReadingOrderPlan::Objects : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Writing.IndirectObject> { get }
+Tetitulz.Pdf.Accessibility.RemediationOptions::.ctor()
+Tetitulz.Pdf.Accessibility.RemediationOptions::AltTextFactory : System.Func<Tetitulz.Pdf.Accessibility.Models.FigureContext, System.String> { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::AutoTagIfUntagged : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::AutoTagOptions : Tetitulz.Pdf.Accessibility.Models.AutoTagOptions { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::EmbedMissingFonts : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::EncryptedRevisionWriter : Tetitulz.Pdf.Accessibility.EncryptedRevisionWriter { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::FixHeadingHierarchy : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::FixReadingOrder : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::FixTabOrder : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::FontEmbedding : Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingOptions { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::FooterMarginPt : System.Single { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::HeaderMarginPt : System.Single { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::Language : System.String { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::MarkArtifacts : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::MaxDocumentContentBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::MaxPageContentBytes : System.Int32 { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::PdfUaPart : System.Int32 { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::SetFigureAltText : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::SetPdfUaIdentifier : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::SingleTextExtraction : System.Boolean { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::Target : System.Nullable<Tetitulz.Pdf.Accessibility.Models.PdfUaVersion> { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::Title : System.String { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::XmpModifyDate : System.Nullable<System.DateTimeOffset> { get; set }
+Tetitulz.Pdf.Accessibility.Tagging.AutoTagPlan::Describe(System.Boolean) : Tetitulz.Pdf.Accessibility.Models.AutoTagResult
+Tetitulz.Pdf.Accessibility.Tagging.AutoTagPlan::NewInfoObjectNumber : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Tagging.AutoTagPlan::Objects : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Writing.IndirectObject> { get }
+Tetitulz.Pdf.Accessibility.Tagging.PdfAutoTagger::AutoTag(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Accessibility.Models.AutoTagOptions = default) : Tetitulz.Pdf.Accessibility.Models.AutoTagResult
+Tetitulz.Pdf.Accessibility.Tagging.PdfAutoTagger::AutoTag(System.String, System.String, Tetitulz.Pdf.Accessibility.Models.AutoTagOptions = default) : Tetitulz.Pdf.Accessibility.Models.AutoTagResult
+Tetitulz.Pdf.Accessibility.Tagging.PdfAutoTagger::Plan(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, Tetitulz.Pdf.Accessibility.Models.AutoTagOptions = default) : Tetitulz.Pdf.Accessibility.Tagging.AutoTagPlan
+class Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkDetail
+class Tetitulz.Pdf.Accessibility.Artifacts.ArtifactMarkPlan
+class Tetitulz.Pdf.Accessibility.Artifacts.PdfArtifactMarker
+class Tetitulz.Pdf.Accessibility.AuditOptions
+class Tetitulz.Pdf.Accessibility.Checking.PdfDeepAccessibilityChecker
+class Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureChecker
+class Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureResult
+class Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureViolation
+class Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfChecker
+class Tetitulz.Pdf.Accessibility.Checking.Wtpdf.PdfWtpdfResult
+class Tetitulz.Pdf.Accessibility.Editing.FigureAltTextPlan
+class Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor
+class Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan
+class Tetitulz.Pdf.Accessibility.EncryptedRevisionWriter
+class Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingOptions
+class Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingPlan
+class Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingRequest
+class Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingResult
+class Tetitulz.Pdf.Accessibility.Fonts.FontEmbeddingSkip
+class Tetitulz.Pdf.Accessibility.Fonts.PdfFontEmbeddingRemediator
+class Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter
+class Tetitulz.Pdf.Accessibility.Models.AccessibilityAuditReport
+class Tetitulz.Pdf.Accessibility.Models.AccessibilityIssue
+class Tetitulz.Pdf.Accessibility.Models.ArtifactMarkResult
+class Tetitulz.Pdf.Accessibility.Models.AutoTagOptions
+class Tetitulz.Pdf.Accessibility.Models.AutoTagResult
+class Tetitulz.Pdf.Accessibility.Models.FigureCandidate
+class Tetitulz.Pdf.Accessibility.Models.FigureContext
+class Tetitulz.Pdf.Accessibility.Models.PageContentClassification
+class Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis
+class Tetitulz.Pdf.Accessibility.Models.ReadingOrderFixResult
+class Tetitulz.Pdf.Accessibility.Models.ReadingOrderIssue
+class Tetitulz.Pdf.Accessibility.Models.RemediationReport
+class Tetitulz.Pdf.Accessibility.Models.RemediationStepResult
+class Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
+class Tetitulz.Pdf.Accessibility.PdfAccessibility
+class Tetitulz.Pdf.Accessibility.PlannedRevision
+class Tetitulz.Pdf.Accessibility.ReadingOrder.PdfReadingOrderAnalyzer
+class Tetitulz.Pdf.Accessibility.ReadingOrder.ReadingOrderPlan
+class Tetitulz.Pdf.Accessibility.RemediationOptions
+class Tetitulz.Pdf.Accessibility.Tagging.AutoTagPlan
+class Tetitulz.Pdf.Accessibility.Tagging.PdfAutoTagger
+enum Tetitulz.Pdf.Accessibility.Checking.Wtpdf.WtpdfConformanceLevel
+enum Tetitulz.Pdf.Accessibility.Models.IssueCategory
+enum Tetitulz.Pdf.Accessibility.Models.IssueSeverity
+enum Tetitulz.Pdf.Accessibility.Models.PageContentKind
+enum Tetitulz.Pdf.Accessibility.Models.PdfUaVersion
+enum Tetitulz.Pdf.Accessibility.Models.WcagLevel

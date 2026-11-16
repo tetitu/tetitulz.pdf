@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <!--
+    Signs a PDF inside the browser (browser-wasm). Uses Core + Signing only: both are fully managed,
+    and Base is left out because SkiaSharp has no browser build here.
+
+    The signature is always made with PdfDeferredSigner (Prepare -> sign the attributes -> Complete),
+    because that is the route that can take an RFC 3161 token fetched ASYNCHRONOUSLY: the one-shot
+    PdfSigningOperations.Sign path fetches its TSA token synchronously, which browser-wasm refuses
+    (PlatformNotSupportedException). Run it through Tetitulz.Pdf.WasmSign.Host, which serves this app
+    and relays /tsa to a fixed TSA - no public TSA sends CORS headers.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.WasmSign</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+    <PackageReference Include="BouncyCastle.Cryptography" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Signing\Tetitulz.Pdf.Signing.csproj" />
+  </ItemGroup>
+
+</Project>

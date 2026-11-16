@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can register the HTML import/export
+      plugin. It was blocked by HtmlToPdf (NU1201); its own only gap is NotNullWhenAttribute.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Exposes the Tetitulz.Pdf HTML converter as an import/export plugin, and converts a PDF to HTML.</Description>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.Html</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.Html</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Its own copy, not Builder's: that one is `internal`, so from here it resolves and then fails
+       as CS0122 rather than CS0246 — which is why this looked like an access problem. -->
+  <ItemGroup>
+    <Compile Remove="Compatibility\NullableAttributes.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <Compile Include="Compatibility\NullableAttributes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+    <!-- So PluginOptionReader's coercions can be driven directly. The culture-sensitivity claim in
+         particular ("1.5" is 1.5 and "1,5" is refused, on a comma-decimal host) is only falsifiable
+         when the parse is called on its own; reaching it through Import would need a browser. -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Plugins.Html.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\..\features\Tetitulz.Pdf.HtmlToPdf\Tetitulz.Pdf.HtmlToPdf.csproj" />
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+</Project>

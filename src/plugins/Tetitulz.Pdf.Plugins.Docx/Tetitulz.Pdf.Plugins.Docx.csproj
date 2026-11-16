@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Exposes the Tetitulz.Pdf DOCX converters as import/export plugins, and adds PDF to DOCX, XLSX and PPTX conversion. Isolates DocumentFormat.OpenXml from the core package graph.</Description>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.Docx</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.Docx</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+    <!-- So XmlTextSanitizer's whitespace exemption can be pinned directly. Reached through a
+         converter it cannot be: all three split their text on \n before sanitizing, so no line
+         ever carries one, and a mutation removing the exemption survived the end-to-end tests. -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Plugins.Docx.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <!--
+    PdfToDocxConverter.cs uses DocumentFormat.OpenXml directly, so this project declares it rather
+    than relying on it arriving transitively through Tetitulz.Pdf.DocxToPdf. A transitive
+    dependency is invisible here and would break silently if that project ever changed how it
+    reads .docx - the same fix Plugins.Maintenance's csproj records for SkiaSharp. Enforced by
+    AssemblyLayeringTests.Third_party_namespaces_are_declared_by_the_project_that_uses_them.
+  -->
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\..\features\Tetitulz.Pdf.DocxToPdf\Tetitulz.Pdf.DocxToPdf.csproj" />
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+</Project>

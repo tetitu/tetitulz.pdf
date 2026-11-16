@@ -1,0 +1,272 @@
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixOptions::.ctor()
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixOptions::AddLanguage : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixOptions::AddMissingTooltips : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixOptions::AddPlaceholderTooltipsForUnnamedFields : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixOptions::DefaultLanguage : System.String { get; set }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixOptions::DefaultTooltipTemplate : System.String { get; set }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixOptions::FixTabOrder : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixOptions::SetDisplayDocTitle : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixResult::AnyFixApplied : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixResult::FixesApplied : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixResult::Warnings : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityPlugin::Check(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Plugins.PluginAccessibilityViolation>
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityPlugin::Fix(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Core.Plugins.PluginAccessibilityFixOptions) : System.Void
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Conformance.AccessibilityPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin::.ctor(System.String)
+Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin::.ctor(System.String, Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions, Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions)
+Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin::Convert(System.IO.Stream, System.IO.Stream) : Tetitulz.Pdf.Core.Plugins.PluginConversionResult
+Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin::RegisterAll(Tetitulz.Pdf.Core.Plugins.PdfPluginHost) : System.Void
+Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin::SupportedTargets : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin::TargetConformanceLevel : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Conformance.FontUnicodeMapping::Maps(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Core.Objects.PdfDictionary) : System.Boolean
+Tetitulz.Pdf.Plugins.Conformance.FontUnicodeMapping::UsesPublishedCharacterCollection(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Core.Objects.PdfDictionary) : System.Boolean
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::AlternatePresentations : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 13
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::AssistiveTechnologyDrmRestriction : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 15
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::BlendModeArray : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 9
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::CharSet : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 11
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::CidSet : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 12
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::InfoDictionary : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 2
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::LegacySignatureSubFilter : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 4
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::MovieOrSoundAction : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 18
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::MovieSoundOrTrapNetAnnotation : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 1
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::NamedResource : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 16
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::NeedAppearances : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 6
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::Opi : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 10
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::OsSpecificFileSpecification : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 17
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::OsSpecificLaunchAction : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 19
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::PrepressViewerPreference : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 8
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::ProcSet : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 3
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::SuspectsFlag : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 7
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::TransferFunctionInGraphicsState : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 5
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::UsageRights : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 14
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::Xfa : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct = 0
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct::value__ : System.Int32
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecationChecker::Check(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecationFinding>
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecationChecker::Check(Tetitulz.Pdf.Core.Document.PdfDocument) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecationFinding>
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecationFinding::Construct : Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct { get }
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecationFinding::Detail : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecationFinding::PageIndex : System.Int32 { get }
+Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecationFinding::ToString() : System.String
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel::A : Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel = 1
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel::B : Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel = 2
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel::Declared : Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel = 0
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel::E : Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel = 5
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel::F : Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel = 6
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel::None : Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel = 4
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel::U : Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel = 3
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel::value__ : System.Int32
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart::Part1 : Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart = 1
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart::Part2 : Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart = 2
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart::Part3 : Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart = 3
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart::Part4 : Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart = 4
+Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart::value__ : System.Int32
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions::.ctor()
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions::AllowSignatureInvalidation : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions::ConvertColour : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions::DeclareConformanceRegardless : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions::DocumentCreator : System.String { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions::DocumentTitle : System.String { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions::FlattenDpi : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions::FlattenKeepOpaqueContentAsVector : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions::FlattenTransparency : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions::IccProfile : System.Byte[] { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions::IccProfileComponents : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult::.ctor()
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult::Blockers : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult::ColourConversion : Tetitulz.Pdf.Base.Operations.Metadata.ColourConversionResult { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult::DeclaredPdfAIdentifier : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult::EmbeddedOutputProfile : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult::FlattenedPages : System.Collections.Generic.IReadOnlyList<System.Int32> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult::IsConformant : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult::OutputWritten : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult::Warnings : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAConverter::ConvertToPdfA1b(System.IO.Stream, System.IO.Stream, System.String = default, System.String = default, System.Byte[] = default) : System.Void
+Tetitulz.Pdf.Plugins.Conformance.PdfAConverter::ConvertToPdfA1b(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions) : Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult
+Tetitulz.Pdf.Plugins.Conformance.PdfAConverter::ConvertToPdfA2b(System.IO.Stream, System.IO.Stream, System.String = default, System.String = default, System.Byte[] = default) : System.Void
+Tetitulz.Pdf.Plugins.Conformance.PdfAConverter::ConvertToPdfA2b(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions) : Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult
+Tetitulz.Pdf.Plugins.Conformance.PdfAConverter::ConvertToPdfA3b(System.IO.Stream, System.IO.Stream, System.String = default, System.String = default, System.Byte[] = default) : System.Void
+Tetitulz.Pdf.Plugins.Conformance.PdfAConverter::ConvertToPdfA3b(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions) : Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationPlugin::.ctor(Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart = default)
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationPlugin::.ctor(Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart, Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel)
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationPlugin::ConformanceLevel : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationPlugin::RegisterAll(Tetitulz.Pdf.Core.Plugins.PdfPluginHost) : System.Void
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationPlugin::Validate(System.IO.Stream) : Tetitulz.Pdf.Core.Plugins.PluginValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationResult::.ctor(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Plugins.Conformance.PdfAViolation>)
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationResult::Informational : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Plugins.Conformance.PdfAViolation> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationResult::IsConformant : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationResult::IsPartial : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidationResult::Violations : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Plugins.Conformance.PdfAViolation> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidator::LastValidationError : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidator::Validate(System.IO.Stream, Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart = default) : Tetitulz.Pdf.Plugins.Conformance.PdfAValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidator::Validate(System.IO.Stream, Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart, Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel) : Tetitulz.Pdf.Plugins.Conformance.PdfAValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidator::Validate(System.String, Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart = default) : Tetitulz.Pdf.Plugins.Conformance.PdfAValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfAValidator::Validate(System.String, Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart, Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel) : Tetitulz.Pdf.Plugins.Conformance.PdfAValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfAViolation::.ctor(System.String, System.String)
+Tetitulz.Pdf.Plugins.Conformance.PdfAViolation::Code : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAViolation::Message : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfAViolation::ToString() : System.String
+Tetitulz.Pdf.Plugins.Conformance.PdfAccessibilityFixer::Fix(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixOptions = default) : Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixResult
+Tetitulz.Pdf.Plugins.Conformance.PdfAccessibilityFixer::Fix(System.String, System.String, Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixOptions = default) : Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixResult
+Tetitulz.Pdf.Plugins.Conformance.PdfAccessibilityFixer::LastFixError : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUa2Checker::LastValidationError : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUa2Checker::Validate(System.IO.Stream) : Tetitulz.Pdf.Plugins.Conformance.PdfUa2ValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfUa2Checker::Validate(System.String) : Tetitulz.Pdf.Plugins.Conformance.PdfUa2ValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfUa2ValidationResult::IsConforming : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUa2ValidationResult::Violations : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Plugins.Conformance.PdfUa2Violation> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUa2Violation::Code : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUa2Violation::Message : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUa2Violation::ToString() : System.String
+Tetitulz.Pdf.Plugins.Conformance.PdfUaAnnotationScope::IsOutsideCropBox(Tetitulz.Pdf.Core.Objects.PdfArray, Tetitulz.Pdf.Core.Objects.PdfArray) : System.Boolean
+Tetitulz.Pdf.Plugins.Conformance.PdfUaAnnotationScope::IsOutsideCropBox(Tetitulz.Pdf.Core.Objects.PdfArray, Tetitulz.Pdf.Core.Objects.PdfArray, System.Func<Tetitulz.Pdf.Core.Objects.PdfObject, Tetitulz.Pdf.Core.Objects.PdfObject>) : System.Boolean
+Tetitulz.Pdf.Plugins.Conformance.PdfUaAnnotationScope::IsPresentedToReader(System.String, System.Nullable<System.Int32>) : System.Boolean
+Tetitulz.Pdf.Plugins.Conformance.PdfUaAnnotationScope::IsPresentedToReader(System.String, System.Nullable<System.Int32>, Tetitulz.Pdf.Core.Objects.PdfArray, Tetitulz.Pdf.Core.Objects.PdfArray) : System.Boolean
+Tetitulz.Pdf.Plugins.Conformance.PdfUaAnnotationScope::IsPresentedToReader(System.String, System.Nullable<System.Int32>, Tetitulz.Pdf.Core.Objects.PdfArray, Tetitulz.Pdf.Core.Objects.PdfArray, System.Func<Tetitulz.Pdf.Core.Objects.PdfObject, Tetitulz.Pdf.Core.Objects.PdfObject>) : System.Boolean
+Tetitulz.Pdf.Plugins.Conformance.PdfUaChecker::DefaultMaxMcidScanBytesPerDocument : System.Int64 = 134217728
+Tetitulz.Pdf.Plugins.Conformance.PdfUaChecker::DefaultMaxMcidScanBytesPerPage : System.Int32 = 8388608
+Tetitulz.Pdf.Plugins.Conformance.PdfUaChecker::LastValidationError : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUaChecker::Validate(System.IO.Stream) : Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfUaChecker::Validate(System.IO.Stream, System.Int32, System.Int64) : Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfUaChecker::Validate(System.String) : Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfUaChecker::Validate(System.String, System.Int32, System.Int64) : Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfUaFontUse::LastError : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUaFontUse::PaintedFonts(Tetitulz.Pdf.Core.Document.PdfDocument) : System.Collections.Generic.ICollection<Tetitulz.Pdf.Core.Objects.PdfDictionary>
+Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationPlugin::ConformanceLevel : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationPlugin::Validate(System.IO.Stream) : Tetitulz.Pdf.Core.Plugins.PluginValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationResult::IsConforming : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationResult::Violations : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Plugins.Conformance.PdfUaViolation> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUaViolation::Code : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUaViolation::Message : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfUaViolation::ToString() : System.String
+Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel::X1a : Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel = 1
+Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel::X3 : Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel = 3
+Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel::X4 : Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel = 4
+Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel::X6 : Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel = 6
+Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel::value__ : System.Int32
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::.ctor()
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::AllowSignatureInvalidation : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::ConvertColour : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::DeclareConformanceRegardless : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::DocumentTitle : System.String { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::EmbedFonts : System.Func<System.IO.Stream, System.IO.Stream, System.Boolean> { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::FlattenDpi : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::FlattenKeepOpaqueContentAsVector : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::FlattenTransparency : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::GtsPdfXVersion : System.String { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::IccProfile : System.Byte[] { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::IccProfileComponents : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::Level : Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::OutputConditionIdentifier : System.String { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::RemoveArtBoxWhenBothPresent : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::RemoveHalftones : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::RepairOptionalContentConfigurations : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::RepairPageBoxes : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions::Trapped : System.Nullable<System.Boolean> { get; set }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::.ctor()
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::Blockers : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::ColourConversion : Tetitulz.Pdf.Base.Operations.Metadata.ColourConversionResult { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::DeclaredPdfXIdentifier : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::EmbeddedFonts : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::EmbeddedOutputProfile : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::FlattenedPages : System.Collections.Generic.IReadOnlyList<System.Int32> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::HalftonesRemoved : System.Int32 { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::IsConformant : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::OptionalContentConfigurationsRepaired : System.Int32 { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::PageBoxesLeftAlone : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::PagesArtBoxRemoved : System.Int32 { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::PagesGivenTrimBox : System.Int32 { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::SetTrapped : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult::Warnings : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXConverter::Convert(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions = default) : Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationPlugin::.ctor(Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel = default)
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationPlugin::ConformanceLevel : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationPlugin::RegisterAll(Tetitulz.Pdf.Core.Plugins.PdfPluginHost) : System.Void
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationPlugin::Validate(System.IO.Stream) : Tetitulz.Pdf.Core.Plugins.PluginValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationResult::Informational : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Plugins.Conformance.PdfXViolation> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationResult::IsConforming : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationResult::IsPartial : System.Boolean { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationResult::Level : Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidationResult::Violations : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Plugins.Conformance.PdfXViolation> { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidator::DefaultMaxDocumentContentBytes : System.Int64 = 134217728
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidator::DefaultMaxPageContentBytes : System.Int32 = 8388608
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidator::LastValidationError : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidator::Validate(System.IO.Stream, Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel = default) : Tetitulz.Pdf.Plugins.Conformance.PdfXValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidator::Validate(System.IO.Stream, Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel, System.Int32, System.Int64) : Tetitulz.Pdf.Plugins.Conformance.PdfXValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidator::Validate(System.String, Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel = default) : Tetitulz.Pdf.Plugins.Conformance.PdfXValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfXValidator::Validate(System.String, Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel, System.Int32, System.Int64) : Tetitulz.Pdf.Plugins.Conformance.PdfXValidationResult
+Tetitulz.Pdf.Plugins.Conformance.PdfXViolation::Code : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXViolation::Message : System.String { get }
+Tetitulz.Pdf.Plugins.Conformance.PdfXViolation::ToString() : System.String
+Tetitulz.Pdf.Plugins.Conformance.TrueTypeCmapRule::Iso32000Part1 : Tetitulz.Pdf.Plugins.Conformance.TrueTypeCmapRule = 1
+Tetitulz.Pdf.Plugins.Conformance.TrueTypeCmapRule::Iso32000Part2 : Tetitulz.Pdf.Plugins.Conformance.TrueTypeCmapRule = 2
+Tetitulz.Pdf.Plugins.Conformance.TrueTypeCmapRule::PdfA1 : Tetitulz.Pdf.Plugins.Conformance.TrueTypeCmapRule = 0
+Tetitulz.Pdf.Plugins.Conformance.TrueTypeCmapRule::value__ : System.Int32
+Tetitulz.Pdf.Plugins.Conformance.TrueTypeFontRules::CmapConforms(Tetitulz.Pdf.Core.Fonts.TrueTypeFontProgram, System.Boolean, Tetitulz.Pdf.Plugins.Conformance.TrueTypeCmapRule) : System.Boolean
+Tetitulz.Pdf.Plugins.Conformance.TrueTypeFontRules::DeclaredEncodingName(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Core.Objects.PdfDictionary) : System.String
+Tetitulz.Pdf.Plugins.Conformance.TrueTypeFontRules::DeclaresFlags(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Core.Objects.PdfDictionary) : System.Boolean
+Tetitulz.Pdf.Plugins.Conformance.TrueTypeFontRules::EmbeddedProgram(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Core.Objects.PdfDictionary, out System.Exception&) : Tetitulz.Pdf.Core.Fonts.TrueTypeFontProgram
+Tetitulz.Pdf.Plugins.Conformance.TrueTypeFontRules::FirstDifferencesNameOutsideGlyphList(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Core.Objects.PdfDictionary) : System.String
+Tetitulz.Pdf.Plugins.Conformance.TrueTypeFontRules::HasDifferences(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Core.Objects.PdfDictionary) : System.Boolean
+Tetitulz.Pdf.Plugins.Conformance.TrueTypeFontRules::IsMacRomanOrWinAnsi(System.String) : System.Boolean
+class Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixOptions
+class Tetitulz.Pdf.Plugins.Conformance.AccessibilityFixResult
+class Tetitulz.Pdf.Plugins.Conformance.AccessibilityPlugin
+class Tetitulz.Pdf.Plugins.Conformance.ConformanceConversionPlugin
+class Tetitulz.Pdf.Plugins.Conformance.FontUnicodeMapping
+class Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecationChecker
+class Tetitulz.Pdf.Plugins.Conformance.PdfAConversionOptions
+class Tetitulz.Pdf.Plugins.Conformance.PdfAConversionResult
+class Tetitulz.Pdf.Plugins.Conformance.PdfAConverter
+class Tetitulz.Pdf.Plugins.Conformance.PdfAValidationPlugin
+class Tetitulz.Pdf.Plugins.Conformance.PdfAValidationResult
+class Tetitulz.Pdf.Plugins.Conformance.PdfAValidator
+class Tetitulz.Pdf.Plugins.Conformance.PdfAViolation
+class Tetitulz.Pdf.Plugins.Conformance.PdfAccessibilityFixer
+class Tetitulz.Pdf.Plugins.Conformance.PdfUa2Checker
+class Tetitulz.Pdf.Plugins.Conformance.PdfUa2ValidationResult
+class Tetitulz.Pdf.Plugins.Conformance.PdfUa2Violation
+class Tetitulz.Pdf.Plugins.Conformance.PdfUaAnnotationScope
+class Tetitulz.Pdf.Plugins.Conformance.PdfUaChecker
+class Tetitulz.Pdf.Plugins.Conformance.PdfUaFontUse
+class Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationPlugin
+class Tetitulz.Pdf.Plugins.Conformance.PdfUaValidationResult
+class Tetitulz.Pdf.Plugins.Conformance.PdfUaViolation
+class Tetitulz.Pdf.Plugins.Conformance.PdfXConversionOptions
+class Tetitulz.Pdf.Plugins.Conformance.PdfXConversionResult
+class Tetitulz.Pdf.Plugins.Conformance.PdfXConverter
+class Tetitulz.Pdf.Plugins.Conformance.PdfXValidationPlugin
+class Tetitulz.Pdf.Plugins.Conformance.PdfXValidationResult
+class Tetitulz.Pdf.Plugins.Conformance.PdfXValidator
+class Tetitulz.Pdf.Plugins.Conformance.PdfXViolation
+class Tetitulz.Pdf.Plugins.Conformance.TrueTypeFontRules
+enum Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecatedConstruct
+enum Tetitulz.Pdf.Plugins.Conformance.PdfAConformanceLevel
+enum Tetitulz.Pdf.Plugins.Conformance.PdfAConformancePart
+enum Tetitulz.Pdf.Plugins.Conformance.PdfXConformanceLevel
+enum Tetitulz.Pdf.Plugins.Conformance.TrueTypeCmapRule
+struct Tetitulz.Pdf.Plugins.Conformance.Pdf20DeprecationFinding

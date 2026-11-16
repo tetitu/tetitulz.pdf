@@ -1,0 +1,45 @@
+# Commits that changed formatting or moved code without changing behaviour.
+#
+# Enable once, per clone:
+#
+#     git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# GitHub, GitLab and Azure DevOps read this file automatically.
+#
+# Only add a PURELY mechanical commit — a re-indent, a rename, a reformat. A commit that also
+# changed behaviour must never be listed, or blame points past the change that introduced a
+# defect.
+#
+# ------------------------------------------------------------------------------------------
+#  MEASURED: this does NOT rescue a file SPLIT, and the 2026-08-11 split commits are
+#  deliberately not listed here.
+# ------------------------------------------------------------------------------------------
+#
+# `--ignore-rev` works by re-attributing a line to the parent commit's version OF THE SAME
+# PATH. When a split creates `Foo.Text.cs` out of `Foo.cs`, the new path has no parent
+# version, so there is nothing to attribute to and blame stops at the split commit regardless.
+#
+# `git blame -C -C -C` is the usual advice for this and it was checked here: it does not
+# recover the authorship either, on this repository's split commits. Listing them would only
+# make the file look like it was doing something.
+#
+# What actually works for those commits:
+#
+#   * each split commit's body names the source file, so `git log --follow` on the source and
+#     a read of that commit gets you there;
+#   * `git log -S'<a line of the code>' -- src/` finds the commit that introduced a line
+#     wherever it now lives — this is the reliable one;
+#   * the text was moved VERBATIM (no reformatting, no reordering, no using-pruning), so the
+#     pre-split history of `StandardEncodings.cs`, `PdfOperations.cs`,
+#     `ContentStreamInterpreter.cs`, `PdfSvgRenderer.cs`,
+#     `PdfDeepAccessibilityChecker.cs`, `PdfRenderContext.cs`, `HtmlToBuilderMapper.cs` and
+#     `PdfFontEmbeddingRemediator.cs` still reads correctly for every line that came out of
+#     them.
+#
+# The file is kept because it is the right place for the next tree-wide reformat, and because
+# recording what was tried is cheaper than the next person trying it again.
+
+# --- 2026-08-11 -----------------------------------------------------------------------------
+# WalkBudget's class body sat at 8 spaces where the repo uses 4, an artefact of an earlier
+# move between assemblies. An in-place re-indent, which IS the case --ignore-rev handles.
+312e04117da7d46d6f261d500c4cde7ec772e67c

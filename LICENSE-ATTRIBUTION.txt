@@ -1,0 +1,188 @@
+Tetitulz.Pdf Attribution License, version 1.0
+
+Copyright (c) 2026 Tamir Mordo
+
+This license is the MIT License with added conditions: whoever uses the
+Software in any of the ways described below must give the author recognition,
+report the use on the Software's GitHub repository, and report any security
+problem they find, with its fix when they have one.
+
+It covers three plugins of Tetitulz.Pdf only. The rest of Tetitulz.Pdf is
+under the Apache License, Version 2.0 (the file LICENSE beside this one).
+
+1. Definitions
+
+"Software" means these three plugins of Tetitulz.Pdf:
+
+  - Tetitulz.Pdf.Plugins.PostScript
+  - Tetitulz.Pdf.Plugins.Maintenance
+  - Tetitulz.Pdf.Plugins.PageEdits
+
+and, for each, its source code (the folder of that name under src/plugins/),
+its compiled binaries and packages, its documentation, its tests (the folder
+of that name followed by ".Tests" under tests/), and any output, data or
+results it produces.
+
+The Software does not include any other part of Tetitulz.Pdf, which is under
+the Apache License, Version 2.0, nor any component, data or test fixture
+written by others, which keeps its own license (section 3(f)).
+
+"Use" means any of the following, by a person, an organization, or an
+automated system acting for either:
+
+  (a) running, linking to, depending on, calling, embedding or bundling the
+      Software, including as a service accessed over a network;
+  (b) copying, modifying, merging, forking, extending, subclassing or
+      inheriting from the Software or any part of it;
+  (c) creating a derivative work, including a translation or port to another
+      programming language or platform, and any work that adapts, reproduces
+      or is substantially based on the Software's code, structure, design,
+      algorithms, test suites or documentation;
+  (d) using the Software, or anything it produces, as an oracle, reference
+      implementation, comparison baseline, benchmark, test expectation or
+      validation source for other software or for published results;
+  (e) learning from the Software: studying its source in order to produce
+      another work that is substantially based on it, and using the Software
+      or any part of it as training, fine-tuning, evaluation or retrieval data
+      for a machine-learning model or an artificial-intelligence system;
+  (f) offering the Software's functions to others through an interface: a
+      web or network API, an SDK, a command-line tool, a plugin, or an
+      interface for AI models and agents (a tool or function an AI model can
+      call, a Model Context Protocol server, an agent skill or action),
+      including when the caller never sees the Software itself;
+  (g) producing, with an AI system that was trained on the Software or
+      retrieves from it, output that reproduces or is substantially based on
+      any part of it;
+  (h) publishing, distributing, sublicensing or selling the Software or any
+      of the above.
+
+Each kind of Use above applies equally to the whole Software and to any part
+of it, however small: a single file, class, method, function, algorithm,
+table, constant set, test, fixture or passage of documentation, whether it is
+copied as it is, adapted, rewritten, or translated into another language.
+
+2. Permission
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of the Software, to Use the Software without restriction, including without
+limitation the rights to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, and to permit persons to whom
+the Software is furnished to do so, subject to the conditions below.
+
+3. Conditions
+
+(a) Notice. The above copyright notice and this license shall be included in
+    all copies or substantial portions of the Software.
+
+(b) Recognition. Every Use, including a Use of only part of the Software,
+    shall give visible recognition to the author, by stating the following
+    (or an equivalent that names the Software and the author):
+
+        Uses Tetitulz.Pdf by Tamir Mordo.
+
+    The recognition shall appear where the people who receive or rely on the
+    result of the Use would reasonably look for credits, for example:
+
+      - for a product, application or library: in its documentation, its
+        "About" or credits screen, or its NOTICE / third-party notices file;
+      - for a network service: in its documentation or its "About" or legal
+        page;
+      - for a derivative work, fork, port or work substantially based on the
+        Software: in its README and its license or NOTICE file, stating that
+        it is derived from or based on Tetitulz.Pdf by Tamir Mordo;
+      - for an oracle, benchmark, comparison or test use: in the published
+        results, test documentation, paper or report that relies on it;
+      - for a machine-learning model or an artificial-intelligence system: in
+        its model card, data sheet or documented list of training sources;
+      - for an API, SDK, command-line tool or plugin: in its documentation
+        and in its machine-readable description (an OpenAPI "info" section,
+        a package description, its help or version text);
+      - for an interface for AI models and agents: in the description of the
+        server, tool, skill or action that the AI model and its user are
+        shown, and in its documentation;
+      - for AI output under 1(g): with the output, wherever the system can
+        tell that the output comes from the Software, and in the system's
+        documentation.
+
+    When the Software is offered through an interface under 1(f), the person
+    or organization offering the interface makes the Use and owes these
+    conditions; a caller of the interface does not, unless the caller Uses
+    the Software in another way.
+
+    For a Use that is entirely internal, with no result published or provided
+    to anyone outside the organization, the recognition shall appear in the
+    internal documentation of the work that makes the Use.
+
+(c) Reporting the use. Whoever makes a Use shall report it on the Software's
+    GitHub repository, https://github.com/tetitu/tetitulz.pdf, by opening an
+    issue titled "Used by: <name of the work>". The report shall state:
+
+      - the person or organization making the Use;
+      - the name of the work that makes the Use (a product, service, API,
+        AI tool or agent interface, fork, port, model, benchmark, paper or
+        internal project);
+      - which of the three plugins it uses, which kinds of Use from section 1
+        it makes, and which parts of the Software it uses if it does not use
+        the whole;
+      - where the recognition required by 3(b) appears, with a link when the
+        work is public.
+
+    One report per work is enough; a later Use of a different kind, or a new
+    work, is reported again. The report shall be made within 30 days of the
+    first Use, and in any case before the work is published or distributed.
+    A confidential work may be described in general terms, but the report
+    still names the person or organization making the Use. If the repository
+    cannot be reached or does not accept issues, the report is made through
+    any other contact the author publishes for the Software.
+
+(d) Security problems. Whoever makes a Use and finds, or is told of, a
+    security vulnerability in the Software, or in any part of a work that
+    comes from the Software, shall:
+
+      - report it to the author privately, as SECURITY.md in the Tetitulz.Pdf
+        repository describes (GitHub private vulnerability reporting on the
+        repository named in 3(c)), within 14 days of finding or being told of
+        it, with the affected version and what reproduces it;
+      - if they have a fix, or make one later, give the fix to the author
+        with the report or as soon as it exists. A fix given under this
+        condition is licensed to the author under this license, and the
+        author may include it in the Software;
+      - not publish the vulnerability or the fix before the author releases
+        a fix, or before 90 days have passed since the report, whichever is
+        sooner, unless the author agrees to an earlier date. After that they
+        may publish both.
+
+    This condition applies to a vulnerability found in a derivative work's
+    copy of the Software as much as to one found in the Software itself.
+
+(e) Conditions pass on. A derivative work shall carry these conditions
+    forward: its own license shall require its users to keep the recognition
+    in 3(b), to report their own Use as in 3(c), and to report security
+    problems and their fixes as in 3(d).
+
+(f) Third-party components. Components, data and test fixtures in the
+    Software's folders that are written by others keep their own licenses,
+    listed in NOTICE.md and THIRD-PARTY.md; this license does not change
+    their terms and does not apply to them.
+
+4. Acceptance
+
+Using the Software in any of the ways described in section 1 means accepting
+this license. If you do not accept it, you have no permission to Use the
+Software.
+
+5. Severability
+
+If any part of this license is held unenforceable for some kind of Use, the
+remainder of this license stays in effect, and the conditions in 3(b), 3(c)
+and 3(d) apply to the fullest extent permitted by applicable law.
+
+6. Disclaimer of warranty and limitation of liability
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

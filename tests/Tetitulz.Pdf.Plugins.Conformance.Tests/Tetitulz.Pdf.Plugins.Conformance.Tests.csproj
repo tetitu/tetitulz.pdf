@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tetitulz.Pdf.TestHelpers\Tetitulz.Pdf.TestHelpers.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Encryption\Tetitulz.Pdf.Encryption.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.Conformance\Tetitulz.Pdf.Plugins.Conformance.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <!-- veraPDF's corpus, a CC BY 4.0 subset (Fixtures/veraPDF/README.md), read by ConformanceCorpusTests. -->
+  <ItemGroup>
+    <None Include="Fixtures\veraPDF\**\*.pdf" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Fixtures\veraPDF\known-disagreements.tsv" CopyToOutputDirectory="PreserveNewest" />
+    <!-- BFO's PDF/A test suite, CC BY 3.0 (Fixtures/bfo/README.md), read by SecondConformanceCorpusTests. -->
+    <None Include="Fixtures\bfo\*.pdf" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Fixtures\bfo\known-disagreements.tsv" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

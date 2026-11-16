@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <!-- Security: override a vulnerable transitive Newtonsoft.Json (GHSA-5crp-9r3c-p9vr).
+         System.Net.Http and System.Text.RegularExpressions were pinned alongside it for
+         GHSA-7jgj-8wvc-jh57 / GHSA-cmhx-cq75-c4mj; on net10.0 both live in the shared framework,
+         so the package reference was redundant (NU1510) — the framework assembly is what loads
+         either way, and the out-of-band package cannot re-enter the graph. -->
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <!-- MinimalTrueType / MinimalWoff: real sfnt and WOFF fixtures, so a font-parsing test does not
+         have to depend on what the host happens to have installed. TestHelpers has no project
+         references of its own, so this adds nothing to Core's own graph. -->
+    <ProjectReference Include="..\Tetitulz.Pdf.TestHelpers\Tetitulz.Pdf.TestHelpers.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Signing\Tetitulz.Pdf.Signing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The one committed HTJ2K codestream (OpenJPH, BSD-2; Fixtures/Htj2k/README.md). -->
+    <None Include="Fixtures\Htj2k\*.j2c" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Unicode's UAX #9 conformance file (Unicode License v3; Fixtures/Unicode/README.md). -->
+    <None Include="Fixtures\Unicode\*.gz" CopyToOutputDirectory="PreserveNewest" />
+    <!-- The coverage-guided fuzzer's findings kept as regression inputs (SyntaxStreamImageFilterTests). -->
+    <None Include="Fixtures\Fuzz\*.pdf" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Independent decoders' answers, recorded (IndependentJpxDecode). -->
+    <None Include="Fixtures\IndependentDecodes\**\*.gz" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- The local re-recording kit (the git-ignored oracle-tests folder): compiled here when present,
+       absent from a clone. No test needs it. -->
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)..\..\oracle-tests\Tetitulz.Pdf.Core.Tests')">
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\oracle-tests\Tetitulz.Pdf.Core.Tests\**\*.cs" LinkBase="Oracles" />
+  </ItemGroup>
+
+</Project>

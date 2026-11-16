@@ -1,0 +1,16 @@
+Tetitulz.Pdf.Plugins.Fonts.BundledFonts::DefaultDirectory() : System.String
+Tetitulz.Pdf.Plugins.Fonts.BundledFonts::Directory : System.String { get }
+Tetitulz.Pdf.Plugins.Fonts.BundledFonts::Extract(System.String) : System.String
+Tetitulz.Pdf.Plugins.Fonts.BundledFonts::FileNames : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Fonts.BundledFonts::LicenceFileNames : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Plugins.Fonts.BundledFonts::Register() : System.String
+Tetitulz.Pdf.Plugins.Fonts.BundledFonts::Register(System.String) : System.String
+Tetitulz.Pdf.Plugins.Fonts.BundledFonts::Unregister() : System.Void
+Tetitulz.Pdf.Plugins.Fonts.BundledFontsPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Fonts.BundledFontsPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Fonts.BundledFontsPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Fonts.BundledFontsPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Fonts.BundledFontsPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Fonts.BundledFontsPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.Fonts.BundledFonts
+class Tetitulz.Pdf.Plugins.Fonts.BundledFontsPlugin

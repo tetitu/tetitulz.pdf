@@ -1,0 +1,7 @@
+Tetitulz.Pdf.Plugins.CMap.AdobeCMapPlugin::.ctor()
+Tetitulz.Pdf.Plugins.CMap.AdobeCMapPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.CMap.AdobeCMapPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.CMap.AdobeCMapPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.CMap.AdobeCMapPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.CMap.AdobeCMapPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.CMap.AdobeCMapPlugin

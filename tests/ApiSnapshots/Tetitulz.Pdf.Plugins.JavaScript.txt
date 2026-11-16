@@ -1,0 +1,12 @@
+Tetitulz.Pdf.Plugins.JavaScript.JintJavaScriptPlugin::.ctor()
+Tetitulz.Pdf.Plugins.JavaScript.JintJavaScriptPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.JavaScript.JintJavaScriptPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.JavaScript.JintJavaScriptPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.JavaScript.JintJavaScriptPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.JavaScript.JintJavaScriptPlugin::TryExecute(System.String, Tetitulz.Pdf.Base.Scripting.PdfJsExecutionContext) : System.Boolean
+Tetitulz.Pdf.Plugins.JavaScript.JintJavaScriptPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.JavaScript.PdfJsEngine::.ctor()
+Tetitulz.Pdf.Plugins.JavaScript.PdfJsEngine::Execute(System.String, Tetitulz.Pdf.Base.Scripting.PdfJsExecutionContext) : System.Void
+Tetitulz.Pdf.Plugins.JavaScript.PdfJsEngine::LastUnsupportedRequest : System.String { get }
+class Tetitulz.Pdf.Plugins.JavaScript.JintJavaScriptPlugin
+class Tetitulz.Pdf.Plugins.JavaScript.PdfJsEngine

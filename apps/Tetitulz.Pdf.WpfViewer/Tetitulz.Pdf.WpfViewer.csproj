@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>TetitulzPdfViewer</AssemblyName>
+    <RootNamespace>Tetitulz.Pdf.WpfViewer</RootNamespace>
+    <!-- The program's icon: Explorer shows it for the program and, once associated, for PDF files. -->
+    <ApplicationIcon>viewer.ico</ApplicationIcon>
+    <!-- Published self-contained for win-x86 and win-x64 by apps/installers/build.ps1. -->
+    <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Windows Forms is here to host the library's viewer control; its implicit using would make
+         WPF's Application, DragEventArgs and the rest ambiguous across the app. -->
+    <Using Remove="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fluent.Ribbon" />
+  </ItemGroup>
+  <!-- The trust-anchor reader the signing CLI uses: one reader of a folder of root certificates. -->
+  <ItemGroup>
+    <Compile Include="..\Tetitulz.Pdf.SignCli\TrustAnchors.cs" Link="Shared\TrustAnchors.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Encryption\Tetitulz.Pdf.Encryption.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.Ocr\Tetitulz.Pdf.Plugins.Ocr.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Signing\Tetitulz.Pdf.Signing.csproj" />
+    <ProjectReference Include="..\..\src\features\Tetitulz.Pdf.Accessibility\Tetitulz.Pdf.Accessibility.csproj" />
+    <ProjectReference Include="..\..\src\features\Tetitulz.Pdf.DocxToPdf\Tetitulz.Pdf.DocxToPdf.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.Maintenance\Tetitulz.Pdf.Plugins.Maintenance.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.Conformance\Tetitulz.Pdf.Plugins.Conformance.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.PageEdits\Tetitulz.Pdf.Plugins.PageEdits.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.Docx\Tetitulz.Pdf.Plugins.Docx.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.Html\Tetitulz.Pdf.Plugins.Html.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.JavaScript\Tetitulz.Pdf.Plugins.JavaScript.csproj" />
+    <!-- Signing with a Windows store or smart-card certificate. -->
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.CertStoreSign\Tetitulz.Pdf.Plugins.CertStoreSign.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.WinForms.PdfViewer\Tetitulz.Pdf.WinForms.PdfViewer.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Tetitulz.Pdf.WpfViewer.Tests" />
+  </ItemGroup>
+</Project>

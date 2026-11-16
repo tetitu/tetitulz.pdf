@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can audit and remediate. It needed
+      no source change of its own — it was blocked only by its sanctioned feature -> plugin edge
+      (Accessibility -> Plugins.Conformance), which had no legacy leg. Porting Conformance freed it,
+      so keep the two in step: dropping Conformance's netstandard2.0 leg breaks this one with NU1201.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Accessibility</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Accessibility</AssemblyName>
+    <Description>Full PDF accessibility plugin: audit, edit, auto-tag, fix reading order, and mark artifacts for PDF/UA-1 compliance.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      Declared, not inherited. Fonts/PdfFontEmbeddingRemediator.cs has `using SkiaSharp;` and
+      compiled only because Base happens to flow it transitively. That breaks the day Base marks
+      Skia PrivateAssets, and until then the dependency is invisible to the CI vulnerability
+      audit, which reads declared references.
+    -->
+    <PackageReference Include="SkiaSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <!--
+      SANCTIONED architecture exception (see CLAUDE.md → Architecture Principles).
+      This feature → plugin reference reuses the PDF/UA-1 validation engine in the
+      Conformance plugin instead of duplicating it. The edge is one-way and acyclic
+      (Accessibility → Conformance → Core/Base); Conformance must never reference
+      Accessibility (or any feature), so no cycle can form.
+    -->
+    <ProjectReference Include="..\..\plugins\Tetitulz.Pdf.Plugins.Conformance\Tetitulz.Pdf.Plugins.Conformance.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Accessibility.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

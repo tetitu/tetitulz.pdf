@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can sign on-chain. Nethereum ships the
+      leg already; the only gap was Task<T>.WaitAsync (.NET 6+), polyfilled below.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Anchors a Tetitulz.Pdf document hash on an Ethereum chain and verifies it. Isolates Nethereum from the core package graph.</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.EthereumSign</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.EthereumSign</AssemblyName>
+    <Nullable>annotations</Nullable>
+  </PropertyGroup>
+
+  <!-- Task<T>.WaitAsync is a BCL instance method from .NET 6 on, and an instance method beats an
+       extension — so on net10.0 this file would be dead code that looked load-bearing. Legacy leg
+       only, which is also where its semantics need stating. -->
+  <ItemGroup>
+    <Compile Remove="Compatibility\TaskWaitAsyncExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <Compile Include="Compatibility\TaskWaitAsyncExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+    <!-- So a guard test can assert that the verification-client cache is bounded and that
+         per-tenant URL paths collapse onto one entry — neither of which is observable from the
+         public surface, and both of which are the leak the cache exists to prevent. -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Plugins.EthereumSign.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Nethereum.Web3" />
+    <!-- Pin Newtonsoft.Json to a safe version; pulled transitively by Nethereum -->
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Signing\Tetitulz.Pdf.Signing.csproj" />
+  </ItemGroup>
+</Project>

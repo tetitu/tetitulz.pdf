@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One installer for one app, filled in by build.ps1 with -d variables:
+    AppName        the name in Apps, the Start menu and the wizard
+    AppFolder      the folder under Program Files\Tetitulz
+    ExeName        the program the Start menu shortcut and the finish page start
+    UpgradeCode    fixed per app: a newer MSI of the same app replaces the installed one
+    IconFile       the app's .ico
+    PayloadDir     the app published, with the licence texts and notices beside it
+    LicenseRtf     the licence the wizard shows
+    ProductVersion a.b.c
+
+  Per machine, 64-bit, in Program Files\Tetitulz\<AppFolder>; a Start menu shortcut; the app's icon in
+  Apps; an optional "Start <AppName>" on the finish page of a new install. Built with the
+  self-compiled WiX 7 (build.ps1); test each MSI on a VM, an upgrade included, before it goes out.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <Package Name="$(AppName)"
+           Manufacturer="Tetitulz"
+           Version="$(ProductVersion)"
+           UpgradeCode="$(UpgradeCode)"
+           Language="1033"
+           Scope="perMachine"
+           InstallerVersion="500">
+
+    <SummaryInformation Description="$(AppName) installer" />
+
+    <MajorUpgrade AllowSameVersionUpgrades="yes" Schedule="afterInstallInitialize"
+                  DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="AppIcon.ico" SourceFile="$(IconFile)" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+    <SetProperty Id="ARPINSTALLLOCATION" Value="[APPDIR]" After="CostFinalize" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="CompanyDir" Name="Tetitulz">
+        <Directory Id="APPDIR" Name="$(AppFolder)" />
+      </Directory>
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+
+    <Feature Id="MainFeature" Title="$(AppName)" Level="1">
+      <ComponentGroupRef Id="PayloadFiles" />
+      <ComponentRef Id="StartMenuShortcut" />
+    </Feature>
+
+    <ComponentGroup Id="PayloadFiles" Directory="APPDIR">
+      <Files Include="$(PayloadDir)\**" />
+    </ComponentGroup>
+
+    <Component Id="StartMenuShortcut" Directory="ProgramMenuFolder">
+      <Shortcut Id="AppShortcut" Name="$(AppName)" Target="[APPDIR]$(ExeName)"
+                WorkingDirectory="APPDIR" Icon="AppIcon.ico" />
+      <!-- HKCU: the Start menu counts as the user's profile to the installer's checks (ICE38, ICE43, ICE57). -->
+      <RegistryValue Root="HKCU" Key="Software\Tetitulz\$(AppFolder)" Name="StartMenuShortcut"
+                     Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <!-- Welcome -> licence -> folder -> install -> finish, with "Start" on a new install. -->
+    <Property Id="WIXUI_INSTALLDIR" Value="APPDIR" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(LicenseRtf)" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <SetProperty Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Start $(AppName)" Sequence="ui"
+                 Before="CostFinalize" Condition="NOT Installed" />
+    <UI>
+      <ui:WixUI Id="WixUI_InstallDir" />
+      <!-- The checkbox keeps its value when hidden, so its text is required too (new installs only). -->
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="SetLaunchTarget" Order="1"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApp" Order="2"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+    </UI>
+
+    <CustomAction Id="SetLaunchTarget" Property="WixShellExecTarget" Value="[APPDIR]$(ExeName)" />
+    <CustomAction Id="LaunchApp" DllEntry="WixShellExec" Impersonate="yes" BinaryRef="Wix4UtilCA_X64" />
+  </Package>
+</Wix>

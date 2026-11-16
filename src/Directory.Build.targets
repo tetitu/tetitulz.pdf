@@ -1,0 +1,105 @@
+<Project>
+
+  <!--
+    Imported AFTER each project file, which is the whole reason this exists rather than living in
+    Directory.Build.props: the conditions below read <Nullable>, and a .props file is evaluated
+    BEFORE the project sets it.
+  -->
+
+  <!--
+    ===================================================================================
+    Nullable warnings are ERRORS in every src/ project that has opted into <Nullable>.
+    ===================================================================================
+
+    WHY: on 2026-08-28 the nullable family went from ~2 000 warnings to ZERO across every
+    src/ project that carries annotations — Builder, HtmlToPdf, Signing, WinForms.PdfViewer
+    and Plugins.{Text,Svg,Docx,Html,Ocr}. Nothing prevented that from silently coming back,
+    and a warning nobody heeds is the state the work existed to end: the annotations then
+    assert something the compiler is telling you is false.
+
+    WHAT IT DOES NOT DO: projects with no <Nullable> setting are nullable-oblivious and emit
+    none of these codes, so this is a no-op for Core, Base, Encryption and the rest. The
+    deliberate decision not to set <Nullable> repo-wide is recorded in Directory.Build.props
+    and is unchanged.
+
+    STARTING NULLABLE WORK ON A NEW PROJECT: turning <Nullable>enable</Nullable> on for a
+    large existing assembly produces hundreds of findings, and each is a judgment call that
+    cannot be made in one commit. Do NOT weaken this list to get green. Instead set, in that
+    project only and with a comment naming the tracking item:
+
+        <NullableWarningsAreErrors>false</NullableWarningsAreErrors>
+
+    ...and remove it when the project reaches zero. That keeps the escape hatch visible in the
+    one file it applies to, rather than hidden in a shared NoWarn where it would silently cover
+    the eight projects that are already clean.
+
+    THE CODES: the twelve the tree actually produced, not the whole CS86xx range — a code the
+    compiler has never emitted here would be an untested claim.
+      CS8600 converting null literal / possible null to non-nullable
+      CS8601 possible null reference assignment
+      CS8602 dereference of a possibly null reference
+      CS8603 possible null reference return
+      CS8604 possible null reference argument
+      CS8618 non-nullable member uninitialised on exit from constructor
+      CS8619 nullability of reference types in value doesn't match target
+      CS8620 argument cannot be used due to differences in nullability
+      CS8622 nullability of reference types in parameter doesn't match delegate
+      CS8625 cannot convert null literal to non-nullable reference type
+      CS8629 nullable value type may be null
+      CS8632 annotation used outside a '#nullable' annotations context
+      CS8767 nullability of reference types in parameter doesn't match overridden member
+  -->
+  <PropertyGroup Condition="'$(Nullable)' != '' and '$(NullableWarningsAreErrors)' != 'false'">
+    <WarningsAsErrors>$(WarningsAsErrors);CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8619;CS8620;CS8622;CS8625;CS8629;CS8632;CS8767</WarningsAsErrors>
+  </PropertyGroup>
+
+  <!--
+    ===================================================================================
+    Doc-comment defects that are now zero tree-wide, and stay that way.
+    ===================================================================================
+
+    These four joined the five already in Directory.Build.props' WarningsAsErrors list. Each
+    was at zero across every target framework when this was set, and each was found by the
+    census that closed B-5 rather than by anyone reading the code:
+
+      CS1573  some parameters documented, others not. Previously excluded as a
+              "partial-coverage problem like CS1591" when it stood at 219 sites; it is now 0,
+              and the exclusion no longer applies. It is also NOT merely cosmetic: XML doc
+              params are all-or-nothing, so documenting ONE parameter converts every sibling
+              from undocumented-and-quiet to undocumented-and-warned. That is how adding a
+              single <param> tag to PdfExporter.RenderPositioned silently undocumented two
+              others.
+      CS1571  duplicate <param> tag — the same parameter documented twice, which happened
+              when a batch edit added tags a doc block 50 lines above already carried.
+      CS1587  an XML comment not attached to any language element: a <summary> left orphaned
+              above a blank line, documenting a member that is no longer there.
+      CS0105  a duplicate using directive.
+
+    Same rule as the existing five: do not add one of these to NoWarn to get green — fix the
+    tag, or delete the stale one.
+  -->
+  <PropertyGroup>
+    <WarningsAsErrors>$(WarningsAsErrors);CS0105;CS1571;CS1573;CS1587</WarningsAsErrors>
+  </PropertyGroup>
+
+  <!--
+    The package's own licence text. Apache-2.0 packages carry /LICENSE beside the SPDX expression
+    (section 4(a) asks for a copy with every distribution). A project setting
+    <TetitulzAttributionLicense>true</TetitulzAttributionLicense> is under the Tetitulz.Pdf
+    Attribution License instead: the package names that file and asks the installer to accept it.
+    Only a plugin nothing else in src/ references may set it, or every package depending on it
+    would carry its conditions.
+  -->
+  <PropertyGroup Condition="'$(TetitulzAttributionLicense)' == 'true'">
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)../LICENSE" Pack="true" PackagePath="\" Visible="false"
+          Condition="'$(TetitulzAttributionLicense)' != 'true'" />
+    <None Include="$(MSBuildThisFileDirectory)../LICENSE-ATTRIBUTION.txt" Pack="true" PackagePath="LICENSE.txt" Visible="false"
+          Condition="'$(TetitulzAttributionLicense)' == 'true'" />
+  </ItemGroup>
+
+</Project>

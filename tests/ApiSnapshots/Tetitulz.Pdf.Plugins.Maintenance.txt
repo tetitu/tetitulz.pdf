@@ -1,0 +1,141 @@
+Tetitulz.Pdf.Plugins.Maintenance.ImageFormat::Gif : Tetitulz.Pdf.Plugins.Maintenance.ImageFormat = 3
+Tetitulz.Pdf.Plugins.Maintenance.ImageFormat::Jpeg : Tetitulz.Pdf.Plugins.Maintenance.ImageFormat = 1
+Tetitulz.Pdf.Plugins.Maintenance.ImageFormat::Jpeg2000 : Tetitulz.Pdf.Plugins.Maintenance.ImageFormat = 5
+Tetitulz.Pdf.Plugins.Maintenance.ImageFormat::Original : Tetitulz.Pdf.Plugins.Maintenance.ImageFormat = 0
+Tetitulz.Pdf.Plugins.Maintenance.ImageFormat::Png : Tetitulz.Pdf.Plugins.Maintenance.ImageFormat = 2
+Tetitulz.Pdf.Plugins.Maintenance.ImageFormat::WebP : Tetitulz.Pdf.Plugins.Maintenance.ImageFormat = 4
+Tetitulz.Pdf.Plugins.Maintenance.ImageFormat::value__ : System.Int32
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::.ctor()
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::BalancedPreset : Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions { get }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::ConvertToGrayscale : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::Default : Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions { get }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::DownsampleAboveDpi : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::DownsampleMonochromeImages : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::Enabled : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::FoldSoftMaskIntoJpeg2000 : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::MaxHeight : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::MaxWidth : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::MinImageSide : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::MinImageSizeBytes : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::PngCompressionLevel : System.IO.Compression.CompressionLevel { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::PrintPreset : Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions { get }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::Quality : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::SkipAlreadyOptimized : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::TargetDpi : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::TargetFormat : Tetitulz.Pdf.Plugins.Maintenance.ImageFormat { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions::WebPreset : Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions { get }
+Tetitulz.Pdf.Plugins.Maintenance.LinearizationOptions::.ctor()
+Tetitulz.Pdf.Plugins.Maintenance.LinearizationOptions::AllowSignatureInvalidation : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.LinearizerPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Maintenance.LinearizerPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Maintenance.LinearizerPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.LinearizerPlugin::Linearize(System.IO.Stream, System.IO.Stream) : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.LinearizerPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Maintenance.LinearizerPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.LinearizerPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::.ctor()
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::Aggressive : Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions { get }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::AllowSignatureInvalidation : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::Balanced : Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions { get }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::CleanContentStreams : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::CompressStreams : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::ConcatenateContentStreams : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::ConvertImagesToIndexed : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::Default : Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions { get }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::FlateCompressionLevel : System.IO.Compression.CompressionLevel { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::ImageOptimization : Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::Lossless : Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions { get }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::MaxObjectCount : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::MaxStreamDecodeBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::MergeImageStrips : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::NeverGrow : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::OptimizeJpegHuffmanTables : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::RecompressExistingStreams : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::RemoveAnnotations : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::RemoveDocumentStructure : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::RemoveDuplicates : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::RemoveMetadata : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::RemoveThumbnails : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::RemoveUnusedObjects : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::RemoveUnusedXObjectResources : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::RemoveXmpMetadata : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::ReplaceAsciiFilters : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::ReplaceLzwWithFlate : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::SubsetEmbeddedFonts : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::UseCcittForBilevelImages : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::UseJbig2ForBilevelImages : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::UseObjectStreams : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions::UsePngPredictorForImages : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::.ctor()
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::BilevelImagesRecompressed : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::BilevelImagesRecompressedAsJbig2 : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::BytesSaved : System.Int64 { get }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::CompressionRatio : System.Double { get }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::ContentStreamsClean : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::ContentStreamsMerged : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::DuplicatesRemoved : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::FellBackToInput : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::FontBytesSaved : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::FontsSubset : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::ImageFailures : System.Collections.Generic.IReadOnlyDictionary<System.Int32, System.Exception> { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::ImageStripsMerged : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::ImagesExamined : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::ImagesOptimized : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::ImagesPalettized : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::ImagesPredicted : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::InputBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::JpegImagesRecompressed : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::ObjectsPackedIntoStreams : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::ObjectsRemoved : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::OutputBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::StreamsCompressed : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::ToleratedFailures : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::UnreachableObjectsRemoved : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::UnusedXObjectResourcesRemoved : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult::XmpStreamsRemoved : System.Int32 { get; set }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizerPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Maintenance.OptimizerPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizerPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.OptimizerPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Maintenance.OptimizerPlugin::Optimize(System.IO.Stream, System.IO.Stream) : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.OptimizerPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.OptimizerPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Maintenance.PdfLinearizer::Linearize(System.IO.Stream, System.IO.Stream) : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.PdfLinearizer::Linearize(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.Maintenance.LinearizationOptions) : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.PdfLinearizer::Linearize(System.String, System.String) : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.PdfLinearizer::Linearize(System.String, System.String, Tetitulz.Pdf.Plugins.Maintenance.LinearizationOptions) : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizeResult::.ctor(System.Int64, System.Int64)
+Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizeResult::AfterBytes : System.Int64 { get }
+Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizeResult::BeforeBytes : System.Int64 { get }
+Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizeResult::BytesSaved : System.Int64 { get }
+Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizeResult::ReductionPct : System.Single { get }
+Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizer::Optimize(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions = default) : Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult
+Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizer::Optimize(System.String, System.String, Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions = default) : Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult
+Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizerWithMetrics::OptimizeWithMetrics(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions = default) : Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizeResult
+Tetitulz.Pdf.Plugins.Maintenance.RepairPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Maintenance.RepairPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Maintenance.RepairPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.RepairPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Maintenance.RepairPlugin::Repair(System.IO.Stream, System.IO.Stream) : Tetitulz.Pdf.Core.Plugins.PluginRepairResult
+Tetitulz.Pdf.Plugins.Maintenance.RepairPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.RepairPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Maintenance.SanitizerPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Maintenance.SanitizerPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Maintenance.SanitizerPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.SanitizerPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Maintenance.SanitizerPlugin::Sanitize(System.IO.Stream, System.IO.Stream) : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.SanitizerPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Maintenance.SanitizerPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.Maintenance.ImageOptimizationOptions
+class Tetitulz.Pdf.Plugins.Maintenance.LinearizationOptions
+class Tetitulz.Pdf.Plugins.Maintenance.LinearizerPlugin
+class Tetitulz.Pdf.Plugins.Maintenance.OptimizationOptions
+class Tetitulz.Pdf.Plugins.Maintenance.OptimizationResult
+class Tetitulz.Pdf.Plugins.Maintenance.OptimizerPlugin
+class Tetitulz.Pdf.Plugins.Maintenance.PdfLinearizer
+class Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizeResult
+class Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizer
+class Tetitulz.Pdf.Plugins.Maintenance.PdfOptimizerWithMetrics
+class Tetitulz.Pdf.Plugins.Maintenance.RepairPlugin
+class Tetitulz.Pdf.Plugins.Maintenance.SanitizerPlugin
+enum Tetitulz.Pdf.Plugins.Maintenance.ImageFormat

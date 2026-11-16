@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts can validate. It references only
+      Core/Base, which already ship that leg; the one construct that did not compile there was the
+      BCL's ReferenceEqualityComparer (.NET 5+), replaced by PdfReferenceEqualityComparer.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>PDF/A, PDF/X and PDF/UA validation and conversion for Tetitulz.Pdf, plus the dictionary-level accessibility checks and their fixer.</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.Conformance</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.Conformance</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- No plugin -> plugin reference (CLAUDE.md, "The reference invariant is acyclicity, not
+         direction"): the converters call PdfSanitizer.Sanitize in Core.Document, not through
+         Tetitulz.Pdf.Plugins.Maintenance, which would bring the whole maintenance assembly into
+         every downstream graph, features/Accessibility included. -->
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+</Project>

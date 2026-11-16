@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      netstandard2.0 alongside net10.0 so .NET Framework hosts get real PostScript/EPS content
+      instead of the hatched placeholder. This was the LAST project in src/ without a legacy leg.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>A pure-managed PostScript interpreter for Tetitulz.Pdf, used for Type 4 (PostScript calculator) functions and PostScript-to-PDF conversion.</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Plugins.PostScript</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.PostScript</AssemblyName>
+    <!-- Under the Tetitulz.Pdf Attribution License (/LICENSE-ATTRIBUTION.txt), not Apache-2.0. -->
+    <TetitulzAttributionLicense>true</TetitulzAttributionLicense>
+    <!-- Pure-managed PostScript interpreter. Converts embedded PostScript to a PDF content
+         stream, which the renderers execute through their form-XObject path: /Subtype /PS
+         XObjects and the legacy inline PS operator via IPostScriptPlugin, and .ps/.eps files
+         via IImportPlugin. No external interpreter, no native dependency.
+
+         Core only — the drawing surface (PdfRenderContext) is internal to Base, and the whole
+         point of returning a content stream is that the plugin never touches it. -->
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Tetitulz.Pdf.Plugins.PostScript.Tests" />
+  </ItemGroup>
+  <!--
+    DECLARED, not inherited. The netstandard2.0 leg's Span<T> / MemoryExtensions support currently
+    arrives only TRANSITIVELY, via Core -> System.Text.Encoding.CodePages. PsScanner and
+    PsNumberParser depend on it, so dropping CodePages from Core would break this project's build
+    for a reason with no visible connection to it. Version matched to the pin in
+    tools/package-consumption/Consumer — see the binding-redirect note there before changing it.
+  -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Memory" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+</Project>

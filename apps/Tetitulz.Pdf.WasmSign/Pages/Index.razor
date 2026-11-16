@@ -1,0 +1,108 @@
+@page "/"
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+
+<h1>Sign a PDF in the browser</h1>
+<p class="note">The document and the key never leave this page. Only the hash of the signature goes to
+    the host's <code>/tsa</code> relay, and only when a timestamp is asked for.</p>
+
+<fieldset disabled="@_busy">
+    <label>PDF <InputFile OnChange="OnPdf" accept=".pdf,application/pdf" /></label>
+    <label>Key (.pfx / .p12, optional) <InputFile OnChange="OnPfx" accept=".pfx,.p12" /></label>
+    <label>Password <input type="password" @bind="_password" /></label>
+    <label>Reason <input @bind="_reason" /></label>
+    <label><input type="checkbox" @bind="_timestamp" /> Add an RFC 3161 timestamp</label>
+    <button @onclick="SignAsync" disabled="@(_pdf == null)">Sign</button>
+</fieldset>
+
+@if (_pfx == null)
+{
+    <p class="note">No key chosen: a throwaway self-signed demo key is used. Its signature is intact but
+        trusted by no one.</p>
+}
+
+<pre id="out">@_log</pre>
+
+@if (_signed != null)
+{
+    <button @onclick="DownloadAsync">Download @_signedName</button>
+}
+
+@code {
+    private const long MaxPdfBytes = 64L * 1024 * 1024;
+    private const long MaxPfxBytes = 64 * 1024;
+
+    private byte[]? _pdf, _pfx, _signed;
+    private string _pdfName = "document.pdf", _signedName = "", _password = "", _reason = "Signed in the browser";
+    private bool _timestamp = true, _busy;
+    private string _log = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // ?selftest signs a built-in one-page PDF with a demo key and a timestamp, with no clicks -
+        // the headless check in the README drives this.
+        if (new Uri(Nav.Uri).Query.Contains("selftest"))
+        {
+            await Task.Yield();
+            _pdf = BrowserSigner.SamplePdf();
+            _pdfName = "sample.pdf";
+            await SignAsync();
+            _log += "SELFTEST-DONE\n";
+        }
+    }
+
+    private async Task OnPdf(InputFileChangeEventArgs e)
+    {
+        _pdf = await Read(e.File, MaxPdfBytes);
+        _pdfName = e.File.Name;
+        _signed = null;
+    }
+
+    private async Task OnPfx(InputFileChangeEventArgs e) => _pfx = await Read(e.File, MaxPfxBytes);
+
+    private static async Task<byte[]> Read(IBrowserFile file, long max)
+    {
+        var buffer = new MemoryStream();
+        await file.OpenReadStream(max).CopyToAsync(buffer);
+        return buffer.ToArray();
+    }
+
+    private async Task SignAsync()
+    {
+        if (_pdf == null) return;
+        _busy = true;
+        _signed = null;
+        _log = "";
+        try
+        {
+            SigningIdentity identity = _pfx == null
+                ? BrowserSigner.CreateDemoIdentity()
+                : BrowserSigner.LoadPkcs12(_pfx, _password);
+
+            SigningOutcome outcome = await BrowserSigner.SignAsync(_pdf, identity, _reason, _timestamp ? Http : null);
+            _signed = outcome.Pdf;
+            _signedName = Path.GetFileNameWithoutExtension(_pdfName) + "-signed.pdf";
+
+            _log += $"SIGNED {_signed.Length} bytes\n";
+            if (outcome.TimestampTime is DateTime at)
+                _log += $"TIMESTAMP {at:u} from {outcome.TimestampAuthority}\n";
+            foreach (var r in outcome.Verification)
+                _log += $"VERIFY field={r.FieldName} integrity={r.IsIntegrityValid} wholeDocument={r.CoversEntireDocument} signer={r.SignerCommonName}\n";
+        }
+        catch (Exception ex)
+        {
+            _log += $"FAILED {ex.GetType().Name}: {ex.Message}\n";
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task DownloadAsync()
+    {
+        if (_signed != null)
+            await JS.InvokeVoidAsync("wasmSign.save", _signedName, _signed);
+    }
+}

@@ -1,0 +1,763 @@
+Tetitulz.Pdf.Builder.CellBuilder::.ctor()
+Tetitulz.Pdf.Builder.CellBuilder::AddList(System.Action<Tetitulz.Pdf.Builder.ListBuilder>) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::AddListItem(System.Action<Tetitulz.Pdf.Builder.ListItemBuilder>) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::AddParagraph(System.Action<Tetitulz.Pdf.Builder.ParagraphBuilder>) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::AddTable(System.Action<Tetitulz.Pdf.Builder.TableBuilder>) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::Background(System.String) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::BorderBottom(Tetitulz.Pdf.Builder.Model.Border) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::BorderLeft(Tetitulz.Pdf.Builder.Model.Border) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::BorderRight(Tetitulz.Pdf.Builder.Model.Border) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::BorderTop(Tetitulz.Pdf.Builder.Model.Border) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::Borders(Tetitulz.Pdf.Builder.Model.Border) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::GridSpan(System.Int32) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::Header() : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::HeaderScope(Tetitulz.Pdf.Builder.Model.TableHeaderScope) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::Padding(System.Double, System.Double, System.Double, System.Double) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::VAlign(Tetitulz.Pdf.Builder.Model.CellVerticalAlign) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::VMerge(Tetitulz.Pdf.Builder.Model.VerticalMerge) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.CellBuilder::Width(System.Double) : Tetitulz.Pdf.Builder.CellBuilder
+Tetitulz.Pdf.Builder.DocumentBuilder::.ctor()
+Tetitulz.Pdf.Builder.DocumentBuilder::AddSection(System.Action<Tetitulz.Pdf.Builder.SectionBuilder>) : Tetitulz.Pdf.Builder.DocumentBuilder
+Tetitulz.Pdf.Builder.DocumentBuilder::Build() : Tetitulz.Pdf.Builder.Model.Document
+Tetitulz.Pdf.Builder.DocumentBuilder::Language(System.String) : Tetitulz.Pdf.Builder.DocumentBuilder
+Tetitulz.Pdf.Builder.DocumentBuilder::Tagged() : Tetitulz.Pdf.Builder.DocumentBuilder
+Tetitulz.Pdf.Builder.DocumentBuilder::WithAuthor(System.String) : Tetitulz.Pdf.Builder.DocumentBuilder
+Tetitulz.Pdf.Builder.DocumentBuilder::WithSubject(System.String) : Tetitulz.Pdf.Builder.DocumentBuilder
+Tetitulz.Pdf.Builder.DocumentBuilder::WithTitle(System.String) : Tetitulz.Pdf.Builder.DocumentBuilder
+Tetitulz.Pdf.Builder.Export.BuilderDiagnostic::.ctor(Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind, System.String, System.Exception = default)
+Tetitulz.Pdf.Builder.Export.BuilderDiagnostic::Detail : System.String { get }
+Tetitulz.Pdf.Builder.Export.BuilderDiagnostic::Exception : System.Exception { get }
+Tetitulz.Pdf.Builder.Export.BuilderDiagnostic::Kind : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind { get }
+Tetitulz.Pdf.Builder.Export.BuilderDiagnostic::ToString() : System.String
+Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::ContentApproximated : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind = 6
+Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::FontFormatRejected : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind = 3
+Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::FontNotResolved : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind = 1
+Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::GlyphMissing : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind = 2
+Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::ImageDecodeFailed : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind = 4
+Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::PageLimitReached : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind = 7
+Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::UnsupportedByExportFormat : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind = 5
+Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::value__ : System.Int32
+Tetitulz.Pdf.Builder.Export.BuilderDiagnostics::LastError : Tetitulz.Pdf.Builder.Export.BuilderDiagnostic { get }
+Tetitulz.Pdf.Builder.Export.BuilderDiagnostics::OnEvent : System.Action<Tetitulz.Pdf.Builder.Export.BuilderDiagnostic> (event)
+Tetitulz.Pdf.Builder.Export.BuilderFontRequest::.ctor(System.String, System.Boolean, System.Boolean, System.Collections.Generic.IReadOnlyList<System.Int32>)
+Tetitulz.Pdf.Builder.Export.BuilderFontRequest::Bold : System.Boolean { get }
+Tetitulz.Pdf.Builder.Export.BuilderFontRequest::FamilyName : System.String { get }
+Tetitulz.Pdf.Builder.Export.BuilderFontRequest::Italic : System.Boolean { get }
+Tetitulz.Pdf.Builder.Export.BuilderFontRequest::RequiredCodePoints : System.Collections.Generic.IReadOnlyList<System.Int32> { get }
+Tetitulz.Pdf.Builder.Export.BuilderFontRequest::ToString() : System.String
+Tetitulz.Pdf.Builder.Export.BuilderImageDecoder::CanDecode(System.Byte[], out System.String&) : System.Boolean
+Tetitulz.Pdf.Builder.Export.DocxExporter::.ctor()
+Tetitulz.Pdf.Builder.Export.DocxExporter::Export(Tetitulz.Pdf.Builder.Model.Document, System.IO.Stream) : System.Void
+Tetitulz.Pdf.Builder.Export.HtmlExporter::.ctor()
+Tetitulz.Pdf.Builder.Export.HtmlExporter::Export(Tetitulz.Pdf.Builder.Model.Document, System.IO.Stream) : System.Void
+Tetitulz.Pdf.Builder.Export.IDocumentExporter::Export(Tetitulz.Pdf.Builder.Model.Document, System.IO.Stream) : System.Void
+Tetitulz.Pdf.Builder.Export.OdtExporter::.ctor()
+Tetitulz.Pdf.Builder.Export.OdtExporter::Export(Tetitulz.Pdf.Builder.Model.Document, System.IO.Stream) : System.Void
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::.ctor()
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::AllowSystemFontSubstitution : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::ClampScale(System.Double) : System.Double
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::ContextualAlternates : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::DiscretionaryLigatures : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::FontProvider : System.Func<Tetitulz.Pdf.Builder.Export.BuilderFontRequest, System.Byte[]> { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::HalfLeading : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::HistoricalLigatures : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::Kerning : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::Ligatures : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::MaxPages : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::MaxUnsubsettableFontBytes : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::OnDiagnostic : System.Action<Tetitulz.Pdf.Builder.Export.BuilderDiagnostic> { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::Scale : System.Double { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::UnrenderableText : Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExporter::.ctor()
+Tetitulz.Pdf.Builder.Export.PdfExporter::.ctor(Tetitulz.Pdf.Builder.Export.PdfExportOptions)
+Tetitulz.Pdf.Builder.Export.PdfExporter::CanSplit(Tetitulz.Pdf.Builder.Model.Paragraph) : System.Boolean
+Tetitulz.Pdf.Builder.Export.PdfExporter::Export(Tetitulz.Pdf.Builder.Model.Document, System.IO.Stream) : System.Void
+Tetitulz.Pdf.Builder.Export.PdfExporter::LinesBeforeBreak(Tetitulz.Pdf.Builder.Model.Paragraph, System.Int32, System.Int32, System.Boolean) : System.Int32
+Tetitulz.Pdf.Builder.Export.PdfExporter::MeasureFirstBaseline(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Builder.Model.IDocElement>, System.Double) : System.Nullable<System.Double>
+Tetitulz.Pdf.Builder.Export.PdfExporter::MeasureFirstBaseline(Tetitulz.Pdf.Builder.Model.Paragraph, System.Double) : System.Double
+Tetitulz.Pdf.Builder.Export.PdfExporter::MeasureHeight(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Builder.Model.IDocElement>, System.Double) : System.Double
+Tetitulz.Pdf.Builder.Export.PdfExporter::MeasureLineHeights(Tetitulz.Pdf.Builder.Model.Paragraph, System.Double) : System.Collections.Generic.IReadOnlyList<System.Double>
+Tetitulz.Pdf.Builder.Export.PdfExporter::MeasureMinContentWidth(Tetitulz.Pdf.Builder.Model.ListBlock, System.Double) : System.Double
+Tetitulz.Pdf.Builder.Export.PdfExporter::MeasureMinContentWidth(Tetitulz.Pdf.Builder.Model.Paragraph, System.Double) : System.Double
+Tetitulz.Pdf.Builder.Export.PdfExporter::MeasureMinContentWidth(Tetitulz.Pdf.Builder.Model.Table, System.Double) : System.Nullable<System.Double>
+Tetitulz.Pdf.Builder.Export.PdfExporter::MeasureShrinkToFitWidth(Tetitulz.Pdf.Builder.Model.ListBlock, System.Double) : System.Double
+Tetitulz.Pdf.Builder.Export.PdfExporter::MeasureShrinkToFitWidth(Tetitulz.Pdf.Builder.Model.Paragraph, System.Double) : System.Double
+Tetitulz.Pdf.Builder.Export.PdfExporter::MeasureShrinkToFitWidth(Tetitulz.Pdf.Builder.Model.Table, System.Double) : System.Nullable<System.Double>
+Tetitulz.Pdf.Builder.Export.PdfExporter::MinFragmentLines(Tetitulz.Pdf.Builder.Model.Paragraph, System.Boolean, System.Boolean) : System.Int32
+Tetitulz.Pdf.Builder.Export.PdfExporter::NumPagesPlaceholder : System.String = "{{NUMPAGES}}"
+Tetitulz.Pdf.Builder.Export.PdfExporter::PagePlaceholder : System.String = "{{PAGE}}"
+Tetitulz.Pdf.Builder.Export.PdfExporter::PlacedFormFields : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Builder.Export.PlacedFormField> { get }
+Tetitulz.Pdf.Builder.Export.PdfExporter::SplitAtHeight(Tetitulz.Pdf.Builder.Model.Paragraph, System.Double, System.Double) : System.Nullable<System.ValueTuple<Tetitulz.Pdf.Builder.Model.Paragraph, Tetitulz.Pdf.Builder.Model.Paragraph>>
+Tetitulz.Pdf.Builder.Export.PdfExporter::SplitAtLines(Tetitulz.Pdf.Builder.Model.Paragraph, System.Double, System.Collections.Generic.IReadOnlyList<System.Int32>) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Builder.Model.Paragraph>
+Tetitulz.Pdf.Builder.Export.PlacedFormField::Field : Tetitulz.Pdf.Builder.Model.FormFieldSpec { get }
+Tetitulz.Pdf.Builder.Export.PlacedFormField::FontSize : System.Double { get }
+Tetitulz.Pdf.Builder.Export.PlacedFormField::Height : System.Double { get }
+Tetitulz.Pdf.Builder.Export.PlacedFormField::PageIndex : System.Int32 { get }
+Tetitulz.Pdf.Builder.Export.PlacedFormField::Width : System.Double { get }
+Tetitulz.Pdf.Builder.Export.PlacedFormField::X : System.Double { get }
+Tetitulz.Pdf.Builder.Export.PlacedFormField::Y : System.Double { get }
+Tetitulz.Pdf.Builder.Export.UnrenderableTextException::.ctor(System.String)
+Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy::Omit : Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy = 1
+Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy::Report : Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy = 0
+Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy::Throw : Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy = 2
+Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy::value__ : System.Int32
+Tetitulz.Pdf.Builder.HeaderFooterBuilder::.ctor()
+Tetitulz.Pdf.Builder.HeaderFooterBuilder::AddParagraph(System.Action<Tetitulz.Pdf.Builder.ParagraphBuilder>) : Tetitulz.Pdf.Builder.HeaderFooterBuilder
+Tetitulz.Pdf.Builder.Import.XfaContent::IsPresent(System.IO.Stream) : System.Boolean
+Tetitulz.Pdf.Builder.Import.XfaContent::LastError : System.String { get }
+Tetitulz.Pdf.Builder.Import.XfaContent::Read(System.IO.Stream, Tetitulz.Pdf.Builder.Import.XfaContentOptions = default) : Tetitulz.Pdf.Builder.Model.Document
+Tetitulz.Pdf.Builder.Import.XfaContentOptions::.ctor()
+Tetitulz.Pdf.Builder.Import.XfaContentOptions::IncludeEmptyValues : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Import.XfaContentOptions::Title : System.String { get; set }
+Tetitulz.Pdf.Builder.Import.XfaLayout::LastError : System.String { get }
+Tetitulz.Pdf.Builder.Import.XfaLayout::Read(System.IO.Stream, Tetitulz.Pdf.Builder.Import.XfaLayoutOptions = default) : Tetitulz.Pdf.Builder.Import.XfaLayoutResult
+Tetitulz.Pdf.Builder.Import.XfaLayoutOptions::.ctor()
+Tetitulz.Pdf.Builder.Import.XfaLayoutOptions::DrawEmptyFields : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Import.XfaLayoutResult::Approximations : System.Collections.Generic.IReadOnlyList<System.String> { get }
+Tetitulz.Pdf.Builder.Import.XfaLayoutResult::Document : Tetitulz.Pdf.Builder.Model.Document { get }
+Tetitulz.Pdf.Builder.Import.XfaLayoutResult::HasData : System.Boolean { get }
+Tetitulz.Pdf.Builder.Import.XfaLayoutResult::PageAreasUsed : System.Int32 { get }
+Tetitulz.Pdf.Builder.ListBuilder::.ctor()
+Tetitulz.Pdf.Builder.ListBuilder::AddItem(System.Action<Tetitulz.Pdf.Builder.ListItemBuilder>) : Tetitulz.Pdf.Builder.ListBuilder
+Tetitulz.Pdf.Builder.ListBuilder::AddItem(System.String) : Tetitulz.Pdf.Builder.ListBuilder
+Tetitulz.Pdf.Builder.ListBuilder::Direction(Tetitulz.Pdf.Builder.Model.TextDirection) : Tetitulz.Pdf.Builder.ListBuilder
+Tetitulz.Pdf.Builder.ListBuilder::Ordered() : Tetitulz.Pdf.Builder.ListBuilder
+Tetitulz.Pdf.Builder.ListBuilder::Rtl() : Tetitulz.Pdf.Builder.ListBuilder
+Tetitulz.Pdf.Builder.ListBuilder::StartAt(System.Int32) : Tetitulz.Pdf.Builder.ListBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::.ctor()
+Tetitulz.Pdf.Builder.ListItemBuilder::AddList(System.Action<Tetitulz.Pdf.Builder.ListBuilder>) : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::AddText(System.String) : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::Bold() : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::Color(System.String) : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::Direction(Tetitulz.Pdf.Builder.Model.TextDirection) : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::FontSize(System.Double) : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::Italic() : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::Level(System.Int32) : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::Marker(System.String) : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::Numbered() : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::Rtl() : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::Text(System.String) : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.ListItemBuilder::TextFormat(Tetitulz.Pdf.Builder.Model.TextRun) : Tetitulz.Pdf.Builder.ListItemBuilder
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::.ctor()
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::AnchorsLeft : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::AnchorsTop : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::BandAlign : Tetitulz.Pdf.Builder.Model.CellVerticalAlign { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::BandHeightPt : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::BottomFraction : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::BottomPt : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::CanFollow(Tetitulz.Pdf.Builder.Model.IDocElement, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Builder.Model.IDocElement>) : System.Boolean
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::ContainingBox : Tetitulz.Pdf.Builder.Model.BoxStart { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::EveryPage : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::Following : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.Paragraph> { get }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::FollowingBlocks : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.IDocElement> { get }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::LeftFraction : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::LeftPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::RightFraction : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::RightPt : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::TopFraction : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::TopPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::WidthFraction : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::WidthPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.AbsolutePlacement::ZIndex : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Model.BackgroundImage::.ctor()
+Tetitulz.Pdf.Builder.Model.BackgroundImage::Data : System.Byte[] { get; set }
+Tetitulz.Pdf.Builder.Model.BackgroundImage::HeightPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BackgroundImage::PositionX : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BackgroundImage::PositionY : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BackgroundImage::Repeat : Tetitulz.Pdf.Builder.Model.BackgroundRepeat { get; set }
+Tetitulz.Pdf.Builder.Model.BackgroundImage::Size : Tetitulz.Pdf.Builder.Model.BackgroundSize { get; set }
+Tetitulz.Pdf.Builder.Model.BackgroundImage::WidthPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BackgroundRepeat::NoRepeat : Tetitulz.Pdf.Builder.Model.BackgroundRepeat = 3
+Tetitulz.Pdf.Builder.Model.BackgroundRepeat::Repeat : Tetitulz.Pdf.Builder.Model.BackgroundRepeat = 0
+Tetitulz.Pdf.Builder.Model.BackgroundRepeat::RepeatX : Tetitulz.Pdf.Builder.Model.BackgroundRepeat = 1
+Tetitulz.Pdf.Builder.Model.BackgroundRepeat::RepeatY : Tetitulz.Pdf.Builder.Model.BackgroundRepeat = 2
+Tetitulz.Pdf.Builder.Model.BackgroundRepeat::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.BackgroundSize::Auto : Tetitulz.Pdf.Builder.Model.BackgroundSize = 0
+Tetitulz.Pdf.Builder.Model.BackgroundSize::Contain : Tetitulz.Pdf.Builder.Model.BackgroundSize = 2
+Tetitulz.Pdf.Builder.Model.BackgroundSize::Cover : Tetitulz.Pdf.Builder.Model.BackgroundSize = 1
+Tetitulz.Pdf.Builder.Model.BackgroundSize::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.Border::.ctor()
+Tetitulz.Pdf.Builder.Model.Border::.ctor(System.Double, System.String)
+Tetitulz.Pdf.Builder.Model.Border::Color : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Border::None : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Border::PaintedWidth(Tetitulz.Pdf.Builder.Model.Border) : System.Double
+Tetitulz.Pdf.Builder.Model.Border::Paints(Tetitulz.Pdf.Builder.Model.Border) : System.Boolean
+Tetitulz.Pdf.Builder.Model.Border::Width : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxEnd::.ctor()
+Tetitulz.Pdf.Builder.Model.BoxEnd::IndexOfStart(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Builder.Model.IDocElement>, System.Int32) : System.Int32
+Tetitulz.Pdf.Builder.Model.BoxShadow::.ctor()
+Tetitulz.Pdf.Builder.Model.BoxShadow::BlurPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxShadow::Color : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.BoxShadow::Inset : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.BoxShadow::OffsetXPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxShadow::OffsetYPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxShadow::SpreadPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::.ctor()
+Tetitulz.Pdf.Builder.Model.BoxStart::BackgroundImage : Tetitulz.Pdf.Builder.Model.BackgroundImage { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::BorderBottom : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::BorderLeft : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::BorderRight : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::BorderTop : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::ClearFloats : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::ClipsContent : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::ContentAlign : Tetitulz.Pdf.Builder.Model.CellVerticalAlign { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::CornerRadiiPercent : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::CornerRadiiPt : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::CornerRadiiYPercent : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::CornerRadiiYPt : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::CornerRadiusPercent : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::CornerRadiusPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::Float : Tetitulz.Pdf.Builder.Model.FloatSide { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::FloatWidth : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::IndexOfEnd(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Builder.Model.IDocElement>, System.Int32, System.Int32 = default) : System.Int32
+Tetitulz.Pdf.Builder.Model.BoxStart::KeepTogether : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::KeepWithNext : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::MarginBottom : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::MarginLeft : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::MarginRight : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::MarginTop : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::MinHeightPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::MoreShadows : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.BoxShadow> { get }
+Tetitulz.Pdf.Builder.Model.BoxStart::Opacity : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::PaddingBottom : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::PaddingLeft : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::PaddingRight : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::PaddingTop : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::Shading : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::Shadow : Tetitulz.Pdf.Builder.Model.BoxShadow { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::StretchesToCell : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::Transform : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::TransformOrigin : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::WidthAtEnd : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::WidthFraction : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.BoxStart::WidthPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.CellVerticalAlign::Baseline : Tetitulz.Pdf.Builder.Model.CellVerticalAlign = 3
+Tetitulz.Pdf.Builder.Model.CellVerticalAlign::Bottom : Tetitulz.Pdf.Builder.Model.CellVerticalAlign = 2
+Tetitulz.Pdf.Builder.Model.CellVerticalAlign::Center : Tetitulz.Pdf.Builder.Model.CellVerticalAlign = 1
+Tetitulz.Pdf.Builder.Model.CellVerticalAlign::Top : Tetitulz.Pdf.Builder.Model.CellVerticalAlign = 0
+Tetitulz.Pdf.Builder.Model.CellVerticalAlign::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.ContentArea::.ctor()
+Tetitulz.Pdf.Builder.Model.ContentArea::HeightPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.ContentArea::LeftPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.ContentArea::TopPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.ContentArea::WidthPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Document::.ctor()
+Tetitulz.Pdf.Builder.Model.Document::Author : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Document::Language : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Document::SaveAsDocx(System.IO.Stream) : System.Void
+Tetitulz.Pdf.Builder.Model.Document::SaveAsHtml(System.IO.Stream) : System.Void
+Tetitulz.Pdf.Builder.Model.Document::SaveAsOdt(System.IO.Stream) : System.Void
+Tetitulz.Pdf.Builder.Model.Document::SaveAsPdf(System.IO.Stream) : System.Void
+Tetitulz.Pdf.Builder.Model.Document::SaveAsPdf(System.IO.Stream, Tetitulz.Pdf.Builder.Export.PdfExportOptions) : System.Void
+Tetitulz.Pdf.Builder.Model.Document::Sections : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.Section> { get }
+Tetitulz.Pdf.Builder.Model.Document::Subject : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Document::Tagged : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Document::Title : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Document::ToDocx() : System.Byte[]
+Tetitulz.Pdf.Builder.Model.Document::ToHtml() : System.Byte[]
+Tetitulz.Pdf.Builder.Model.Document::ToOdt() : System.Byte[]
+Tetitulz.Pdf.Builder.Model.Document::ToPdf() : System.Byte[]
+Tetitulz.Pdf.Builder.Model.Document::ToPdf(Tetitulz.Pdf.Builder.Export.PdfExportOptions) : System.Byte[]
+Tetitulz.Pdf.Builder.Model.FloatSide::Left : Tetitulz.Pdf.Builder.Model.FloatSide = 1
+Tetitulz.Pdf.Builder.Model.FloatSide::None : Tetitulz.Pdf.Builder.Model.FloatSide = 0
+Tetitulz.Pdf.Builder.Model.FloatSide::Right : Tetitulz.Pdf.Builder.Model.FloatSide = 2
+Tetitulz.Pdf.Builder.Model.FloatSide::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.Footer::.ctor()
+Tetitulz.Pdf.Builder.Model.Footer::Blocks : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.IDocElement> { get }
+Tetitulz.Pdf.Builder.Model.Footer::Content() : System.Collections.Generic.IEnumerable<Tetitulz.Pdf.Builder.Model.IDocElement>
+Tetitulz.Pdf.Builder.Model.Footer::Paragraphs : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.Paragraph> { get }
+Tetitulz.Pdf.Builder.Model.Footnote::.ctor()
+Tetitulz.Pdf.Builder.Model.Footnote::Mark : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Footnote::MarkFormat : Tetitulz.Pdf.Builder.Model.TextRun { get; set }
+Tetitulz.Pdf.Builder.Model.Footnote::Placement : Tetitulz.Pdf.Builder.Model.NotePlacement { get; set }
+Tetitulz.Pdf.Builder.Model.Footnote::Runs : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.IInlineElement> { get }
+Tetitulz.Pdf.Builder.Model.FormFieldKind::Checkbox : Tetitulz.Pdf.Builder.Model.FormFieldKind = 1
+Tetitulz.Pdf.Builder.Model.FormFieldKind::ComboBox : Tetitulz.Pdf.Builder.Model.FormFieldKind = 2
+Tetitulz.Pdf.Builder.Model.FormFieldKind::ListBox : Tetitulz.Pdf.Builder.Model.FormFieldKind = 3
+Tetitulz.Pdf.Builder.Model.FormFieldKind::RadioButton : Tetitulz.Pdf.Builder.Model.FormFieldKind = 4
+Tetitulz.Pdf.Builder.Model.FormFieldKind::Text : Tetitulz.Pdf.Builder.Model.FormFieldKind = 0
+Tetitulz.Pdf.Builder.Model.FormFieldKind::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.FormFieldOption::.ctor(System.String, System.String)
+Tetitulz.Pdf.Builder.Model.FormFieldOption::Text : System.String { get }
+Tetitulz.Pdf.Builder.Model.FormFieldOption::Value : System.String { get }
+Tetitulz.Pdf.Builder.Model.FormFieldSpec::.ctor()
+Tetitulz.Pdf.Builder.Model.FormFieldSpec::IsChecked : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.FormFieldSpec::Kind : Tetitulz.Pdf.Builder.Model.FormFieldKind { get; set }
+Tetitulz.Pdf.Builder.Model.FormFieldSpec::MaxLength : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Model.FormFieldSpec::MultiSelect : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.FormFieldSpec::Multiline : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.FormFieldSpec::Name : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.FormFieldSpec::Options : System.Collections.Generic.IList<Tetitulz.Pdf.Builder.Model.FormFieldOption> { get }
+Tetitulz.Pdf.Builder.Model.FormFieldSpec::Password : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.FormFieldSpec::ReadOnly : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.FormFieldSpec::Value : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Header::.ctor()
+Tetitulz.Pdf.Builder.Model.Header::Blocks : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.IDocElement> { get }
+Tetitulz.Pdf.Builder.Model.Header::Content() : System.Collections.Generic.IEnumerable<Tetitulz.Pdf.Builder.Model.IDocElement>
+Tetitulz.Pdf.Builder.Model.Header::Paragraphs : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.Paragraph> { get }
+Tetitulz.Pdf.Builder.Model.ImageOrientation::FlipHorizontal : Tetitulz.Pdf.Builder.Model.ImageOrientation = 2
+Tetitulz.Pdf.Builder.Model.ImageOrientation::FlipVertical : Tetitulz.Pdf.Builder.Model.ImageOrientation = 4
+Tetitulz.Pdf.Builder.Model.ImageOrientation::Normal : Tetitulz.Pdf.Builder.Model.ImageOrientation = 1
+Tetitulz.Pdf.Builder.Model.ImageOrientation::Rotate180 : Tetitulz.Pdf.Builder.Model.ImageOrientation = 3
+Tetitulz.Pdf.Builder.Model.ImageOrientation::Rotate90Anticlockwise : Tetitulz.Pdf.Builder.Model.ImageOrientation = 8
+Tetitulz.Pdf.Builder.Model.ImageOrientation::Rotate90Clockwise : Tetitulz.Pdf.Builder.Model.ImageOrientation = 6
+Tetitulz.Pdf.Builder.Model.ImageOrientation::Transpose : Tetitulz.Pdf.Builder.Model.ImageOrientation = 5
+Tetitulz.Pdf.Builder.Model.ImageOrientation::Transverse : Tetitulz.Pdf.Builder.Model.ImageOrientation = 7
+Tetitulz.Pdf.Builder.Model.ImageOrientation::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.ImageRun::.ctor()
+Tetitulz.Pdf.Builder.Model.ImageRun::Alt : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.ImageRun::Box : Tetitulz.Pdf.Builder.Model.InlineBox { get; set }
+Tetitulz.Pdf.Builder.Model.ImageRun::Data : System.Byte[] { get; set }
+Tetitulz.Pdf.Builder.Model.ImageRun::Drawing : Tetitulz.Pdf.Builder.Model.VectorDrawing { get; set }
+Tetitulz.Pdf.Builder.Model.ImageRun::HeightPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.ImageRun::IsDecorative : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.ImageRun::Orientation : Tetitulz.Pdf.Builder.Model.ImageOrientation { get; set }
+Tetitulz.Pdf.Builder.Model.ImageRun::WidthPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::.ctor()
+Tetitulz.Pdf.Builder.Model.InlineBox::Background : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::BackgroundImage : Tetitulz.Pdf.Builder.Model.BackgroundImage { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::Border : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::CornerRadiiPercent : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::CornerRadiiPt : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::CornerRadiiYPercent : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::CornerRadiiYPt : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::CornerRadiusPercent : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::CornerRadiusPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::MarginBottom : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::MarginLeft : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::MarginRight : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::MarginTop : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::OccupiesLine : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::PaddingBottom : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::PaddingLeft : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::PaddingRight : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.InlineBox::PaddingTop : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.LineBreak::.ctor()
+Tetitulz.Pdf.Builder.Model.ListBlock::.ctor()
+Tetitulz.Pdf.Builder.Model.ListBlock::ContinuesPrevious : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.ListBlock::Direction : System.Nullable<Tetitulz.Pdf.Builder.Model.TextDirection> { get; set }
+Tetitulz.Pdf.Builder.Model.ListBlock::IsOrdered : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.ListBlock::Items : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.ListItem> { get }
+Tetitulz.Pdf.Builder.Model.ListBlock::NestingDepth : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Model.ListBlock::SpacingAfter : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.ListBlock::SpacingBefore : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.ListBlock::Start : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Model.ListBlock::TextIndentPt : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.ListItem::.ctor()
+Tetitulz.Pdf.Builder.Model.ListItem::DefaultSpacingAfterPt : System.Double = 2
+Tetitulz.Pdf.Builder.Model.ListItem::Direction : System.Nullable<Tetitulz.Pdf.Builder.Model.TextDirection> { get; set }
+Tetitulz.Pdf.Builder.Model.ListItem::IsNumbered : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.ListItem::Level : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Model.ListItem::LineHeightFactor : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.ListItem::LineSpacingPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.ListItem::Marker : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.ListItem::MarkerFormat : Tetitulz.Pdf.Builder.Model.TextRun { get; set }
+Tetitulz.Pdf.Builder.Model.ListItem::Runs : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.IInlineElement> { get }
+Tetitulz.Pdf.Builder.Model.ListItem::SpacingAfter : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.ListItem::Sublist : Tetitulz.Pdf.Builder.Model.ListBlock { get; set }
+Tetitulz.Pdf.Builder.Model.ListItem::Text : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.ListItem::TextFormat : Tetitulz.Pdf.Builder.Model.TextRun { get; set }
+Tetitulz.Pdf.Builder.Model.NotePlacement::DocumentEnd : Tetitulz.Pdf.Builder.Model.NotePlacement = 1
+Tetitulz.Pdf.Builder.Model.NotePlacement::PageFoot : Tetitulz.Pdf.Builder.Model.NotePlacement = 0
+Tetitulz.Pdf.Builder.Model.NotePlacement::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.PageBorders::.ctor()
+Tetitulz.Pdf.Builder.Model.PageBorders::Bottom : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.PageBorders::Left : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.PageBorders::OffsetFromPage : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.PageBorders::Right : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.PageBorders::SpaceBottom : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.PageBorders::SpaceLeft : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.PageBorders::SpaceRight : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.PageBorders::SpaceTop : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.PageBorders::Top : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.PageBreak::.ctor()
+Tetitulz.Pdf.Builder.Model.PageContentBox::Fit(System.Double, System.Double, System.Double, out System.Boolean&) : System.ValueTuple<System.Double, System.Double>
+Tetitulz.Pdf.Builder.Model.PageContentBox::MinContentPt : System.Double = 36
+Tetitulz.Pdf.Builder.Model.Paragraph::.ctor()
+Tetitulz.Pdf.Builder.Model.Paragraph::Alignment : Tetitulz.Pdf.Builder.Model.TextAlignment { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::AnchorName : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::BackgroundImage : Tetitulz.Pdf.Builder.Model.BackgroundImage { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::BorderBottom : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::BorderLeft : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::BorderRight : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::BorderTop : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::BoxInsetBottom : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::BoxInsetIsExact : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::BoxInsetLeft : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::BoxInsetRight : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::BoxInsetTop : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::ClearFloats : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::CloneWithoutRuns() : Tetitulz.Pdf.Builder.Model.Paragraph
+Tetitulz.Pdf.Builder.Model.Paragraph::CornerRadiiPercent : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::CornerRadiiPt : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::CornerRadiiYPercent : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::CornerRadiiYPt : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::CornerRadiusPercent : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::CornerRadiusPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::DefaultBoxInsetPt : System.Double = 2
+Tetitulz.Pdf.Builder.Model.Paragraph::Direction : System.Nullable<Tetitulz.Pdf.Builder.Model.TextDirection> { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::FirstLineIndent : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::Float : Tetitulz.Pdf.Builder.Model.FloatSide { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::FloatWidth : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::Hyphenate : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::IndentLeft : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::IndentRight : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::IsArtifact : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::KeepTogether : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::KeepWithNext : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::LineHeightFactor : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::LineSpacingPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::MoreShadows : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.BoxShadow> { get }
+Tetitulz.Pdf.Builder.Model.Paragraph::Opacity : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::Orphans : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::PageBreakBefore : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::Placement : Tetitulz.Pdf.Builder.Model.AbsolutePlacement { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::Role : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::Runs : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.IInlineElement> { get }
+Tetitulz.Pdf.Builder.Model.Paragraph::Shading : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::Shadow : Tetitulz.Pdf.Builder.Model.BoxShadow { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::SpacingAfter : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::SpacingBefore : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::Tabs : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.TabStop> { get }
+Tetitulz.Pdf.Builder.Model.Paragraph::Transform : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::TransformOrigin : System.Double[] { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::Widows : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::WidthAtEnd : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::WidthFraction : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.Paragraph::WidthPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.PathCommand::C1X : System.Double { get }
+Tetitulz.Pdf.Builder.Model.PathCommand::C1Y : System.Double { get }
+Tetitulz.Pdf.Builder.Model.PathCommand::C2X : System.Double { get }
+Tetitulz.Pdf.Builder.Model.PathCommand::C2Y : System.Double { get }
+Tetitulz.Pdf.Builder.Model.PathCommand::Close() : Tetitulz.Pdf.Builder.Model.PathCommand
+Tetitulz.Pdf.Builder.Model.PathCommand::CurveTo(System.Double, System.Double, System.Double, System.Double, System.Double, System.Double) : Tetitulz.Pdf.Builder.Model.PathCommand
+Tetitulz.Pdf.Builder.Model.PathCommand::LineTo(System.Double, System.Double) : Tetitulz.Pdf.Builder.Model.PathCommand
+Tetitulz.Pdf.Builder.Model.PathCommand::MoveTo(System.Double, System.Double) : Tetitulz.Pdf.Builder.Model.PathCommand
+Tetitulz.Pdf.Builder.Model.PathCommand::Verb : Tetitulz.Pdf.Builder.Model.PathVerb { get }
+Tetitulz.Pdf.Builder.Model.PathCommand::X : System.Double { get }
+Tetitulz.Pdf.Builder.Model.PathCommand::Y : System.Double { get }
+Tetitulz.Pdf.Builder.Model.PathVerb::Close : Tetitulz.Pdf.Builder.Model.PathVerb = 3
+Tetitulz.Pdf.Builder.Model.PathVerb::CurveTo : Tetitulz.Pdf.Builder.Model.PathVerb = 2
+Tetitulz.Pdf.Builder.Model.PathVerb::LineTo : Tetitulz.Pdf.Builder.Model.PathVerb = 1
+Tetitulz.Pdf.Builder.Model.PathVerb::MoveTo : Tetitulz.Pdf.Builder.Model.PathVerb = 0
+Tetitulz.Pdf.Builder.Model.PathVerb::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.Section::.ctor()
+Tetitulz.Pdf.Builder.Model.Section::Children : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.IDocElement> { get }
+Tetitulz.Pdf.Builder.Model.Section::ContentAreas : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.ContentArea> { get }
+Tetitulz.Pdf.Builder.Model.Section::Direction : Tetitulz.Pdf.Builder.Model.TextDirection { get; set }
+Tetitulz.Pdf.Builder.Model.Section::EvenAndOddHeaders : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Section::EvenPageFooter : Tetitulz.Pdf.Builder.Model.Footer { get; set }
+Tetitulz.Pdf.Builder.Model.Section::EvenPageHeader : Tetitulz.Pdf.Builder.Model.Header { get; set }
+Tetitulz.Pdf.Builder.Model.Section::FirstPageFooter : Tetitulz.Pdf.Builder.Model.Footer { get; set }
+Tetitulz.Pdf.Builder.Model.Section::FirstPageHeader : Tetitulz.Pdf.Builder.Model.Header { get; set }
+Tetitulz.Pdf.Builder.Model.Section::Footer : Tetitulz.Pdf.Builder.Model.Footer { get; set }
+Tetitulz.Pdf.Builder.Model.Section::Header : Tetitulz.Pdf.Builder.Model.Header { get; set }
+Tetitulz.Pdf.Builder.Model.Section::MarginBottom : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Section::MarginLeft : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Section::MarginRight : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Section::MarginTop : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Section::PageBorders : Tetitulz.Pdf.Builder.Model.PageBorders { get; set }
+Tetitulz.Pdf.Builder.Model.Section::PageHeightPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Section::PageNumberFormat : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Section::PageNumberStart : System.Nullable<System.Int32> { get; set }
+Tetitulz.Pdf.Builder.Model.Section::PageWidthPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Section::RightToLeftLayout : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Section::TitlePage : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TabAlignment::Center : Tetitulz.Pdf.Builder.Model.TabAlignment = 1
+Tetitulz.Pdf.Builder.Model.TabAlignment::Decimal : Tetitulz.Pdf.Builder.Model.TabAlignment = 3
+Tetitulz.Pdf.Builder.Model.TabAlignment::Left : Tetitulz.Pdf.Builder.Model.TabAlignment = 0
+Tetitulz.Pdf.Builder.Model.TabAlignment::Right : Tetitulz.Pdf.Builder.Model.TabAlignment = 2
+Tetitulz.Pdf.Builder.Model.TabAlignment::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.TabLeader::Dot : Tetitulz.Pdf.Builder.Model.TabLeader = 1
+Tetitulz.Pdf.Builder.Model.TabLeader::Hyphen : Tetitulz.Pdf.Builder.Model.TabLeader = 2
+Tetitulz.Pdf.Builder.Model.TabLeader::None : Tetitulz.Pdf.Builder.Model.TabLeader = 0
+Tetitulz.Pdf.Builder.Model.TabLeader::Underscore : Tetitulz.Pdf.Builder.Model.TabLeader = 3
+Tetitulz.Pdf.Builder.Model.TabLeader::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.TabRun::.ctor()
+Tetitulz.Pdf.Builder.Model.TabStop::.ctor()
+Tetitulz.Pdf.Builder.Model.TabStop::Align : Tetitulz.Pdf.Builder.Model.TabAlignment { get; set }
+Tetitulz.Pdf.Builder.Model.TabStop::Leader : Tetitulz.Pdf.Builder.Model.TabLeader { get; set }
+Tetitulz.Pdf.Builder.Model.TabStop::LeaderText : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.TabStop::PosPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Table::.ctor()
+Tetitulz.Pdf.Builder.Model.Table::Alignment : System.Nullable<Tetitulz.Pdf.Builder.Model.TextAlignment> { get; set }
+Tetitulz.Pdf.Builder.Model.Table::AutoLayout : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Table::BorderColor : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.Table::BorderWidth : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Table::CellSpacingPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Table::ColumnWidths : System.Collections.Generic.List<System.Double> { get }
+Tetitulz.Pdf.Builder.Model.Table::DefaultMinRowHeightPt : System.Double = 16
+Tetitulz.Pdf.Builder.Model.Table::DefaultSpacingAfterPt : System.Double = 4
+Tetitulz.Pdf.Builder.Model.Table::KeepTogether : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Table::KeepWithNext : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Table::MinRowHeightPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Table::OuterBorderOnly : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Table::RepeatHeaderRow : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Table::RowSpacingPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Table::Rows : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.TableRow> { get }
+Tetitulz.Pdf.Builder.Model.Table::RtlColumns : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Table::ShrinkToContent : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.Table::SpacingAfter : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Table::SpacingBefore : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.Table::WidthPt : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::.ctor()
+Tetitulz.Pdf.Builder.Model.TableCell::BackgroundColor : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::Blocks : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.IDocElement> { get }
+Tetitulz.Pdf.Builder.Model.TableCell::BorderBottom : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::BorderLeft : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::BorderRight : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::BorderTop : Tetitulz.Pdf.Builder.Model.Border { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::Content() : System.Collections.Generic.IEnumerable<Tetitulz.Pdf.Builder.Model.IDocElement>
+Tetitulz.Pdf.Builder.Model.TableCell::DefaultPaddingPt : System.Double = 3
+Tetitulz.Pdf.Builder.Model.TableCell::GridSpan : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::HeaderScope : Tetitulz.Pdf.Builder.Model.TableHeaderScope { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::InnerPaddingPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::IsHeader : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::MarginBottom : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::MarginLeft : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::MarginRight : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::MarginTop : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::Paragraphs : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.Paragraph> { get }
+Tetitulz.Pdf.Builder.Model.TableCell::VAlign : Tetitulz.Pdf.Builder.Model.CellVerticalAlign { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::VMerge : Tetitulz.Pdf.Builder.Model.VerticalMerge { get; set }
+Tetitulz.Pdf.Builder.Model.TableCell::WidthPt : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.TableHeaderScope::Both : Tetitulz.Pdf.Builder.Model.TableHeaderScope = 3
+Tetitulz.Pdf.Builder.Model.TableHeaderScope::Column : Tetitulz.Pdf.Builder.Model.TableHeaderScope = 2
+Tetitulz.Pdf.Builder.Model.TableHeaderScope::None : Tetitulz.Pdf.Builder.Model.TableHeaderScope = 0
+Tetitulz.Pdf.Builder.Model.TableHeaderScope::Row : Tetitulz.Pdf.Builder.Model.TableHeaderScope = 1
+Tetitulz.Pdf.Builder.Model.TableHeaderScope::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.TableRow::.ctor()
+Tetitulz.Pdf.Builder.Model.TableRow::Cells : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.TableCell> { get }
+Tetitulz.Pdf.Builder.Model.TableRow::ExactHeight : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TableRow::HeightPt : System.Nullable<System.Double> { get; set }
+Tetitulz.Pdf.Builder.Model.TableRow::IsHeader : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TextAlignment::Center : Tetitulz.Pdf.Builder.Model.TextAlignment = 1
+Tetitulz.Pdf.Builder.Model.TextAlignment::End : Tetitulz.Pdf.Builder.Model.TextAlignment = 5
+Tetitulz.Pdf.Builder.Model.TextAlignment::Justify : Tetitulz.Pdf.Builder.Model.TextAlignment = 3
+Tetitulz.Pdf.Builder.Model.TextAlignment::Left : Tetitulz.Pdf.Builder.Model.TextAlignment = 0
+Tetitulz.Pdf.Builder.Model.TextAlignment::Right : Tetitulz.Pdf.Builder.Model.TextAlignment = 2
+Tetitulz.Pdf.Builder.Model.TextAlignment::Start : Tetitulz.Pdf.Builder.Model.TextAlignment = 4
+Tetitulz.Pdf.Builder.Model.TextAlignment::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.TextDirection::Auto : Tetitulz.Pdf.Builder.Model.TextDirection = 2
+Tetitulz.Pdf.Builder.Model.TextDirection::LeftToRight : Tetitulz.Pdf.Builder.Model.TextDirection = 0
+Tetitulz.Pdf.Builder.Model.TextDirection::RightToLeft : Tetitulz.Pdf.Builder.Model.TextDirection = 1
+Tetitulz.Pdf.Builder.Model.TextDirection::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.TextRun::.ctor()
+Tetitulz.Pdf.Builder.Model.TextRun::BaselineShift : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::Box : Tetitulz.Pdf.Builder.Model.InlineBox { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::CharSpacing : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::Clone() : Tetitulz.Pdf.Builder.Model.TextRun
+Tetitulz.Pdf.Builder.Model.TextRun::Color : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::ContextualAlternates : System.Nullable<System.Boolean> { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::DiscretionaryLigatures : System.Nullable<System.Boolean> { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::FontName : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::FontSize : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::FormField : Tetitulz.Pdf.Builder.Model.FormFieldSpec { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::Highlight : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::HistoricalLigatures : System.Nullable<System.Boolean> { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::HorizontalScale : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::IsAllCaps : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::IsBold : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::IsDoubleStrike : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::IsInvisible : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::IsItalic : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::IsSmallCaps : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::IsStrikethrough : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::IsUnderline : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::Kerning : System.Nullable<System.Boolean> { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::Ligatures : System.Nullable<System.Boolean> { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::LinkAnchor : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::LinkUri : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::Opacity : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::Text : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.TextRun::VerticalAlign : Tetitulz.Pdf.Builder.Model.VerticalAlign { get; set }
+Tetitulz.Pdf.Builder.Model.TocBlock::.ctor()
+Tetitulz.Pdf.Builder.Model.TocBlock::DottedLeader : System.Boolean { get; set }
+Tetitulz.Pdf.Builder.Model.TocBlock::LevelIndentPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.TocBlock::MaxLevel : System.Int32 { get; set }
+Tetitulz.Pdf.Builder.Model.TocBlock::Title : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.VectorDrawing::.ctor()
+Tetitulz.Pdf.Builder.Model.VectorDrawing::FillColor : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.VectorDrawing::Path : System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.PathCommand> { get }
+Tetitulz.Pdf.Builder.Model.VectorDrawing::StrokeColor : System.String { get; set }
+Tetitulz.Pdf.Builder.Model.VectorDrawing::StrokeWidthPt : System.Double { get; set }
+Tetitulz.Pdf.Builder.Model.VerticalAlign::Baseline : Tetitulz.Pdf.Builder.Model.VerticalAlign = 0
+Tetitulz.Pdf.Builder.Model.VerticalAlign::Subscript : Tetitulz.Pdf.Builder.Model.VerticalAlign = 2
+Tetitulz.Pdf.Builder.Model.VerticalAlign::Superscript : Tetitulz.Pdf.Builder.Model.VerticalAlign = 1
+Tetitulz.Pdf.Builder.Model.VerticalAlign::value__ : System.Int32
+Tetitulz.Pdf.Builder.Model.VerticalMerge::Continue : Tetitulz.Pdf.Builder.Model.VerticalMerge = 2
+Tetitulz.Pdf.Builder.Model.VerticalMerge::None : Tetitulz.Pdf.Builder.Model.VerticalMerge = 0
+Tetitulz.Pdf.Builder.Model.VerticalMerge::Restart : Tetitulz.Pdf.Builder.Model.VerticalMerge = 1
+Tetitulz.Pdf.Builder.Model.VerticalMerge::value__ : System.Int32
+Tetitulz.Pdf.Builder.ParagraphBuilder::.ctor()
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddDecorativeImage(System.Byte[], System.Double, System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddEndnote(System.Action<System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.IInlineElement>>, System.String = default) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddEndnote(System.String, System.String = default) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddFootnote(System.Action<System.Collections.Generic.List<Tetitulz.Pdf.Builder.Model.IInlineElement>>, System.String = default) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddFootnote(System.String, System.String = default) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddImage(System.Byte[], System.Double, System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddImage(System.Byte[], System.Double, System.Double, System.String) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddLineBreak() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddPageBreak() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddTab() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddTabStop(System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddTabStop(System.Double, Tetitulz.Pdf.Builder.Model.TabAlignment, Tetitulz.Pdf.Builder.Model.TabLeader) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AddText(System.String) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Alignment(Tetitulz.Pdf.Builder.Model.TextAlignment) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::AllCaps() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Artifact() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::BackgroundImage(Tetitulz.Pdf.Builder.Model.BackgroundImage) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::BaselineShift(System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Bold() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::BorderBottom(Tetitulz.Pdf.Builder.Model.Border) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::BorderLeft(Tetitulz.Pdf.Builder.Model.Border) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::BorderRight(Tetitulz.Pdf.Builder.Model.Border) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::BorderTop(Tetitulz.Pdf.Builder.Model.Border) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Borders(Tetitulz.Pdf.Builder.Model.Border) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::CharSpacing(System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Color(System.String) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Direction(Tetitulz.Pdf.Builder.Model.TextDirection) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::DoubleStrike() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::FontName(System.String) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::FontSize(System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Highlight(System.String) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::HorizontalScale(System.Int32) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Indent(System.Double, System.Double = default) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::IndentRight(System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Italic() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::LineSpacing(System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Link(System.String) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Opacity(System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::PageBreakBefore() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Role(System.String) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Rtl() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Shading(System.String) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::SmallCaps() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::SpacingAfter(System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::SpacingBefore(System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Strikethrough() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Subscript() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Superscript() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::TextOpacity(System.Double) : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.ParagraphBuilder::Underline() : Tetitulz.Pdf.Builder.ParagraphBuilder
+Tetitulz.Pdf.Builder.RowBuilder::.ctor()
+Tetitulz.Pdf.Builder.RowBuilder::AddCell(System.Action<Tetitulz.Pdf.Builder.CellBuilder>) : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.RowBuilder::AddCell(System.String) : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.RowBuilder::Bold() : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.RowBuilder::Color(System.String) : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.RowBuilder::ExactHeight(System.Double) : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.RowBuilder::FontName(System.String) : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.RowBuilder::FontSize(System.Double) : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.RowBuilder::Header() : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.RowBuilder::Height(System.Double) : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.RowBuilder::Italic() : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.RowBuilder::Strikethrough() : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.RowBuilder::Underline() : Tetitulz.Pdf.Builder.RowBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::.ctor()
+Tetitulz.Pdf.Builder.SectionBuilder::AddList(System.Action<Tetitulz.Pdf.Builder.ListBuilder>) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::AddListItem(System.Action<Tetitulz.Pdf.Builder.ListItemBuilder>) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::AddListItem(System.String, System.Boolean = default, System.Int32 = default) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::AddParagraph(System.Action<Tetitulz.Pdf.Builder.ParagraphBuilder>) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::AddTable(System.Action<Tetitulz.Pdf.Builder.TableBuilder>) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::AddTableOfContents(System.String = default, System.Int32 = default) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::Direction(Tetitulz.Pdf.Builder.Model.TextDirection) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::EvenAndOddHeaders() : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::EvenPageFooter(System.Action<Tetitulz.Pdf.Builder.HeaderFooterBuilder>) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::EvenPageHeader(System.Action<Tetitulz.Pdf.Builder.HeaderFooterBuilder>) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::FirstPageFooter(System.Action<Tetitulz.Pdf.Builder.HeaderFooterBuilder>) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::FirstPageHeader(System.Action<Tetitulz.Pdf.Builder.HeaderFooterBuilder>) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::Footer(System.Action<Tetitulz.Pdf.Builder.HeaderFooterBuilder>) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::Header(System.Action<Tetitulz.Pdf.Builder.HeaderFooterBuilder>) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::Margins(System.Double, System.Double, System.Double, System.Double) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::PageBorders(Tetitulz.Pdf.Builder.Model.PageBorders) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::PageNumberFormat(System.String) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::PageNumberStart(System.Int32) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::PageSize(System.Double, System.Double) : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::Rtl() : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.SectionBuilder::TitlePage() : Tetitulz.Pdf.Builder.SectionBuilder
+Tetitulz.Pdf.Builder.TableBuilder::.ctor()
+Tetitulz.Pdf.Builder.TableBuilder::AddRow(System.Action<Tetitulz.Pdf.Builder.RowBuilder>) : Tetitulz.Pdf.Builder.TableBuilder
+Tetitulz.Pdf.Builder.TableBuilder::BorderColor(System.String) : Tetitulz.Pdf.Builder.TableBuilder
+Tetitulz.Pdf.Builder.TableBuilder::BorderWidth(System.Double) : Tetitulz.Pdf.Builder.TableBuilder
+Tetitulz.Pdf.Builder.TableBuilder::ColumnWidths(System.Double[]) : Tetitulz.Pdf.Builder.TableBuilder
+Tetitulz.Pdf.Builder.TableBuilder::OuterBorderOnly() : Tetitulz.Pdf.Builder.TableBuilder
+Tetitulz.Pdf.Builder.TableBuilder::RepeatHeaderRow() : Tetitulz.Pdf.Builder.TableBuilder
+Tetitulz.Pdf.Builder.TableBuilder::RtlColumns() : Tetitulz.Pdf.Builder.TableBuilder
+Tetitulz.Pdf.Builder.TableBuilder::Width(System.Double) : Tetitulz.Pdf.Builder.TableBuilder
+class Tetitulz.Pdf.Builder.CellBuilder
+class Tetitulz.Pdf.Builder.DocumentBuilder
+class Tetitulz.Pdf.Builder.Export.BuilderDiagnostic
+class Tetitulz.Pdf.Builder.Export.BuilderDiagnostics
+class Tetitulz.Pdf.Builder.Export.BuilderFontRequest
+class Tetitulz.Pdf.Builder.Export.BuilderImageDecoder
+class Tetitulz.Pdf.Builder.Export.DocxExporter
+class Tetitulz.Pdf.Builder.Export.HtmlExporter
+class Tetitulz.Pdf.Builder.Export.OdtExporter
+class Tetitulz.Pdf.Builder.Export.PdfExportOptions
+class Tetitulz.Pdf.Builder.Export.PdfExporter
+class Tetitulz.Pdf.Builder.Export.PlacedFormField
+class Tetitulz.Pdf.Builder.Export.UnrenderableTextException
+class Tetitulz.Pdf.Builder.HeaderFooterBuilder
+class Tetitulz.Pdf.Builder.Import.XfaContent
+class Tetitulz.Pdf.Builder.Import.XfaContentOptions
+class Tetitulz.Pdf.Builder.Import.XfaLayout
+class Tetitulz.Pdf.Builder.Import.XfaLayoutOptions
+class Tetitulz.Pdf.Builder.Import.XfaLayoutResult
+class Tetitulz.Pdf.Builder.ListBuilder
+class Tetitulz.Pdf.Builder.ListItemBuilder
+class Tetitulz.Pdf.Builder.Model.AbsolutePlacement
+class Tetitulz.Pdf.Builder.Model.BackgroundImage
+class Tetitulz.Pdf.Builder.Model.Border
+class Tetitulz.Pdf.Builder.Model.BoxEnd
+class Tetitulz.Pdf.Builder.Model.BoxShadow
+class Tetitulz.Pdf.Builder.Model.BoxStart
+class Tetitulz.Pdf.Builder.Model.ContentArea
+class Tetitulz.Pdf.Builder.Model.Document
+class Tetitulz.Pdf.Builder.Model.Footer
+class Tetitulz.Pdf.Builder.Model.Footnote
+class Tetitulz.Pdf.Builder.Model.FormFieldOption
+class Tetitulz.Pdf.Builder.Model.FormFieldSpec
+class Tetitulz.Pdf.Builder.Model.Header
+class Tetitulz.Pdf.Builder.Model.ImageRun
+class Tetitulz.Pdf.Builder.Model.InlineBox
+class Tetitulz.Pdf.Builder.Model.LineBreak
+class Tetitulz.Pdf.Builder.Model.ListBlock
+class Tetitulz.Pdf.Builder.Model.ListItem
+class Tetitulz.Pdf.Builder.Model.PageBorders
+class Tetitulz.Pdf.Builder.Model.PageBreak
+class Tetitulz.Pdf.Builder.Model.PageContentBox
+class Tetitulz.Pdf.Builder.Model.Paragraph
+class Tetitulz.Pdf.Builder.Model.Section
+class Tetitulz.Pdf.Builder.Model.TabRun
+class Tetitulz.Pdf.Builder.Model.TabStop
+class Tetitulz.Pdf.Builder.Model.Table
+class Tetitulz.Pdf.Builder.Model.TableCell
+class Tetitulz.Pdf.Builder.Model.TableRow
+class Tetitulz.Pdf.Builder.Model.TextRun
+class Tetitulz.Pdf.Builder.Model.TocBlock
+class Tetitulz.Pdf.Builder.Model.VectorDrawing
+class Tetitulz.Pdf.Builder.ParagraphBuilder
+class Tetitulz.Pdf.Builder.RowBuilder
+class Tetitulz.Pdf.Builder.SectionBuilder
+class Tetitulz.Pdf.Builder.TableBuilder
+enum Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind
+enum Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy
+enum Tetitulz.Pdf.Builder.Model.BackgroundRepeat
+enum Tetitulz.Pdf.Builder.Model.BackgroundSize
+enum Tetitulz.Pdf.Builder.Model.CellVerticalAlign
+enum Tetitulz.Pdf.Builder.Model.FloatSide
+enum Tetitulz.Pdf.Builder.Model.FormFieldKind
+enum Tetitulz.Pdf.Builder.Model.ImageOrientation
+enum Tetitulz.Pdf.Builder.Model.NotePlacement
+enum Tetitulz.Pdf.Builder.Model.PathVerb
+enum Tetitulz.Pdf.Builder.Model.TabAlignment
+enum Tetitulz.Pdf.Builder.Model.TabLeader
+enum Tetitulz.Pdf.Builder.Model.TableHeaderScope
+enum Tetitulz.Pdf.Builder.Model.TextAlignment
+enum Tetitulz.Pdf.Builder.Model.TextDirection
+enum Tetitulz.Pdf.Builder.Model.VerticalAlign
+enum Tetitulz.Pdf.Builder.Model.VerticalMerge
+interface Tetitulz.Pdf.Builder.Export.IDocumentExporter
+interface Tetitulz.Pdf.Builder.Model.IDocElement
+interface Tetitulz.Pdf.Builder.Model.IInlineElement
+struct Tetitulz.Pdf.Builder.Model.PathCommand

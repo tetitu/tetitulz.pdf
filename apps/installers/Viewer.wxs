@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Tetitulz PDF Viewer: one template for the 32-bit and the 64-bit MSI, filled in by build.ps1 with -arch
+  and -d variables:
+    AppName        the name in Apps, the Start menu and the wizard ("(32-bit)" added for x86)
+    PayloadDir     the viewer published self-contained for the architecture, with its licence texts
+    IconFile       the viewer's .ico
+    LicenseRtf     the licence the wizard shows
+    ProductVersion a.b.c
+
+  Both MSIs share one upgrade code, so one replaces the other: a machine has one viewer installed.
+  Into Program Files (Program Files (x86) for the 32-bit MSI on 64-bit Windows), per machine.
+
+  Features, chosen on the wizard's Custom Setup page:
+    Main            the viewer, its Start menu shortcut
+    Associate       a PDF file type that opens in the viewer (Open with), its entry in Default apps,
+                    and File Explorer's preview through the viewer while it is the default
+      MakeDefault   on a user's first start, the viewer offers once to become the default PDF app and
+                    opens Default apps at its entry (Windows lets only the user make that choice)
+    ExplorerPreview the viewer as .pdf's preview handler in File Explorer, whatever app opens PDFs —
+                    in place of the one .pdf had; uninstalling removes it, and Windows shows no PDF
+                    preview until another program registers one
+
+  The names here are the program's own (Shell\ShellIdentity.cs); ShellIntegrationTests holds the two to
+  each other. Built with the self-compiled WiX 7 (build.ps1); test each MSI on a VM, an upgrade from the
+  other architecture included, before it goes out.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <?define ExeName = "TetitulzPdfViewer.exe" ?>
+  <?define ProgId = "Tetitulz.PdfViewer.Document" ?>
+  <?define PreviewClsid = "{4CFF0BCE-5B8E-48CD-8BEE-4B85F6C0B932}" ?>
+  <?define PreviewShellEx = "{8895b1c6-b41f-4c1c-a562-0d564250836f}" ?>
+  <?define RegisteredName = "Tetitulz PDF Viewer" ?>
+  <?define CapabilitiesKey = "Software\Tetitulz\PDF Viewer\Capabilities" ?>
+
+  <Package Name="$(AppName)"
+           Manufacturer="Tetitulz"
+           Version="$(ProductVersion)"
+           UpgradeCode="2A1613B6-3F24-4F55-B3D5-F24495A3606C"
+           Language="1033"
+           Scope="perMachine"
+           InstallerVersion="500">
+
+    <SummaryInformation Description="$(AppName) installer" />
+
+    <MajorUpgrade AllowSameVersionUpgrades="yes" Schedule="afterInstallInitialize"
+                  DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="AppIcon.ico" SourceFile="$(IconFile)" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+    <SetProperty Id="ARPINSTALLLOCATION" Value="[APPDIR]" After="CostFinalize" />
+
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="CompanyDir" Name="Tetitulz">
+        <Directory Id="APPDIR" Name="PDF Viewer" />
+      </Directory>
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+
+    <Feature Id="Main" Title="Tetitulz PDF Viewer" Description="The viewer and its Start menu shortcut."
+             Level="1" AllowAbsent="no" Display="expand" ConfigurableDirectory="APPDIR">
+      <ComponentGroupRef Id="PayloadFiles" />
+      <ComponentRef Id="StartMenuShortcut" />
+
+      <Feature Id="Associate" Title="Open PDF files with it"
+               Description="Lists the viewer in Open with and in Default apps, and lets File Explorer preview PDFs in it while it is your PDF app."
+               Level="1" Display="expand">
+        <ComponentRef Id="Association" />
+        <ComponentRef Id="PreviewServer" />
+
+        <Feature Id="MakeDefault" Title="Make it the default PDF app"
+                 Description="On your first start the viewer offers to become the app that opens PDF files, and opens Windows' Default apps at it. Windows lets only you make that choice."
+                 Level="1">
+          <ComponentRef Id="OfferDefault" />
+        </Feature>
+      </Feature>
+
+      <Feature Id="ExplorerPreview" Title="Preview PDF files in File Explorer"
+               Description="Shows PDFs in File Explorer's preview pane with this viewer, whichever app opens them, in place of the preview Windows has now."
+               Level="1">
+        <ComponentRef Id="PreviewServer" />
+        <ComponentRef Id="PdfPreviewHandler" />
+      </Feature>
+    </Feature>
+
+    <ComponentGroup Id="PayloadFiles" Directory="APPDIR">
+      <Files Include="$(PayloadDir)\**" />
+    </ComponentGroup>
+
+    <Component Id="StartMenuShortcut" Directory="ProgramMenuFolder">
+      <Shortcut Id="AppShortcut" Name="Tetitulz PDF Viewer" Target="[APPDIR]$(ExeName)"
+                WorkingDirectory="APPDIR" Icon="AppIcon.ico" />
+      <!-- HKCU: the Start menu counts as the user's profile to the installer's checks (ICE38, ICE43, ICE57). -->
+      <RegistryValue Root="HKCU" Key="Software\Tetitulz\PDF Viewer" Name="StartMenuShortcut"
+                     Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <!-- The file type, Open with, and the viewer's entry in Default apps. -->
+    <Component Id="Association" Directory="APPDIR">
+      <RegistryKey Root="HKLM" Key="Software\Classes\$(ProgId)">
+        <RegistryValue Type="string" Value="PDF Document" KeyPath="yes" />
+        <RegistryValue Name="FriendlyTypeName" Type="string" Value="PDF Document" />
+        <RegistryValue Key="DefaultIcon" Type="string" Value="&quot;[APPDIR]$(ExeName)&quot;,0" />
+        <RegistryValue Key="shell\open\command" Type="string" Value="&quot;[APPDIR]$(ExeName)&quot; &quot;%1&quot;" />
+        <!-- File Explorer's preview while the viewer opens PDFs. -->
+        <RegistryValue Key="shellex\$(PreviewShellEx)" Type="string" Value="$(PreviewClsid)" />
+      </RegistryKey>
+      <RegistryValue Root="HKLM" Key="Software\Classes\.pdf\OpenWithProgids" Name="$(ProgId)" Type="string" Value="" />
+      <RegistryKey Root="HKLM" Key="Software\Classes\Applications\$(ExeName)">
+        <RegistryValue Name="FriendlyAppName" Type="string" Value="$(RegisteredName)" />
+        <RegistryValue Key="SupportedTypes" Name=".pdf" Type="string" Value="" />
+        <RegistryValue Key="shell\open\command" Type="string" Value="&quot;[APPDIR]$(ExeName)&quot; &quot;%1&quot;" />
+      </RegistryKey>
+      <RegistryKey Root="HKLM" Key="$(CapabilitiesKey)">
+        <RegistryValue Name="ApplicationName" Type="string" Value="$(RegisteredName)" />
+        <RegistryValue Name="ApplicationDescription" Type="string" Value="Read, fill, mark up, sign and convert PDF files." />
+        <RegistryValue Name="ApplicationIcon" Type="string" Value="&quot;[APPDIR]$(ExeName)&quot;,0" />
+        <RegistryValue Key="FileAssociations" Name=".pdf" Type="string" Value="$(ProgId)" />
+      </RegistryKey>
+      <RegistryValue Root="HKLM" Key="Software\RegisteredApplications" Name="$(RegisteredName)" Type="string" Value="$(CapabilitiesKey)" />
+    </Component>
+
+    <!-- The preview handler's class: the viewer itself, started by COM with -Embedding (an out-of-process server). -->
+    <Component Id="PreviewServer" Directory="APPDIR">
+      <RegistryKey Root="HKLM" Key="Software\Classes\CLSID\$(PreviewClsid)">
+        <RegistryValue Type="string" Value="Tetitulz PDF preview" KeyPath="yes" />
+        <RegistryValue Name="DisplayName" Type="string" Value="Tetitulz PDF preview" />
+        <RegistryValue Key="LocalServer32" Type="string" Value="&quot;[APPDIR]$(ExeName)&quot;" />
+      </RegistryKey>
+      <RegistryValue Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\PreviewHandlers"
+                     Name="$(PreviewClsid)" Type="string" Value="Tetitulz PDF preview" />
+    </Component>
+
+    <!-- .pdf's own preview handler: the viewer, whichever app opens PDFs. -->
+    <Component Id="PdfPreviewHandler" Directory="APPDIR">
+      <RegistryValue Root="HKLM" Key="Software\Classes\.pdf\shellex\$(PreviewShellEx)" Type="string"
+                     Value="$(PreviewClsid)" KeyPath="yes" />
+    </Component>
+
+    <!-- Read by the viewer on a user's first start: offer once to become the default PDF app. -->
+    <Component Id="OfferDefault" Directory="APPDIR">
+      <RegistryValue Root="HKLM" Key="Software\Tetitulz\PDF Viewer" Name="OfferToBecomeDefault"
+                     Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <!-- Welcome -> licence -> custom setup (the features, the folder) -> install -> finish, with "Start". -->
+    <WixVariable Id="WixUILicenseRtf" Value="$(LicenseRtf)" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <SetProperty Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Start Tetitulz PDF Viewer" Sequence="ui"
+                 Before="CostFinalize" Condition="NOT Installed" />
+    <UI>
+      <ui:WixUI Id="WixUI_FeatureTree" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="SetLaunchTarget" Order="1"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApp" Order="2"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+    </UI>
+
+    <CustomAction Id="SetLaunchTarget" Property="WixShellExecTarget" Value="[APPDIR]$(ExeName)" />
+    <CustomAction Id="LaunchApp" DllEntry="WixShellExec" Impersonate="yes" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)" />
+  </Package>
+</Wix>

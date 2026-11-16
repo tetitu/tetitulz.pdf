@@ -1,0 +1,375 @@
+M.typeof	string:function
+M.keys(new)	string:a,b,c,concat,d,fromRotated,h,invert,rotate,scale,transform,translate,v
+M.keys(proto)	string:
+M.new()	string:1,0,0,1,,,0,0,,
+M.new(1..6)	string:1,2,3,4,,,5,6,,
+M.toString	string:[object Object]
+M.concat	string:25,28,57,64,,,100,112
+M.concat.mutates	string:false|1,2,3,4
+M.invert	string:0.5,0,0,0.25,,,-5,-5
+M.invert.mutates	string:false|2,4
+M.invert.singular	string:1,0,0,1
+M.transform([x,y])	string:object|75,106
+M.transform([[x,y],[x,y]])	string:75,106,9,12
+M.transform([x1,y1,x2,y2])	string:75,106,9,12
+M.fromRotated(this,0)	string:1,0,0,1,,,0,0
+M.fromRotated(this,1)	string:1,0,0,1,,,0,0
+M.fromRotated(this,2)	throw:TypeError:Invalid argument type.
+M.fromRotated.returns	boolean:false
+M.methods	string:concat,fromRotated,invert,rotate,scale,transform,translate
+D.AFParseDateEx('1/2/00',m/d/yy)	string:2000-1-2
+D.AFParseDateEx('1/2/29',m/d/yy)	string:2029-1-2
+D.AFParseDateEx('1/2/30',m/d/yy)	string:2030-1-2
+D.AFParseDateEx('1/2/49',m/d/yy)	string:2049-1-2
+D.AFParseDateEx('1/2/50',m/d/yy)	string:1950-1-2
+D.AFParseDateEx('1/2/69',m/d/yy)	string:1969-1-2
+D.AFParseDateEx('1/2/70',m/d/yy)	string:1970-1-2
+D.AFParseDateEx('1/2/99',m/d/yy)	string:1999-1-2
+D.printd(''d' d')	string:'4' 4
+D.printd(''day' d')	string:'4a' 4
+D.printd('\d d')	string:d 4
+D.printd('\\ d')	string: 4
+D.printd('d 'mmm' m')	string:4 'Mar' 3
+D.printd('''')	string:''
+D.printd(''')	string:'
+D.scand('mmm d, yyyy','March 4 2026')	string:2026-3-4 0:0
+D.scand('mmm d, yyyy','Mar 4, 2026')	string:2026-3-4 0:0
+D.scand('m/d/yyyy','2026-03-04')	object:null
+D.scand('yyyy-mm-dd','2026/3/4')	string:2026-3-4 0:0
+D.scand('m/d/yyyy','13/4/2026')	object:null
+D.scand('m/d/yyyy','2/30/2026')	object:null
+D.scand('m/d','3/4')	string:2026-3-4 0:0
+D.scand('HH:MM','13:05')	object:null
+D.scand('h:MM tt','1:05 pm')	object:null
+D.scand('m/d/yyyy','3/4')	string:2026-3-4 0:0
+D.scand('d/m/yyyy x','3/4/2026')	string:2026-4-3 0:0
+D.scand('m/d/yyyy','3.4.2026 extra 99')	object:null
+P.tooFew	throw:InvalidArgsError:Invalid arguments.
+P.%d 1234567	string:1234567
+P.%f 1234.5	string:1234.500000
+P.%.2f 1234.5	string:1234.50
+P.%,0d 1234567	string:1,234,567
+P.%,1d 1234567	string:1234567
+P.%s 12	string:12
+P.%5s	string:[ab]
+P.%%	string:100%%
+P.% d	string:[ 5]
+P.%x -255	string:!
+P.%d '12abc'	string:-2147483648
+P.%f 'x'	string:1.#QNAN0
+P.%.3f 0.0005	string:0.001
+P.%.0f 0.5	string:1
+P.%.0f -0.5	string:-1
+P.%.0f -1.5	string:-2
+P.%e	string:%e
+S.AVG(p1..p3)	string:number/0.666667
+S.SUM(p1..p3)	string:number/2
+S.MIN(p1..p3)	number:0
+S.PRD(p1..p3)	number:0
+S.SUM(grp)	number:7
+S.SUM(missing)	throw:TypeError:f is null
+A.replaceAlert	string:kept
+A.range(both)	string:(none)
+A.range(gt)	string:(none)
+A.range(lt)	string:(none)
+A.range.rc	boolean:false
+A.dateKeystroke	string:(none)
+A.numberKeystroke	string:(none)
+A.numberKeystroke.rc	boolean:false
+A.specialKeystroke	string:(none)
+A.event.willCommit settable	boolean:true
+E.eMailValidate('a@b.com')	boolean:true
+E.eMailValidate('a.b+c@d-e.co.uk')	boolean:true
+E.eMailValidate('a@b')	boolean:false
+E.eMailValidate('@b.com')	boolean:false
+E.eMailValidate('a b@c.com')	boolean:false
+E.eMailValidate('a@b..com')	boolean:false
+E.eMailValidate('A@B.COM')	boolean:true
+E.eMailValidate('a@b.c')	boolean:false
+F.pb.alignment	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.borderStyle	string:solid
+F.pb.buttonAlignX	number:50
+F.pb.buttonAlignY	number:50
+F.pb.buttonFitBounds	boolean:false
+F.pb.buttonPosition	number:0
+F.pb.buttonScaleHow	number:0
+F.pb.buttonScaleWhen	number:0
+F.pb.calcOrderIndex	number:-1
+F.pb.charLimit	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.comb	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.commitOnSelChange	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.currentValueIndices	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.defaultStyle	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.defaultValue	string:
+F.pb.doNotScroll	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.doNotSpellCheck	boolean:false
+F.pb.display	number:0
+F.pb.editable	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.exportValues	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.fileSelect	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.fillColor	string:[T]
+F.pb.hidden	boolean:false
+F.pb.highlight	string:invert
+F.pb.lineWidth	number:1
+F.pb.multiline	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.multipleSelection	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.numItems	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.page	number:0
+F.pb.password	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.print	boolean:true
+F.pb.radiosInUnison	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.readonly	boolean:false
+F.pb.rect	string:[36,720,136,700]
+F.pb.required	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.richText	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.richValue	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.rotation	number:0
+F.pb.strokeColor	string:[T]
+F.pb.style	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.pb.submitName	string:
+F.pb.textColor	string:[G,0]
+F.pb.textFont	string:Helvetica
+F.pb.textSize	number:8
+F.pb.type	string:button
+F.pb.userName	string:
+F.pb.value	string:
+F.pb.valueAsString	string:
+F.cb.alignment	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.borderStyle	string:solid
+F.cb.buttonAlignX	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.buttonAlignY	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.buttonFitBounds	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.buttonPosition	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.buttonScaleHow	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.buttonScaleWhen	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.calcOrderIndex	number:-1
+F.cb.charLimit	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.comb	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.commitOnSelChange	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.currentValueIndices	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.defaultStyle	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.defaultValue	string:Off
+F.cb.doNotScroll	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.doNotSpellCheck	boolean:false
+F.cb.display	number:0
+F.cb.editable	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.exportValues	string:[Yes]
+F.cb.fileSelect	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.fillColor	string:[T]
+F.cb.hidden	boolean:false
+F.cb.highlight	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.lineWidth	number:1
+F.cb.multiline	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.multipleSelection	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.numItems	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.page	number:0
+F.cb.password	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.print	boolean:true
+F.cb.radiosInUnison	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.readonly	boolean:false
+F.cb.rect	string:[150,720,170,700]
+F.cb.required	boolean:false
+F.cb.richText	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.richValue	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.cb.rotation	number:0
+F.cb.strokeColor	string:[T]
+F.cb.style	string:check
+F.cb.submitName	string:
+F.cb.textColor	string:[G,0]
+F.cb.textFont	string:ZapfDingbats
+F.cb.textSize	number:0
+F.cb.type	string:checkbox
+F.cb.userName	string:
+F.cb.value	string:Yes
+F.cb.valueAsString	string:Yes
+F.rb.alignment	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.borderStyle	string:solid
+F.rb.buttonAlignX	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.buttonAlignY	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.buttonFitBounds	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.buttonPosition	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.buttonScaleHow	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.buttonScaleWhen	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.calcOrderIndex	number:-1
+F.rb.charLimit	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.comb	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.commitOnSelChange	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.currentValueIndices	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.defaultStyle	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.defaultValue	string:Off
+F.rb.doNotScroll	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.doNotSpellCheck	boolean:false
+F.rb.display	number:0
+F.rb.editable	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.exportValues	string:[A,B]
+F.rb.fileSelect	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.fillColor	string:[T]
+F.rb.hidden	boolean:false
+F.rb.highlight	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.lineWidth	number:1
+F.rb.multiline	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.multipleSelection	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.numItems	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.page	string:[0,1]
+F.rb.password	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.print	boolean:true
+F.rb.radiosInUnison	boolean:false
+F.rb.readonly	boolean:false
+F.rb.rect	string:[200,720,220,700]
+F.rb.required	boolean:false
+F.rb.richText	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.richValue	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.rb.rotation	number:0
+F.rb.strokeColor	string:[T]
+F.rb.style	string:circle
+F.rb.submitName	string:
+F.rb.textColor	string:[G,0]
+F.rb.textFont	string:ZapfDingbats
+F.rb.textSize	number:0
+F.rb.type	string:radiobutton
+F.rb.userName	string:
+F.rb.value	string:B
+F.rb.valueAsString	string:B
+F.co.alignment	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.borderStyle	string:solid
+F.co.buttonAlignX	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.buttonAlignY	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.buttonFitBounds	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.buttonPosition	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.buttonScaleHow	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.buttonScaleWhen	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.calcOrderIndex	number:-1
+F.co.charLimit	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.comb	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.commitOnSelChange	boolean:false
+F.co.currentValueIndices	number:1
+F.co.defaultStyle	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.defaultValue	string:
+F.co.doNotScroll	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.doNotSpellCheck	boolean:false
+F.co.display	number:0
+F.co.editable	boolean:false
+F.co.exportValues	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.fileSelect	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.fillColor	string:[T]
+F.co.hidden	boolean:false
+F.co.highlight	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.lineWidth	number:1
+F.co.multiline	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.multipleSelection	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.numItems	number:2
+F.co.page	number:0
+F.co.password	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.print	boolean:true
+F.co.radiosInUnison	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.readonly	boolean:false
+F.co.rect	string:[250,720,350,700]
+F.co.required	boolean:false
+F.co.richText	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.richValue	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.rotation	number:0
+F.co.strokeColor	string:[T]
+F.co.style	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.co.submitName	string:
+F.co.textColor	string:[G,0]
+F.co.textFont	string:Helvetica
+F.co.textSize	number:8
+F.co.type	string:combobox
+F.co.userName	string:
+F.co.value	number:2
+F.co.valueAsString	string:2
+F.li.alignment	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.borderStyle	string:solid
+F.li.buttonAlignX	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.buttonAlignY	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.buttonFitBounds	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.buttonPosition	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.buttonScaleHow	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.buttonScaleWhen	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.calcOrderIndex	number:-1
+F.li.charLimit	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.comb	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.commitOnSelChange	boolean:false
+F.li.currentValueIndices	number:1
+F.li.defaultStyle	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.defaultValue	string:
+F.li.doNotScroll	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.doNotSpellCheck	boolean:false
+F.li.display	number:0
+F.li.editable	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.exportValues	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.fileSelect	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.fillColor	string:[T]
+F.li.hidden	boolean:false
+F.li.highlight	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.lineWidth	number:1
+F.li.multiline	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.multipleSelection	boolean:false
+F.li.numItems	number:3
+F.li.page	number:0
+F.li.password	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.print	boolean:true
+F.li.radiosInUnison	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.readonly	boolean:false
+F.li.rect	string:[360,720,460,660]
+F.li.required	boolean:false
+F.li.richText	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.richValue	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.rotation	number:0
+F.li.strokeColor	string:[T]
+F.li.style	throw:InvalidGetError:Get not possible, invalid or unknown.
+F.li.submitName	string:
+F.li.textColor	string:[G,0]
+F.li.textFont	string:Helvetica
+F.li.textSize	number:8
+F.li.type	string:listbox
+F.li.userName	string:
+F.li.value	string:b
+F.li.valueAsString	string:b
+F.pb.buttonGetCaption()	string:PB Caption
+F.pb.buttonGetCaption(1)	string:PB Down
+F.pb.buttonGetCaption(2)	string:PB Rollover
+F.cb.isBoxChecked(0)	number:1
+F.rb.exportValues	string:A,B
+F.rb.0.rect	string:200,720,220,700
+F.rb.1.rect	string:300,520,320,500
+F.rb.1.page	number:1
+F.rb.2	object:null
+F.rb.page	string:[0,1]
+F.co.getItemAt(1)	string:2
+F.co.getItemAt(1,false)	string:Two
+F.co.getItemAt(-1)	string:2
+F.co.getItemAt(9)	string:2
+F.co.value	number:2
+F.grp	string:grp
+F.grp.type	string:
+F.grp.value	string:
+F.grp.getArray	string:grp.a,grp.b
+F.getField(missing)	object:null
+F.numFields	number:13
+F.getNthFieldName(all)	string:cb,co,grp.a,grp.b,ival,li,p1,p2,p3,pb,rb,results,timer
+I.author	string:Probe Author
+I.title	string:Probe Two
+I.subject	string:Probe subject
+I.keywords	string:probe, two
+I.creator	string:Tetitulz probe
+I.producer	string:Tetitulz
+I.creationDate	string:Date:2026-3-4 13:5
+I.modDate	string:Date:2026-10-29 7:12
+I.info.keys	string:Author,Authors,ContactEmail,CreationDate,Creator,Custom,Keywords,ModDate,Producer,Subject,Title
+I.info.Author	string:Probe Author
+I.info.author	string:Probe Author
+I.info.Custom	string:custom value
+I.dataObjects	number:1
+I.dataObjects[0].keys	string:MIMEType,creationDate,description,getFieldValue,modDate,name,path,setFieldValue,size,toString,valueOf
+I.dataObjects[0].name	string:hello.txt
+I.dataObjects[0].path	string:hello.txt
+I.dataObjects[0].size	number:11
+I.dataObjects[0].MIMEType	string:text/plain
+I.dataObjects[0].description	string:A test attachment
+I.dataObjects[0].creationDate	string:Date:2026
+I.dataObjects[0].modDate	string:Date:2026
+I.getDataObject(name)	string:hello.txt
+I.getDataObjectContents	string:hello world
+T.setTimeOut	string:object|
+T.setInterval	string:started

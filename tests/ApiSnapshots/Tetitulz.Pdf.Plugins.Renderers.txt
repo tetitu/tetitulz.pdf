@@ -1,0 +1,10 @@
+Tetitulz.Pdf.Plugins.Renderers.SkiaSharpRendererPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Renderers.SkiaSharpRendererPlugin::CanRender(Tetitulz.Pdf.Core.Document.PdfPage, Tetitulz.Pdf.Core.Document.PdfDocument) : System.Boolean
+Tetitulz.Pdf.Plugins.Renderers.SkiaSharpRendererPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Renderers.SkiaSharpRendererPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Renderers.SkiaSharpRendererPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Renderers.SkiaSharpRendererPlugin::Priority : System.Int32 { get }
+Tetitulz.Pdf.Plugins.Renderers.SkiaSharpRendererPlugin::RenderPage(Tetitulz.Pdf.Core.Document.PdfPage, Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32) : System.Byte[]
+Tetitulz.Pdf.Plugins.Renderers.SkiaSharpRendererPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Renderers.SkiaSharpRendererPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.Renderers.SkiaSharpRendererPlugin

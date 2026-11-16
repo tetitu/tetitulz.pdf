@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Decryption and encryption for Tetitulz.Pdf - RC4 and AES handlers, /Perms validation, and the two supported routes for editing an encrypted document (encrypted incremental update, or a full decrypt-operate-re-encrypt round trip).</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Encryption</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Encryption</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography" />
+    <PackageReference Include="Portable.BouncyCastle" ExcludeAssets="compile;runtime" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <ProjectReference Include="..\Tetitulz.Pdf.Base\Tetitulz.Pdf.Base.csproj" />
+    <!--
+      Signing an encrypted document in place needs both halves - PdfSigner's plan of the revision and
+      this assembly's file key - and the composition lives here for the same reason PdfEncryptedForms
+      does: the operation travels to the crypto. Core-ring to core-ring, acyclic (Signing references
+      Core only), and it brings no new third-party package into this graph - both already carry
+      BouncyCastle. What it does add to an Encryption consumer's graph is Tetitulz.Pdf.Signing itself.
+    -->
+    <ProjectReference Include="..\Tetitulz.Pdf.Signing\Tetitulz.Pdf.Signing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Base.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <!--
+      This assembly's OWN test project, which could not see its internals until now - so a test of
+      PdfEncryptionPrimitives had to live in Base.Tests to reach them.
+    -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Encryption.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

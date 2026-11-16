@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>Rendering and high-level document operations for Tetitulz.Pdf: raster and SVG page rendering, text and table extraction, AcroForm filling and flattening, redaction, annotations, bookmarks and image editing.</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Base</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Base</AssemblyName>
+  </PropertyGroup>
+
+  <!--
+    No Jint here. The ECMAScript interpreter moved to Tetitulz.Pdf.Plugins.JavaScript on
+    2026-08-12: it was reached from one 449-line file, and carrying it here put a full script
+    engine into the package graph of every consumer of Base - all four feature DLLs, most plugins,
+    and the WinForms viewer's net462 leg. Scripting/IJavaScriptPlugin.cs is the contract and
+    Scripting/PluginJavaScriptRunner.cs the single dispatch point. See GAPS.md §15b.
+    Do not add it back to make a caller work without registering the plugin.
+  -->
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Win32" />
+  </ItemGroup>
+
+  <!--
+    No HarfBuzz here. SkiaSharp.HarfBuzz and the two HarfBuzzSharp.NativeAssets packages were
+    removed on 2026-08-07 with their only consumer, Rendering/TextShaper.cs; Directory.Packages.props
+    holds the reasons and the "do not add them back" rule.
+
+    Linux / macOS natives are net10.0-only on purpose. The netstandard2.0 leg exists so net462
+    hosts can consume the library, and those are Windows by definition — shipping .so/.dylib into
+    their output would be pure bloat.
+  -->
+  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+    <PackageReference Include="SkiaSharp.NativeAssets.macOS" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The licence texts of data compiled into this assembly: the ISO-8859 tables generated from the Unicode mapping files. -->
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\licenses\LICENSE-Unicode.txt" Pack="true" PackagePath="licenses\" Visible="false" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,55 @@
+// Copyright (c) 2026 Tamir Mordo
+// Licensed under the Apache License, Version 2.0. See LICENSE and NOTICE at the repository root.
+// SPDX-License-Identifier: Apache-2.0
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Tetitulz.Pdf.Base.Images;
+using Tetitulz.Pdf.Base.Layout;
+using Tetitulz.Pdf.Base.Operations;
+using Tetitulz.Pdf.Base.Scripting;
+using Tetitulz.Pdf.Base.Signing;
+using Tetitulz.Pdf.Core.Document;
+using Tetitulz.Pdf.Core.Forms;
+using Tetitulz.Pdf.Core.Objects;
+using Tetitulz.Pdf.Core.Plugins;
+using Tetitulz.Pdf.Core.Text;
+using Tetitulz.Pdf.Core.Writing;
+
+namespace Tetitulz.Pdf.Base
+{
+    public static partial class PdfOperations
+    {
+        /// <summary>
+        /// Embeds an ICC color profile from a file into the PDF as an /OutputIntent.
+        /// </summary>
+        public static void EmbedIccProfile(
+            Stream input, Stream output,
+            string iccPath,
+            string outputConditionId = Operations.Metadata.PdfIccEmbedder.DefaultOutputConditionId,
+            string outputCondition   = null,
+            string registryName      = null,
+            string info              = null,
+            string subtype           = Operations.Metadata.PdfIccEmbedder.PdfA1Subtype)
+            => Operations.Metadata.PdfIccEmbedder.EmbedProfile(
+                input, output, iccPath,
+                outputConditionId, outputCondition, registryName, info, subtype);
+
+        /// <summary>
+        /// Embeds a raw ICC color profile byte array into the PDF as an /OutputIntent.
+        /// </summary>
+        public static void EmbedIccProfile(
+            Stream input, Stream output,
+            byte[] iccBytes,
+            string outputConditionId = Operations.Metadata.PdfIccEmbedder.DefaultOutputConditionId,
+            string outputCondition   = null,
+            string registryName      = null,
+            string info              = null,
+            string subtype           = Operations.Metadata.PdfIccEmbedder.PdfA1Subtype)
+            => Operations.Metadata.PdfIccEmbedder.EmbedProfile(
+                input, output, iccBytes,
+                outputConditionId, outputCondition, registryName, info, subtype);
+    }
+}

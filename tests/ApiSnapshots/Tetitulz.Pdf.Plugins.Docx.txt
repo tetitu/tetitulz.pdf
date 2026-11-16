@@ -1,0 +1,33 @@
+Tetitulz.Pdf.Plugins.Docx.DocxExportPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Docx.DocxExportPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Docx.DocxExportPlugin::Export(Tetitulz.Pdf.Core.Document.PdfDocument, System.IO.Stream, Tetitulz.Pdf.Core.Plugins.ExportOptions) : System.Void
+Tetitulz.Pdf.Plugins.Docx.DocxExportPlugin::FormatKey : System.String { get }
+Tetitulz.Pdf.Plugins.Docx.DocxExportPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Docx.DocxExportPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Docx.DocxExportPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Docx.DocxExportPlugin::TargetMimeType : System.String { get }
+Tetitulz.Pdf.Plugins.Docx.DocxExportPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Docx.DocxImportPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Docx.DocxImportPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Docx.DocxImportPlugin::FormatKey : System.String { get }
+Tetitulz.Pdf.Plugins.Docx.DocxImportPlugin::Import(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Core.Plugins.ImportOptions) : System.Void
+Tetitulz.Pdf.Plugins.Docx.DocxImportPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Docx.DocxImportPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Docx.DocxImportPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Docx.DocxImportPlugin::SourceMimeType : System.String { get }
+Tetitulz.Pdf.Plugins.Docx.DocxImportPlugin::Version : System.Version { get }
+Tetitulz.Pdf.Plugins.Docx.InvoiceWorkbook::Write(System.Collections.Generic.IEnumerable<Tetitulz.Pdf.Base.Operations.Forms.InvoiceDataTable>, System.Boolean = default) : System.Byte[]
+Tetitulz.Pdf.Plugins.Docx.InvoiceWorkbook::Write(System.IO.Stream, System.Collections.Generic.IEnumerable<Tetitulz.Pdf.Base.Operations.Forms.InvoiceDataTable>, System.Boolean = default) : System.Void
+Tetitulz.Pdf.Plugins.Docx.PdfToDocxConverter::Convert(System.Byte[]) : System.Byte[]
+Tetitulz.Pdf.Plugins.Docx.PdfToDocxConverter::Convert(System.IO.Stream) : System.Byte[]
+Tetitulz.Pdf.Plugins.Docx.PdfToDocxConverter::Convert(System.String, System.String) : System.Void
+Tetitulz.Pdf.Plugins.Docx.PdfToDocxConverter::LastError : System.String { get }
+Tetitulz.Pdf.Plugins.Docx.PdfToExcelConverter::Convert(System.Byte[]) : System.Byte[]
+Tetitulz.Pdf.Plugins.Docx.PdfToExcelConverter::LastError : System.String { get }
+Tetitulz.Pdf.Plugins.Docx.PdfToPptxConverter::Convert(System.Byte[]) : System.Byte[]
+class Tetitulz.Pdf.Plugins.Docx.DocxExportPlugin
+class Tetitulz.Pdf.Plugins.Docx.DocxImportPlugin
+class Tetitulz.Pdf.Plugins.Docx.InvoiceWorkbook
+class Tetitulz.Pdf.Plugins.Docx.PdfToDocxConverter
+class Tetitulz.Pdf.Plugins.Docx.PdfToExcelConverter
+class Tetitulz.Pdf.Plugins.Docx.PdfToPptxConverter

@@ -1,0 +1,98 @@
+﻿<Project>
+
+  <!-- Inherit the repo-wide identity/packaging defaults, then layer on the
+       settings that apply only to shipping library assemblies. -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup Label="Packaging">
+    <!-- Everything under src/ is a shipping library. Individual projects may
+         opt out with <IsPackable>false</IsPackable>. -->
+    <IsPackable>true</IsPackable>
+    <Description>Tetitulz.Pdf — a pure-managed .NET PDF library (no native PDF engine).</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup Label="Packaging" Condition="'$(IsPackable)' == 'true'">
+    <!--
+      The package page shows the project's OWN README when it has one, and the repository README
+      otherwise. Both are packed as README.md, which is what PackageReadmeFile above names.
+
+      Until 2026-09-05 this packed the repository README unconditionally, so the seven projects
+      that had written their own shipped it and nobody ever saw theirs - the file was in the repo,
+      referenced from the docs, and absent from the package. Verified by unzipping a .nupkg and
+      reading the first line, not by reading this file.
+    -->
+    <None Include="README.md" Pack="true" PackagePath="\" Visible="false"
+          Condition="Exists('$(MSBuildProjectDirectory)/README.md')" />
+    <None Include="$(MSBuildThisFileDirectory)../README.md" Pack="true" PackagePath="\" Visible="false"
+          Condition="!Exists('$(MSBuildProjectDirectory)/README.md')" />
+    <!--
+      The third-party notices travel with every package: the dependencies' and the embedded data's
+      licences ask for their notice "with all copies" (MIT, BSD, Apache 2.0 section 4, the Unicode
+      licence). A project embedding data adds that data's full licence text beside these.
+    -->
+    <None Include="$(MSBuildThisFileDirectory)../NOTICE" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)../NOTICE.md" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)../THIRD-PARTY.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+
+  <PropertyGroup Label="API documentation">
+    <!--
+      The library already carries ~1,400 authored /// doc comments that were
+      never reaching consumers because no project emitted an XML doc file.
+      CS1591 (missing doc comment on a public member) is suppressed: coverage is
+      partial (Base 1094/1392, Core 321/987) and turning ~950 warnings on would
+      drown real diagnostics. Remove the NoWarn once coverage is complete.
+    -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <!--
+      A BROKEN doc tag is a different thing from a MISSING one, and these five
+      fail the build.
+
+      CS1570 is the one that costs most: badly formed XML makes the compiler drop
+      the WHOLE comment from the emitted .xml, so a carefully written block simply
+      does not reach consumers and nothing says so. CS1734/CS1572 (a paramref or
+      param naming a parameter that is not there) is the tell for a doc block that
+      has drifted onto the wrong member — six were found that way, each one a
+      method whose real documentation was sitting above a different method and a
+      method left with none. CS1574/CS0419 point a reader at something that does
+      not exist, or silently at the wrong overload.
+
+      Set once the whole tree measured clean across every target framework
+      (127 sites closed). Do NOT add one of these to NoWarn to get green:
+      point the tag at what exists, or delete the stale cross-reference.
+
+      CS1573 (some parameters documented, others not) WAS deliberately absent here —
+      219 live sites, a partial-coverage problem of the same kind as CS1591. That
+      reasoning expired on 2026-08-28 when the count reached 0; it now fails the
+      build alongside CS1571/CS1587/CS0105, in Directory.Build.targets. It is also
+      not the cosmetic class it looked like: XML doc params are all-or-nothing, so
+      documenting one parameter converts every sibling from undocumented-and-quiet
+      to undocumented-and-warned.
+
+      The nullable family lives in that same targets file rather than here, because
+      it is conditioned on <Nullable> and a .props is evaluated before the project
+      sets it.
+    -->
+    <WarningsAsErrors>$(WarningsAsErrors);CS0419;CS1570;CS1572;CS1574;CS1734</WarningsAsErrors>
+  </PropertyGroup>
+
+  <!--
+    Deliberately NOT set here: <Nullable>.
+
+    The plan called for <Nullable>annotations</Nullable> repo-wide, but that is
+    wrong for this codebase and would make the public API *less* honest, not more.
+    With no `?` annotations anywhere in src/, `annotations` mode emits
+    [NullableContext(1)] and marks every reference type NON-nullable in metadata —
+    which would tell consumers that the ~24 documented "returns null on failure"
+    methods (PdfParser, PdfStructuredTextExtractor, PdfFieldExtractor, …) never
+    return null. Nullable-oblivious is the safer state until the annotations are
+    actually written.
+
+    The correct path is per-project <Nullable>enable</Nullable> plus real
+    annotation work, starting with Tetitulz.Pdf.Core. Tracked as Tier 2.
+  -->
+
+</Project>

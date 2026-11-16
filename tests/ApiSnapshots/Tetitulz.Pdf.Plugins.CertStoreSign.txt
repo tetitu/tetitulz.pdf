@@ -1,0 +1,14 @@
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreExternalSigner::.ctor(System.Security.Cryptography.X509Certificates.X509Certificate2, System.Security.Cryptography.X509Certificates.X509Certificate2Collection = default, System.Boolean = default)
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreExternalSigner::Dispose() : System.Void
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreExternalSigner::EstimatedSignatureSize : System.Int32 { get }
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreExternalSigner::GetCertificateChain() : System.Collections.Generic.IList<System.Byte[]>
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreExternalSigner::IncludeOption : System.Security.Cryptography.X509Certificates.X509IncludeOption { get; set }
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreExternalSigner::KeyPin : System.String { get; set }
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreExternalSigner::SignData(System.Byte[], System.String) : System.Byte[]
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreExternalSigner::SignDigest(System.Byte[], System.String) : System.Byte[]
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreExternalSigner::Silent : System.Boolean { get; set }
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreLookup::FindByThumbprint(System.String, System.Security.Cryptography.X509Certificates.StoreLocation = default) : System.Security.Cryptography.X509Certificates.X509Certificate2
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreLookup::FindUsableSigningCertificates(System.Security.Cryptography.X509Certificates.StoreLocation, System.DateTime) : System.Security.Cryptography.X509Certificates.X509Certificate2Collection
+Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreLookup::PermitsDocumentSigning(System.Security.Cryptography.X509Certificates.X509Certificate2) : System.Boolean
+class Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreExternalSigner
+class Tetitulz.Pdf.Plugins.CertStoreSign.CertStoreLookup

@@ -1,0 +1,9 @@
+Tetitulz.Pdf.Plugins.HtmlBrowser.PlaywrightHtmlBrowserPlugin::.ctor()
+Tetitulz.Pdf.Plugins.HtmlBrowser.PlaywrightHtmlBrowserPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.HtmlBrowser.PlaywrightHtmlBrowserPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.HtmlBrowser.PlaywrightHtmlBrowserPlugin::InstallBrowsers(System.Nullable<Tetitulz.Pdf.HtmlToPdf.BrowserEngine> = default) : System.Void
+Tetitulz.Pdf.Plugins.HtmlBrowser.PlaywrightHtmlBrowserPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.HtmlBrowser.PlaywrightHtmlBrowserPlugin::RenderAsync(Tetitulz.Pdf.HtmlToPdf.HtmlBrowserRequest) : System.Threading.Tasks.Task<System.Byte[]>
+Tetitulz.Pdf.Plugins.HtmlBrowser.PlaywrightHtmlBrowserPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.HtmlBrowser.PlaywrightHtmlBrowserPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.HtmlBrowser.PlaywrightHtmlBrowserPlugin

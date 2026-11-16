@@ -1,0 +1,2 @@
+# A codestream is bytes: no line-ending conversion, whatever core.autocrlf says.
+*.j2c binary

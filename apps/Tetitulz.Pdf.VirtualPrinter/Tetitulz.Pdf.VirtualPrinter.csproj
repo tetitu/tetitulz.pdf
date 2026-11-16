@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <!-- System.Printing reads the spooler's job: its document name names the PDF. -->
+    <UseWPF>true</UseWPF>
+    <AssemblyName>TetitulzPdfPrinter</AssemblyName>
+    <RootNamespace>Tetitulz.Pdf.VirtualPrinter</RootNamespace>
+    <Description>A Windows virtual printer: a "Microsoft PS Class Driver" printer on a named-pipe port, each job converted to PDF by the PostScript plugin.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The printer's machinery and its install scripts, shared with the tray app and hilaPdf. -->
+    <ProjectReference Include="..\..\src\features\Tetitulz.Pdf.Printing\Tetitulz.Pdf.Printing.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,40 @@
+# veraPDF corpus files whose verdict this repository does not yet match, each with its reason.
+# "miss": a rule the checker does not have (the file passes though it should fail), named by the
+# clause folder the corpus files it under. "stricter": a check deliberately stricter than veraPDF.
+# "deep": a PDF/UA-1 rule the deep checker owns (CLAUDE.md, "Which side owns which PDF/UA check"),
+# so PdfUaChecker alone passes the file; the code after the colon is the error PdfAccessibility.Audit
+# reports for it, which Accessibility's UaConformanceCorpusTests asserts.
+# The list only shrinks: ConformanceCorpusTests fails an entry whose file now gets its verdict.
+# folder/file<TAB>reason
+PDF_UA-1/7.1-t01-pass-b.pdf	stricter UA50: the structure tree names MCID 0, which the page content never defines
+PDF_UA-1/7.1-t03-fail-b.pdf	deep 7.1 General: UA17
+PDF_UA-1/7.1-t06-fail-a.pdf	deep 7.1 General: UA13
+PDF_UA-1/7.1-t07-fail-a.pdf	deep 7.1 General: UA13
+PDF_UA-1/7.18.4-t01-fail-a.pdf	deep 7.18.4 Forms: UA32
+PDF_UA-1/7.18.5-t01-fail-a.pdf	deep 7.18.5 Links: UA32
+PDF_UA-1/7.2-t03-fail-a.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t03-fail-c.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t09-fail-a.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t11-fail-a.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t12-fail-a.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t13-fail-a.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t14-fail-a.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t17-fail-a.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t18-fail-a.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t19-fail-a.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t19-fail-b.pdf	deep 7.2 Text: UA11
+PDF_UA-1/7.2-t20-fail-a.pdf	deep 7.2 Text: UA11
+PDF_UA-1/7.2-t26-fail-a.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t27-fail-c.pdf	deep 7.2 Text: UA31
+PDF_UA-1/7.2-t42-fail-a.pdf	deep 7.2 Text: UA12
+PDF_UA-1/7.2-t43-fail-a.pdf	deep 7.2 Text: UA12
+PDF_UA-1/7.20-t02-fail-a.pdf	deep 7.20 XObjects: UA14
+PDF_UA-1/7.4.2-t01-fail-a.pdf	deep 7.4.2 Numbered headings: UA10
+PDF_UA-1/7.4.2-t01-fail-b.pdf	deep 7.4.2 Numbered headings: UA10
+PDF_UA-1/7.4.4-t01-fail-a.pdf	deep 7.4.4 Unnumbered headings: UA10
+PDF_UA-1/7.4.4-t02-fail-a.pdf	deep 7.4.4 Unnumbered headings: UA10
+PDF_UA-1/7.4.4-t02-fail-b.pdf	deep 7.4.4 Unnumbered headings: UA10
+PDF_UA-1/7.4.4-t03-fail-a.pdf	deep 7.4.4 Unnumbered headings: UA10
+PDF_UA-1/7.4.4-t03-fail-b.pdf	deep 7.4.4 Unnumbered headings: UA10
+PDF_UA-1/7.5-t01-fail-a.pdf	deep 7.5 Tables: UA12
+PDF_UA-1/7.5-t01-fail-b.pdf	deep 7.5 Tables: UA12

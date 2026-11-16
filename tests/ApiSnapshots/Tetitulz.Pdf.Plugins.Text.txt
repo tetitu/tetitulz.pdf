@@ -1,0 +1,10 @@
+Tetitulz.Pdf.Plugins.Text.TextExportPlugin::.ctor()
+Tetitulz.Pdf.Plugins.Text.TextExportPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Text.TextExportPlugin::Export(Tetitulz.Pdf.Core.Document.PdfDocument, System.IO.Stream, Tetitulz.Pdf.Core.Plugins.ExportOptions) : System.Void
+Tetitulz.Pdf.Plugins.Text.TextExportPlugin::FormatKey : System.String { get }
+Tetitulz.Pdf.Plugins.Text.TextExportPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Text.TextExportPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Text.TextExportPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Text.TextExportPlugin::TargetMimeType : System.String { get }
+Tetitulz.Pdf.Plugins.Text.TextExportPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.Text.TextExportPlugin

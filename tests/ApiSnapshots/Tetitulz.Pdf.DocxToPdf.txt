@@ -1,0 +1,45 @@
+Tetitulz.Pdf.DocxToPdf.ConversionEngine::BuiltIn : Tetitulz.Pdf.DocxToPdf.ConversionEngine = 0
+Tetitulz.Pdf.DocxToPdf.ConversionEngine::LibreOffice : Tetitulz.Pdf.DocxToPdf.ConversionEngine = 1
+Tetitulz.Pdf.DocxToPdf.ConversionEngine::MicrosoftWord : Tetitulz.Pdf.DocxToPdf.ConversionEngine = 2
+Tetitulz.Pdf.DocxToPdf.ConversionEngine::value__ : System.Int32
+Tetitulz.Pdf.DocxToPdf.DocxToPdfConverter::Convert(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Void
+Tetitulz.Pdf.DocxToPdf.DocxToPdfConverter::Convert(System.String, System.String, Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Void
+Tetitulz.Pdf.DocxToPdf.DocxToPdfConverter::ConvertToBytes(System.Byte[], Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Byte[]
+Tetitulz.Pdf.DocxToPdf.DocxToPdfConverter::ConvertToBytes(System.String, Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Byte[]
+Tetitulz.Pdf.DocxToPdf.DocxToPdfConverter::DiagnosticReported : System.Action<System.String> (event)
+Tetitulz.Pdf.DocxToPdf.DocxToPdfConverter::LastDiagnostic : System.String { get }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfConverterService::.ctor()
+Tetitulz.Pdf.DocxToPdf.DocxToPdfConverterService::Convert(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Void
+Tetitulz.Pdf.DocxToPdf.DocxToPdfConverterService::Convert(System.String, System.String, Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Void
+Tetitulz.Pdf.DocxToPdf.DocxToPdfConverterService::ConvertToBytes(System.Byte[], Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Byte[]
+Tetitulz.Pdf.DocxToPdf.DocxToPdfConverterService::ConvertToBytes(System.String, Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Byte[]
+Tetitulz.Pdf.DocxToPdf.DocxToPdfException::.ctor(System.String)
+Tetitulz.Pdf.DocxToPdf.DocxToPdfException::.ctor(System.String, System.Exception)
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::.ctor()
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::AllowRestrictedSystemFonts : System.Boolean { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::CompressStreams : System.Boolean { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::Default : Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions { get }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::DefaultFontSize : System.Double { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::EmbedImages : System.Boolean { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::Engine : Tetitulz.Pdf.DocxToPdf.ConversionEngine { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::LibreOfficePath : System.String { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::MarginBottom : System.Double { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::MarginLeft : System.Double { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::MarginRight : System.Double { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::MarginTop : System.Double { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::MaxPages : System.Int32 { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::PageHeight : System.Double { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::PageWidth : System.Double { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::TaggedPdf : System.Boolean { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::UseDocumentMargins : System.Boolean { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::UseLegacyRenderer : System.Boolean { get; set }
+Tetitulz.Pdf.DocxToPdf.IDocxToPdfConverter::Convert(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Void
+Tetitulz.Pdf.DocxToPdf.IDocxToPdfConverter::Convert(System.String, System.String, Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Void
+Tetitulz.Pdf.DocxToPdf.IDocxToPdfConverter::ConvertToBytes(System.Byte[], Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Byte[]
+Tetitulz.Pdf.DocxToPdf.IDocxToPdfConverter::ConvertToBytes(System.String, Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Byte[]
+class Tetitulz.Pdf.DocxToPdf.DocxToPdfConverter
+class Tetitulz.Pdf.DocxToPdf.DocxToPdfConverterService
+class Tetitulz.Pdf.DocxToPdf.DocxToPdfException
+class Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions
+enum Tetitulz.Pdf.DocxToPdf.ConversionEngine
+interface Tetitulz.Pdf.DocxToPdf.IDocxToPdfConverter

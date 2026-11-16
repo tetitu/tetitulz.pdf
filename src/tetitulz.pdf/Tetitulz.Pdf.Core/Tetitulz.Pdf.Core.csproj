@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <Description>The Tetitulz.Pdf object model, parser, stream filters, font programs and writing primitives. No SkiaSharp and no UI - this is the layer every other package is built on.</Description>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Tetitulz.Pdf.Core</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Core</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Encoding.CodePages" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- RFC 7932 Appendix A, the Brotli static dictionary (IO/Brotli, checked against its CRC-32 when read). -->
+    <EmbeddedResource Include="IO\Brotli\dictionary.bin" LogicalName="Tetitulz.Pdf.Core.IO.Brotli.dictionary.bin" />
+    <EmbeddedResource Include="Text\Hyphenation\hyph-en-us.tex" LogicalName="Tetitulz.Pdf.Core.Text.Hyphenation.hyph-en-us.tex" />
+    <!-- Adobe's Core14 AFM files whose KPX pairs Standard14Kerning reads, gzipped and otherwise unmodified, with the
+         MustRead their licence says must travel with them (tools/standard14-afm/pack.ps1). -->
+    <EmbeddedResource Include="Fonts\Afm\*.afm.gz" LogicalName="Tetitulz.Pdf.Core.Fonts.Afm.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Fonts\Afm\MustRead.html" LogicalName="Tetitulz.Pdf.Core.Fonts.Afm.MustRead.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Base</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Signing</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Core.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Base.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Accessibility</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Builder</_Parameter1>
+    </AssemblyAttribute>
+    <!-- Shares Core.Fonts.FontFileLocator with Builder and Base (one OS font scan, not three). -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.DocxToPdf</_Parameter1>
+    </AssemblyAttribute>
+    <!-- Shares Core.Text.CssColor with Base's SVG converter (one CSS colour reading, not two). -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.HtmlToPdf</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Accessibility.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.DocxToPdf.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>FontDiag</_Parameter1>
+    </AssemblyAttribute>
+    <!-- The JPEG 2000 decoder is internal (Base reaches it through InternalsVisibleTo); the benchmark
+         harness times its stages one by one, which no public surface exposes. -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tetitulz.Pdf.Benchmarks</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The licence texts of data compiled into this assembly: the Unicode-derived bidi and script tables; the Brotli static dictionary; the Adobe Glyph List. -->
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\licenses\LICENSE-Unicode.txt" Pack="true" PackagePath="licenses\" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\licenses\LICENSE-Brotli.txt" Pack="true" PackagePath="licenses\" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\licenses\LICENSE-Adobe-Glyph-List.txt" Pack="true" PackagePath="licenses\" Visible="false" />
+  </ItemGroup>
+
+</Project>

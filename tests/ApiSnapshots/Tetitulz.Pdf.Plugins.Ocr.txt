@@ -1,0 +1,16 @@
+Tetitulz.Pdf.Plugins.Ocr.PdfOcrEngine::LastError : System.String { get }
+Tetitulz.Pdf.Plugins.Ocr.PdfOcrEngine::LastFailedPages : System.Collections.Generic.IReadOnlyList<System.Int32> { get }
+Tetitulz.Pdf.Plugins.Ocr.PdfOcrEngine::OcrDocument(System.Byte[], System.String = default, System.String = default, System.Int32 = default) : System.String
+Tetitulz.Pdf.Plugins.Ocr.PdfOcrEngine::OcrPage(System.Byte[], System.Int32, System.String = default, System.String = default, System.Int32 = default) : System.String
+Tetitulz.Pdf.Plugins.Ocr.TesseractOcrPlugin::.ctor(System.String = default, System.String = default)
+Tetitulz.Pdf.Plugins.Ocr.TesseractOcrPlugin::CanProcess(System.Int32, System.Int32) : System.Boolean
+Tetitulz.Pdf.Plugins.Ocr.TesseractOcrPlugin::Description : System.String { get }
+Tetitulz.Pdf.Plugins.Ocr.TesseractOcrPlugin::Initialize() : System.Void
+Tetitulz.Pdf.Plugins.Ocr.TesseractOcrPlugin::LastError : System.String { get }
+Tetitulz.Pdf.Plugins.Ocr.TesseractOcrPlugin::Name : System.String { get }
+Tetitulz.Pdf.Plugins.Ocr.TesseractOcrPlugin::RecognizeText(System.Byte[], System.Int32, System.Int32, System.Int32) : System.String
+Tetitulz.Pdf.Plugins.Ocr.TesseractOcrPlugin::RecognizeWords(System.Byte[], System.Int32, System.Int32, System.Int32) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Plugins.OcrWordBox>
+Tetitulz.Pdf.Plugins.Ocr.TesseractOcrPlugin::Shutdown() : System.Void
+Tetitulz.Pdf.Plugins.Ocr.TesseractOcrPlugin::Version : System.Version { get }
+class Tetitulz.Pdf.Plugins.Ocr.PdfOcrEngine
+class Tetitulz.Pdf.Plugins.Ocr.TesseractOcrPlugin

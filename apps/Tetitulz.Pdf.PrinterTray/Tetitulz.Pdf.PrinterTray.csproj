@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- System.Printing reads the spooler's job: its document name names the PDF. -->
+    <UseWPF>true</UseWPF>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ApplicationIcon>printertray.ico</ApplicationIcon>
+    <AssemblyName>TetitulzPdfPrinterTray</AssemblyName>
+    <RootNamespace>Tetitulz.Pdf.PrinterTray</RootNamespace>
+    <Description>The Tetitulz PDF printer in the notification area: each print asks where to save it, and can make it PDF/A, protect it with a password or sign it.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Sinks.File" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The printer's machinery and its install scripts, shared with the console listener and hilaPdf. -->
+    <ProjectReference Include="..\..\src\features\Tetitulz.Pdf.Printing\Tetitulz.Pdf.Printing.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.Conformance\Tetitulz.Pdf.Plugins.Conformance.csproj" />
+    <ProjectReference Include="..\..\src\plugins\Tetitulz.Pdf.Plugins.CertStoreSign\Tetitulz.Pdf.Plugins.CertStoreSign.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Encryption\Tetitulz.Pdf.Encryption.csproj" />
+    <ProjectReference Include="..\..\src\tetitulz.pdf\Tetitulz.Pdf.Signing\Tetitulz.Pdf.Signing.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Tetitulz.Pdf.PrinterTray.Tests" />
+  </ItemGroup>
+</Project>

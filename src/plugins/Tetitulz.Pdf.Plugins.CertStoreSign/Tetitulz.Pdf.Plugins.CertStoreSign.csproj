@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      net10.0;netstandard2.0, matching every other plugin here.
+
+      The CMS is built with System.Security.Cryptography.Pkcs.SignedCms, which is NOT in-box on
+      any leg — it is a separate assembly that must be referenced explicitly, on .NET as much as
+      on netstandard2.0. Since the package is required either way, there is no leg this could be
+      dropped from to avoid it, and matching the other plugins costs nothing.
+
+      That package is also the reason this is a plugin rather than part of Tetitulz.Pdf.Signing:
+      it keeps the dependency out of the graph of every consumer who only wants to sign with a
+      PFX. BouncyCastle, which Signing already carries, cannot do this job at all — it needs an
+      AsymmetricKeyParameter, and a key that stays on a smart card cannot produce one.
+    -->
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Tetitulz.Pdf.Plugins.CertStoreSign</RootNamespace>
+    <AssemblyName>Tetitulz.Pdf.Plugins.CertStoreSign</AssemblyName>
+    <Description>Signs PDFs with a certificate from the operating system's certificate store, including smart cards and HSMs whose private key never leaves the device.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.Pkcs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="Tetitulz.Pdf.Core.Plugins.PdfPluginAssemblyAttribute" />
+    <InternalsVisibleTo Include="Tetitulz.Pdf.Plugins.CertStoreSign.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Core\Tetitulz.Pdf.Core.csproj" />
+    <ProjectReference Include="..\..\tetitulz.pdf\Tetitulz.Pdf.Signing\Tetitulz.Pdf.Signing.csproj" />
+  </ItemGroup>
+</Project>
