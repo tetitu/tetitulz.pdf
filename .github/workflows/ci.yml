@@ -598,12 +598,17 @@ jobs:
           retention-days: 14
 
   release:
-    # A v* tag alone, and only after all three jobs above are green: the tag's packages become a
-    # GitHub release. Nothing is pushed to a package feed. The apps release from tetitulz.pdf-apps.
+    # A v* tag alone, and only after all three jobs above are green: the tag's packages are pushed
+    # to nuget.org, then become a GitHub release. The apps release from tetitulz.pdf-apps.
     #
     # The one job whose token writes: `contents: write` creates the release, `actions: read` lets
-    # the GitHub CLI fetch this run's artifacts. The CLI ships on the runner, so no further action
-    # is pinned here.
+    # the GitHub CLI fetch this run's artifacts, `id-token: write` lets NuGet/login trade the run's
+    # OIDC token for a short-lived nuget.org key under the account's Trusted Publishing policy
+    # (this repository, ci.yml, no environment). No key is stored. The nuget.org account name is
+    # the repository variable NUGET_USER. The GitHub CLI and the .NET SDK ship on the runner.
+    #
+    # nuget.org first: a version there cannot be deleted, only unlisted, and `--skip-duplicate`
+    # makes a re-run after a partial push or a failed release step finish the work it left.
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [build-test, linux-verify, macos-verify]
     runs-on: ubuntu-latest
@@ -611,6 +616,7 @@ jobs:
     permissions:
       contents: write
       actions: read
+      id-token: write
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
@@ -618,6 +624,28 @@ jobs:
     steps:
       - name: Download what build-test packed
         run: gh run download "${{ github.run_id }}" --name nupkg --dir release
+
+      - name: Require the nuget.org account name
+        env:
+          NUGET_USER: ${{ vars.NUGET_USER }}
+        run: |
+          if [ -z "$NUGET_USER" ]; then
+            echo "::error::Set the repository variable NUGET_USER to the nuget.org account that holds the Trusted Publishing policy."
+            exit 1
+          fi
+
+      - name: Log in to nuget.org
+        id: nuget
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Push the packages to nuget.org
+        run: |
+          dotnet nuget push "release/*.nupkg" \
+            --api-key "${{ steps.nuget.outputs.NUGET_API_KEY }}" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
 
       - name: Create the GitHub release
         run: |

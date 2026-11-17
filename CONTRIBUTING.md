@@ -1956,17 +1956,22 @@ after flushing its reply; a worker pool waiting on thread-pool threads under con
 Three jobs: `build-test` on `windows-latest` (the full solution with coverage, plus the packing
 gate), `linux-verify` on `ubuntu-latest` and `macos-verify` on
 `macos-latest`, the last two on `tetitulz.pdf.portable.slnf`. A `v*` tag adds a fourth, `release`: once
-the three are green it attaches the tag's `.nupkg`s to a GitHub release, through the runner's GitHub
-CLI. The apps are built, tested and released by `tetitulz.pdf-apps`' own workflow. It is the one job whose token writes (`contents: write`), and
-it pushes to no package feed. All in [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+the three are green it pushes the tag's `.nupkg`s to nuget.org, then attaches them to a GitHub release
+through the runner's GitHub CLI. The apps are built, tested and released by `tetitulz.pdf-apps`' own
+workflow. It is the one job whose token writes (`contents: write`, and `id-token: write` for
+nuget.org). **No nuget.org key is stored**: `NuGet/login` trades the run's OIDC token for a
+short-lived key under the account's Trusted Publishing policy (this repository, `ci.yml`, no
+environment), the account named by the repository variable `NUGET_USER`; the job stops before
+pushing when it is unset. nuget.org goes first because a version there cannot be deleted, only
+unlisted, and `--skip-duplicate` lets a re-run finish what a partial push left. All in
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 **The workflow's own settings**: a read-only token outside `release`, a timeout on every job, every action pinned by
 commit SHA with its tag beside it, `global.json` pinning the SDK's feature band, Dependabot for NuGet and
 the actions, and no test oracle to install. The workflow triggers on `main`, on pull requests to it
 and on `v*` tags.
-**The owner's:** the remote and the branch filter, publishing to a package feed (the release job
-attaches the packages to a GitHub release and pushes them nowhere; no `.snupkg`; author signing needs
-a certificate), an SBOM step on it.
+**The owner's:** the remote and the branch filter, the nuget.org account and its Trusted Publishing
+policy (no `.snupkg`; author signing needs a certificate), an SBOM step on the release.
 
 **Six guard steps, none relaxable to go green:**
 

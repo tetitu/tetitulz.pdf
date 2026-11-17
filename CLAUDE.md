@@ -1012,7 +1012,8 @@ the shared checkout**: do not edit or read a source file it names while it runs,
 
 Three jobs: `build-test` (Windows, full solution, packing gate), `linux-verify` (Ubuntu) and
 `macos-verify` (macOS), the last two on `tetitulz.pdf.portable.slnf`; a `v*` tag adds `release`, which
-attaches the packages to a GitHub release once the three are green. **Six guard steps — none may
+pushes the packages to nuget.org (Trusted Publishing, no stored key; the account is the repository
+variable `NUGET_USER`) and attaches them to a GitHub release once the three are green. **Six guard steps — none may
 be relaxed to go green**: every `src/` project in the `.sln`; every `src/` library has a test
 project (empty `KnownGaps`); every portable project in the `.slnf`; only `src/` libraries packed; no
 `TODO_` metadata in a `.nuspec`; **the test run actually completed**. Plus a vulnerability audit and the coverage ratchet; the
