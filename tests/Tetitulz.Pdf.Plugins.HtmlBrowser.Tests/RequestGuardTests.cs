@@ -100,17 +100,14 @@ public class RequestGuardTests
         => Assert.Equal(allowed, PlaywrightRenderer.IsWebSocketAllowed(url));
 
     /// <summary>
-    /// Behind the guard's proxy every engine is told the proxy and that loopback goes to it too —
+    /// Behind the guard's proxy the browser is told the proxy and that loopback goes to it too —
     /// a browser otherwise connects to <c>127.0.0.1</c> around its proxy, which is the address the
     /// guard exists for.
     /// </summary>
-    [Theory]
-    [InlineData(Tetitulz.Pdf.HtmlToPdf.BrowserEngine.Chromium)]
-    [InlineData(Tetitulz.Pdf.HtmlToPdf.BrowserEngine.Firefox)]
-    [InlineData(Tetitulz.Pdf.HtmlToPdf.BrowserEngine.WebKit)]
-    public void BehindTheProxy_EveryEngineIsSentThroughIt_LoopbackIncluded(Tetitulz.Pdf.HtmlToPdf.BrowserEngine engine)
+    [Fact]
+    public void BehindTheProxy_TheBrowserIsSentThroughIt_LoopbackIncluded()
     {
-        var launch = PlaywrightRenderer.LaunchOptions(engine, "socks5://127.0.0.1:5555");
+        var launch = PlaywrightRenderer.LaunchOptions(Tetitulz.Pdf.HtmlToPdf.BrowserEngine.Chromium, "socks5://127.0.0.1:5555");
 
         Assert.True(launch.Headless);
         Assert.Equal("socks5://127.0.0.1:5555", launch.Proxy.Server);
@@ -118,20 +115,48 @@ public class RequestGuardTests
     }
 
     /// <summary>
-    /// WebRTC's own UDP is kept inside the proxy where the engine has a switch for it: Chromium's
-    /// handling policy, Firefox's peer-connection preference.
+    /// WebRTC's own UDP is kept inside the proxy by Chromium's handling policy.
     /// </summary>
     [Fact]
     public void BehindTheProxy_WebRtcIsKeptFromSendingUdpAroundIt()
     {
         var chromium = PlaywrightRenderer.LaunchOptions(Tetitulz.Pdf.HtmlToPdf.BrowserEngine.Chromium, "socks5://127.0.0.1:5555");
-        var firefox = PlaywrightRenderer.LaunchOptions(Tetitulz.Pdf.HtmlToPdf.BrowserEngine.Firefox, "socks5://127.0.0.1:5555");
 
         Assert.Equal(new[] { "--force-webrtc-ip-handling-policy=disable_non_proxied_udp" }, chromium.Args);
         Assert.Null(chromium.FirefoxUserPrefs);
-        var preferences = System.Linq.Enumerable.ToDictionary(firefox.FirefoxUserPrefs, p => p.Key, p => p.Value);
-        Assert.Equal(false, preferences["media.peerconnection.enabled"]);
-        Assert.Null(firefox.Args);
+    }
+
+    /// <summary>
+    /// An engine other than Chromium is refused before a browser starts, for the reason Playwright
+    /// gives — it prints a PDF from headless Chromium alone; Chromium itself is not refused.
+    /// </summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(-1)]
+    public void AnEngineOtherThanChromium_IsRefused_BecausePlaywrightPrintsPdfFromChromiumAlone(int engine)
+    {
+        var refusal = PlaywrightRenderer.WhyTheEngineCannotRender((Tetitulz.Pdf.HtmlToPdf.BrowserEngine)engine);
+
+        Assert.NotNull(refusal);
+        Assert.Contains($"Browser engine {engine} is not supported", refusal);
+        Assert.Contains("headless Chromium only", refusal);
+        Assert.Null(PlaywrightRenderer.WhyTheEngineCannotRender(Tetitulz.Pdf.HtmlToPdf.BrowserEngine.Chromium));
+    }
+
+    /// <summary>
+    /// The launcher refuses such an engine itself, as an <see cref="Tetitulz.Pdf.HtmlToPdf.HtmlToPdfException"/>
+    /// carrying that reason, before it touches Playwright (none is passed).
+    /// </summary>
+    [Fact]
+    public async System.Threading.Tasks.Task TheLauncher_RefusesAnEngineOtherThanChromium_BeforeTouchingPlaywright()
+    {
+        var options = new Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions { Engine = (Tetitulz.Pdf.HtmlToPdf.BrowserEngine)1 };
+
+        var ex = await Assert.ThrowsAsync<Tetitulz.Pdf.HtmlToPdf.HtmlToPdfException>(
+            () => PlaywrightRenderer.LaunchBrowserAsync(null!, options));
+
+        Assert.Equal(PlaywrightRenderer.WhyTheEngineCannotRender((Tetitulz.Pdf.HtmlToPdf.BrowserEngine)1), ex.Message);
     }
 
     /// <summary>With the guard off there is no proxy, and nothing that belongs to it is set.</summary>

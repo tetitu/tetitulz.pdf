@@ -10,7 +10,7 @@ namespace Tetitulz.Pdf.HtmlToPdf
     public enum HtmlRenderEngine
     {
         /// <summary>
-        /// Render with a headless browser (Playwright / Chromium-Firefox-WebKit). Full CSS,
+        /// Render with a headless browser (Playwright driving headless Chromium). Full CSS,
         /// JavaScript and web-font fidelity. Requires the Playwright browsers to be installed
         /// (<c>playwright install</c>) and can fetch remote resources. <b>Not the default</b> — see the remarks on <c>HtmlToPdfOptions.RenderEngine</c>.
         /// </summary>

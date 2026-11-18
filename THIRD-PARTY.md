@@ -34,7 +34,7 @@ of their owners endorses, certifies or is affiliated with Tetitulz.Pdf.
 |---|---|---|
 | LibreOffice (`soffice`) | `DocxToPdf` (`ConversionEngine.LibreOffice`) | Out-of-process DOCX conversion; not bundled. |
 | Microsoft Word (COM) | `DocxToPdf` (`WordComConverter`) | Windows only; not bundled. |
-| Chromium / Firefox / WebKit | `Plugins.HtmlBrowser` | Installed by `playwright install`. |
+| Chromium | `Plugins.HtmlBrowser` | Installed by `playwright install`. |
 
 ## 2. Embedded data
 

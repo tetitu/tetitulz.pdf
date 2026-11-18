@@ -6,13 +6,10 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 {
     public class BrowserEngineTests
     {
-        [Theory]
-        [InlineData(BrowserEngine.Chromium)]
-        [InlineData(BrowserEngine.Firefox)]
-        [InlineData(BrowserEngine.WebKit)]
-        public void BrowserEngine_AllValuesAreDefined(BrowserEngine engine)
+        [Fact]
+        public void BrowserEngine_ChromiumIsDefined()
         {
-            Assert.True(Enum.IsDefined(typeof(BrowserEngine), engine));
+            Assert.True(Enum.IsDefined(typeof(BrowserEngine), BrowserEngine.Chromium));
         }
 
         [Fact]
@@ -22,10 +19,10 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         }
 
         [Fact]
-        public void BrowserEngine_HasThreeValues()
+        public void BrowserEngine_IsChromiumOnly_TheOneEnginePlaywrightPrintsPdfFrom()
         {
             var values = Enum.GetValues(typeof(BrowserEngine));
-            Assert.Equal(3, values.Length);
+            Assert.Equal(1, values.Length);
         }
     }
 }

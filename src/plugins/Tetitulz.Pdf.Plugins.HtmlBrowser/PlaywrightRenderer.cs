@@ -184,9 +184,6 @@ namespace Tetitulz.Pdf.Plugins.HtmlBrowser
         /// <summary>Chromium's switch that keeps WebRTC from sending UDP the proxy does not carry.</summary>
         internal const string WebRtcThroughTheProxyOnly = "--force-webrtc-ip-handling-policy=disable_non_proxied_udp";
 
-        /// <summary>Firefox's preference that switches the WebRTC peer connection off.</summary>
-        internal const string FirefoxPeerConnectionPreference = "media.peerconnection.enabled";
-
         /// <summary>
         /// How <paramref name="engine"/> is launched: headless, Chromium in its sandbox unless
         /// <paramref name="chromiumSandbox"/> is off (the driver passes <c>--no-sandbox</c> unless asked
@@ -203,17 +200,21 @@ namespace Tetitulz.Pdf.Plugins.HtmlBrowser
             launch.Proxy = new Proxy { Server = proxyServer, Bypass = "<-loopback>" };
 
             // WebRTC sends UDP of its own (a STUN request to whatever address a page names as an
-            // ICE server), which no proxy carries. Chromium is told to send none outside the
-            // proxy; Firefox has the peer connection switched off; WebKit has no switch.
-            if (engine == BrowserEngine.Chromium)
-                launch.Args = new[] { WebRtcThroughTheProxyOnly };
-            else if (engine == BrowserEngine.Firefox)
-                launch.FirefoxUserPrefs = new System.Collections.Generic.Dictionary<string, object>
-                {
-                    [FirefoxPeerConnectionPreference] = false,
-                };
+            // ICE server), which no proxy carries. Chromium is told to send none outside the proxy.
+            launch.Args = new[] { WebRtcThroughTheProxyOnly };
             return launch;
         }
+
+        /// <summary>
+        /// Why <paramref name="engine"/> cannot render, or <c>null</c> when it can: Playwright prints
+        /// a PDF from headless Chromium alone, so any other value — one cast from an integer outside
+        /// the enum — is refused before a browser starts rather than inside <c>page.pdf()</c>.
+        /// </summary>
+        internal static string WhyTheEngineCannotRender(BrowserEngine engine)
+            => engine == BrowserEngine.Chromium
+                ? null
+                : $"Browser engine {(int)engine} is not supported: Playwright prints a PDF from " +
+                  "headless Chromium only. Use BrowserEngine.Chromium.";
 
         /// <summary>
         /// Launches the browser the options name, behind <paramref name="proxyServer"/> when one is
@@ -223,20 +224,10 @@ namespace Tetitulz.Pdf.Plugins.HtmlBrowser
         internal static async Task<IBrowser> LaunchBrowserAsync(
             IPlaywright playwright, HtmlToPdfOptions options, string proxyServer = null)
         {
-            IBrowserType browserType;
-            switch (options.Engine)
-            {
-                case BrowserEngine.Firefox:
-                    browserType = playwright.Firefox;
-                    break;
-                case BrowserEngine.WebKit:
-                    browserType = playwright.Webkit;
-                    break;
-                case BrowserEngine.Chromium:
-                default:
-                    browserType = playwright.Chromium;
-                    break;
-            }
+            string refusal = WhyTheEngineCannotRender(options.Engine);
+            if (refusal != null)
+                throw new HtmlToPdfException(refusal);
+            IBrowserType browserType = playwright.Chromium;
 
             try
             {

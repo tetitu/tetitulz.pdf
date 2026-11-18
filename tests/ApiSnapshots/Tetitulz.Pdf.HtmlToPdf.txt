@@ -1,6 +1,4 @@
 Tetitulz.Pdf.HtmlToPdf.BrowserEngine::Chromium : Tetitulz.Pdf.HtmlToPdf.BrowserEngine = 0
-Tetitulz.Pdf.HtmlToPdf.BrowserEngine::Firefox : Tetitulz.Pdf.HtmlToPdf.BrowserEngine = 1
-Tetitulz.Pdf.HtmlToPdf.BrowserEngine::WebKit : Tetitulz.Pdf.HtmlToPdf.BrowserEngine = 2
 Tetitulz.Pdf.HtmlToPdf.BrowserEngine::value__ : System.Int32
 Tetitulz.Pdf.HtmlToPdf.GuardedRemoteResourceLoader::.ctor(System.Int64 = default, System.Nullable<System.TimeSpan> = default, System.Int32 = default)
 Tetitulz.Pdf.HtmlToPdf.GuardedRemoteResourceLoader::DefaultMaxBytes : System.Int64 = 16777216

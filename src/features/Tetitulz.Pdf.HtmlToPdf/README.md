@@ -330,12 +330,11 @@ plugin's `InstallBrowsers` as the replacement.
 ### BrowserEngine (enum)
 
 ```csharp
-BrowserEngine.Chromium  // 0 - Default. Best PDF fidelity.
-BrowserEngine.Firefox   // 1 - Good standards compliance.
-BrowserEngine.WebKit    // 2 - Lightweight (Safari engine).
+BrowserEngine.Chromium  // 0 - The only value. Default.
 ```
 
-**Note:** `Page.PdfAsync()` is fully supported on Chromium. Firefox/WebKit may have limitations.
+**Chromium only:** Playwright prints a PDF from headless Chromium alone ("PDF generation is only
+supported for Headless Chromium"), so Firefox and WebKit are not offered.
 
 ### HtmlToPdfConverter (static class)
 
@@ -409,7 +408,7 @@ plugin's call as the replacement.
 | `RenderEngine` | `HtmlRenderEngine` | `Managed` | Which engine: `Managed` (in-process) or `Browser` (the HtmlBrowser plugin) |
 | `JavaScriptEnabled` | `bool` | `true` | Browser engine: script in the page. Managed engine: run the page's scripts when the HtmlScript plugin is registered |
 | `BlockPrivateNetworkAccess` | `bool` | `true` | Browser engine: refuse loopback, private, link-local and metadata addresses — the browser is launched behind the plugin's own proxy, which connects only to an address it has vetted |
-| `ChromiumSandbox` | `bool` | `true` | Browser engine: run Chromium inside its operating-system sandbox, which holds a renderer a page compromised. Turn it off only where Chromium cannot start sandboxed — a Linux host running as root, a container without user namespaces. Firefox and WebKit are not affected |
+| `ChromiumSandbox` | `bool` | `true` | Browser engine: run Chromium inside its operating-system sandbox, which holds a renderer a page compromised. Turn it off only where Chromium cannot start sandboxed — a Linux host running as root, a container without user namespaces |
 | `BasePath` | `string` | `null` | Managed engine: the directory local images, stylesheets and fonts may be read from |
 | `RemoteResourceLoader` | `IRemoteResourceLoader` | `null` | Managed engine: fetches remote `http(s)` subresources; `GuardedRemoteResourceLoader` for untrusted HTML |
 | `MaxRemoteResources` | `int` | 32 | Managed engine: distinct URLs one conversion may fetch |
@@ -440,16 +439,16 @@ using Tetitulz.Pdf.HtmlToPdf;
 // Basic HTML string to PDF
 HtmlToPdfConverter.ConvertHtml("<h1>Hello World</h1>", "output.pdf");
 
-// URL to PDF with Firefox
+// URL to PDF in the browser engine
 HtmlToPdfConverter.ConvertUrl("https://example.com", "output.pdf", new HtmlToPdfOptions
 {
-    Engine = BrowserEngine.Firefox
+    RenderEngine = HtmlRenderEngine.Browser
 });
 
-// HTML to PDF with WebKit, A4 landscape
+// HTML to PDF in the browser engine, A4 landscape
 HtmlToPdfConverter.ConvertHtml(html, "report.pdf", new HtmlToPdfOptions
 {
-    Engine = BrowserEngine.WebKit,
+    RenderEngine = HtmlRenderEngine.Browser,
     PageWidth = "210mm",
     PageHeight = "297mm",
     Landscape = true,

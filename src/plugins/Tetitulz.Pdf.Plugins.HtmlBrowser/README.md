@@ -33,13 +33,9 @@ by `HtmlToPdfOptions.JavaScriptEnabled`, every request through the SSRF guard) a
 the content, prints, and tears down in reverse — the context before the browser, the browser before the driver —
 so a failure part-way does not leak a browser process, and no two conversions share state.
 
-`HtmlToPdfOptions.Engine` picks the browser:
-
-| `BrowserEngine` | Playwright | Notes |
-|---|---|---|
-| `Chromium` | `playwright.Chromium` | full PDF support, the best fidelity |
-| `Firefox` | `playwright.Firefox` | PDF support may be limited |
-| `WebKit` | `playwright.Webkit` | PDF support may be limited |
+The browser is headless Chromium (`BrowserEngine.Chromium`, the enum's one value): Playwright prints
+a PDF from no other ("PDF generation is only supported for Headless Chromium"), so Firefox and
+WebKit are not offered.
 
 The page size, margins, landscape, background, header and footer templates and scale go to `page.pdf()` as they
 are set; the scale is clamped to Chromium's `[0.1, 2.0]` by the managed engine's own clamp
@@ -66,8 +62,7 @@ decided in two places:
   scheme aborted. It also refuses a private host early, with an error that names it.
 
 And around them: WebSockets are routed and held to the same host rule, service workers are
-blocked, downloads are not accepted, and WebRTC is kept from sending UDP outside the proxy
-(Chromium) or switched off (Firefox).
+blocked, downloads are not accepted, and WebRTC is kept from sending UDP outside the proxy.
 
 **Chromium runs in its operating-system sandbox** (`HtmlToPdfOptions.ChromiumSandbox`, on by
 default): the proxy and the route bound what an intact renderer does, and a page that compromised
@@ -82,9 +77,7 @@ turns the guard off for input it trusts.
 
 What that leaves: the proxy asks for no credentials, since a browser offers a SOCKS proxy none, so
 during a conversion another process on the machine can connect through it — to public addresses
-only. Chromium is the engine this was run against, channel by channel, against a loopback
-listener; Firefox and WebKit are given the same proxy and were not run, and WebKit has no switch
-for WebRTC. `Microsoft.Playwright` 1.64.1 is the floor: earlier clients fail on a routed
+only. This was run against Chromium, channel by channel, against a loopback listener. `Microsoft.Playwright` 1.64.1 is the floor: earlier clients fail on a routed
 WebSocket. With `BlockPrivateNetworkAccess` off there is no proxy and no route, and a page reaches
 whatever the machine does, its local files included.
 

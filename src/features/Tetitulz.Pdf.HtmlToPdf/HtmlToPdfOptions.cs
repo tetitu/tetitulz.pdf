@@ -196,7 +196,7 @@ namespace Tetitulz.Pdf.HtmlToPdf
         /// what an intact renderer does; a renderer a page compromises acts with this process's own
         /// file and network access unless the sandbox holds it. Set to <c>false</c> only where
         /// Chromium cannot start sandboxed — a Linux host running as root, or a container without
-        /// user namespaces. Firefox and WebKit are not affected.
+        /// user namespaces.
         /// </summary>
         public bool ChromiumSandbox { get; set; } = true;
 

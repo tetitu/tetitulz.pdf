@@ -9,7 +9,7 @@ using Tetitulz.Pdf.HtmlToPdf;
 namespace Tetitulz.Pdf.Plugins.HtmlBrowser
 {
     /// <summary>
-    /// Renders HTML to PDF through a headless browser (Chromium, Firefox or WebKit) driven by
+    /// Renders HTML to PDF through a headless Chromium driven by
     /// Microsoft Playwright — the implementation behind <see cref="HtmlRenderEngine.Browser"/>.
     /// </summary>
     /// <remarks>
@@ -41,7 +41,7 @@ namespace Tetitulz.Pdf.Plugins.HtmlBrowser
 
         /// <inheritdoc/>
         public string Description =>
-            "Renders HTML to PDF with a headless Chromium/Firefox/WebKit via Microsoft Playwright.";
+            "Renders HTML to PDF with a headless Chromium via Microsoft Playwright.";
 
         /// <inheritdoc/>
         public Version Version => new Version(1, 0, 0);

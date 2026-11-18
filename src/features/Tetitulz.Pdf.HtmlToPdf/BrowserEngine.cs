@@ -7,21 +7,15 @@ namespace Tetitulz.Pdf.HtmlToPdf
     /// <summary>
     /// Specifies which browser engine Playwright should use for rendering HTML to PDF.
     /// </summary>
+    /// <remarks>
+    /// Chromium only: Playwright prints a PDF from headless Chromium alone ("PDF generation is
+    /// only supported for Headless Chromium"), so no other browser is offered.
+    /// </remarks>
     public enum BrowserEngine
     {
         /// <summary>
-        /// Chromium-based engine. Best PDF fidelity. Default.
+        /// Chromium, the one engine Playwright prints a PDF from. Default.
         /// </summary>
-        Chromium = 0,
-
-        /// <summary>
-        /// Firefox engine. Good standards compliance.
-        /// </summary>
-        Firefox = 1,
-
-        /// <summary>
-        /// WebKit engine (Safari). Lightweight and fast.
-        /// </summary>
-        WebKit = 2
+        Chromium = 0
     }
 }

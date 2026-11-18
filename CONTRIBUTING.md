@@ -456,7 +456,7 @@ the host *name* (RFC 1928 address type 3), resolves it once through
 `PrivateAddressGuard.TryResolveSafeAddresses`, and dials one of the addresses that came back —
 CONNECT only, at most `MaxConnections` at once, the handshake under a timeout. `<-loopback>` in the
 bypass list is what sends `127.0.0.1` to the proxy instead of around it. Chromium is launched with
-`--force-webrtc-ip-handling-policy=disable_non_proxied_udp`; Firefox with the peer connection off.
+`--force-webrtc-ip-handling-policy=disable_non_proxied_udp`.
 The route stays for what a proxy cannot decide (`file:`, other schemes) and to refuse a private host
 early by name; a WebSocket keeps its own interception (held to the same host rule by
 `PlaywrightRenderer.IsWebSocketAllowed`), which needs `Microsoft.Playwright` 1.64.1 — up to 1.62.0

@@ -33,7 +33,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         {
             var options = new HtmlToPdfOptions
             {
-                Engine = BrowserEngine.Firefox,
+                RenderEngine = HtmlRenderEngine.Browser,
                 PageWidth = "210mm",
                 PageHeight = "297mm",
                 MarginTop = "1in",
@@ -50,7 +50,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
                 WaitForNetworkIdle = false
             };
 
-            Assert.Equal(BrowserEngine.Firefox, options.Engine);
+            Assert.Equal(HtmlRenderEngine.Browser, options.RenderEngine);
             Assert.Equal("210mm", options.PageWidth);
             Assert.Equal("297mm", options.PageHeight);
             Assert.True(options.Landscape);

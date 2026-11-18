@@ -15,9 +15,8 @@ namespace Tetitulz.Pdf.HtmlToPdf
     /// <see cref="HtmlToPdfOptions.RenderEngine"/>:
     /// <list type="bullet">
     /// <item><see cref="HtmlRenderEngine.Browser"/> — Microsoft Playwright driving
-    /// Chromium, Firefox or WebKit. Full CSS fidelity; needs a browser installed.
-    /// <c>Page.PdfAsync()</c> is fully supported on Chromium; Firefox and WebKit may have
-    /// limitations.</item>
+    /// headless Chromium, the one browser Playwright prints a PDF from. Full CSS fidelity; needs
+    /// the browser installed.</item>
     /// <item><see cref="HtmlRenderEngine.Managed"/> — pure-managed, in-process, no browser and no
     /// network I/O. Honoured by every HTML- and file-input entry point, synchronous and
     /// asynchronous alike; the URL entry points refuse it rather than silently launching a
