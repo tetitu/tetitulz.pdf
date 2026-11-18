@@ -545,7 +545,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         {
             string enormous = new string('w', 3000);
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
 
             DocxToPdfConverter.DiagnosticReported += Collect;
             string pdf;
@@ -673,7 +674,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
                 rows.Append(MatrixRow(Enumerable.Repeat("x", 20).ToArray()));
 
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             string pdf;
             try { pdf = Convert(MathPara("<m:m>" + rows + "</m:m>")); }
@@ -692,7 +694,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void UnsupportedConstruct_IsLinearisedAndReported()
         {
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
 
             DocxToPdfConverter.DiagnosticReported += Collect;
             string pdf;
@@ -728,7 +731,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
                 inner = $"<m:f><m:num>{inner}</m:num><m:den>{R("2")}</m:den></m:f>";
 
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             try { Convert(MathPara(inner)); }
             finally { DocxToPdfConverter.DiagnosticReported -= Collect; }
@@ -887,7 +891,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void GroupCharacter_UnderAWideBase_IsADrawnBraceAsWideAsTheBase()
         {
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             string pdf;
             try { pdf = Convert(MathPara($"<m:groupChr><m:e>{WideBase}</m:e></m:groupChr>")); }
@@ -927,7 +932,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void GroupCharacter_OtherDrawnForms_SpanTheBase(string chr, bool top, bool curved)
         {
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             string pdf;
             try
@@ -999,7 +1005,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void GroupCharacter_WithNoDrawnForm_IsReported()
         {
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             string pdf;
             try
@@ -1144,7 +1151,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         private static List<string> ConvertCollecting(string paragraphXml, out string pdf)
         {
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             try { pdf = Convert(paragraphXml); }
             finally { DocxToPdfConverter.DiagnosticReported -= Collect; }

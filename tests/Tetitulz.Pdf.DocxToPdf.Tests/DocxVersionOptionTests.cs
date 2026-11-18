@@ -44,7 +44,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         private static (byte[] pdf, List<string> seen) Convert(DocxToPdfOptions options)
         {
             var seen = new List<string>();
-            Action<string> handler = seen.Add;
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            Action<string> handler = m => { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); };
             DocxToPdfConverter.DiagnosticReported += handler;
             try { return (DocxToPdfConverter.ConvertToBytes(Docx(), options), seen); }
             finally { DocxToPdfConverter.DiagnosticReported -= handler; }

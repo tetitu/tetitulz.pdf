@@ -25,7 +25,7 @@ namespace Tetitulz.Pdf.Core.Util
         /// <summary>The value as an <see cref="int"/>.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ToInt(double value)
-            => value != value ? 0                          // NaN
+            => double.IsNaN(value) ? 0                          // NaN
              : value >= int.MaxValue ? int.MaxValue
              : value <= int.MinValue ? int.MinValue
              : (int)value;
@@ -33,7 +33,7 @@ namespace Tetitulz.Pdf.Core.Util
         /// <summary>The value as a <see cref="long"/>; 2⁶³, not <see cref="long.MaxValue"/>, is the first value past the range.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long ToLong(double value)
-            => value != value ? 0L
+            => double.IsNaN(value) ? 0L
              : value >= 9223372036854775808.0 ? long.MaxValue
              : value <= long.MinValue ? long.MinValue
              : (long)value;
@@ -41,21 +41,21 @@ namespace Tetitulz.Pdf.Core.Util
         /// <summary>The value as a <see cref="uint"/>.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint ToUInt(double value)
-            => value != value || value <= 0 ? 0u
+            => double.IsNaN(value) || value <= 0 ? 0u
              : value >= uint.MaxValue ? uint.MaxValue
              : (uint)value;
 
         /// <summary>The value as a <see cref="ushort"/>.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ushort ToUShort(double value)
-            => value != value || value <= 0 ? (ushort)0
+            => double.IsNaN(value) || value <= 0 ? (ushort)0
              : value >= ushort.MaxValue ? ushort.MaxValue
              : (ushort)value;
 
         /// <summary>The value as a <see cref="byte"/>.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ToByte(double value)
-            => value != value || value <= 0 ? (byte)0
+            => double.IsNaN(value) || value <= 0 ? (byte)0
              : value >= byte.MaxValue ? byte.MaxValue
              : (byte)value;
     }

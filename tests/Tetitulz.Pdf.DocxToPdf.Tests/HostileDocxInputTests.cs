@@ -225,7 +225,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void AZeroPageDimension_IsIgnoredAndReported(uint widthTwips, uint heightTwips, bool legacy)
         {
             var seen = new System.Collections.Generic.List<string>();
-            void Collect(string m) => seen.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             byte[] pdf;
             try
@@ -467,7 +468,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void AHostileStyleChain_IsFollowedOnlySoFar()
         {
             var seen = new System.Collections.Generic.List<string>();
-            void Collect(string m) => seen.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); }
             Tetitulz.Pdf.DocxToPdf.Rendering.DocxDiagnostics.OnEvent += Collect;
             try
             {

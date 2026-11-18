@@ -273,7 +273,8 @@ simplePos=""0"" relativeHeight=""1"" behindDoc=""0"" locked=""0"" layoutInCell="
         {
             var seen = new List<string>();
             void Bad(string _) => throw new InvalidDataException("handler blew up");
-            void Good(string m) => seen.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Good(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); }
 
             DocxDiagnostics.OnEvent += Bad;
             DocxDiagnostics.OnEvent += Good;

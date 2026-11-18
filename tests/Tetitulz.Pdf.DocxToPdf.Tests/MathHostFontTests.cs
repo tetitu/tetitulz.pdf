@@ -46,7 +46,8 @@ public sealed class MathHostFontTests : IDisposable
     private (string Pdf, List<string> Reports) Convert(string covered)
     {
         var reports = new List<string>();
-        void Collect(string m) => reports.Add(m);
+        int collectingThread = System.Environment.CurrentManagedThreadId;
+        void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
         DocxToPdfConverter.DiagnosticReported += Collect;
         try
         {

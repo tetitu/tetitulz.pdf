@@ -87,7 +87,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         {
             string path = HostFontFile(fsType);
             var reported = new List<string>();
-            Action<string> collect = reported.Add;
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            Action<string> collect = m => { if (System.Environment.CurrentManagedThreadId == collectingThread) reported.Add(m); };
 
             DocxDiagnostics.OnEvent += collect;
             try

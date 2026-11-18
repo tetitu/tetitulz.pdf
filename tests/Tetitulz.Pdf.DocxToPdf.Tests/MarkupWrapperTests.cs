@@ -133,7 +133,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void ARemovedRun_IsNotDrawnNorReportedLost(string removed, bool legacy)
         {
             var seen = new List<string>();
-            void Collect(string m) => seen.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             string text;
             try
@@ -240,7 +241,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void ADirectionOverride_IsAppliedAndNotReported_OnBothPaths(bool legacy)
         {
             var seen = new List<string>();
-            void Collect(string m) => seen.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             string text;
             try
@@ -506,7 +508,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
             }
 
             var seen = new List<string>();
-            void Collect(string m) => seen.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             string text;
             try { text = Text(DocxToPdfConverter.ConvertToBytes(ms.ToArray(), Options(legacy))); }

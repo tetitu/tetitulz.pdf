@@ -123,7 +123,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         private static string ToPdf(byte[] docx, out List<string> diagnostics)
         {
             var seen = new List<string>();
-            void Collect(string m) => seen.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); }
 
             DocxToPdfConverter.DiagnosticReported += Collect;
             try
@@ -492,7 +493,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void ThreeDimensionalBarChart_IsDrawnFlatAndReported()
         {
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
 
             DocxToPdfConverter.DiagnosticReported += Collect;
             string pdf;
@@ -611,7 +613,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 <c:pt idx=""0""><c:v>5</c:v></c:pt><c:pt idx=""1""><c:v>8</c:v></c:pt></c:numCache></c:numRef></c:yVal></c:ser>";
 
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             string pdf;
             try { pdf = Convert(ChartXml("scatterChart", noX)); }
@@ -693,7 +696,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
             // A bubble with no size is not a bubble. It must still be locatable — an invisible
             // point reads as missing data — and the substitution has to be stated.
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             string pdf;
             try
@@ -818,7 +822,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
             for (int i = 0; i < count; i++) { cats[i] = "c"; values[i] = i % 100; }
 
             var reports = new List<string>();
-            void Collect(string m) => reports.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) reports.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             string pdf;
             try

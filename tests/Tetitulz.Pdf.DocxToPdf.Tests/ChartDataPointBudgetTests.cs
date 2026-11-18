@@ -90,7 +90,8 @@ public class ChartDataPointBudgetTests
     private static List<string> ConvertCollectingDiagnostics(byte[] docx)
     {
         var seen = new List<string>();
-        void Sink(string m) { lock (seen) seen.Add(m); }
+        int collectingThread = System.Environment.CurrentManagedThreadId;
+        void Sink(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) lock (seen) seen.Add(m); }
 
         DocxToPdfConverter.DiagnosticReported += Sink;
         try

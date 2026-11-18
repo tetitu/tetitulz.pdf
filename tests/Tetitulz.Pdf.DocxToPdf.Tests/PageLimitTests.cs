@@ -57,7 +57,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
                 Assert.True(all.Pages.Count > 3, $"the control runs past the limit: {all.Pages.Count} pages");   // potency
 
             var seen = new List<string>();
-            void Collect(string m) => seen.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); }
             DocxToPdfConverter.DiagnosticReported += Collect;
             byte[] pdf;
             try { pdf = DocxToPdfConverter.ConvertToBytes(docx, Options(legacy, maxPages: 2)); }

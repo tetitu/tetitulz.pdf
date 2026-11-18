@@ -130,7 +130,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         private static string ToPdfText(byte[] docx, out List<string> diagnostics)
         {
             var seen = new List<string>();
-            void Collect(string m) => seen.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); }
 
             DocxToPdfConverter.DiagnosticReported += Collect;
             try

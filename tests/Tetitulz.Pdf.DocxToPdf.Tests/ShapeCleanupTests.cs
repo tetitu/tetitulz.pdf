@@ -66,7 +66,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         private static string ConvertDrawing(string drawingXml, out List<string> diagnostics)
         {
             var seen = new List<string>();
-            void Collect(string m) => seen.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); }
 
             DocxToPdfConverter.DiagnosticReported += Collect;
             try
@@ -263,7 +264,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void TableRendererLastError_AlsoReachesTheDiagnosticsSink()
         {
             var seen = new List<string>();
-            void Collect(string m) => seen.Add(m);
+            int collectingThread = System.Environment.CurrentManagedThreadId;
+            void Collect(string m) { if (System.Environment.CurrentManagedThreadId == collectingThread) seen.Add(m); }
 
             DocxToPdfConverter.DiagnosticReported += Collect;
             try
