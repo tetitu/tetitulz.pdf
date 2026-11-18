@@ -11,8 +11,8 @@ assemblies serve modern .NET and .NET Framework hosts. The Windows-only packages
 WinForms viewer control and `Printing` (a virtual PDF printer's machinery), are in
 [tetitulz.pdf-apps](https://github.com/tetitu/tetitulz.pdf-apps).
 
-> **Status.** The packages are attached to each
-> [GitHub release](https://github.com/tetitu/tetitulz.pdf/releases); they are not on nuget.org yet.
+> **Status.** The packages are on [nuget.org](https://www.nuget.org/packages?q=Tetitulz.Pdf) as
+> `Tetitulz.Pdf.*` and attached to each [GitHub release](https://github.com/tetitu/tetitulz.pdf/releases).
 > The desktop apps built on the library are in
 > [tetitulz.pdf-apps](https://github.com/tetitu/tetitulz.pdf-apps).
 > The API is not frozen. See [Versioning](#versioning).
@@ -70,7 +70,14 @@ What the library does **not** do is stated in each package's README, beside its 
 
 ## Getting started
 
-The packages are not on NuGet yet. Build from source and reference the projects you need:
+Add the packages you need from nuget.org, each named after its project:
+
+```bash
+dotnet add package Tetitulz.Pdf.Base
+dotnet add package Tetitulz.Pdf.HtmlToPdf     # and Builder, DocxToPdf, Signing, Encryption, Plugins.* …
+```
+
+Or build from source and reference the projects:
 
 ```bash
 git clone <repository-url>
@@ -386,9 +393,9 @@ proved by mutating the code it covers. [`tests/README.md`](tests/README.md) expl
 ## Versioning
 
 Versions come from git tags through MinVer; an untagged build is a prerelease. A `v*` tag that
-passes CI on Windows, Linux and macOS becomes a GitHub release with the packages attached. A minor version may still break the API: defects are still surfacing at
-a steady rate. `dotnet pack tetitulz.pdf.sln -c Release -o artifacts` produces all 27 packages;
-none is on nuget.org.
+passes CI on Windows, Linux and macOS is pushed to nuget.org and becomes a GitHub release with the
+packages attached. A minor version may still break the API: defects are still surfacing at a steady
+rate. `dotnet pack tetitulz.pdf.sln -c Release -o artifacts` produces all 27 packages.
 
 ---
 
