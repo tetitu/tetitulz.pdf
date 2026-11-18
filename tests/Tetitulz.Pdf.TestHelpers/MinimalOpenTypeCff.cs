@@ -39,8 +39,8 @@ public static class MinimalOpenTypeCff
     /// </summary>
     public sealed class Glyph
     {
-        public string Name;
-        public byte[] Charstring;
+        public string? Name;
+        public byte[] Charstring = Array.Empty<byte>();
         /// <summary>Code in the font's format-0 <c>/Encoding</c>, or <c>-1</c> for unencoded.</summary>
         public int Code = -1;
     }
@@ -185,8 +185,8 @@ public static class MinimalOpenTypeCff
     /// <param name="privateOffsetOverride">The Private offset the Top DICT declares instead of the
     /// real one — a hostile value the parser must survive.</param>
     /// <param name="encodingOffsetOverride">The same for the Encoding offset.</param>
-    public static byte[] BuildBareCff(IReadOnlyList<Glyph> glyphs, IReadOnlyList<byte[]> globalSubrs = null,
-                                      byte[] privateDict = null, int? privateOffsetOverride = null,
+    public static byte[] BuildBareCff(IReadOnlyList<Glyph> glyphs, IReadOnlyList<byte[]>? globalSubrs = null,
+                                      byte[]? privateDict = null, int? privateOffsetOverride = null,
                                       int? encodingOffsetOverride = null)
     {
         if (glyphs == null || glyphs.Count == 0)
@@ -292,10 +292,10 @@ public static class MinimalOpenTypeCff
     /// the block's end (<paramref name="localSubr"/> last) — and as many Private DICTs, each 8 bytes, Font
     /// DICT <i>k</i>'s naming header <i>k</i>; needs <paramref name="fdCount"/> at least that many. Distinct
     /// INDEXes at distinct offsets whose lengths sum to about that many copies of the item.</param>
-    public static byte[] BuildCidKeyed(int[] cidsByGid, byte[] topFontMatrix = null,
-                                       byte[] fdFontMatrix = null, byte? charsetFormat = null,
+    public static byte[] BuildCidKeyed(int[] cidsByGid, byte[]? topFontMatrix = null,
+                                       byte[]? fdFontMatrix = null, byte? charsetFormat = null,
                                        byte fdIndex = 0, int? privateOffsetOverride = null,
-                                       int fdCount = 1, byte[] localSubr = null, bool distinctPrivateSizes = false,
+                                       int fdCount = 1, byte[]? localSubr = null, bool distinctPrivateSizes = false,
                                        int privatePadding = 0, int overlappingSubrsHeaders = 0)
     {
         bool subrsChain = localSubr != null && overlappingSubrsHeaders > 0;
@@ -323,7 +323,7 @@ public static class MinimalOpenTypeCff
         byte[] globalSubrs = CffIndex(Array.Empty<byte[]>());
         byte[] privateDict = { 139, 20 };            // defaultWidthX 0
         byte[] subrsIndex = Array.Empty<byte>();
-        if (subrsChain)
+        if (subrsChain && localSubr != null)
         {
             // Header k is a one-item INDEX whose item is the rest of the block: the headers after it
             // and localSubr. Private DICT k follows the FDArray at k × 8, so its Subrs offset is the

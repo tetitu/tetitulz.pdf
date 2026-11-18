@@ -80,7 +80,7 @@ public static class SyntheticCmykProfile
     /// <param name="a2b">The A2B table; <see cref="LightnessFromKWithToe"/> by default.</param>
     /// <param name="perceptualA2b">A separate perceptual A2B table, or null.</param>
     /// <param name="mediaWhite">A <c>wtpt</c> tag's X, Y, Z, or null for none.</param>
-    public static byte[] Build(byte[] b2a, byte[] a2b = null, byte[] perceptualA2b = null, double[] mediaWhite = null)
+    public static byte[] Build(byte[] b2a, byte[]? a2b = null, byte[]? perceptualA2b = null, double[]? mediaWhite = null)
     {
         a2b ??= LightnessFromKWithToe();
         var tags = new List<(string, int)> { ("A2B0", perceptualA2b == null ? 1 : 2), ("A2B1", 1), ("B2A0", 0), ("B2A1", 0) };

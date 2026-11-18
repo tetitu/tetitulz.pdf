@@ -54,6 +54,7 @@ does not carry the crypto stack into every consumer.
 | Audit, auto-tag and remediate for PDF/UA-1 and PDF/UA-2 | `PdfAccessibility` | `Accessibility` |
 | Build a document in code and export it as PDF, DOCX, HTML or ODT | `DocumentBuilder`, `PdfExporter` | `Builder` |
 | DOCX to PDF; PDF to DOCX, XLSX, PPTX | `DocxToPdfConverter`, `PdfToDocxConverter` | `DocxToPdf`, `Plugins.Docx` |
+| Choose the PDF version a new file declares, or raise an existing file's (never below what the content needs) | `PdfDocumentBuilder.WithVersion`; the `Version` option of `PdfExportOptions`, `HtmlToPdfOptions`, `DocxToPdfOptions`; `PdfOperations.SetVersion` | `Core`, `Builder`, `HtmlToPdf`, `DocxToPdf`, `Base` |
 | HTML or Markdown to PDF, with a managed engine or a browser; fillable forms; page JavaScript | `HtmlToPdfConverter`, `MarkdownToPdfConverter`, `HtmlFillableForms` | `HtmlToPdf`, `Plugins.Html`, `Plugins.HtmlBrowser`, `Plugins.HtmlScript` |
 | PDF to HTML, text or SVG | `PdfHtmlConverter`, `PdfOperations.Export` | `Plugins.Html`, `Plugins.Text`, `Plugins.Svg` |
 | SVG to PDF | `SvgToPdfConverter` | `Base` |
@@ -113,6 +114,59 @@ The same `Document` exports through `DocxExporter`, `HtmlExporter` or `OdtExport
 call styles the run before it: `.AddText("Total: ").AddText("$1,240").Bold()` bolds only the amount,
 and `.Bold()` with no run in front of it throws rather than producing plain text. Right-to-left text
 is first class: `.Rtl()` on a section or paragraph, or `.Direction(TextDirection.RightToLeft)`.
+`new PdfExportOptions { Version = PdfVersion.Pdf17 }` chooses the PDF version the file declares.
+
+### HTML to PDF: a simple invoice
+
+```csharp
+using Tetitulz.Pdf.Core.Document;
+using Tetitulz.Pdf.HtmlToPdf;
+
+string html = """
+<html>
+<head>
+  <style>
+    body   { font-family: Helvetica, Arial, sans-serif; font-size: 11pt; color: #222; }
+    h1     { font-size: 22pt; color: #0b5394; margin: 0 0 4pt 0; }
+    .muted { color: #777; }
+    table  { width: 100%; border-collapse: collapse; margin-top: 18pt; }
+    th     { background: #0b5394; color: #fff; text-align: left; padding: 6pt; }
+    td     { border-bottom: 1px solid #ddd; padding: 6pt; }
+    .num   { text-align: right; }
+    .total td { font-weight: bold; border-bottom: none; }
+  </style>
+</head>
+<body>
+  <h1>Invoice #2026-0042</h1>
+  <p class="muted">Issued 18 November 2026 &middot; Due 18 December 2026</p>
+  <p><b>Bill to</b><br>Acme Ltd.<br>12 Harbour Street<br>Tel Aviv</p>
+  <table>
+    <tr><th>Item</th><th class="num">Qty</th><th class="num">Price</th><th class="num">Amount</th></tr>
+    <tr><td>Consulting (hours)</td><td class="num">12</td><td class="num">$150.00</td><td class="num">$1,800.00</td></tr>
+    <tr><td>Hosting, November</td><td class="num">1</td><td class="num">$49.00</td><td class="num">$49.00</td></tr>
+    <tr class="total"><td colspan="3" class="num">Total</td><td class="num">$1,849.00</td></tr>
+  </table>
+  <p class="muted">Thank you for your business.</p>
+</body>
+</html>
+""";
+
+byte[] pdf = HtmlToPdfConverter.ConvertHtmlToBytes(html, new HtmlToPdfOptions
+{
+    PageSize = HtmlPageSize.A4,          // A3, A5, Letter, Legal … or PageWidth/PageHeight for any size
+    MarginTop = "20mm", MarginBottom = "20mm", MarginLeft = "18mm", MarginRight = "18mm",
+    Version = PdfVersion.Pdf17,          // optional: unset writes the lowest version the content needs
+    DefaultLanguage = "en",
+});
+File.WriteAllBytes("invoice.pdf", pdf);
+```
+
+The default engine is managed: no browser, no network, no JavaScript, and the output is tagged. Set
+`RenderEngine = HtmlRenderEngine.Browser` (with `Plugins.HtmlBrowser`) for full CSS and page script
+through Chromium. A fuller console demo, an English and a multi-page right-to-left Hebrew invoice
+through both engines with a footer on every page, is
+[`demo/HtmlInvoice`](https://github.com/tetitu/tetitulz.pdf-apps/tree/main/demo/HtmlInvoice) in
+tetitulz.pdf-apps.
 
 ### Render, extract, sign
 

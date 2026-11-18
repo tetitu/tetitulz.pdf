@@ -29,7 +29,7 @@ public static class OutlineTrueType
     /// delta under 256 as a byte with its sign in the flag, and a run of equal flags as one flag with
     /// <c>REPEAT_FLAG</c> and a count.
     /// </summary>
-    public static byte[] Simple(Point[][] contours, byte[] instructions, bool compact)
+    public static byte[] Simple(Point[][] contours, byte[]? instructions, bool compact)
     {
         var s = new MemoryStream();
         W16(s, contours.Length);
@@ -120,7 +120,7 @@ public static class OutlineTrueType
     /// code at U+F000 + code, as a Windows symbol font has it.
     /// </summary>
     public static byte[] Build(IReadOnlyList<byte[]> glyphs, int unitsPerEm = 1000, bool longLoca = false,
-                               string characters = null, bool symbolic = false)
+                               string? characters = null, bool symbolic = false)
     {
         var glyf = new MemoryStream();
         var offsets = new List<int> { 0, 0 };

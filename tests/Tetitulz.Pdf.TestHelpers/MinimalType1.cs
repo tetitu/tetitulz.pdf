@@ -52,13 +52,13 @@ public static class MinimalType1
     /// </summary>
     public static (byte[] Program, int Length1, int Length2) Build(
         IReadOnlyList<(string Name, byte[] Charstring)> glyphs,
-        IReadOnlyDictionary<int, string> encoding = null,
+        IReadOnlyDictionary<int, string>? encoding = null,
         string fontName = "ProbeFont",
         string fontMatrix = "[0.001 0 0 0.001 0 0]",
         string fontBBox = "{0 0 1000 1000}",
-        string extraCharStringsText = null,
+        string? extraCharStringsText = null,
         int lenIV = 4,
-        string subrsText = null)
+        string? subrsText = null)
     {
         var clear = new StringBuilder();
         clear.Append($"%!PS-AdobeFont-1.0: {fontName} 001.001\n");

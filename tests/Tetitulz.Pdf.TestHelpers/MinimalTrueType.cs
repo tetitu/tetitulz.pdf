@@ -73,7 +73,7 @@ public static class MinimalTrueType
     /// PDF glyph-space value). <paramref name="vmtxBytes"/> truncates the <c>vmtx</c> table to that
     /// many bytes when non-negative, for a program whose vertical metrics cannot be read.
     /// </summary>
-    public static byte[] BuildSymbolicWithVerticalMetrics(string characters, int advanceHeight, int vmtxBytes = -1)
+    public static byte[] BuildSymbolicWithVerticalMetrics(string? characters, int advanceHeight, int vmtxBytes = -1)
     {
         int numGlyphs = new SortedSet<char>(characters ?? string.Empty).Count + 1;
 
@@ -153,7 +153,7 @@ public static class MinimalTrueType
     /// Preview &amp; Print rather than "restricted and preview".
     /// </param>
     /// <param name="familyName">The <c>name</c> table family, or null for the default.</param>
-    public static byte[] BuildWithFsType(string characters, int fsType, string familyName = null)
+    public static byte[] BuildWithFsType(string characters, int fsType, string? familyName = null)
     {
         byte[] os2 = BuildOs2();
         WriteUInt16At(os2, 8, fsType);
@@ -231,7 +231,7 @@ public static class MinimalTrueType
     }
 
     /// <summary>The code points of <paramref name="text"/>, surrogate pairs combined.</summary>
-    private static IEnumerable<int> CodePointsOf(string text)
+    private static IEnumerable<int> CodePointsOf(string? text)
     {
         string s = text ?? string.Empty;
         for (int i = 0; i < s.Length; i++)
@@ -246,10 +246,10 @@ public static class MinimalTrueType
         }
     }
 
-    private static byte[] Build(string characters, int cmapPlatformId, int cmapEncodingId,
+    private static byte[] Build(string? characters, int cmapPlatformId, int cmapEncodingId,
                                 bool distinctWidths,
-                                Dictionary<string, byte[]> extraTables = null,
-                                string familyName = null,
+                                Dictionary<string, byte[]>? extraTables = null,
+                                string? familyName = null,
                                 int cmapCodeOffset = 0)
     {
         // Code points, not UTF-16 units: a surrogate pair is one mapped character, and taking the
@@ -646,7 +646,7 @@ public static class MinimalTrueType
 
     internal static byte[] BuildName() => BuildName(null);
 
-    internal static byte[] BuildName(string familyName)
+    internal static byte[] BuildName(string? familyName)
     {
         byte[] value = Encoding.BigEndianUnicode.GetBytes(
             string.IsNullOrEmpty(familyName) ? "TestFont" : familyName);
