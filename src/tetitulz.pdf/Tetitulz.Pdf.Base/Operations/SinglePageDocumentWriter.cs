@@ -179,9 +179,16 @@ namespace Tetitulz.Pdf.Base.Operations
                     refs.Append(refs.Length == 0 ? "" : " ").Append(ObjectCount + 1 + i).Append(" 0 R");
             if (refs.Length > 0) annotsEntry = "\n   /Annots [" + refs + "]";
 
+            // The header is 1.4 raised to what the built objects use (an OpenType font program is 1.6).
+            // The text objects are the generators' own, transparency and Flate at most, which 1.4 holds.
+            var floor = new PdfFeatureVersions.Floor();
+            for (int i = 0; i < extraCount; i++)
+                PdfFeatureVersions.Scan(objects[i].Object, floor);
+            Core.Document.PdfVersion version = floor.HeaderFor(Core.Document.PdfVersion.Pdf14);
+
             // The binary comment PdfWriter.WriteHeader writes: ISO 32000 7.5.2 recommends it and
             // ISO 19005 6.1.2 requires it (% and four bytes above 127), so a one-page file can be PDF/A.
-            string header1 = "%PDF-1.4\n%\u00E2\u00E3\u00CF\u00D3\n";
+            string header1 = "%PDF-" + version + "\n%\u00E2\u00E3\u00CF\u00D3\n";
             string obj1 = "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n";
             string obj2 = $"2 0 obj\n<< /Type /Pages /Kids [{PageObject} 0 R] /Count 1 >>\nendobj\n";
             string obj3 = $"{PageObject} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox {mediaBox}\n   /Contents 4 0 R{annotsEntry}\n   /Resources {Resources(fontEncoding, extGStates, xObjects, fonts, patterns)}\n>>\nendobj\n";

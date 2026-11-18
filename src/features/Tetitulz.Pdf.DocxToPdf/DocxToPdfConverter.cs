@@ -166,6 +166,9 @@ namespace Tetitulz.Pdf.DocxToPdf
         /// </remarks>
         private static void BeginConversion() => Rendering.DocxDiagnostics.Clear();
 
+        /// <summary>The operation a raised header is reported under, on either path of the BuiltIn engine.</summary>
+        internal const string VersionOperation = "DocxToPdfOptions.Version";
+
         /// <summary>
         /// The options a caller's mistake turns into a degenerate document: the page sides and the
         /// default font size positive and finite, the margins non-negative and finite. The legacy
@@ -301,12 +304,15 @@ namespace Tetitulz.Pdf.DocxToPdf
                         doc.SaveAsPdf(output, new Tetitulz.Pdf.Builder.Export.PdfExportOptions
                         {
                             MaxPages = options.MaxPages,
-                            // The page limit's report reaches this converter's own channel; the Builder's
-                            // other diagnostics stay on BuilderDiagnostics.OnEvent, as they always have.
+                            Version = options.Version,
+                            // The page limit's and the version's reports reach this converter's own channel;
+                            // the Builder's other diagnostics stay on BuilderDiagnostics.OnEvent, as they always have.
                             OnDiagnostic = d =>
                             {
                                 if (d.Kind == Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind.PageLimitReached)
                                     Rendering.DocxDiagnostics.Report("DocxToPdfConverter.MaxPages", d.Detail);
+                                else if (d.Kind == Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind.VersionRaised)
+                                    Rendering.DocxDiagnostics.Report(VersionOperation, d.Detail);
                             },
                         });
                     }

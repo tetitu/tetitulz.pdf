@@ -123,6 +123,28 @@ namespace Tetitulz.Pdf.DocxToPdf
         private int _maxPages;
 
         /// <summary>
+        /// The PDF version the header names, on either path of the BuiltIn engine; <b><c>null</c>, the
+        /// default, for the lowest version the content needs, never below 1.4</b>. A version below what the
+        /// content uses (a tagged document's structure tree is 1.3, its <c>/MarkInfo</c> 1.4; an OpenType
+        /// font program 1.6) is raised to it and <see cref="DocxToPdfConverter.DiagnosticReported"/> says so;
+        /// a version no edition of the standard publishes (1.0 to 1.7, and 2.0) is refused. LibreOffice and
+        /// Word write their own header and do not read it.
+        /// </summary>
+        public Tetitulz.Pdf.Core.Document.PdfVersion? Version
+        {
+            get => _version;
+            set
+            {
+                if (value.HasValue && !value.Value.IsPublished)
+                    throw new ArgumentOutOfRangeException(nameof(value), value.Value.ToString(),
+                        "A PDF version is 1.0 to 1.7, or 2.0.");
+                _version = value;
+            }
+        }
+
+        private Tetitulz.Pdf.Core.Document.PdfVersion? _version;
+
+        /// <summary>
         /// Allow a font picked up off the host machine to be embedded even when its <c>OS/2</c>
         /// <c>fsType</c> forbids it. Default <c>false</c>.
         /// </summary>

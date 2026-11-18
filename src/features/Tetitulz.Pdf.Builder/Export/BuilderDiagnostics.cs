@@ -55,6 +55,13 @@ namespace Tetitulz.Pdf.Builder.Export
         /// written whole, and the content after them was not laid out.
         /// </summary>
         PageLimitReached = 7,
+
+        /// <summary>
+        /// The file was written at a higher PDF version than <see cref="PdfExportOptions.Version"/>
+        /// asked for, because the content uses a feature the asked-for version does not have; the
+        /// detail names the feature and both versions. Reported only when a version was asked for.
+        /// </summary>
+        VersionRaised = 8,
     }
 
     /// <summary>One tolerated failure, with enough detail to act on.</summary>

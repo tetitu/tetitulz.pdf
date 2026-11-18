@@ -8,6 +8,25 @@ namespace Tetitulz.Pdf.Core.Document
 {
     public struct PdfVersion : IComparable<PdfVersion>, IEquatable<PdfVersion>
     {
+        /// <summary>PDF 1.0.</summary>
+        public static readonly PdfVersion Pdf10 = new PdfVersion(1, 0);
+        /// <summary>PDF 1.1.</summary>
+        public static readonly PdfVersion Pdf11 = new PdfVersion(1, 1);
+        /// <summary>PDF 1.2.</summary>
+        public static readonly PdfVersion Pdf12 = new PdfVersion(1, 2);
+        /// <summary>PDF 1.3.</summary>
+        public static readonly PdfVersion Pdf13 = new PdfVersion(1, 3);
+        /// <summary>PDF 1.4 — the highest version PDF/A-1 admits.</summary>
+        public static readonly PdfVersion Pdf14 = new PdfVersion(1, 4);
+        /// <summary>PDF 1.5.</summary>
+        public static readonly PdfVersion Pdf15 = new PdfVersion(1, 5);
+        /// <summary>PDF 1.6.</summary>
+        public static readonly PdfVersion Pdf16 = new PdfVersion(1, 6);
+        /// <summary>PDF 1.7 (ISO 32000-1) — the highest version PDF/A-2 and -3 admit.</summary>
+        public static readonly PdfVersion Pdf17 = new PdfVersion(1, 7);
+        /// <summary>PDF 2.0 (ISO 32000-2).</summary>
+        public static readonly PdfVersion Pdf20 = new PdfVersion(2, 0);
+
         public int Major { get; }
         public int Minor { get; }
 
@@ -16,6 +35,15 @@ namespace Tetitulz.Pdf.Core.Document
             Major = major;
             Minor = minor;
         }
+
+        /// <summary>
+        /// Whether this is a published version of the format — 1.0 to 1.7, or 2.0 — and so one a
+        /// writer may put in a header. A reader still parses any <c>major.minor</c> a file carries.
+        /// </summary>
+        public bool IsPublished => (Major == 1 && Minor >= 0 && Minor <= 7) || (Major == 2 && Minor == 0);
+
+        /// <summary>The later of two versions.</summary>
+        public static PdfVersion Max(PdfVersion a, PdfVersion b) => a >= b ? a : b;
 
         public int CompareTo(PdfVersion other)
         {

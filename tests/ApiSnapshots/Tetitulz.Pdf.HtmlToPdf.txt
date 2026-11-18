@@ -20,6 +20,16 @@ Tetitulz.Pdf.HtmlToPdf.HtmlFormConversionResult::Pdf : System.Byte[] { get }
 Tetitulz.Pdf.HtmlToPdf.HtmlMediaType::Print : Tetitulz.Pdf.HtmlToPdf.HtmlMediaType = 0
 Tetitulz.Pdf.HtmlToPdf.HtmlMediaType::Screen : Tetitulz.Pdf.HtmlToPdf.HtmlMediaType = 1
 Tetitulz.Pdf.HtmlToPdf.HtmlMediaType::value__ : System.Int32
+Tetitulz.Pdf.HtmlToPdf.HtmlPageSize::A3 : Tetitulz.Pdf.HtmlToPdf.HtmlPageSize = 1
+Tetitulz.Pdf.HtmlToPdf.HtmlPageSize::A4 : Tetitulz.Pdf.HtmlToPdf.HtmlPageSize = 2
+Tetitulz.Pdf.HtmlToPdf.HtmlPageSize::A5 : Tetitulz.Pdf.HtmlToPdf.HtmlPageSize = 3
+Tetitulz.Pdf.HtmlToPdf.HtmlPageSize::B4 : Tetitulz.Pdf.HtmlToPdf.HtmlPageSize = 4
+Tetitulz.Pdf.HtmlToPdf.HtmlPageSize::B5 : Tetitulz.Pdf.HtmlToPdf.HtmlPageSize = 5
+Tetitulz.Pdf.HtmlToPdf.HtmlPageSize::Executive : Tetitulz.Pdf.HtmlToPdf.HtmlPageSize = 9
+Tetitulz.Pdf.HtmlToPdf.HtmlPageSize::Legal : Tetitulz.Pdf.HtmlToPdf.HtmlPageSize = 7
+Tetitulz.Pdf.HtmlToPdf.HtmlPageSize::Letter : Tetitulz.Pdf.HtmlToPdf.HtmlPageSize = 6
+Tetitulz.Pdf.HtmlToPdf.HtmlPageSize::Tabloid : Tetitulz.Pdf.HtmlToPdf.HtmlPageSize = 8
+Tetitulz.Pdf.HtmlToPdf.HtmlPageSize::value__ : System.Int32
 Tetitulz.Pdf.HtmlToPdf.HtmlRenderEngine::Browser : Tetitulz.Pdf.HtmlToPdf.HtmlRenderEngine = 0
 Tetitulz.Pdf.HtmlToPdf.HtmlRenderEngine::Managed : Tetitulz.Pdf.HtmlToPdf.HtmlRenderEngine = 1
 Tetitulz.Pdf.HtmlToPdf.HtmlRenderEngine::value__ : System.Int32
@@ -67,13 +77,14 @@ Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MarginBottom : System.String { get; set
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MarginLeft : System.String { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MarginRight : System.String { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MarginTop : System.String { get; set }
-Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MaxPages : System.Int32 { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MaxHtmlBytes : System.Int64 { get; set }
+Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MaxPages : System.Int32 { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MaxRemoteResources : System.Int32 { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MediaType : Tetitulz.Pdf.HtmlToPdf.HtmlMediaType { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::NavigationTimeoutMs : System.Int32 { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::OnDiagnostic : System.Action<Tetitulz.Pdf.Builder.Export.BuilderDiagnostic> { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::PageHeight : System.String { get; set }
+Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::PageSize : System.Nullable<Tetitulz.Pdf.HtmlToPdf.HtmlPageSize> { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::PageWidth : System.String { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::PrintBackground : System.Boolean { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::RemoteResourceLoader : Tetitulz.Pdf.HtmlToPdf.IRemoteResourceLoader { get; set }
@@ -83,6 +94,7 @@ Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::Scale : System.Double { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::SvgRasterizer : System.Func<System.String, System.Byte[]> { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::Tagged : System.Boolean { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::UnrenderableText : Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy { get; set }
+Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::Version : System.Nullable<Tetitulz.Pdf.Core.Document.PdfVersion> { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::ViewportWidth : System.Nullable<System.Double> { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::WaitForNetworkIdle : System.Boolean { get; set }
 Tetitulz.Pdf.HtmlToPdf.IHtmlBrowserPlugin::RenderAsync(Tetitulz.Pdf.HtmlToPdf.HtmlBrowserRequest) : System.Threading.Tasks.Task<System.Byte[]>
@@ -110,6 +122,7 @@ class Tetitulz.Pdf.HtmlToPdf.Markdown.MarkdownToHtml
 class Tetitulz.Pdf.HtmlToPdf.Markdown.MarkdownToPdfConverter
 enum Tetitulz.Pdf.HtmlToPdf.BrowserEngine
 enum Tetitulz.Pdf.HtmlToPdf.HtmlMediaType
+enum Tetitulz.Pdf.HtmlToPdf.HtmlPageSize
 enum Tetitulz.Pdf.HtmlToPdf.HtmlRenderEngine
 interface Tetitulz.Pdf.HtmlToPdf.IHtmlBrowserPlugin
 interface Tetitulz.Pdf.HtmlToPdf.IHtmlScriptPlugin

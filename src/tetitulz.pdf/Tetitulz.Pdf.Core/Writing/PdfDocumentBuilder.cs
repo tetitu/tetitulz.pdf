@@ -69,16 +69,36 @@ namespace Tetitulz.Pdf.Core.Writing
         private readonly List<PageSpec> _pages = new List<PageSpec>();
         private readonly List<EmbeddedFont> _embeddedFonts = new List<EmbeddedFont>();
         private int _embeddedFontCounter;
-        private PdfVersion _version = new PdfVersion(1, 4);
+        private PdfVersion _version = PdfVersion.Pdf14;
         private bool _compressStreams = true;
         private string _title, _author, _subject;
 
-        /// <summary>Sets the output PDF version (default 1.4).</summary>
+        /// <summary>
+        /// Sets the PDF version the header asks for (default 1.4). The header written is the higher
+        /// of this and what the document uses — a JPEG 2000 image needs 1.5, an OpenType font program
+        /// 1.6 — so a file never claims a version below its content; <see cref="WrittenVersion"/> and
+        /// <see cref="VersionRaisedBecause"/> say what <see cref="Build"/> wrote and why.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="version"/> is not a published
+        /// version (1.0 to 1.7, or 2.0).</exception>
         public PdfDocumentBuilder WithVersion(PdfVersion version)
         {
+            if (!version.IsPublished)
+                throw new ArgumentOutOfRangeException(nameof(version), version.ToString(),
+                    "A PDF version is 1.0 to 1.7, or 2.0.");
             _version = version;
             return this;
         }
+
+        /// <summary>The version the last <see cref="Build"/> wrote in the header; null before one.</summary>
+        public PdfVersion? WrittenVersion { get; private set; }
+
+        /// <summary>
+        /// The feature that made the last <see cref="Build"/> write a version above the one
+        /// <see cref="WithVersion"/> asked for, such as <c>a JPEG 2000 image (JPXDecode)</c>; null
+        /// when the header is the version asked for.
+        /// </summary>
+        public string VersionRaisedBecause { get; private set; }
 
         /// <summary>
         /// Sets the document information (/Info dictionary) — Title, Author and Subject.
@@ -152,11 +172,10 @@ namespace Tetitulz.Pdf.Core.Writing
         /// </summary>
         public void Build(Stream output)
         {
+            WrittenVersion = null;
+            VersionRaisedBecause = null;
             if (output == null) throw new ArgumentNullException(nameof(output));
             if (_pages.Count == 0) throw new InvalidOperationException("Cannot build a PDF with no pages.");
-
-            var writer = new PdfWriter(output);
-            writer.WriteHeader(_version);
 
             int nextObjNum = 1;
 
@@ -364,6 +383,38 @@ namespace Tetitulz.Pdf.Core.Writing
             catalogDict.ObjectNumber = catalogObjNum;
             catalogDict.GenerationNumber = 0;
 
+            // Document information dictionary (/Info), numbered after every other object.
+            int infoObjNum = nextObjNum++;
+            var info = new PdfDictionary();
+            if (!string.IsNullOrEmpty(_title)) info.Set(PdfName.Title, new PdfString(_title));
+            if (!string.IsNullOrEmpty(_author)) info.Set(PdfName.Author, new PdfString(_author));
+            if (!string.IsNullOrEmpty(_subject)) info.Set(PdfName.Subject, new PdfString(_subject));
+            info.Set(PdfName.Producer, new PdfString(PdfProducer.Value));
+            info.ObjectNumber = infoObjNum;
+            info.GenerationNumber = 0;
+
+            var trailer = new PdfDictionary();
+            trailer.Set(PdfName.Size, new PdfNumber(nextObjNum)); // /Size = max object number + 1
+            trailer.Set(PdfName.Root, new PdfReference(catalogObjNum, 0));
+            trailer.Set(PdfName.ID, PdfTrailerBuilder.NewFileId());
+            trailer.Set(PdfName.Info, new PdfReference(infoObjNum, 0));
+
+            // The header is written once every object exists, so it names what they use: the
+            // version asked for, raised to what any object or content stream needs.
+            var floor = new PdfFeatureVersions.Floor();
+            foreach (var (_, obj) in allObjects) PdfFeatureVersions.Scan(obj, floor);
+            PdfFeatureVersions.Scan(pagesDict, floor);
+            PdfFeatureVersions.Scan(catalogDict, floor);
+            PdfFeatureVersions.Scan(info, floor);
+            PdfFeatureVersions.Scan(trailer, floor);
+            foreach (var spec in _pages) spec.Builder.RequireContentFeatures(floor);
+
+            PdfVersion version = floor.HeaderFor(_version);
+            var writer = new PdfWriter(output);
+            writer.WriteHeader(version);
+            WrittenVersion = version;
+            VersionRaisedBecause = floor.RaisedBecause(_version);
+
             // Write all side objects first (fonts, images, content streams, page dicts)
             var xrefEntries = new List<(int objNum, long offset)>();
             xrefEntries.Add((0, 0)); // free head
@@ -374,7 +425,7 @@ namespace Tetitulz.Pdf.Core.Writing
                 xrefEntries.Add((n, off));
             }
 
-            // Write pages tree root and catalog
+            // Write pages tree root, catalog and /Info
             {
                 long off = writer.WriteIndirectObject(pagesRootObjNum, 0, pagesDict);
                 xrefEntries.Add((pagesRootObjNum, off));
@@ -383,33 +434,10 @@ namespace Tetitulz.Pdf.Core.Writing
                 long off = writer.WriteIndirectObject(catalogObjNum, 0, catalogDict);
                 xrefEntries.Add((catalogObjNum, off));
             }
-
-            // Build trailer
-            int totalObjects = nextObjNum; // /Size = max object number + 1
-
-            var idArray = PdfTrailerBuilder.NewFileId();
-
-            var trailer = new PdfDictionary();
-            trailer.Set(PdfName.Size, new PdfNumber(totalObjects));
-            trailer.Set(PdfName.Root, new PdfReference(catalogObjNum, 0));
-            trailer.Set(PdfName.ID, idArray);
-
-            // Document information dictionary (/Info).
-            int infoObjNum = nextObjNum++;
-            var info = new PdfDictionary();
-            if (!string.IsNullOrEmpty(_title)) info.Set(PdfName.Title, new PdfString(_title));
-            if (!string.IsNullOrEmpty(_author)) info.Set(PdfName.Author, new PdfString(_author));
-            if (!string.IsNullOrEmpty(_subject)) info.Set(PdfName.Subject, new PdfString(_subject));
-            info.Set(PdfName.Producer, new PdfString(PdfProducer.Value));
-            info.ObjectNumber = infoObjNum;
-            info.GenerationNumber = 0;
             {
                 long off = writer.WriteIndirectObject(infoObjNum, 0, info);
                 xrefEntries.Add((infoObjNum, off));
             }
-            trailer.Set(PdfName.Info, new PdfReference(infoObjNum, 0));
-            totalObjects = nextObjNum;
-            trailer.Set(PdfName.Size, new PdfNumber(totalObjects));
 
             long xrefOffset = writer.WriteXrefTable(xrefEntries);
             writer.WriteTrailer(trailer, xrefOffset);

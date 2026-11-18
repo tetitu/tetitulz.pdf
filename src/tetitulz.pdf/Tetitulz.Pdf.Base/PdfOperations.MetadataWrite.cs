@@ -37,5 +37,18 @@ namespace Tetitulz.Pdf.Base
         /// <summary>Writes or replaces the XMP metadata stream.</summary>
         public static void WriteXmpMetadata(Stream input, Stream output, string xmpXml)
             => PdfMetadataWriter.WriteXmpMetadata(input, output, xmpXml);
+
+        /// <summary>
+        /// Raises the document's declared PDF version to <paramref name="version"/> (1.4 to 1.7, or 2.0)
+        /// through the catalog's <c>/Version</c>, in one appended revision over the original bytes; a
+        /// document already at that version is written unchanged.
+        /// </summary>
+        /// <remarks>
+        /// <para>Lowering is refused: a lower version claims the document uses nothing past it. To write a
+        /// new document at a chosen version, set <c>PdfDocumentBuilder.WithVersion</c> or a converter's
+        /// <c>Version</c> option instead. See <see cref="PdfVersionSetter"/>.</para>
+        /// </remarks>
+        public static PdfVersionChange SetVersion(Stream input, Stream output, PdfVersion version)
+            => PdfVersionSetter.SetVersion(input, output, version);
     }
 }

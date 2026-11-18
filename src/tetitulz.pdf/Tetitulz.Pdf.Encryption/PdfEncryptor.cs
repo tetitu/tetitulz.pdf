@@ -437,8 +437,7 @@ namespace Tetitulz.Pdf.Encryption
                 trailer.Set(PdfName.AuthCode, seal.CreatePlaceholder());
 
             // Object streams are PDF 1.5 (§7.5.7); the writer would raise the header itself, with a warning.
-            var compressedFloor = new PdfVersion(1, 5);
-            if (version.CompareTo(compressedFloor) < 0) version = compressedFloor;
+            version = PdfVersion.Max(version, PdfFeatureVersions.ObjectStreams);
 
             long fileStart = output.CanSeek ? output.Position : 0;
             PdfCompressedFileWriter.Write(output, version, objects, trailer,
@@ -601,41 +600,34 @@ namespace Tetitulz.Pdf.Encryption
         internal static PdfVersion DetermineMinimumVersion(
             PdfVersion current, EncryptionAlgorithm algorithm, bool pdfMacEnabled = false)
         {
-            int reqMajor = 1;
-            int reqMinor;
+            PdfVersion required;
             switch (algorithm)
             {
                 case EncryptionAlgorithm.RC4_40:
-                    reqMinor = 1;
+                    required = PdfFeatureVersions.Rc4Revision2;
                     break;
-                case EncryptionAlgorithm.RC4_40R3:   // revision 3 arrived with PDF 1.4
+                case EncryptionAlgorithm.RC4_40R3:
                 case EncryptionAlgorithm.RC4_128:
-                    reqMinor = 4;
+                    required = PdfFeatureVersions.Rc4Revision3;
                     break;
                 case EncryptionAlgorithm.AES128:
-                    reqMinor = 6;
+                    required = PdfFeatureVersions.Aes128;
                     break;
                 case EncryptionAlgorithm.AES256:
                 case EncryptionAlgorithm.AES256GCM:
-                    reqMajor = 2;
-                    reqMinor = 0;
+                    required = PdfFeatureVersions.Aes256;
                     break;
                 default:
-                    reqMinor = 4;
+                    required = PdfVersion.Pdf14;
                     break;
             }
 
             // ISO/TS 32004 is a PDF 2.0 feature (/KDFSalt and /AuthCode are both new entries),
             // regardless of which crypt filter the document otherwise uses.
             if (pdfMacEnabled)
-            {
-                reqMajor = 2;
-                reqMinor = 0;
-            }
+                required = PdfVersion.Max(required, PdfFeatureVersions.PdfMac);
 
-            if (current.Major > reqMajor || (current.Major == reqMajor && current.Minor >= reqMinor))
-                return current;
-            return new PdfVersion(reqMajor, reqMinor);
+            return PdfVersion.Max(current, required);
         }
 
         #endregion

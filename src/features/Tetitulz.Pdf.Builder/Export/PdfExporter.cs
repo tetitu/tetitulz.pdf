@@ -353,6 +353,7 @@ namespace Tetitulz.Pdf.Builder.Export
             {
                 PlacedFormFields = _placedFormFields,
                 Doc = new PdfDocumentBuilder().WithCompression(true)
+                    .WithVersion(_options.Version ?? Tetitulz.Pdf.Core.Document.PdfVersion.Pdf14)
                     .WithMetadata(document.Title, document.Author, document.Subject),
                 Fonts = new BuilderFontResolver(_options),
                 Options = _options,
@@ -416,6 +417,9 @@ namespace Tetitulz.Pdf.Builder.Export
                     "expect a gap after the number and an alignment offset on that line.");
 
             ctx.Doc.Build(output);
+
+            string? raised = PdfFeatureVersions.RaiseReport(_options.Version, ctx.Doc.WrittenVersion!.Value, ctx.Doc.VersionRaisedBecause);
+            if (raised != null) BuilderDiagnostics.Report(BuilderDiagnosticKind.VersionRaised, raised);
         }
 
         /// <summary>

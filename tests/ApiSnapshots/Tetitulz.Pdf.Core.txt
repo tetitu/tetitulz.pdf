@@ -837,8 +837,19 @@ Tetitulz.Pdf.Core.Document.PdfVersion::CompareTo(Tetitulz.Pdf.Core.Document.PdfV
 Tetitulz.Pdf.Core.Document.PdfVersion::Equals(System.Object) : System.Boolean
 Tetitulz.Pdf.Core.Document.PdfVersion::Equals(Tetitulz.Pdf.Core.Document.PdfVersion) : System.Boolean
 Tetitulz.Pdf.Core.Document.PdfVersion::GetHashCode() : System.Int32
+Tetitulz.Pdf.Core.Document.PdfVersion::IsPublished : System.Boolean { get }
 Tetitulz.Pdf.Core.Document.PdfVersion::Major : System.Int32 { get }
+Tetitulz.Pdf.Core.Document.PdfVersion::Max(Tetitulz.Pdf.Core.Document.PdfVersion, Tetitulz.Pdf.Core.Document.PdfVersion) : Tetitulz.Pdf.Core.Document.PdfVersion
 Tetitulz.Pdf.Core.Document.PdfVersion::Minor : System.Int32 { get }
+Tetitulz.Pdf.Core.Document.PdfVersion::Pdf10 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Document.PdfVersion::Pdf11 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Document.PdfVersion::Pdf12 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Document.PdfVersion::Pdf13 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Document.PdfVersion::Pdf14 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Document.PdfVersion::Pdf15 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Document.PdfVersion::Pdf16 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Document.PdfVersion::Pdf17 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Document.PdfVersion::Pdf20 : Tetitulz.Pdf.Core.Document.PdfVersion
 Tetitulz.Pdf.Core.Document.PdfVersion::ToString() : System.String
 Tetitulz.Pdf.Core.Document.PdfVersion::TryParse(System.String, out Tetitulz.Pdf.Core.Document.PdfVersion&) : System.Boolean
 Tetitulz.Pdf.Core.Document.PdfVersion::op_Equality(Tetitulz.Pdf.Core.Document.PdfVersion, Tetitulz.Pdf.Core.Document.PdfVersion) : System.Boolean
@@ -2502,9 +2513,28 @@ Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder::AddEmbeddedFont(Tetitulz.Pdf.Core.
 Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder::AddPage(System.Double, System.Double) : Tetitulz.Pdf.Core.Writing.PdfContentStreamBuilder
 Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder::Build(System.IO.Stream) : System.Void
 Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder::Structure : Tetitulz.Pdf.Core.Writing.PdfStructureTree { get }
+Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder::VersionRaisedBecause : System.String { get }
 Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder::WithCompression(System.Boolean) : Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder
 Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder::WithMetadata(System.String, System.String, System.String) : Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder
 Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder::WithVersion(Tetitulz.Pdf.Core.Document.PdfVersion) : Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder
+Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder::WrittenVersion : System.Nullable<Tetitulz.Pdf.Core.Document.PdfVersion> { get }
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions+Floor::.ctor()
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions+Floor::Feature : System.String { get }
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions+Floor::HeaderFor(Tetitulz.Pdf.Core.Document.PdfVersion) : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions+Floor::RaisedBecause(Tetitulz.Pdf.Core.Document.PdfVersion) : System.String
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions+Floor::Require(Tetitulz.Pdf.Core.Document.PdfVersion, System.String) : System.Void
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions+Floor::Version : Tetitulz.Pdf.Core.Document.PdfVersion { get }
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions::Aes128 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions::Aes256 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions::ArtifactSubtype : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions::FileIdentifier : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions::MarkedContent : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions::ObjectStreams : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions::OptionalContent : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions::PdfMac : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions::Rc4Revision2 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions::Rc4Revision3 : Tetitulz.Pdf.Core.Document.PdfVersion
+Tetitulz.Pdf.Core.Writing.PdfFeatureVersions::Scan(Tetitulz.Pdf.Core.Objects.PdfObject, Tetitulz.Pdf.Core.Writing.PdfFeatureVersions+Floor) : System.Void
 Tetitulz.Pdf.Core.Writing.PdfFileId::Existing(Tetitulz.Pdf.Core.Objects.PdfObject, System.Func<Tetitulz.Pdf.Core.Objects.PdfObject, Tetitulz.Pdf.Core.Objects.PdfObject>) : Tetitulz.Pdf.Core.Objects.PdfArray
 Tetitulz.Pdf.Core.Writing.PdfFileId::FromDigest(System.Byte[]) : Tetitulz.Pdf.Core.Objects.PdfArray
 Tetitulz.Pdf.Core.Writing.PdfFileId::HalfLengthBytes : System.Int32 = 16
@@ -2793,6 +2823,8 @@ class Tetitulz.Pdf.Core.Writing.PdfCompressedWriteOptions
 class Tetitulz.Pdf.Core.Writing.PdfContentStreamBuilder
 class Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder
 class Tetitulz.Pdf.Core.Writing.PdfDocumentBuilder+EmbeddedFont
+class Tetitulz.Pdf.Core.Writing.PdfFeatureVersions
+class Tetitulz.Pdf.Core.Writing.PdfFeatureVersions+Floor
 class Tetitulz.Pdf.Core.Writing.PdfFileId
 class Tetitulz.Pdf.Core.Writing.PdfPageTreeWriter
 class Tetitulz.Pdf.Core.Writing.PdfStructureElement

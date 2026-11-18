@@ -36,6 +36,7 @@ Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::GlyphMissing : Tetitulz.Pdf.B
 Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::ImageDecodeFailed : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind = 4
 Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::PageLimitReached : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind = 7
 Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::UnsupportedByExportFormat : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind = 5
+Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::VersionRaised : Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind = 8
 Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind::value__ : System.Int32
 Tetitulz.Pdf.Builder.Export.BuilderDiagnostics::LastError : Tetitulz.Pdf.Builder.Export.BuilderDiagnostic { get }
 Tetitulz.Pdf.Builder.Export.BuilderDiagnostics::OnEvent : System.Action<Tetitulz.Pdf.Builder.Export.BuilderDiagnostic> (event)
@@ -68,6 +69,7 @@ Tetitulz.Pdf.Builder.Export.PdfExportOptions::MaxUnsubsettableFontBytes : System
 Tetitulz.Pdf.Builder.Export.PdfExportOptions::OnDiagnostic : System.Action<Tetitulz.Pdf.Builder.Export.BuilderDiagnostic> { get; set }
 Tetitulz.Pdf.Builder.Export.PdfExportOptions::Scale : System.Double { get; set }
 Tetitulz.Pdf.Builder.Export.PdfExportOptions::UnrenderableText : Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy { get; set }
+Tetitulz.Pdf.Builder.Export.PdfExportOptions::Version : System.Nullable<Tetitulz.Pdf.Core.Document.PdfVersion> { get; set }
 Tetitulz.Pdf.Builder.Export.PdfExporter::.ctor()
 Tetitulz.Pdf.Builder.Export.PdfExporter::.ctor(Tetitulz.Pdf.Builder.Export.PdfExportOptions)
 Tetitulz.Pdf.Builder.Export.PdfExporter::CanSplit(Tetitulz.Pdf.Builder.Model.Paragraph) : System.Boolean

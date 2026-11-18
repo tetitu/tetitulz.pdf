@@ -45,13 +45,10 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Document
                 effectivePages = new[] { new PostScriptPage() };
             }
 
-            var writer = new PdfWriter(output);
-            var offsets = new List<(int objNum, long offset)>();
+            // Every object is built before the header, which names what they use: 1.4 raised to the
+            // floor read off them (a 16-bit image, `1 1 16 … image`, is PDF 1.5).
+            var objects = new List<(int objNum, PdfObject obj)>();
             int nextObjNum = 1;
-
-            // 1.5: a 16-bit image (`1 1 16 … image`) passes through as /BitsPerComponent 16, which
-            // ISO 32000-1 §8.9.5 admits from PDF 1.5; nothing else written here needs more than 1.2.
-            writer.WriteHeader(new PdfVersion(1, 5));
 
             // Object numbers are laid out before anything is written: a page dictionary has to
             // reference its content stream and its resources, and the /Pages root has to list every
@@ -83,7 +80,7 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Document
             var catalog = new PdfDictionary();
             catalog[PdfName.Type]  = PdfName.Catalog;
             catalog[PdfName.Pages] = new PdfReference(pagesRootNum, 0);
-            offsets.Add((catalogNum, writer.WriteIndirectObject(catalogNum, 0, catalog)));
+            objects.Add((catalogNum, catalog));
 
             var kids = new PdfArray();
             foreach (int n in pageNums) kids.Add(new PdfReference(n, 0));
@@ -92,7 +89,7 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Document
             pagesRoot[PdfName.Type]  = PdfName.Pages;
             pagesRoot[PdfName.Kids]  = kids;
             pagesRoot[PdfName.Count] = new PdfNumber(effectivePages.Count);
-            offsets.Add((pagesRootNum, writer.WriteIndirectObject(pagesRootNum, 0, pagesRoot)));
+            objects.Add((pagesRootNum, pagesRoot));
 
             // ---- pages ----
 
@@ -109,8 +106,7 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Document
                 var contentStream = new PdfStream();
                 contentStream[PdfName.Length] = new PdfNumber(content.Length);
                 contentStream.RawData = content;
-                offsets.Add((contentNums[i],
-                    writer.WriteIndirectObject(contentNums[i], 0, Deflated(contentStream))));
+                objects.Add((contentNums[i], Deflated(contentStream)));
 
                 var mediaBox = new PdfArray();
                 mediaBox.Add(new PdfNumber(0));
@@ -127,21 +123,30 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Document
                     ? new PdfReference(pageResourceNums[i], 0)
                     : (PdfObject)new PdfDictionary();
 
-                offsets.Add((pageNums[i], writer.WriteIndirectObject(pageNums[i], 0, pageDict)));
+                objects.Add((pageNums[i], pageDict));
             }
 
             // ---- promoted resources ----
 
             foreach (var (num, obj) in resourceObjects)
-                offsets.Add((num, writer.WriteIndirectObject(num, 0, Deflated(obj))));
+                objects.Add((num, Deflated(obj)));
 
-            // ---- xref and trailer ----
-
-            long xrefOffset = writer.WriteXrefTable(offsets);
+            // ---- header, objects, xref and trailer ----
 
             var trailer = new PdfDictionary();
             trailer[PdfName.Size] = new PdfNumber(nextObjNum);
             trailer[PdfName.Root] = new PdfReference(catalogNum, 0);
+
+            var floor = new PdfFeatureVersions.Floor();
+            foreach (var (_, obj) in objects) PdfFeatureVersions.Scan(obj, floor);
+
+            var writer = new PdfWriter(output);
+            writer.WriteHeader(floor.HeaderFor(PdfVersion.Pdf14));
+            var offsets = new List<(int objNum, long offset)>();
+            foreach (var (num, obj) in objects)
+                offsets.Add((num, writer.WriteIndirectObject(num, 0, obj)));
+
+            long xrefOffset = writer.WriteXrefTable(offsets);
             writer.WriteTrailer(trailer, xrefOffset);
 
             // The counter PdfWriter grew for THIS caller, finally read. Its own doc names us:

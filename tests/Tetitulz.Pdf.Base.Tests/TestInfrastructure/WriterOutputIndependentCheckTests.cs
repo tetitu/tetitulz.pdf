@@ -139,6 +139,9 @@ public class WriterOutputIndependentCheckTests
             new PdfMetadataUpdate { Title = "Checked", Author = "Writer check" })),
         ["AddAttachment"] = Plain((i, o) => PdfOperations.AddAttachment(i, o, "notes.txt",
             Encoding.ASCII.GetBytes("attached"), "text/plain")),
+        // The fixture is PDF 1.7, so 2.0 appends a revision.
+        ["SetVersion"] = Plain((i, o) => Assert.True(PdfOperations.SetVersion(i, o,
+            Tetitulz.Pdf.Core.Document.PdfVersion.Pdf20).RevisionAppended)),
 
         // Content
         ["AddHeaderFooter"] = Plain((i, o) => PdfOperations.AddHeaderFooter(i, o,
