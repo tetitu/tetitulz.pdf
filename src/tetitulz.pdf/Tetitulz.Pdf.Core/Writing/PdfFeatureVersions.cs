@@ -16,9 +16,10 @@ namespace Tetitulz.Pdf.Core.Writing
     /// <remarks>
     /// <para><b>One table for "what version does this need".</b> A writer asks it rather than
     /// writing its own literal: the compressed writer and the optimizer for object streams, the
-    /// encryptor for its algorithms, <see cref="PdfDocumentBuilder"/> for everything it builds.</para>
-    /// <para><b>Public because a plugin and Encryption need it</b>: Core's <c>InternalsVisibleTo</c>
-    /// names neither. The object scan stays internal.</para>
+    /// encryptor for its algorithms, <see cref="PdfDocumentBuilder"/>, the legacy DOCX assembler, the
+    /// one-page generators' skeleton and the PostScript converter for everything they build.</para>
+    /// <para><b>Public because plugins and Encryption need it</b>: Core's <c>InternalsVisibleTo</c>
+    /// names neither, and the PostScript converter scans the objects it writes.</para>
     /// </remarks>
     public static class PdfFeatureVersions
     {
@@ -60,7 +61,7 @@ namespace Tetitulz.Pdf.Core.Writing
         /// The highest version a writer has been asked for so far, and the feature that asked —
         /// the one a raised header is reported by.
         /// </summary>
-        internal sealed class Floor
+        public sealed class Floor
         {
             /// <summary>The version the features seen so far need; PDF 1.0 when none needs more.</summary>
             public PdfVersion Version { get; private set; } = PdfVersion.Pdf10;
@@ -106,8 +107,9 @@ namespace Tetitulz.Pdf.Core.Writing
         /// once, so a referenced object is scanned where it is written. Iterative, so the depth of a
         /// caller-built dictionary costs no stack.
         /// </summary>
-        internal static void Scan(PdfObject obj, Floor floor)
+        public static void Scan(PdfObject obj, Floor floor)
         {
+            if (floor == null) throw new System.ArgumentNullException(nameof(floor));
             var pending = new Stack<PdfObject>();
             pending.Push(obj);
             while (pending.Count > 0)
@@ -138,11 +140,14 @@ namespace Tetitulz.Pdf.Core.Writing
             // §7.4: a stream's filters. FlateDecode is PDF 1.2, JPXDecode PDF 1.5.
             ScanFilters(dict.Get(PdfName.Filter), floor);
 
-            // §8.9.5: an image's soft mask (PDF 1.4) and a JPEG 2000 image's own opacity (PDF 1.5).
+            // §8.9.5: an image's soft mask (PDF 1.4), a JPEG 2000 image's own opacity (PDF 1.5), and
+            // 16 bits a component (Table 87: "1, 2, 4, 8, or (from PDF 1.5) 16").
             if (PdfName.Image.Equals(subtype))
             {
                 if (dict.ContainsKey(PdfName.SMask)) floor.Require(PdfVersion.Pdf14, "an image soft mask (/SMask)");
                 if (dict.ContainsKey(PdfName.SMaskInData)) floor.Require(PdfVersion.Pdf15, "/SMaskInData");
+                if (dict.Get(PdfName.BitsPerComponent) is PdfNumber bits && bits.IsInteger && bits.IntValue == 16)
+                    floor.Require(PdfVersion.Pdf15, "a 16-bit image (/BitsPerComponent 16)");
             }
 
             // §8.4.5: the transparency entries of a graphics state (PDF 1.4).

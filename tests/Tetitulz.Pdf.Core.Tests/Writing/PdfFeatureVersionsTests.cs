@@ -125,6 +125,27 @@ public sealed class PdfFeatureVersionsTests
     }
 
     [Fact]
+    public void SixteenBitImage_Is15_AndAnEightBitOneIsNothing()
+    {
+        var sixteen = ScanOf(Dict((PdfName.Subtype, PdfName.Image), (PdfName.BitsPerComponent, new PdfNumber(16))));
+        Assert.Equal(PdfVersion.Pdf15, sixteen.Version);
+        Assert.Contains("16-bit", sixteen.Feature);
+
+        Assert.Equal(PdfVersion.Pdf10,
+            ScanOf(Dict((PdfName.Subtype, PdfName.Image), (PdfName.BitsPerComponent, new PdfNumber(8)))).Version);
+    }
+
+    [Fact]
+    public void Scan_OfNothing_LeavesTheFloor_AndANullFloorIsRefused()
+    {
+        var floor = new PdfFeatureVersions.Floor();
+        PdfFeatureVersions.Scan(null, floor);
+        Assert.Equal(PdfVersion.Pdf10, floor.Version);
+
+        Assert.Throws<System.ArgumentNullException>(() => PdfFeatureVersions.Scan(Dict(), null));
+    }
+
+    [Fact]
     public void DeeplyNestedArrays_AreWalkedWithoutRecursion()
     {
         PdfObject inner = Dict((PdfName.Filter, PdfName.JPXDecode));
