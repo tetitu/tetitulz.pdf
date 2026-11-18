@@ -421,6 +421,7 @@ plugin's call as the replacement.
 | `UnrenderableText` | `UnrenderableTextPolicy` | `Report` | Managed engine: `Report` draws `?` and warns, `Omit`, or `Throw` |
 | `OnDiagnostic` | `Action<BuilderDiagnostic>` | `null` | Managed engine: every approximation, declined resource and font problem |
 | `MaxPages` | `int` | `0` | Managed engine: the most pages written, `0` for no limit; a longer page ends at the last whole page within it, reported through `OnDiagnostic` as `PageLimitReached`. Negative is refused. The browser engine paginates itself. |
+| `Version` | `PdfVersion?` | `null` | Managed engine: the PDF version the header names — `PdfVersion.Pdf17`, `PdfVersion.Pdf20`; `null` for the lowest the content needs, never below 1.4. A version below what the content uses is raised to it and reported through `OnDiagnostic` as `VersionRaised`; an unpublished version is refused. The browser engine writes its own header. |
 | `Tagged` | `bool` | `true` | Managed engine: write tagged PDF |
 | `DefaultLanguage` | `string` | `null` | Managed engine: the catalog `/Lang` when `<html lang>` is absent |
 | `RunningDate` | `string` | `null` | Managed engine: the text the `date` substitution class prints |

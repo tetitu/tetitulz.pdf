@@ -75,6 +75,29 @@ namespace Tetitulz.Pdf.Core.Writing
                 Version = version;
                 Feature = feature;
             }
+
+            /// <summary>
+            /// The version a header written for <paramref name="requested"/> carries: the request
+            /// raised to this floor, never lowered — every writer that takes a version from its
+            /// caller settles its header here.
+            /// </summary>
+            public PdfVersion HeaderFor(PdfVersion requested) => PdfVersion.Max(requested, Version);
+
+            /// <summary>The feature that raised a header written for <paramref name="requested"/>; null when the request stood.</summary>
+            public string RaisedBecause(PdfVersion requested) => Version > requested ? Feature : null;
+        }
+
+        /// <summary>
+        /// What a producer reports when its caller asked for <paramref name="asked"/> and the header
+        /// names <paramref name="written"/> because the content uses <paramref name="raisedBecause"/>;
+        /// null when nothing was asked (the header is then whatever the content needs, and nothing
+        /// deviates) or the request stood. The Builder's exporter and the DOCX converter's own
+        /// assembler alike.
+        /// </summary>
+        internal static string RaiseReport(PdfVersion? asked, PdfVersion written, string raisedBecause)
+        {
+            if (!asked.HasValue || raisedBecause == null) return null;
+            return $"PDF {asked.Value} was asked for and the file was written as PDF {written}: the content uses {raisedBecause}.";
         }
 
         /// <summary>

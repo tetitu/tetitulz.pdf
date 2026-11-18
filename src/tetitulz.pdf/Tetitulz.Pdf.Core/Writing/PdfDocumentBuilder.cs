@@ -409,11 +409,11 @@ namespace Tetitulz.Pdf.Core.Writing
             PdfFeatureVersions.Scan(trailer, floor);
             foreach (var spec in _pages) spec.Builder.RequireContentFeatures(floor);
 
-            PdfVersion version = PdfVersion.Max(_version, floor.Version);
+            PdfVersion version = floor.HeaderFor(_version);
             var writer = new PdfWriter(output);
             writer.WriteHeader(version);
             WrittenVersion = version;
-            VersionRaisedBecause = version > _version ? floor.Feature : null;
+            VersionRaisedBecause = floor.RaisedBecause(_version);
 
             // Write all side objects first (fonts, images, content streams, page dicts)
             var xrefEntries = new List<(int objNum, long offset)>();

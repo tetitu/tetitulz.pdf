@@ -933,9 +933,6 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
 
         private void AssemblePdf(Stream output)
         {
-            var writer = new PdfWriter(output);
-            writer.WriteHeader(new PdfVersion(1, 4));
-
             int nextObjectNumber = 1;
 
             // Reserve catalog and pages tree object numbers
@@ -984,28 +981,17 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
                 pageIndex++;
             }
 
-            // Write all objects
-            var xrefEntries = new List<(int objNum, long offset)>();
-
-            foreach (var (objNum, obj) in allObjects)
-            {
-                long offset = writer.WriteIndirectObject(objNum, 0, obj);
-                xrefEntries.Add((objNum, offset));
-            }
-
-            // Write pages tree — one implementation, in Core.Writing.PdfPageTreeWriter.
+            // Pages tree — one implementation, in Core.Writing.PdfPageTreeWriter.
             var pagesDict = PdfPageTreeWriter.BuildRoot(pageObjNums, pagesTreeObjNum);
-
-            long pagesOffset = writer.WriteIndirectObject(pagesTreeObjNum, 0, pagesDict);
-            xrefEntries.Add((pagesTreeObjNum, pagesOffset));
+            allObjects.Add((pagesTreeObjNum, pagesDict));
 
             // Named destinations (/Dests) for internal links, and the document outline
             // (/Outlines) from heading paragraphs.
-            int destsObjNum = BuildDests(writer, ref nextObjectNumber, xrefEntries, pageObjNums);
-            int outlinesObjNum = BuildOutlines(writer, ref nextObjectNumber, xrefEntries, pageObjNums);
-            int structRootObjNum = BuildStructTree(writer, ref nextObjectNumber, xrefEntries, pageObjNums);
+            int destsObjNum = BuildDests(allObjects, ref nextObjectNumber, pageObjNums);
+            int outlinesObjNum = BuildOutlines(allObjects, ref nextObjectNumber, pageObjNums);
+            int structRootObjNum = BuildStructTree(allObjects, ref nextObjectNumber, pageObjNums);
 
-            // Write catalog
+            // Catalog
             var catalogDict = new PdfDictionary();
             catalogDict.Set(PdfName.Type, PdfName.Catalog);
             catalogDict.Set(PdfName.Pages, new PdfReference(pagesTreeObjNum, 0));
@@ -1021,9 +1007,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             }
             catalogDict.ObjectNumber = catalogObjNum;
             catalogDict.GenerationNumber = 0;
-
-            long catalogOffset = writer.WriteIndirectObject(catalogObjNum, 0, catalogDict);
-            xrefEntries.Add((catalogObjNum, catalogOffset));
+            allObjects.Add((catalogObjNum, catalogDict));
 
             // Document information dictionary (/Info) from the DOCX core properties.
             int infoObjNum = nextObjectNumber++;
@@ -1035,25 +1019,36 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             info.Set(PdfName.Producer, new PdfString(PdfProducer.Value));
             info.ObjectNumber = infoObjNum;
             info.GenerationNumber = 0;
-            long infoOffset = writer.WriteIndirectObject(infoObjNum, 0, info);
-            xrefEntries.Add((infoObjNum, infoOffset));
+            allObjects.Add((infoObjNum, info));
 
-            // Write xref table
-            xrefEntries.Insert(0, (0, 0));
-            long xrefOffset = writer.WriteXrefTable(xrefEntries);
-
-            // Write trailer
-            int totalObjects = nextObjectNumber;
             var trailer = new PdfDictionary();
-            trailer.Set(PdfName.Size, new PdfNumber(totalObjects));
+            trailer.Set(PdfName.Size, new PdfNumber(nextObjectNumber));
             trailer.Set(PdfName.Root, new PdfReference(catalogObjNum, 0));
             trailer.Set(PdfName.Info, new PdfReference(infoObjNum, 0));
+
+            // The header is written once every object exists, so it names what they use: the version
+            // asked for (DocxToPdfOptions.Version, else 1.4) raised to what any object or content stream needs.
+            var floor = new PdfFeatureVersions.Floor();
+            foreach (var (_, obj) in allObjects) PdfFeatureVersions.Scan(obj, floor);
+            PdfFeatureVersions.Scan(trailer, floor);
+            foreach (var pageBuilder in _pageBuilders) pageBuilder.RequireContentFeatures(floor);
+            PdfVersion asked = _options.Version ?? PdfVersion.Pdf14;
+
+            var writer = new PdfWriter(output);
+            writer.WriteHeader(floor.HeaderFor(asked));
+            string raised = PdfFeatureVersions.RaiseReport(_options.Version, floor.HeaderFor(asked), floor.RaisedBecause(asked));
+            if (raised != null) DocxDiagnostics.Report(DocxToPdfConverter.VersionOperation, raised);
+
+            var xrefEntries = new List<(int objNum, long offset)> { (0, 0) };
+            foreach (var (objNum, obj) in allObjects)
+                xrefEntries.Add((objNum, writer.WriteIndirectObject(objNum, 0, obj)));
+
+            long xrefOffset = writer.WriteXrefTable(xrefEntries);
             writer.WriteTrailer(trailer, xrefOffset);
         }
 
         // Builds the catalog /Dests dictionary (bookmark name → [page /XYZ x y null]).
-        private int BuildDests(PdfWriter writer, ref int nextObjNum,
-            List<(int objNum, long offset)> xref, List<int> pageObjNums)
+        private int BuildDests(List<(int objNum, PdfObject obj)> objects, ref int nextObjNum, List<int> pageObjNums)
         {
             if (_bookmarks.Count == 0) return 0;
             var dict = new PdfDictionary();
@@ -1068,8 +1063,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             if (!any) return 0;
             int n = nextObjNum++;
             dict.ObjectNumber = n; dict.GenerationNumber = 0;
-            long off = writer.WriteIndirectObject(n, 0, dict);
-            xref.Add((n, off));
+            objects.Add((n, dict));
             return n;
         }
 
@@ -1077,8 +1071,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             => XyzDestination.Build(pageObjNum, _marginLeft, y, zoom: null);
 
         // Builds the /Outlines (bookmark pane) tree from the collected heading paragraphs.
-        private int BuildOutlines(PdfWriter writer, ref int nextObjNum,
-            List<(int objNum, long offset)> xref, List<int> pageObjNums)
+        private int BuildOutlines(List<(int objNum, PdfObject obj)> objects, ref int nextObjNum, List<int> pageObjNums)
         {
             if (_headings.Count == 0) return 0;
             int rootNum = nextObjNum++;
@@ -1138,13 +1131,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
                 pd.Set(PdfName.Count, new PdfNumber(descendants[kv.Key]));
             }
 
-            foreach (var (num, d, _) in items)
-            {
-                long off = writer.WriteIndirectObject(num, 0, d);
-                xref.Add((num, off));
-            }
-            long roff = writer.WriteIndirectObject(rootNum, 0, root);
-            xref.Add((rootNum, roff));
+            foreach (var (num, d, _) in items) objects.Add((num, d));
+            objects.Add((rootNum, root));
             return rootNum;
         }
 
@@ -1152,8 +1140,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         // element per body paragraph, each referencing its line MCIDs, plus the parent number
         // tree mapping (page, MCID) back to the owning element. Returns the StructTreeRoot object
         // number, or 0 when tagging is off / nothing was tagged.
-        private int BuildStructTree(PdfWriter writer, ref int nextObjNum,
-            List<(int objNum, long offset)> xref, List<int> pageObjNums)
+        private int BuildStructTree(List<(int objNum, PdfObject obj)> objects, ref int nextObjNum, List<int> pageObjNums)
         {
             if (!_options.TaggedPdf || _structElems.Count == 0) return 0;
 
@@ -1230,8 +1217,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             void Write(int num, PdfObject o)
             {
                 o.ObjectNumber = num; o.GenerationNumber = 0;
-                long off = writer.WriteIndirectObject(num, 0, o);
-                xref.Add((num, off));
+                objects.Add((num, o));
             }
             Write(structRootNum, structRoot);
             Write(docElemNum, docElem);

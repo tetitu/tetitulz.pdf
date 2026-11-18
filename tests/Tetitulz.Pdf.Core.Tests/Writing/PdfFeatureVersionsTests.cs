@@ -100,6 +100,31 @@ public sealed class PdfFeatureVersionsTests
     }
 
     [Fact]
+    public void HeaderFor_RaisesARequestToTheFloor_AndNeverLowersIt()
+    {
+        var floor = ScanOf(Dict((PdfName.Filter, PdfName.JPXDecode)));
+
+        Assert.Equal(PdfVersion.Pdf15, floor.HeaderFor(PdfVersion.Pdf13));
+        Assert.Equal("a JPEG 2000 image (JPXDecode)", floor.RaisedBecause(PdfVersion.Pdf13));
+
+        Assert.Equal(PdfVersion.Pdf17, floor.HeaderFor(PdfVersion.Pdf17));
+        Assert.Null(floor.RaisedBecause(PdfVersion.Pdf17));
+        Assert.Null(floor.RaisedBecause(PdfVersion.Pdf15));
+    }
+
+    [Fact]
+    public void RaiseReport_IsMadeOnlyWhenAVersionWasAskedFor_AndRaised()
+    {
+        string report = PdfFeatureVersions.RaiseReport(PdfVersion.Pdf13, PdfVersion.Pdf15, "JPXDecode");
+        Assert.Equal("PDF 1.3 was asked for and the file was written as PDF 1.5: the content uses JPXDecode.", report);
+
+        // Nothing asked: the header is whatever the content needs, raised from the 1.4 default or not.
+        Assert.Null(PdfFeatureVersions.RaiseReport(null, PdfVersion.Pdf15, "JPXDecode"));
+        // Asked, and the request stood.
+        Assert.Null(PdfFeatureVersions.RaiseReport(PdfVersion.Pdf17, PdfVersion.Pdf17, null));
+    }
+
+    [Fact]
     public void DeeplyNestedArrays_AreWalkedWithoutRecursion()
     {
         PdfObject inner = Dict((PdfName.Filter, PdfName.JPXDecode));

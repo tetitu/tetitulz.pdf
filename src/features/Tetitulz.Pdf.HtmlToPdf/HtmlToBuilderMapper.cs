@@ -777,6 +777,7 @@ namespace Tetitulz.Pdf.HtmlToPdf
             Scale = EffectiveScale,
             HalfLeading = true,
             MaxPages = _options.MaxPages,
+            Version = _options.Version,
         };
 
     }

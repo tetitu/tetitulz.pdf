@@ -249,6 +249,35 @@ namespace Tetitulz.Pdf.Builder.Export
         /// </remarks>
         public bool HalfLeading { get; set; }
 
+        /// <summary>
+        /// The PDF version the file's header names. <b><c>null</c>, the default, writes the lowest
+        /// version the document's content needs, and never below 1.4.</b>
+        /// </summary>
+        /// <remarks>
+        /// <para>The header is never lower than the content: a version below what an object or a
+        /// content stream uses (a JPEG 2000 image is 1.5, an OpenType font program 1.6) is raised to
+        /// it, and a <see cref="BuilderDiagnosticKind.VersionRaised"/> report names the feature. A
+        /// higher version is written as asked — <c>PdfVersion.Pdf17</c> for a reader that wants it,
+        /// <c>PdfVersion.Pdf20</c> for PDF 2.0. A version no edition of the standard publishes (1.0
+        /// to 1.7, and 2.0) is refused.</para>
+        /// <para>The version is the header alone: nothing is left out or written differently to fit
+        /// it. A file for PDF/A is made by <c>Plugins.Conformance.PdfAConverter</c>, not by this
+        /// option.</para>
+        /// </remarks>
+        public Tetitulz.Pdf.Core.Document.PdfVersion? Version
+        {
+            get => _version;
+            set
+            {
+                if (value.HasValue && !value.Value.IsPublished)
+                    throw new ArgumentOutOfRangeException(nameof(value), value.Value.ToString(),
+                        "A PDF version is 1.0 to 1.7, or 2.0.");
+                _version = value;
+            }
+        }
+
+        private Tetitulz.Pdf.Core.Document.PdfVersion? _version;
+
         internal static readonly PdfExportOptions Default = new PdfExportOptions();
     }
 }

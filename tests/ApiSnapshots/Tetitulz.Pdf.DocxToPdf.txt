@@ -33,6 +33,7 @@ Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::PageWidth : System.Double { get; set }
 Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::TaggedPdf : System.Boolean { get; set }
 Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::UseDocumentMargins : System.Boolean { get; set }
 Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::UseLegacyRenderer : System.Boolean { get; set }
+Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions::Version : System.Nullable<Tetitulz.Pdf.Core.Document.PdfVersion> { get; set }
 Tetitulz.Pdf.DocxToPdf.IDocxToPdfConverter::Convert(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Void
 Tetitulz.Pdf.DocxToPdf.IDocxToPdfConverter::Convert(System.String, System.String, Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Void
 Tetitulz.Pdf.DocxToPdf.IDocxToPdfConverter::ConvertToBytes(System.Byte[], Tetitulz.Pdf.DocxToPdf.DocxToPdfOptions = default) : System.Byte[]

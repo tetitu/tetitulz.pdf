@@ -103,6 +103,9 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         /// <summary>Records that this page references a document-level embedded font.</summary>
         internal void UseEmbeddedFont(string resName) => _builder.UseEmbeddedFont(resName);
 
+        /// <summary>Raises <paramref name="floor"/> to what this page's content stream uses (its forms' too).</summary>
+        internal void RequireContentFeatures(PdfFeatureVersions.Floor floor) => _builder.RequireContentFeatures(floor);
+
         /// <summary>Deferred field substitution (e.g. NUMPAGES) in this page's content.</summary>
         internal void ReplaceInContent(string from, string to) => _builder.ReplaceInContent(from, to);
 

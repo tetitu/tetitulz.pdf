@@ -366,6 +366,28 @@ namespace Tetitulz.Pdf.HtmlToPdf
 
         private int _maxPages;
 
+        /// <summary>
+        /// The PDF version the managed engine's header names; <b><c>null</c>, the default, for the lowest
+        /// version the content needs, never below 1.4</b>. A version below what the content uses is raised
+        /// to it and reported through <see cref="OnDiagnostic"/> as
+        /// <see cref="Tetitulz.Pdf.Builder.Export.BuilderDiagnosticKind.VersionRaised"/>
+        /// (<see cref="Tetitulz.Pdf.Builder.Export.PdfExportOptions.Version"/>); a version no edition of the
+        /// standard publishes is refused. The browser engine writes its own header and does not read it.
+        /// </summary>
+        public Tetitulz.Pdf.Core.Document.PdfVersion? Version
+        {
+            get => _version;
+            set
+            {
+                if (value.HasValue && !value.Value.IsPublished)
+                    throw new ArgumentOutOfRangeException(nameof(value), value.Value.ToString(),
+                        "A PDF version is 1.0 to 1.7, or 2.0.");
+                _version = value;
+            }
+        }
+
+        private Tetitulz.Pdf.Core.Document.PdfVersion? _version;
+
         // ------------------------------------------------- managed engine: tagged output
 
         /// <summary>

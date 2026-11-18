@@ -69,8 +69,8 @@ Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MarginBottom : System.String { get; set
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MarginLeft : System.String { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MarginRight : System.String { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MarginTop : System.String { get; set }
-Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MaxPages : System.Int32 { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MaxHtmlBytes : System.Int64 { get; set }
+Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MaxPages : System.Int32 { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MaxRemoteResources : System.Int32 { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::MediaType : Tetitulz.Pdf.HtmlToPdf.HtmlMediaType { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::NavigationTimeoutMs : System.Int32 { get; set }
@@ -85,6 +85,7 @@ Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::Scale : System.Double { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::SvgRasterizer : System.Func<System.String, System.Byte[]> { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::Tagged : System.Boolean { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::UnrenderableText : Tetitulz.Pdf.Builder.Export.UnrenderableTextPolicy { get; set }
+Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::Version : System.Nullable<Tetitulz.Pdf.Core.Document.PdfVersion> { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::ViewportWidth : System.Nullable<System.Double> { get; set }
 Tetitulz.Pdf.HtmlToPdf.HtmlToPdfOptions::WaitForNetworkIdle : System.Boolean { get; set }
 Tetitulz.Pdf.HtmlToPdf.IHtmlBrowserPlugin::RenderAsync(Tetitulz.Pdf.HtmlToPdf.HtmlBrowserRequest) : System.Threading.Tasks.Task<System.Byte[]>

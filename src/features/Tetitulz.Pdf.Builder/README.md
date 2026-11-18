@@ -136,6 +136,7 @@ exporter round-trips it as `opacity:`.
 | `UnrenderableText` | `Report` | What to do when no font covers a run: `Report` keeps today's pixels and raises a diagnostic, `Omit` drops the run, `Throw` raises `UnrenderableTextException`. `Throw` is not the default because it would break every host lacking a Hebrew or CJK font. |
 | `OnDiagnostic` | `null` | Receives every `BuilderDiagnostics` event the export raises — font not resolved, glyph missing, font format rejected, image decode failed, content approximated or not expressible, the page limit reached. |
 | `MaxPages` | `0` | The most pages the export writes; `0` for no limit. A longer document ends at the last whole page within the limit (its footer drawn, its page count the pages written) and raises `PageLimitReached`. A negative value is refused. |
+| `Version` | `null` | The PDF version the header names — `PdfVersion.Pdf17`, `PdfVersion.Pdf20`; `null` for the lowest the content needs, never below 1.4. A version below what the content uses (a JPEG 2000 image is 1.5, an OpenType font 1.6) is raised to it and reported as `VersionRaised`; an unpublished version is refused. |
 | `MaxUnsubsettableFontBytes` | ~4 MB | A CFF/OTF program `CffSubsetter` cannot subset is embedded **whole**, so one over this size is declined with a diagnostic naming the reason rather than silently producing a 20 MB PDF. A program it can subset costs only its used glyphs, whatever its size. |
 
 Diagnostics are also readable after the fact through `BuilderDiagnostics.LastError`, which is
