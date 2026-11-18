@@ -567,6 +567,7 @@ same question. Before writing any of these, use the one implementation:
 | Is the family a platform resolved the one asked for (separators and case folded) | `FontFileLocator.IsFamilyMatch` |
 | What a font's name says about weight and slant (`Bold`/`Heavy`/`Black`; `Italic`/`Oblique`) — the standard-14 face (so its widths), the raster face, the SVG face and the remediator's embedded face | `Core.Fonts.FontNameStyle` (`IsBold`, `IsItalic`); `FontCache.StyleNamedBy` |
 | xref-stream field layout | `Core.Writing.XrefStreamFields` |
+| The PDF version a feature needs (ISO 32000-2's "(PDF 1.x)" marks — object streams, each encryption algorithm, a filter, an entry, a content-stream feature) and the floor read off the objects a writer is about to write; a header is the version asked for raised to it, never lower — `PdfDocumentBuilder`, the compressed writer, the encryptor and the optimizer alike | `Core.Writing.PdfFeatureVersions` (`Scan`, `Floor`); `PdfContentStreamBuilder.RequireContentFeatures` |
 | Type 0 function `/Decode` | `PdfFunctionEvaluator.ApplyDecode` |
 | SVG writer ambient context | `SvgContentWriter.SetAmbient` / `InheritFrom` |
 | QuadPoints / normalised `/Rect` | `PdfAnnotationWriter.QuadPointsFor` / `NormalisedRect` |

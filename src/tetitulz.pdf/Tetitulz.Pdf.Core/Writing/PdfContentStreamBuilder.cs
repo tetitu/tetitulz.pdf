@@ -793,6 +793,30 @@ namespace Tetitulz.Pdf.Core.Writing
         private int _nextMcid;
         private int _markedContentDepth;
 
+        // What this content's operators need that no object written for it shows (marked content,
+        // optional content, an artifact's subtype). The objects are scanned where they are written.
+        private readonly PdfFeatureVersions.Floor _contentFloor = new PdfFeatureVersions.Floor();
+
+        /// <summary>
+        /// Raises <paramref name="floor"/> to what this content's operators need, and those of every
+        /// transparency group it draws, each content once. Operators written through
+        /// <see cref="AppendRaw"/> are the caller's and are not read.
+        /// </summary>
+        internal void RequireContentFeatures(PdfFeatureVersions.Floor floor)
+        {
+            var seen = new HashSet<PdfContentStreamBuilder>();
+            var pending = new Stack<PdfContentStreamBuilder>();
+            pending.Push(this);
+            while (pending.Count > 0)
+            {
+                PdfContentStreamBuilder content = pending.Pop();
+                if (!seen.Add(content)) continue;
+                if (content._contentFloor.Feature != null)
+                    floor.Require(content._contentFloor.Version, content._contentFloor.Feature);
+                foreach (FormEntry form in content._forms) pending.Push(form.Content);
+            }
+        }
+
         /// <summary>MCIDs handed out on this page — the length its <c>/ParentTree</c> array needs.</summary>
         public int MarkedContentCount => _nextMcid;
 
@@ -814,6 +838,7 @@ namespace Tetitulz.Pdf.Core.Writing
             if (element == null) throw new ArgumentNullException(nameof(element));
             int mcid = _nextMcid++;
             _markedContentDepth++;
+            _contentFloor.Require(PdfFeatureVersions.MarkedContent, "marked content (BDC)");
             _ops.Append('/').Append(EscapeName(element.Role))
                 .Append(" <</MCID ").Append(mcid.ToString(CultureInfo.InvariantCulture)).Append(">> BDC\n");
             element.AddContent(this, mcid);
@@ -831,8 +856,13 @@ namespace Tetitulz.Pdf.Core.Writing
         public PdfContentStreamBuilder BeginArtifact(string artifactType, string subtype = null)
         {
             _markedContentDepth++;
+            _contentFloor.Require(PdfFeatureVersions.MarkedContent, "marked content (BDC)");
             _ops.Append("/Artifact <</Type /").Append(EscapeName(artifactType ?? PdfArtifactTypes.Layout));
-            if (!string.IsNullOrEmpty(subtype)) _ops.Append(" /Subtype /").Append(EscapeName(subtype));
+            if (!string.IsNullOrEmpty(subtype))
+            {
+                _contentFloor.Require(PdfFeatureVersions.ArtifactSubtype, "an artifact's /Subtype");
+                _ops.Append(" /Subtype /").Append(EscapeName(subtype));
+            }
             _ops.Append(">> BDC\n");
             return this;
         }
@@ -891,6 +921,7 @@ namespace Tetitulz.Pdf.Core.Writing
             }
 
             _markedContentDepth++;
+            _contentFloor.Require(PdfFeatureVersions.OptionalContent, "optional content (/OC)");
             _ops.Append("/OC /").Append(EscapeName(name)).Append(" BDC\n");
             return this;
         }

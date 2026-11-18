@@ -108,7 +108,7 @@ namespace Tetitulz.Pdf.Core.Writing
         /// Object streams do not exist before PDF 1.5 (§7.5.7), so a file written here declares at
         /// least this version regardless of what the caller asked for.
         /// </summary>
-        private static readonly PdfVersion MinimumVersion = new PdfVersion(1, 5);
+        private static readonly PdfVersion MinimumVersion = PdfFeatureVersions.ObjectStreams;
 
         /// <summary>
         /// Hard ceiling on <see cref="PdfCompressedWriteOptions.MaxObjectsPerObjectStream"/>: the

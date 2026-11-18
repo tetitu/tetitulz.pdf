@@ -627,10 +627,7 @@ namespace Tetitulz.Pdf.Plugins.Maintenance
         /// the cross-reference table.
         /// </summary>
         private static PdfVersion RaiseForObjectStreams(PdfVersion version)
-        {
-            var minimum = new PdfVersion(1, 5);
-            return version < minimum ? minimum : version;
-        }
+            => PdfVersion.Max(version, Tetitulz.Pdf.Core.Writing.PdfFeatureVersions.ObjectStreams);
 
         /// <summary>
         /// Counts the bytes written through to an underlying stream, so the result's
