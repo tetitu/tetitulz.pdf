@@ -1403,6 +1403,10 @@ Tetitulz.Pdf.Base.Operations.Metadata.PdfUnencryptedWrapperReader::Inspect(Syste
 Tetitulz.Pdf.Base.Operations.Metadata.PdfUsageRightsReader::LastError : System.String { get }
 Tetitulz.Pdf.Base.Operations.Metadata.PdfUsageRightsReader::Read(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Metadata.UsageRightsEntry>
 Tetitulz.Pdf.Base.Operations.Metadata.PdfUsageRightsReader::Read(System.String) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Metadata.UsageRightsEntry>
+Tetitulz.Pdf.Base.Operations.Metadata.PdfVersionChange::Previous : Tetitulz.Pdf.Core.Document.PdfVersion { get }
+Tetitulz.Pdf.Base.Operations.Metadata.PdfVersionChange::RevisionAppended : System.Boolean { get }
+Tetitulz.Pdf.Base.Operations.Metadata.PdfVersionChange::Version : Tetitulz.Pdf.Core.Document.PdfVersion { get }
+Tetitulz.Pdf.Base.Operations.Metadata.PdfVersionSetter::SetVersion(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Core.Document.PdfVersion) : Tetitulz.Pdf.Base.Operations.Metadata.PdfVersionChange
 Tetitulz.Pdf.Base.Operations.Metadata.RgbConversionOptions::.ctor()
 Tetitulz.Pdf.Base.Operations.Metadata.RgbConversionOptions::ConvertDeviceCmyk : System.Boolean { get; set }
 Tetitulz.Pdf.Base.Operations.Metadata.RgbConversionOptions::OutputIccProfile : System.Byte[] { get; set }
@@ -2054,6 +2058,7 @@ Tetitulz.Pdf.Base.PdfOperations::SetPageBoxes(System.IO.Stream, System.IO.Stream
 Tetitulz.Pdf.Base.PdfOperations::SetPageLabels(System.IO.Stream, System.IO.Stream, System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Structure.PageLabelRange>) : System.Void
 Tetitulz.Pdf.Base.PdfOperations::SetPageTransition(System.IO.Stream, System.IO.Stream, System.Int32, Tetitulz.Pdf.Base.Operations.Documents.PageTransitionSettings, System.Nullable<System.Double> = default) : System.Void
 Tetitulz.Pdf.Base.PdfOperations::SetPageTransitions(System.IO.Stream, System.IO.Stream, System.Collections.Generic.IReadOnlyList<System.Int32>, Tetitulz.Pdf.Base.Operations.Documents.PageTransitionSettings, System.Nullable<System.Double> = default) : System.Void
+Tetitulz.Pdf.Base.PdfOperations::SetVersion(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Core.Document.PdfVersion) : Tetitulz.Pdf.Base.Operations.Metadata.PdfVersionChange
 Tetitulz.Pdf.Base.PdfOperations::ShapeText(System.String) : System.String
 Tetitulz.Pdf.Base.PdfOperations::SubsetFont(System.Byte[], System.Collections.Generic.IEnumerable<System.Char>) : System.Byte[]
 Tetitulz.Pdf.Base.PdfOperations::SubsetFont(System.Byte[], System.String) : System.Byte[]
@@ -2572,6 +2577,8 @@ class Tetitulz.Pdf.Base.Operations.Metadata.PdfMetadataWriter
 class Tetitulz.Pdf.Base.Operations.Metadata.PdfUnencryptedWrapperReader
 class Tetitulz.Pdf.Base.Operations.Metadata.PdfUnencryptedWrapperReader+WrapperInfo
 class Tetitulz.Pdf.Base.Operations.Metadata.PdfUsageRightsReader
+class Tetitulz.Pdf.Base.Operations.Metadata.PdfVersionChange
+class Tetitulz.Pdf.Base.Operations.Metadata.PdfVersionSetter
 class Tetitulz.Pdf.Base.Operations.Metadata.RgbConversionOptions
 class Tetitulz.Pdf.Base.Operations.Metadata.UsageRightsEntry
 class Tetitulz.Pdf.Base.Operations.Metadata.XmpMetadataRevision
