@@ -91,7 +91,7 @@
       flagged both on restore. A shipped package's dependency is every consumer's floor, so this stays
       the lowest version carrying those fixes; a consumer may take a later one.
     -->
-    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.15" />
     <!-- netstandard2.0/net462 compile-time only; assets excluded so it never ships at runtime. -->
     <PackageVersion Include="Portable.BouncyCastle" Version="1.9.0" />
   </ItemGroup>
