@@ -144,7 +144,7 @@
     <!-- Core's code pages (and PostScript's). Every package on Core requires at least this version,
          so it is the lowest one the library needs, not the newest: a consumer pinning an earlier
          major would otherwise fail to restore. Raised for a fix the library needs. -->
-    <PackageVersion Include="System.Text.Encoding.CodePages" Version="10.0.11" />
+    <PackageVersion Include="System.Text.Encoding.CodePages" Version="10.0.15" />
     <!-- Transitive-vulnerability overrides: GHSA-7jgj-8wvc-jh57, GHSA-cmhx-cq75-c4mj.
 
          KEPT ON PURPOSE, AND NO LONGER FOR THE ORIGINAL REASON. Four test projects used to carry
