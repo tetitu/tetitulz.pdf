@@ -1022,6 +1022,9 @@ restore-the-packed-`.nupkg`s check and the benchmarks' `-- verify` are run local
 pinned by SHA, the token is read-only outside `release`, every job has a timeout, and no job installs a test oracle
 (none is needed). The workflow file and each step's detail: `CONTRIBUTING.md` § CI. Compiler-setting
 guards: never `NoWarn` to go green.
+**A shipped package's dependency version is every consumer's floor**: the lowest that carries what the
+library needs (an API, a fix), never raised for freshness — a consumer pinning below it cannot restore.
+Dependabot skips the majors of the BCL packages the libraries ship with.
 
 ---
 

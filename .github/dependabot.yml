@@ -24,6 +24,12 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "BouncyCastle.Cryptography"
         update-types: ["version-update:semver-major"]
+      # A shipped package's dependency is every consumer's floor: a new major of these is not taken
+      # for freshness, only for a fix the library needs (patches and security advisories still come).
+      - dependency-name: "System.Text.Encoding.CodePages"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "System.Security.Cryptography.Pkcs"
+        update-types: ["version-update:semver-major"]
       # The HTML engine's depth and selector bounds are measured against the pinned AngleSharp, and
       # Plugins.HtmlScript compiles AngleSharp.Js 1.1.0's source, written against AngleSharp 1.8.x:
       # the three move together, by hand, with the adversarial markup tests re-run.

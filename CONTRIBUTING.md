@@ -1971,6 +1971,12 @@ unlisted, and `--skip-duplicate` lets a re-run finish what a partial push left. 
 commit SHA with its tag beside it, `global.json` pinning the SDK's feature band, Dependabot for NuGet and
 the actions, and no test oracle to install. The workflow triggers on `main`, on pull requests to it
 and on `v*` tags.
+**A shipped package's dependency version is every consumer's floor.** NuGet resolves the lowest version
+a package allows, and a consumer that pins the dependency below it (central package management with
+transitive pinning) fails to restore until it raises its pin, so the library asks for the lowest version that
+carries what it needs: an API, or a fix it depends on (`System.Security.Cryptography.Pkcs` stays at the
+first version with its CVE fixes). A newer version is the consumer's to take. Dependabot skips the majors
+of the BCL packages the libraries ship with (`.github/dependabot.yml`); a patch or an advisory still comes.
 **The owner's:** the remote and the branch filter, the nuget.org account and its Trusted Publishing
 policy (no `.snupkg`; author signing needs a certificate), an SBOM step on the release.
 
