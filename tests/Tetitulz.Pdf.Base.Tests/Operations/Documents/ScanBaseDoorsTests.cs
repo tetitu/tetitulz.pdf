@@ -237,4 +237,40 @@ public class ScanBaseDoorsTests
         }
         finally { PdfLimits.ResetToDefaults(); }
     }
+
+    /// <summary>
+    /// The same budget holds a shared dictionary of tiling patterns or of Type 3 fonts, each a container the walk
+    /// descends into: two hundred entries read under fifty stop and say so; the control reads them all.
+    /// </summary>
+    [Theory]
+    [InlineData("Pattern", 50L, true)]
+    [InlineData("Pattern", PdfLimits.DefaultMaxImageIndexEntriesPerDocument, false)]
+    [InlineData("Font", 50L, true)]
+    [InlineData("Font", PdfLimits.DefaultMaxImageIndexEntriesPerDocument, false)]
+    public void TheImageIndex_ChargesSharedPatternAndFontEntries(string category, long budget, bool cut)
+    {
+        var b = new PdfFixtureBuilder().Header()
+            .Obj(1, "<< /Type /Catalog /Pages 2 0 R >>")
+            .Obj(2, "<< /Type /Pages /Kids [" + string.Concat(Enumerable.Range(0, 10).Select(i => $"{10 + i} 0 R ")) + "] /Count 10 >>")
+            .Obj(3, $"<< /{category} << " + string.Concat(Enumerable.Range(0, 20).Select(i => $"/E{i} {30 + i} 0 R ")) + ">> >>");
+        for (int i = 0; i < 10; i++) b.Obj(10 + i, "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 72 72] /Resources 3 0 R >>");
+        for (int i = 0; i < 20; i++)
+        {
+            if (category == "Pattern")
+                b.StreamObj(30 + i, "<< /Type /Pattern /PatternType 1 /PaintType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /Resources << >>", "");
+            else
+                b.Obj(30 + i, "<< /Type /Font /Subtype /Type3 /FontBBox [0 0 1 1] /FontMatrix [1 0 0 1 0 0] /CharProcs << >> " +
+                              "/Encoding << /Differences [] >> /FirstChar 0 /LastChar 0 /Widths [0] /Resources << >> >>");
+        }
+        try
+        {
+            PdfLimits.MaxImageIndexEntriesPerDocument = budget;
+            using var doc = PdfDocument.Open(new MemoryStream(b.Finish()));
+            var index = DocumentImageIndex.Build(doc);
+
+            Assert.Equal(cut, index.EntryCut != null);
+            Assert.True(index.FormsVisited > 0);   // the walk reached the containers it charges
+        }
+        finally { PdfLimits.ResetToDefaults(); }
+    }
 }
