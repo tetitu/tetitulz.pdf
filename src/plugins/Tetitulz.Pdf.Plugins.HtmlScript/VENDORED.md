@@ -15,7 +15,7 @@ infinite loop in a page script could not be stopped in-process at all: .NET cann
 The owner chose this route on 2026-09-29 over attaching constraints by reflection into Jint's
 private fields (fragile) or waiting on an upstream change.
 
-## What was changed — nine things
+## What was changed — ten things
 
 Everything is byte-for-byte the tag's, visibility included, except these, each marked
 `TETITULZ MODIFICATION`:
@@ -66,6 +66,12 @@ Everything is byte-for-byte the tag's, visibility included, except these, each m
    still reaches the setter. `TrySetToIndex` leaves a symbol key and an accessor descriptor to the
    object's own property bag, where the reads look: a symbol-keyed write went to the indexer as
    `"Symbol(k)"` and never read back.
+10. **What the script cache keeps** (2026-11-23). `ScriptCache` keeps a source only when it is at most
+   `MaxCachedSourceLength` (512 K) characters long and prepared for the second time (the sources seen once
+   are remembered by hash, at most 4 096, forgotten together when the set fills); with every slot taken,
+   the entry served least gives way. It kept the first 32 sources the process ever prepared, of any size,
+   for good: the first page a server converted could fill every slot with its own scripts, pinned, and
+   every library after it paid a full preparation on every run.
 
 ## Re-vendoring a newer release
 
