@@ -76,14 +76,24 @@ namespace Tetitulz.Pdf.Core.Parsing
         private sealed class ObjectStreamReader
         {
             /// <summary>
-            /// Bytes one <see cref="Entries"/> element occupies: two <c>int</c>s in a value tuple,
-            /// which the runtime lays out without padding. Named rather than inlined because it is
-            /// what the cache budget is counted in.
+            /// Bytes one entry occupies: two <c>int</c>s in a value tuple of <see cref="Entries"/>,
+            /// which the runtime lays out without padding, and its <see cref="Ends"/> element. Named
+            /// rather than inlined because it is what the cache budget is counted in.
             /// </summary>
-            public const int EntryByteSize = 2 * sizeof(int);
+            public const int EntryByteSize = 3 * sizeof(int);
 
             /// <summary>Object number and byte offset (relative to <c>/First</c>) per contained object.</summary>
             public (int objNum, int offset)[] Entries;
+
+            /// <summary>
+            /// Per entry, where its object's bytes end (relative to <c>/First</c>): the next larger offset
+            /// the index names, or the end of the stream. §7.5.7 lays the objects out one after another,
+            /// so a member is parsed within its own bytes and cannot read on into the members after it.
+            /// </summary>
+            public int[] Ends;
+
+            /// <summary>The decoded stream, which each member's parse reads its own span of.</summary>
+            public byte[] Decoded;
 
             /// <summary>
             /// Indexes of entries whose offset an earlier entry already names, or null when there
@@ -1575,14 +1585,20 @@ namespace Tetitulz.Pdf.Core.Parsing
                     int objNum = start + i;
                     var entry = new CrossReferenceEntry { ObjectNumber = objNum, SectionOffset = _sectionBeingParsed };
 
-                    switch ((int)field0)
+                    // The fields are read whole (a /W width may be up to eight bytes) and compared whole:
+                    // narrowed to an int first, a type of 2^32 + 1 would read as type 1, where §7.5.8.3
+                    // reads any type but 0 to 2 as a reference to the null object. A generation is at most
+                    // 65 535 (§7.3.10) and is saturated; an object-stream number or index past an int names
+                    // no object and the entry is dropped.
+                    int generation = (int)Math.Min(Math.Max(field2, 0L), int.MaxValue);
+                    switch (field0)
                     {
-                        case 0:
+                        case 0L:
                             entry.Type = CrossReferenceEntry.EntryType.Free;
                             entry.Offset = field1;
-                            entry.GenerationNumber = (int)field2;
+                            entry.GenerationNumber = generation;
                             break;
-                        case 1:
+                        case 1L:
                             // /W [1 8 1] with the high bit set in the offset field yields a
                             // negative long, which would reach Stream.Position and throw
                             // ArgumentOutOfRangeException out of GetObject. Such an entry names no
@@ -1599,9 +1615,17 @@ namespace Tetitulz.Pdf.Core.Parsing
                             // as the stream position it names. An offset within `origin` of
                             // long.MaxValue wraps negative, which GetObject's range check refuses.
                             entry.Offset = field1 + origin;
-                            entry.GenerationNumber = (int)field2;
+                            entry.GenerationNumber = generation;
                             break;
-                        case 2:
+                        case 2L:
+                            if (field1 < 0 || field1 > int.MaxValue || field2 < 0 || field2 > int.MaxValue)
+                            {
+                                LastXrefSectionError =
+                                    $"obj {objNum.ToString(CultureInfo.InvariantCulture)}: xref-stream entry names object stream " +
+                                    $"{field1.ToString(CultureInfo.InvariantCulture)} at index {field2.ToString(CultureInfo.InvariantCulture)}, " +
+                                    "past any object number or index; the entry was dropped.";
+                                continue;
+                            }
                             entry.Type = CrossReferenceEntry.EntryType.Compressed;
                             entry.ObjectStreamNumber = (int)field1;
                             entry.IndexInObjectStream = (int)field2;
@@ -1780,6 +1804,7 @@ namespace Tetitulz.Pdf.Core.Parsing
                 long remaining = Math.Max(0, _stream.Length - streamDataStart);
                 if (actualLength < 0 || actualLength > remaining)
                     actualLength = (int)Math.Min(remaining, int.MaxValue);
+                ChargeRawStreamBytes(objNum, actualLength);
                 byte[] streamData = _tokenizer.ReadStreamBytesRaw(actualLength);
 
                 var pdfStream = new PdfStream();
@@ -2474,6 +2499,44 @@ namespace Tetitulz.Pdf.Core.Parsing
         }
 
         /// <summary>
+        /// The decoded object-stream bytes this parser's member parses have read: the evidence that each
+        /// member is parsed within its own span (<see cref="ObjectStreamReader.Ends"/>).
+        /// </summary>
+        internal long MemberBytesParsed { get; private set; }
+
+        /// <summary>The raw stream bytes this parser has copied out of the file, the figure <see cref="ChargeRawStreamBytes"/> bounds.</summary>
+        private long _rawStreamBytesRead;
+
+        /// <summary>The raw stream bytes this parser has read so far: the evidence for <see cref="ChargeRawStreamBytes"/>.</summary>
+        internal long RawStreamBytesRead => _rawStreamBytesRead;
+
+        /// <summary>
+        /// The raw stream bytes one parser reads before it refuses another stream: twice the file and
+        /// a floor. A document whose streams each lie in their own bytes reads the file at most once
+        /// (twice where a repair re-reads), so it never meets the bound.
+        /// </summary>
+        private const long RawStreamBytesFloor = 16L * 1024 * 1024;
+
+        /// <summary>
+        /// Charges <paramref name="length"/> raw bytes of stream <paramref name="objNum"/> before they are
+        /// copied, refusing the stream past twice the file's length (and <see cref="RawStreamBytesFloor"/>).
+        /// Stream objects whose data runs to one shared <c>endstream</c>, each header inside the
+        /// previous stream's data, each copy the rest of the file, and each object is cached: N of them
+        /// cost N times the file. Refused, the object is unreadable and said so (<see cref="LastObjectParseError"/>).
+        /// </summary>
+        private void ChargeRawStreamBytes(int objNum, long length)
+        {
+            long fileLength = _stream.Length;
+            long allowance = Math.Max(RawStreamBytesFloor, fileLength > long.MaxValue / 4 ? long.MaxValue / 2 : 2 * fileLength);
+            if (_rawStreamBytesRead + length > allowance)
+                throw new PdfParseException(
+                    $"obj {objNum}: its {length.ToString(CultureInfo.InvariantCulture)} bytes of stream data would take the stream data " +
+                    $"this document has read to {(_rawStreamBytesRead + length).ToString(CultureInfo.InvariantCulture)} bytes, past twice its " +
+                    $"{fileLength.ToString(CultureInfo.InvariantCulture)}; streams whose data overlap one another are adversarial, and it was not read.");
+            _rawStreamBytesRead += length;
+        }
+
+        /// <summary>
         /// Index memory currently retained by <see cref="_objStmReaders"/>, in bytes, charged
         /// against <see cref="PdfLimits.MaxObjStmIndexCacheBytes"/>.
         /// </summary>
@@ -2549,10 +2612,15 @@ namespace Tetitulz.Pdf.Core.Parsing
                 return PdfNull.Instance;
             }
 
-            // The tokenizer and the parser share one MemoryStream, so seeking the tokenizer
-            // positions the parser too, which is what makes two of them over one stream work.
-            reader.Tokenizer.Seek(objOffset);
-            var obj = reader.Parser.ParseDirectObject();
+            // Parsed within its own bytes — its offset to the next member's (§7.5.7) — over a view of
+            // the decoded stream, no copy: members whose offsets fall inside one another (each at one
+            // more `(` of a nested literal string) would otherwise each parse, and cache, the rest of
+            // the body. Bounded so, every member's parse together reads the body once.
+            long objEnd = Math.Min((long)reader.First + reader.Ends[indexInStream], reader.DecodedLength);
+            var span = new MemoryStream(reader.Decoded, (int)objOffset, (int)Math.Max(0, objEnd - objOffset), writable: false);
+            var memberParser = new PdfParser(span) { _xrefTable = _xrefTable };
+            var obj = memberParser.ParseDirectObject();
+            MemberBytesParsed += span.Position;
             StampIdentity(obj, targetObjNumber, 0);   // §7.5.7: a member's generation is always 0
             return obj;
         }
@@ -2577,6 +2645,29 @@ namespace Tetitulz.Pdf.Core.Parsing
                 (_failedObjectStreams ??= new Dictionary<int, string>())[streamObjNumber] = ex.Message;
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Per entry, the next larger offset any entry names, or <paramref name="bodyLength"/> for the
+        /// largest: where §7.5.7 has that member's object end. Offsets are sorted once, not searched per
+        /// entry, so the index of a stream of <c>/N</c> members costs n log n.
+        /// </summary>
+        private static int[] MemberEnds((int objNum, int offset)[] entries, int bodyLength)
+        {
+            int n = entries.Length;
+            var ends = new int[n];
+            if (n == 0) return ends;
+            var order = new int[n];
+            var keys = new int[n];
+            for (int i = 0; i < n; i++) { order[i] = i; keys[i] = entries[i].offset; }
+            Array.Sort(keys, order);
+            int next = bodyLength;
+            for (int k = n - 1; k >= 0; k--)
+            {
+                ends[order[k]] = Math.Max(keys[k], next);
+                if (k > 0 && keys[k - 1] < keys[k]) next = keys[k];
+            }
+            return ends;
         }
 
         /// <summary>Object streams whose reader could not be built, with the reason, for this parser.</summary>
@@ -2641,6 +2732,7 @@ namespace Tetitulz.Pdf.Core.Parsing
                 Tokenizer     = new PdfTokenizer(ms),
                 Parser        = new PdfParser(ms),
                 Entries       = new (int objNum, int offset)[n],
+                Decoded       = decoded,
             };
             reader.Parser._xrefTable = _xrefTable;
 
@@ -2665,6 +2757,7 @@ namespace Tetitulz.Pdf.Core.Parsing
                 if (!(offsetsSeen ??= new HashSet<int>()).Add(offset))
                     (reader.SharedOffsets ??= new HashSet<int>()).Add(i);
             }
+            reader.Ends = MemberEnds(reader.Entries, decoded.Length - first);
 
             // Cache within the retained index budget, evicting the least recently used readers to
             // make room. A reader larger than the whole budget is not cached, and is kept alone as
