@@ -577,10 +577,36 @@ namespace Tetitulz.Pdf.HtmlToPdf
         /// </summary>
         private byte[]? Rasterize(string markup, string what)
         {
+            // The same markup is the same raster, handed over as the same array, so the writer embeds it once.
+            if (_rasterized.TryGetValue(markup, out byte[]? known)) return known;
+            byte[]? raster = RasterizeOnce(markup, what);
+            _rasterized[markup] = raster;
+            return raster;
+        }
+
+        /// <summary>Each distinct SVG markup's raster, or null where it had none (<see cref="Rasterize"/>).</summary>
+        private readonly Dictionary<string, byte[]?> _rasterized = new Dictionary<string, byte[]?>(StringComparer.Ordinal);
+
+        /// <summary>The raster bytes this conversion may still keep (<see cref="PdfLimits.MaxHtmlRasterizedSvgBytes"/>).</summary>
+        private long _rasterBytesLeft = PdfLimits.MaxHtmlRasterizedSvgBytes;
+
+        private byte[]? RasterizeOnce(string markup, string what)
+        {
+            if (_rasterBytesLeft < 0) return null;   // spent: said once, when it was
             try
             {
                 byte[]? data = _options.SvgRasterizer!(markup);
-                if (data != null && data.Length > 0) return data;
+                if (data != null && data.Length > 0)
+                {
+                    // Every raster is held in the document until it is written: a page of distinct SVGs of a few
+                    // bytes each, every one rasterising to a megabyte, is held to one budget.
+                    _rasterBytesLeft -= data.LongLength;
+                    if (_rasterBytesLeft >= 0) return data;
+                    ReportDiagnostic(BuilderDiagnosticKind.ImageDecodeFailed,
+                        what + " and the SVGs after it were not drawn: their rasters pass PdfLimits.MaxHtmlRasterizedSvgBytes (" +
+                        PdfLimits.MaxHtmlRasterizedSvgBytes.ToString("N0", CultureInfo.InvariantCulture) + " bytes).");
+                    return null;
+                }
                 ReportDiagnostic(BuilderDiagnosticKind.ImageDecodeFailed,
                     what + " could not be rasterized: HtmlToPdfOptions.SvgRasterizer returned nothing. It is absent from the output.");
                 return null;
