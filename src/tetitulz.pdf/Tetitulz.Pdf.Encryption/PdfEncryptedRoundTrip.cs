@@ -192,6 +192,10 @@ namespace Tetitulz.Pdf.Encryption
                     plaintext = decrypted.ToArray();
                 }
 
+                // What the decrypt could not carry is not in the output either: said, never inferred.
+                if (PdfDecryptor.LastObjectStreamRejection is string dropped)
+                    warnings.Add("Objects were dropped while decrypting the input, and are absent from the output: " + dropped);
+
                 // An owner-only document opens with the empty user password whatever the caller typed:
                 // the output then opens with the same empty password, never with the caller's string,
                 // which authenticated nothing.
@@ -284,6 +288,8 @@ namespace Tetitulz.Pdf.Encryption
                         {
                             return Fail("the produced document could not be re-encrypted: " + ex.Message);
                         }
+                        if (PdfEncryptor.LastDroppedObjects is string notEncrypted)
+                            warnings.Add("Objects of the produced document could not be read and are absent from the output: " + notEncrypted);
                         final = encrypted.ToArray();
                     }
                 }

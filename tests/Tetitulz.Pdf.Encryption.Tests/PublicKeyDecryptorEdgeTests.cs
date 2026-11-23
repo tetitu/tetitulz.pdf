@@ -45,6 +45,31 @@ public class PublicKeyDecryptorEdgeTests
     }
 
     /// <summary>
+    /// A <c>/Recipients</c> entry that is not a string is refused, naming the entry: every entry is hashed into the
+    /// file key, so leaving one out derived a wrong key and reported the document as encrypted for somebody else.
+    /// The control is the same list with a string there, which reaches the recipient match.
+    /// </summary>
+    [Fact]
+    public void ARecipientsEntryThatIsNotAString_IsRefusedNamingIt()
+    {
+        var (_, pfx) = PublicKeyRoundTripTests.MakeRecipient();
+
+        var refused = Assert.Throws<PdfException>(() => PublicKeyRoundTripTests.Decrypt(WithRecipients("() 5"), pfx));
+        Assert.Contains("/Recipients entry 1 is not a string", refused.Message);
+
+        var control = Assert.Throws<PdfException>(() => PublicKeyRoundTripTests.Decrypt(WithRecipients("() ()"), pfx));
+        Assert.Contains("not encrypted for this key", control.Message);
+    }
+
+    private static byte[] WithRecipients(string recipients) => Build(new[]
+    {
+        "<< /Type /Catalog /Pages 2 0 R >>",
+        "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>",
+        $"<< /Filter /Adobe.PubSec /SubFilter /adbe.pkcs7.s4 /V 4 /R 4 /Length 128 /Recipients [{recipients}] >>",
+    }, " /Encrypt 4 0 R /ID [<00112233445566778899AABBCCDDEEFF> <00112233445566778899AABBCCDDEEFF>]");
+
+    /// <summary>
     /// ...and the encryptor will not write such a document, since nothing could open it. Two
     /// recipients — the control — encrypt as before.
     /// </summary>

@@ -248,6 +248,33 @@ namespace Tetitulz.Pdf.Core.Parsing
         /// </summary>
         internal long MaxSyntaxStreamDecodeWork { get; set; } = PdfLimits.MaxSyntaxStreamDecodeWork;
 
+        /// <summary>
+        /// The decoded bytes of an object stream or cross-reference stream this parser's document holds,
+        /// read as the parser reads its own: a <c>/Filter</c> naming an image codec is refused by name
+        /// before any decode (<see cref="SyntaxStreamFilters"/>), and every stage spends this document's
+        /// syntax-stream budget (<see cref="SyntaxStreamWork"/>). Not memoised on the stream.
+        /// </summary>
+        /// <remarks>
+        /// For a reader outside Core that holds such a stream in a form the parser never decoded — the
+        /// decryptor's decrypted copy of an object stream — so it is bounded as the parser's own reading
+        /// is, once for every stream of the document rather than once for each.
+        /// </remarks>
+        /// <exception cref="PdfParseException">The stream's <c>/Filter</c> names an image codec.</exception>
+        public byte[] DecodeSyntaxStream(PdfStream stream)
+        {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            string codec = SyntaxStreamFilters.ImageCodecOf(stream);
+            if (codec != null)
+                throw new PdfParseException(
+                    $"the stream's /Filter names /{codec}, an image codec, whose output is samples and never " +
+                    "object syntax; it was not decoded.");
+            byte[] raw = stream.RawData ?? Array.Empty<byte>();
+            PdfObject filter = stream[PdfName.Filter];
+            if (filter == null) return raw;
+            return IO.Filters.FilterPipeline.Decode(raw, filter, stream[PdfName.DecodeParms],
+                PdfLimits.MaxDecompressedBytes, SyntaxStreamWork);
+        }
+
         public PdfParser(Stream stream)
         {
             _stream = stream ?? throw new ArgumentNullException(nameof(stream));

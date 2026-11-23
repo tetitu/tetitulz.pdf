@@ -2042,6 +2042,7 @@ Tetitulz.Pdf.Core.Parsing.CrossReferenceTable::GetOffset(System.Int32) : System.
 Tetitulz.Pdf.Core.Parsing.CrossReferenceTable::SetEntry(Tetitulz.Pdf.Core.Parsing.CrossReferenceEntry) : System.Void
 Tetitulz.Pdf.Core.Parsing.PdfParser::.ctor(System.IO.Stream)
 Tetitulz.Pdf.Core.Parsing.PdfParser::CrossReferenceTable : Tetitulz.Pdf.Core.Parsing.CrossReferenceTable { get }
+Tetitulz.Pdf.Core.Parsing.PdfParser::DecodeSyntaxStream(Tetitulz.Pdf.Core.Objects.PdfStream) : System.Byte[]
 Tetitulz.Pdf.Core.Parsing.PdfParser::EnumerateAllObjects() : System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<System.Int32, Tetitulz.Pdf.Core.Objects.PdfObject>>
 Tetitulz.Pdf.Core.Parsing.PdfParser::EnumerateAllObjects(System.Action<System.Int32, System.Exception>) : System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<System.Int32, Tetitulz.Pdf.Core.Objects.PdfObject>>
 Tetitulz.Pdf.Core.Parsing.PdfParser::FindStartXref() : System.Int64

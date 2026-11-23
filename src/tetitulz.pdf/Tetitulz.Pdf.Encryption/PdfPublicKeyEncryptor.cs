@@ -247,6 +247,7 @@ namespace Tetitulz.Pdf.Encryption
             bool enablePdfMac,
             bool encryptMetadata)
         {
+            PdfEncryptor._lastDroppedObjects = null;
             // The reader examines at most this many recipients, and the file key hashes all of
             // them, so a document with more would be written and then never open.
             if (certDers.Count > PdfPublicKeyDecryptor.MaxRecipients)
@@ -296,18 +297,9 @@ namespace Tetitulz.Pdf.Encryption
             // 5. Derive the document encryption key — the reader's recipe, so the two cannot drift.
             byte[] encKey = PdfPublicKeyDecryptor.DeriveEncryptionKey(seed, recipientDers, keyBytes, encryptMetadata);
 
-            // 6. Collect all objects, encrypt them — content only, one rule with PdfEncryptor (FileLayoutObjects).
-            var allObjects = new Dictionary<int, PdfObject>();
-            bool inputHasObjectStreams = false;
-            foreach (var kvp in doc.Parser.EnumerateAllObjects())
-            {
-                if (FileLayoutObjects.IsLayout(kvp.Value))
-                {
-                    if (FileLayoutObjects.IsObjectStream(kvp.Value)) inputHasObjectStreams = true;
-                    continue;
-                }
-                allObjects[kvp.Key] = kvp.Value;
-            }
+            // 6. Collect all objects, encrypt them — content only, PdfEncryptor's own collection: the layout
+            // left out, the references the parser resolved into place restored, an unreadable object said.
+            var allObjects = PdfEncryptor.ContentObjects(doc, out bool inputHasObjectStreams);
 
             // The document-level metadata stream's number, to leave as it is when the metadata stays
             // plaintext — the same read PdfEncryptor makes, and the one the compressed layout's writer is
