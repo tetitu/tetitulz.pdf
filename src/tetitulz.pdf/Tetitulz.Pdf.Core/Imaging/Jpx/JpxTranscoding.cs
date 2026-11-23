@@ -47,13 +47,22 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
         public static bool TryToPart1(byte[] jpeg2000, out byte[] result, out string reason) =>
             TryTranscode(jpeg2000, toHighThroughput: false, keepQualityLayers: true, out result, out reason);
 
-        private static bool TryTranscode(byte[] data, bool toHighThroughput, bool keepQualityLayers, out byte[] result, out string reason)
+        /// <summary>
+        /// As <see cref="TryToPart1(byte[], out byte[], out string)"/>, every image's work also spending
+        /// <paramref name="documentWork"/> — a document's, so a document of many images is bounded as a
+        /// whole, not only image by image.
+        /// </summary>
+        internal static bool TryToPart1(byte[] jpeg2000, Util.WorkBudget documentWork, out byte[] result, out string reason) =>
+            TryTranscode(jpeg2000, toHighThroughput: false, keepQualityLayers: true, out result, out reason, documentWork);
+
+        private static bool TryTranscode(byte[] data, bool toHighThroughput, bool keepQualityLayers, out byte[] result, out string reason,
+            Util.WorkBudget documentWork = null)
         {
             result = null;
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (JpxHeader.IsRawCodestream(data))
-                return JpxTranscoder.TryTranscode(data, toHighThroughput, null, out result, out reason, keepQualityLayers);
-            return TryTranscodeFile(data, toHighThroughput, keepQualityLayers, out result, out reason);
+                return JpxTranscoder.TryTranscode(data, toHighThroughput, null, out result, out reason, keepQualityLayers, documentWork);
+            return TryTranscodeFile(data, toHighThroughput, keepQualityLayers, out result, out reason, documentWork);
         }
 
         private const uint Jp2Brand = 0x6A703220, JphBrand = 0x6A706820;   // 'jp2 ', 'jph '
@@ -68,7 +77,8 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
         /// <c>jp2 </c>-compatible) — every other box kept byte for byte. A JPX file (Reader Requirements, a
         /// fragment table, brand <c>jpx </c>) is refused, as is CMYK on the way to JPH, which enumerates none.
         /// </summary>
-        private static bool TryTranscodeFile(byte[] data, bool toHt, bool keepQualityLayers, out byte[] result, out string reason)
+        private static bool TryTranscodeFile(byte[] data, bool toHt, bool keepQualityLayers, out byte[] result, out string reason,
+            Util.WorkBudget documentWork)
         {
             result = null;
             if (!JpxHeader.IsJp2Container(data))
@@ -124,7 +134,7 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
 
             var source = new byte[codestream.End - codestream.ContentStart];
             Array.Copy(data, codestream.ContentStart, source, 0, source.Length);
-            if (!JpxTranscoder.TryTranscode(source, toHt, null, out byte[] transcoded, out reason, keepQualityLayers)) return false;
+            if (!JpxTranscoder.TryTranscode(source, toHt, null, out byte[] transcoded, out reason, keepQualityLayers, documentWork)) return false;
 
             var output = new List<byte>(data.Length + transcoded.Length - source.Length);
             foreach (var box in boxes)

@@ -54,10 +54,11 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
         /// cannot carry.
         /// </summary>
         internal static bool TryTranscode(byte[] codestream, bool toHighThroughput, KeepPart1 keep, out byte[] result, out string reason,
-            bool keepQualityLayers = true)
+            bool keepQualityLayers = true, WorkBudget documentWork = null)
         {
             result = null;
             if (!JpxCodestreamParser.TryParse(codestream, out JpxCodestream cs, out reason)) return false;
+            if (!JpxDecodedImage.TryValidateArea(cs.Size, cs.Size.Components.Length, out reason)) return false;
             bool mixed = toHighThroughput && keep != null;
             if (!toHighThroughput && cs.HtCapabilities < 0)
             {
@@ -70,7 +71,10 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
                 return false;
             }
 
-            var budget = new WorkBudget(PdfLimits.MaxJpxDecodeWork, "JPEG 2000 transcoding (PdfLimits.MaxJpxDecodeWork)");
+            // The decoder's allowance for the file's bytes (its floor and per-byte share, no reconstruction —
+            // a transcode reconstructs no samples), and a document's when one transcodes many images.
+            var budget = new WorkBudget(JpxDecoder.WorkAllowed(codestream.Length, 0),
+                "JPEG 2000 transcoding (PdfLimits.MaxJpxDecodeWorkPerByte)", false, documentWork);
             var tiles = new List<int>(cs.Tiles.Keys);
             tiles.Sort();
             var tileData = new Dictionary<int, List<byte>>();
@@ -93,10 +97,12 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
                 reason = "a code-block cannot be coded as HT: " + e.Message;
                 return false;
             }
-            catch (WorkBudgetExceededException)
+            catch (WorkBudgetExceededException ex)
             {
                 // A Try method answers false, as the decoder does: the work a codestream declares is the file's.
-                reason = $"the transcode exceeded PdfLimits.MaxJpxDecodeWork ({budget.Total} units); adversarial or amplifying input";
+                reason = documentWork != null && ex.Budget == documentWork
+                    ? $"the document's JPEG 2000 transcoding exceeded its {documentWork.Total} units (PdfLimits.MaxJpxDecodeWork)"
+                    : $"the transcode exceeded PdfLimits.MaxJpxDecodeWorkPerByte over its {codestream.Length} bytes ({budget.Total} units); adversarial or amplifying input";
                 return false;
             }
 
@@ -151,8 +157,10 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
                             JpxPrecinctBand pb = precinct.Bands[band.Orientation == 0 ? 0 : band.Orientation - 1];
                             for (int i = 0; i < pb.Blocks.Length; i++)
                             {
-                                budget.Tick();
                                 JpxCodeBlock block = pb.Blocks[i];
+                                // A block with passes is decoded and coded again: at most three passes a
+                                // plane of its band each way, a unit a pass, as tier 1 charges.
+                                budget.Tick(block.Passes == 0 ? 1 : 1 + 6L * Math.Max(1, mb));
                                 bool blockHt = block.IsHighThroughput(style);
                                 bool wantHt = toHt && !(keep != null && !blockHt && keep(t, c, r, band.Orientation, i));
                                 if (wantHt) planes = Math.Max(planes, mb);

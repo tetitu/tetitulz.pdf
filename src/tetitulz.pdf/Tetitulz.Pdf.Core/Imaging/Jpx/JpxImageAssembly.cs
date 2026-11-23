@@ -191,17 +191,27 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
         /// Asked once the reduction is final (the decoder clamps it to the levels the tiles have) and
         /// before any tile's samples are allocated: a single-tile image's tier 1 values alone are a
         /// quarter of the peak, so a check after the first tile has already paid it.
+        /// <paramref name="structures"/> are the code-blocks and precinct-bands the tiles' layouts hold
+        /// meanwhile (<see cref="JpxTileLayout.Structures"/>, summed), at
+        /// <see cref="JpxTileLayout.BytesPerStructure"/> each: a layout of a structure per sample holds
+        /// twenty times the planes.
         /// </summary>
-        internal static bool TryValidateWorkingSet(JpxImageSize grid, int componentCount, int reduction, out string reason)
+        internal static bool TryValidateWorkingSet(JpxImageSize grid, int componentCount, int reduction, out string reason,
+            long structures = 0)
         {
             reason = null;
             JpxRect area = JpxGeometry.Resolution(JpxGeometry.ImageArea(grid), Math.Max(0, Math.Min(reduction, 32)), 0);
             long samples = Math.Max(0, area.Width) * Math.Max(0, area.Height) * componentCount;
-            long bytes = samples * WorkingBytesPerSample;
+            long layoutBytes = Math.Max(0, structures) * JpxTileLayout.BytesPerStructure;
+            long bytes = samples * WorkingBytesPerSample + layoutBytes;
             if (bytes > PdfLimits.MaxJpxWorkingSetBytes)
             {
-                reason = $"the decode holds {samples} samples at reduction {reduction} ({area.Width}x{area.Height}, {componentCount} planes), " +
-                         $"{bytes} bytes at {WorkingBytesPerSample} a sample; PdfLimits.MaxJpxWorkingSetBytes is {PdfLimits.MaxJpxWorkingSetBytes}";
+                reason = layoutBytes == 0
+                    ? $"the decode holds {samples} samples at reduction {reduction} ({area.Width}x{area.Height}, {componentCount} planes), " +
+                      $"{bytes} bytes at {WorkingBytesPerSample} a sample; PdfLimits.MaxJpxWorkingSetBytes is {PdfLimits.MaxJpxWorkingSetBytes}"
+                    : $"the decode holds {samples} samples at reduction {reduction} ({area.Width}x{area.Height}, {componentCount} planes) " +
+                      $"and {structures} code-blocks and precinct-bands, {bytes} bytes at {WorkingBytesPerSample} a sample and " +
+                      $"{JpxTileLayout.BytesPerStructure} a structure; PdfLimits.MaxJpxWorkingSetBytes is {PdfLimits.MaxJpxWorkingSetBytes}";
                 return false;
             }
             return true;

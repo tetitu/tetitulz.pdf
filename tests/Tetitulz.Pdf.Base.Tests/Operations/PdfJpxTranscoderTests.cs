@@ -8,6 +8,7 @@ using System.Linq;
 using SkiaSharp;
 using Tetitulz.Pdf.Base.Operations.Images;
 using Tetitulz.Pdf.Core;
+using Tetitulz.Pdf.Core.Constants;
 using Tetitulz.Pdf.Core.Document;
 using Tetitulz.Pdf.Core.Imaging.Jpx;
 using Tetitulz.Pdf.Core.Objects;
@@ -147,7 +148,11 @@ public sealed class PdfJpxTranscoderTests
         JpxTestPdf.AssertEveryPixel(now, (x, y) => JpxTestPdf.Pixel(Rgb, x, y));
     }
 
-    /// <summary>An encrypted document is refused: the superseding streams would be written in clear text.</summary>
+    /// <summary>
+    /// An encrypted document is refused: the superseding streams would be written in clear text. The
+    /// refusal is the clear-text revision writers' one (<c>EncryptedRevision.Refuse</c>), naming the route
+    /// that writes encrypted.
+    /// </summary>
     [Fact]
     public void AnEncryptedDocument_IsRefused()
     {
@@ -159,7 +164,72 @@ public sealed class PdfJpxTranscoderTests
             OwnerPassword = "owner",
             Algorithm = Tetitulz.Pdf.Base.Encryption.EncryptionAlgorithm.AES128,
         });
-        var ex = Assert.Throws<PdfException>(() => Transcode(encrypted.ToArray()));
-        Assert.Contains("encrypted", ex.Message, StringComparison.Ordinal);
+        var ex = Assert.Throws<PdfEncryptedDocumentException>(() => Transcode(encrypted.ToArray()));
+        Assert.Contains("Cannot transcode the images of an encrypted document", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("PdfEncryptedRoundTrip.Run", ex.Message, StringComparison.Ordinal);
+    }
+}
+
+/// <summary>
+/// The document's images are transcoded under one budget together (<c>PdfLimits.MaxJpxDecodeWork</c>), each also
+/// under its own bytes' allowance: a document of many images is one ceiling of work, not one a image. Under a
+/// ceiling one image's transcode fits and two do not, the first is transcoded and the second left as it was,
+/// named with the document's reason.
+/// </summary>
+[Collection(TestInfrastructure.PdfLimitsCollection.Name)]
+public sealed class PdfJpxTranscoderDocumentBudgetTests
+{
+    private static readonly JpxLosslessFixtures.Fixture Rgb = JpxLosslessFixtures.Rgb40x24_Mct_TwoLevels;
+
+    [Fact]
+    public void Adversarial_many_images_share_the_documents_budget()
+    {
+        Assert.True(JpxTranscoding.TryToHighThroughput(Rgb.Codestream, out byte[] ht, out string reason), reason);
+        var probe = new Tetitulz.Pdf.Core.Util.WorkBudget(long.MaxValue / 4, "probe");
+        Assert.True(JpxTranscoding.TryToPart1(ht, probe, out _, out reason), reason);
+        long one = probe.Spent;
+        Assert.True(one > 10, $"one image's transcode spent {one} units");
+
+        byte[] input = TwoImages(ht);
+        try
+        {
+            PdfLimits.MaxJpxDecodeWork = one + one / 2;
+            using var i = new MemoryStream(input, writable: false);
+            using var o = new MemoryStream();
+            JpxTranscodeResult result = PdfOperations.TranscodeHtj2kImagesToPart1(i, o);
+
+            Assert.Single(result.Transcoded);
+            var skipped = Assert.Single(result.Skipped);
+            Assert.Contains("the document's JPEG 2000 transcoding exceeded", skipped.Value, StringComparison.Ordinal);
+        }
+        finally { PdfLimits.ResetToDefaults(); }
+    }
+
+    /// <summary>The control: under the default ceiling both images are transcoded.</summary>
+    [Fact]
+    public void Two_images_under_the_default_ceiling_are_both_transcoded()
+    {
+        Assert.True(JpxTranscoding.TryToHighThroughput(Rgb.Codestream, out byte[] ht, out string reason), reason);
+        using var i = new MemoryStream(TwoImages(ht), writable: false);
+        using var o = new MemoryStream();
+        JpxTranscodeResult result = PdfOperations.TranscodeHtj2kImagesToPart1(i, o);
+
+        Assert.Equal(2, result.Transcoded.Count);
+        Assert.Empty(result.Skipped);
+    }
+
+    private static byte[] TwoImages(byte[] ht)
+    {
+        string image = $"<< /Type /XObject /Subtype /Image /Width {Rgb.Width} /Height {Rgb.Height} " +
+                       $"/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /JPXDecode /Length {ht.Length} >>";
+        return new PdfFixtureBuilder().Header()
+            .Obj(1, "<< /Type /Catalog /Pages 2 0 R >>")
+            .Obj(2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>")
+            .Obj(3, $"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {2 * Rgb.Width} {Rgb.Height}] " +
+                    "/Resources << /XObject << /Im0 5 0 R /Im1 6 0 R >> >> /Contents 4 0 R >>")
+            .StreamObj(4, "<<", $"q {Rgb.Width} 0 0 {Rgb.Height} 0 0 cm /Im0 Do Q q {Rgb.Width} 0 0 {Rgb.Height} {Rgb.Width} 0 cm /Im1 Do Q")
+            .ObjAtGeneration(5, 0, image, ht)
+            .ObjAtGeneration(6, 0, image, ht)
+            .Finish();
     }
 }

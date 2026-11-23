@@ -493,7 +493,7 @@ internal sealed partial class SvgContentWriter
             // The raster path's decode, from the samples already in hand and under this state's
             // intent; null is reported there, as the raster side draws nothing for it.
             SkiaSharp.SKBitmap bmp = ContentStreamInterpreter.DecodeImageXObject(
-                _doc, stream, raw, ImageIntent(dict), targetWidth, targetHeight);
+                _doc, stream, raw, ImageIntent(dict), targetWidth, targetHeight, Shared?.FormBudget);
             if (bmp == null) return null;
 
             try

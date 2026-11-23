@@ -404,11 +404,11 @@ namespace Tetitulz.Pdf.Core.IO.Filters
         /// responsible for honouring /BlackIs1 by inverting the output.
         /// </summary>
         internal static byte[] DecodeGroup4(byte[] encoded, int columns, int rows,
-            bool endOfBlock, out int rowsDecoded)
-            => DecodeGroup4(encoded, 0, columns, rows, endOfBlock, out rowsDecoded, out _);
+            bool endOfBlock, out int rowsDecoded, Util.WorkBudget budget = null)
+            => DecodeGroup4(encoded, 0, columns, rows, endOfBlock, out rowsDecoded, out _, out _, budget);
 
         /// <summary>
-        /// As <see cref="DecodeGroup4(byte[], int, int, bool, out int)"/>, from
+        /// As <see cref="DecodeGroup4(byte[], int, int, bool, out int, Util.WorkBudget)"/>, from
         /// <paramref name="startOffset"/> bytes in, reporting where the data ended.
         /// </summary>
         /// <param name="encoded">The coded data.</param>
@@ -428,9 +428,11 @@ namespace Tetitulz.Pdf.Core.IO.Filters
         /// <summary>
         /// As the overload above, and <paramref name="terminated"/>: whether the data said where it ends —
         /// an EOFB, or the <paramref name="rows"/> asked for — rather than running out.
+        /// <paramref name="budget"/>, when given, is charged each row's <paramref name="columns"/> pixels
+        /// before the row is decoded (<see cref="StreamFilter.Work"/>, a page's image decoding).
         /// </summary>
         internal static byte[] DecodeGroup4(byte[] encoded, int startOffset, int columns, int rows,
-            bool endOfBlock, out int rowsDecoded, out int endOffset, out bool terminated)
+            bool endOfBlock, out int rowsDecoded, out int endOffset, out bool terminated, Util.WorkBudget budget = null)
         {
             ResetRowRecovery();
             bool sawEofb = false;
@@ -453,6 +455,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
                 }
                 if (br.Eof) break;
 
+                budget?.Tick(columns);
                 byte[] cur = new byte[columns];
                 DecodeLine2D(br, columns, refLine, cur);
 
@@ -583,18 +586,19 @@ namespace Tetitulz.Pdf.Core.IO.Filters
         /// optional EOL code (000000000001).
         /// </summary>
         internal static byte[] DecodeGroup3_1D(byte[] encoded, int columns, int rows,
-            bool endOfBlock, bool encodedByteAlign, bool requireEol, out int rowsDecoded)
+            bool endOfBlock, bool encodedByteAlign, bool requireEol, out int rowsDecoded, Util.WorkBudget budget = null)
             => DecodeGroup3_1D(encoded, 0, columns, rows, endOfBlock, encodedByteAlign, requireEol,
-                               out rowsDecoded, out _, out _);
+                               out rowsDecoded, out _, out _, budget);
 
         /// <summary>
         /// As the overload above, from <paramref name="startOffset"/>, reporting where the data ended —
         /// past the last row and the RTC after it, rounded up to a byte — and whether it said so (an RTC,
-        /// or the <paramref name="rows"/> asked for) rather than running out.
+        /// or the <paramref name="rows"/> asked for) rather than running out. <paramref name="budget"/>,
+        /// when given, is charged each row's <paramref name="columns"/> pixels before the row is decoded.
         /// </summary>
         internal static byte[] DecodeGroup3_1D(byte[] encoded, int startOffset, int columns, int rows,
             bool endOfBlock, bool encodedByteAlign, bool requireEol, out int rowsDecoded,
-            out int endOffset, out bool terminated)
+            out int endOffset, out bool terminated, Util.WorkBudget budget = null)
         {
             ResetRowRecovery();
             var br = new MsbBitStream(encoded, startOffset);
@@ -629,6 +633,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
                 // Optionally align to byte boundary before each line.
                 if (encodedByteAlign) br.AlignToByte();
 
+                budget?.Tick(columns);
                 byte[] cur = new byte[columns];
                 DecodeLine1D(br, columns, cur);
                 lines.Add(cur);
@@ -674,12 +679,12 @@ namespace Tetitulz.Pdf.Core.IO.Filters
         /// ordinary files. Other readers read the tag alone.
         /// </remarks>
         internal static byte[] DecodeGroup3_2D(byte[] encoded, int columns, int rows,
-            bool endOfBlock, bool encodedByteAlign, out int rowsDecoded)
-            => DecodeGroup3_2D(encoded, 0, columns, rows, endOfBlock, encodedByteAlign, out rowsDecoded, out _, out _);
+            bool endOfBlock, bool encodedByteAlign, out int rowsDecoded, Util.WorkBudget budget = null)
+            => DecodeGroup3_2D(encoded, 0, columns, rows, endOfBlock, encodedByteAlign, out rowsDecoded, out _, out _, budget);
 
-        /// <summary>As the overload above, from <paramref name="startOffset"/>, reporting where the data ended and whether it said so, as <see cref="DecodeGroup3_1D(byte[], int, int, int, bool, bool, bool, out int, out int, out bool)"/> does.</summary>
+        /// <summary>As the overload above, from <paramref name="startOffset"/>, reporting where the data ended and whether it said so, and charging <paramref name="budget"/>, as <see cref="DecodeGroup3_1D(byte[], int, int, int, bool, bool, bool, out int, out int, out bool, Util.WorkBudget)"/> does.</summary>
         internal static byte[] DecodeGroup3_2D(byte[] encoded, int startOffset, int columns, int rows,
-            bool endOfBlock, bool encodedByteAlign, out int rowsDecoded, out int endOffset, out bool terminated)
+            bool endOfBlock, bool encodedByteAlign, out int rowsDecoded, out int endOffset, out bool terminated, Util.WorkBudget budget = null)
         {
             ResetRowRecovery();
             bool sawRtc = false;
@@ -718,6 +723,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
 
                 if (encodedByteAlign) br.AlignToByte();
 
+                budget?.Tick(columns);
                 byte[] cur = new byte[columns];
                 if (tag == 1) DecodeLine1D(br, columns, cur);
                 else DecodeLine2D(br, columns, refLine, cur);

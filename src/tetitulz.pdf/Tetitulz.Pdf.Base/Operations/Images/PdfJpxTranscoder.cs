@@ -20,7 +20,7 @@ namespace Tetitulz.Pdf.Base.Operations.Images
     /// Rewrites a document's HTJ2K images as Part 1 JPEG 2000, losslessly, by an incremental update: each
     /// <c>JPXDecode</c> image XObject whose codestream uses HT code-blocks (ITU-T T.814) is superseded —
     /// same object number, same dictionary — by the same image re-coded with T.800's block coder
-    /// (<see cref="JpxTranscoding.TryToPart1"/>), which decodes to the same samples.
+    /// (<see cref="JpxTranscoding.TryToPart1(byte[], out byte[], out string)"/>), which decodes to the same samples.
     /// </summary>
     /// <remarks>
     /// <para><b>Why.</b> ISO 32000-2 §7.4.9 limits <c>JPXDecode</c> data to the JPX baseline, whose codestreams
@@ -51,10 +51,7 @@ namespace Tetitulz.Pdf.Base.Operations.Images
             JpxTranscodePlan plan;
             using (var doc = PdfDocument.Open(ms))
             {
-                if (doc.IsEncrypted)
-                    throw new PdfException(
-                        "Cannot transcode the images of an encrypted document here: the new streams would be written " +
-                        "in clear text. Decrypt it first, or route the plan through the Encryption assembly's incremental update.");
+                EncryptedRevision.Refuse(doc, "transcode the images of", "the new image streams");
                 plan = Plan(doc, allowCertifiedDocument);
                 ms.Position = 0;
                 if (plan.Objects.Count == 0)
@@ -85,13 +82,17 @@ namespace Tetitulz.Pdf.Base.Operations.Images
             var objects = new List<IndirectObject>();
             var transcoded = new List<int>();
             var skipped = new List<KeyValuePair<int, string>>();
+            // Each image's transcode is bounded by its own bytes; the document's images together by one
+            // ceiling, so a document of many images is not many ceilings of work.
+            var documentWork = new Core.Util.WorkBudget(PdfLimits.MaxJpxDecodeWork,
+                "JPEG 2000 transcoding of this document (PdfLimits.MaxJpxDecodeWork)");
             foreach (KeyValuePair<int, DocumentImageIndex.Entry> entry in DocumentImageIndex.Build(document).Entries)
             {
                 PdfStream image = entry.Value.Stream;
                 if (!IsJpxOnly(document, image)) continue;
                 byte[] codestream = image.RawData;
                 if (!JpxHeader.TryReadHighThroughput(codestream, out bool ht) || !ht) continue;
-                if (!JpxTranscoding.TryToPart1(codestream, out byte[] part1, out string reason))
+                if (!JpxTranscoding.TryToPart1(codestream, documentWork, out byte[] part1, out string reason))
                 {
                     skipped.Add(new KeyValuePair<int, string>(entry.Key, reason));
                     continue;

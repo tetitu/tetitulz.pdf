@@ -590,10 +590,13 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// The target is handed over as the current transform of the decode's own context, so the
         /// reduction is the raster path's exactly — <see cref="PdfRenderContext.GetImageDeviceExtent"/>
         /// reads it back and <see cref="Images.ImageDownsampling"/> decides — rather than a second rule
-        /// for the SVG writer to keep in step.
+        /// for the SVG writer to keep in step. <paramref name="pageBudget"/> is the drawing page's budget
+        /// (the SVG writer's <see cref="SvgSharedState.FormBudget"/>), so a decode here spends the page's
+        /// image work as the raster path's does; null — a caller decoding one image outside any page —
+        /// gives the decode a budget of its own.
         /// </remarks>
         internal static SKBitmap DecodeImageXObject(PdfDocument doc, PdfStream image, byte[] raw, IccRenderingIntent intent,
-            int targetWidth, int targetHeight)
+            int targetWidth, int targetHeight, RenderBudget pageBudget = null)
         {
             if (doc == null || image == null) return null;
             int w = PdfResolve.Int(doc, image, PdfName.Width,  PdfName.W, 1);
@@ -609,7 +612,7 @@ namespace Tetitulz.Pdf.Base.Rendering
             }
             using var fonts   = new FontCache();
             var interpreter = new ContentStreamInterpreter(ctx, doc, new PdfDictionary(), fonts)
-                { FormBudget = new RenderBudget() };
+                { FormBudget = pageBudget ?? new RenderBudget() };
             ctx.GS.RenderingIntent = IccRenderingIntents.Name(intent);
             ctx.GS.BlackPointCompensation = IccRenderingIntents.Compensates(intent);
             return raw == null
@@ -1106,8 +1109,18 @@ namespace Tetitulz.Pdf.Base.Rendering
             byte[] jpxOpacity = null;
             if (JpxHeader.IsJpx(data) || DeclaresJpxFilter(imageDict, _doc))
             {
-                var jpxBitmap = JpxImageDecoder.DecodeToBitmap(data, imageDict, _doc, SKAlphaType.Premul,
-                    out JpxDecodeOutcome outcome, CurrentIntent, tw, th, _ctx.JpxDecodeThreads);
+                SKBitmap jpxBitmap;
+                JpxDecodeOutcome outcome;
+                try
+                {
+                    jpxBitmap = JpxImageDecoder.DecodeToBitmap(data, imageDict, _doc, SKAlphaType.Premul,
+                        out outcome, CurrentIntent, tw, th, _ctx.JpxDecodeThreads, FormBudget?.ImageWork);
+                }
+                catch (Core.Util.WorkBudgetExceededException ex) when (FormBudget != null && FormBudget.IsImageWorkRefusal(ex))
+                {
+                    // The page's image decoding is spent: reported once by the budget, nothing drawn.
+                    return null;
+                }
                 if (jpxBitmap != null)
                 {
                     if (outcome.DecodeArrayApplies)

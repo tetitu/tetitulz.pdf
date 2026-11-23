@@ -259,11 +259,15 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
             var refusals = new string[tileCount];
             try
             {
-                // Tier 2, every tile, on the calling thread.
+                // Tier 2, every tile, on the calling thread. Every tile's layout is held until tier 1,
+                // so their structures are summed into the working set as they are made.
+                long structures = 0;
                 for (int i = 0; i < tileCount; i++)
                 {
                     int t = indices[i];
                     if (!JpxTier2Decoder.TryDecodeTile(cs, t, budget, out decodes[i], out reason)) return false;
+                    structures += decodes[i].Layout.Structures;
+                    if (!JpxDecodedImage.TryValidateWorkingSet(cs.Size, planeCount, reduction, out reason, structures)) return false;
                     var list = new List<string>();
                     if (!decodes[i].Complete) list.Add($"tile {t}: {decodes[i].StopReason}");
                     foreach (string d in decodes[i].Deviations) list.Add($"tile {t}: {d}");
@@ -273,7 +277,7 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
 
                 // The peak memory, now that the reduction is what the tiles allow and before tier 1
                 // allocates the first tile-component's values (a quarter of it for one tile).
-                if (!JpxDecodedImage.TryValidateWorkingSet(cs.Size, planeCount, reduction, out reason)) return false;
+                if (!JpxDecodedImage.TryValidateWorkingSet(cs.Size, planeCount, reduction, out reason, structures)) return false;
 
                 // Tier 1, the wavelet and the transformation, per tile: the tiles across the workers,
                 // or each tile's blocks and wavelet lines across them (see the remarks).

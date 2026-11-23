@@ -5,6 +5,7 @@
 using System;
 using Tetitulz.Pdf.Core.Constants;
 using Tetitulz.Pdf.Core.Objects;
+using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Core.IO.Filters
 {
@@ -161,25 +162,34 @@ namespace Tetitulz.Pdf.Core.IO.Filters
             byte[] decoded;
             try
             {
+                // Output is sized by /Columns and the rows the data names, not by its bytes (a row of
+                // one V0 code is a whole row), so each row is charged to the caller's budget — a
+                // page's image decoding — before it is decoded.
                 if (k < 0)
                 {
-                    decoded = CcittFaxDecoder.DecodeGroup4(data, columns, rows, endOfBlock, out _);
+                    decoded = CcittFaxDecoder.DecodeGroup4(data, columns, rows, endOfBlock, out _, Work);
                 }
                 else if (k == 0)
                 {
                     decoded = CcittFaxDecoder.DecodeGroup3_1D(
-                        data, columns, rows, endOfBlock, encodedByteAlign, endOfLine, out _);
+                        data, columns, rows, endOfBlock, encodedByteAlign, endOfLine, out _, Work);
                 }
                 else
                 {
                     // /K > 0 → mixed 1D/2D; each line's tag bit selects encoding.
                     decoded = CcittFaxDecoder.DecodeGroup3_2D(
-                        data, columns, rows, endOfBlock, encodedByteAlign, out _);
+                        data, columns, rows, endOfBlock, encodedByteAlign, out _, Work);
                 }
 
                 // Internal decoder uses "1 = black".  PDF default /BlackIs1 false means
                 // the rendered bitmap treats 1 as white.  Invert unless BlackIs1 is on.
                 if (!blackIs1) CcittFaxDecoder.InvertBytes(decoded);
+            }
+            catch (WorkBudgetExceededException ex) when (Work != null && ex.Budget == Work)
+            {
+                // The caller's budget refused, not this stream: the caller's refusal to report, never
+                // turned into the raw-bytes fallback the caller would read as this stream failing.
+                throw;
             }
             catch (Exception ex)
             {
