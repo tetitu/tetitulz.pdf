@@ -42,12 +42,15 @@ namespace Tetitulz.Pdf.Core.Document
 
         /// <summary>
         /// Maximum depth of the shallow canonical serialisation used to compare an object's
-        /// pre- and post-certification versions. References are not followed, so real nesting
-        /// stays far below this; the guard only stops a self-nesting direct structure. Beyond
-        /// it the serialiser emits a placeholder, which compares unequal to a shallower value
-        /// and therefore fails closed (reported as changed).
+        /// pre- and post-certification versions. References are not followed, so the depth is the
+        /// direct nesting the parser admits, <see cref="Constants.PdfLimits.MaxObjectGraphDepth"/>. Beyond it the
+        /// serialiser writes a token no other canonical form holds, so a value it cannot read whole
+        /// compares unequal to everything, itself included: a change hidden below the cap reads as a
+        /// change (fails closed).
         /// </summary>
-        private const int MaxCanonicalDepth = 64;
+        private static int MaxCanonicalDepth => Constants.PdfLimits.MaxObjectGraphDepth;
+
+        private static long _undecidable;
 
         // Field keys whose change is a permitted "fill-in" of an existing form field
         // (value + appearance), as opposed to a structural alteration.
@@ -1511,7 +1514,13 @@ namespace Tetitulz.Pdf.Core.Document
 
         private static void WriteCanonical(PdfObject obj, StringBuilder sb, int depth)
         {
-            if (depth > MaxCanonicalDepth) { sb.Append('~'); return; }
+            if (depth > MaxCanonicalDepth)
+            {
+                sb.Append('~')
+                  .Append(System.Threading.Interlocked.Increment(ref _undecidable).ToString(System.Globalization.CultureInfo.InvariantCulture))
+                  .Append('~');
+                return;
+            }
             switch (obj)
             {
                 case null:

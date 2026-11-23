@@ -81,14 +81,7 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
             // the copy-through below would silently return the input untouched — a workflow that
             // flattens a filled form before archiving it would archive a still-editable one and be
             // told nothing. Fail closed with the reason instead.
-            if (doc.IsEncrypted)
-                throw new Core.PdfEncryptedDocumentException(
-                    "Cannot flatten an encrypted document here: the stamped appearance content " +
-                    "would be written in clear text where the reader expects per-object " +
-                    "ciphertext, and this assembly cannot decrypt. Decrypt first with " +
-                    "Tetitulz.Pdf.Encryption.PdfDecryptor, or run the flatten inside " +
-                    "Tetitulz.Pdf.Encryption.PdfEncryptedRoundTrip.Run, which decrypts, operates " +
-                    "and re-encrypts.");
+            EncryptedRevision.Refuse(doc, "flatten", "the stamped appearance content");
 
             if (doc.AcroForm == null)
             {

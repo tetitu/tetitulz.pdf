@@ -72,6 +72,7 @@ namespace Tetitulz.Pdf.Core.Document
             if (objectGraph.AcroForm == null || offsetSource.BaseStream == null) return results;
 
             Dictionary<string, string> current = null;
+            bool currentCut = false;
             var seen = new HashSet<PdfDictionary>(PdfReferenceEquality.Instance);
             foreach (var field in objectGraph.AcroForm.GetSignatureFields())
             {
@@ -114,8 +115,11 @@ namespace Tetitulz.Pdf.Core.Document
 
                 using (signedRevision)
                 {
-                    var signed = FieldValues(signedRevision);
-                    current ??= FieldValues(objectGraph);
+                    var signed = FieldValues(signedRevision, out bool signedCut);
+                    current ??= FieldValues(objectGraph, out currentCut);
+                    if (signedCut || currentCut)
+                        analysis.Violations.Add($"the field tree is nested deeper than {PdfLimits.MaxTreeDepth} levels, so the fields " +
+                                                "below that depth could not be checked.");
 
                     foreach (string name in LockedNames(action, names, signed.Keys))
                     {
@@ -192,20 +196,27 @@ namespace Tetitulz.Pdf.Core.Document
         /// name, a second field of a name joined to the first — the whole tree, with the cycle guard and
         /// depth cap every other walk over it carries.
         /// </summary>
-        private static Dictionary<string, string> FieldValues(PdfDocument doc)
+        /// <param name="doc">The document whose fields are read.</param>
+        /// <param name="cut">True when fields lie below <see cref="PdfLimits.MaxTreeDepth"/>, where the walk stops: no lock can be checked there.</param>
+        private static Dictionary<string, string> FieldValues(PdfDocument doc, out bool cut)
         {
+            cut = false;
             var values = new Dictionary<string, string>(StringComparer.Ordinal);
             if (doc.AcroForm == null) return values;
 
             var visited = new HashSet<PdfDictionary>(PdfReferenceEquality.Instance);
-            Collect(doc.AcroForm.Fields, values, visited, 0);
+            Collect(doc, doc.AcroForm.Fields, values, visited, 0, ref cut);
             return values;
         }
 
-        private static void Collect(IReadOnlyList<PdfFormField> fields, Dictionary<string, string> values,
-                                    HashSet<PdfDictionary> visited, int depth)
+        private static void Collect(PdfDocument doc, IReadOnlyList<PdfFormField> fields, Dictionary<string, string> values,
+                                    HashSet<PdfDictionary> visited, int depth, ref bool cut)
         {
-            if (depth >= PdfLimits.MaxTreeDepth) return;
+            if (depth >= PdfLimits.MaxTreeDepth)
+            {
+                if (fields.Count > 0) cut = true;
+                return;
+            }
             foreach (var field in fields)
             {
                 if (field?.Dictionary == null || !visited.Add(field.Dictionary)) continue;
@@ -213,30 +224,56 @@ namespace Tetitulz.Pdf.Core.Document
                 string name = field.ReportedName;
                 if (name != null && field.IsAddressableField)
                 {
-                    string shown = Shown(field);
+                    string shown = Shown(doc, field);
                     values[name] = values.TryGetValue(name, out string earlier) ? earlier + "\n" + shown : shown;
                 }
 
-                Collect(field.Kids, values, visited, depth + 1);
+                Collect(doc, field.Kids, values, visited, depth + 1, ref cut);
             }
         }
 
         /// <summary>What a field shows: its value, and the appearance it and its widgets name.</summary>
-        private static string Shown(PdfFormField field)
+        private static string Shown(PdfDocument doc, PdfFormField field)
         {
             var shown = new System.Text.StringBuilder(DocMdpAnalyzer.Canonical(field.Value));
-            AppendAppearance(shown, field.Dictionary);
+            AppendAppearance(doc, shown, field.Dictionary);
             foreach (var kid in field.Kids)
                 if (kid?.Dictionary != null && !kid.IsAddressableField)
-                    AppendAppearance(shown, kid.Dictionary);
+                    AppendAppearance(doc, shown, kid.Dictionary);
             return shown.ToString();
         }
 
-        private static void AppendAppearance(System.Text.StringBuilder shown, PdfDictionary widget)
+        /// <summary>
+        /// A widget's appearance as a reader draws it: <c>/AP</c> resolved, and each of its <c>/N</c>, <c>/R</c> and
+        /// <c>/D</c> — a stream, or a dictionary of state streams — resolved to the stream itself, whose canonical
+        /// form holds its content's digest. A reference names an object, and a later revision may rewrite that
+        /// object in place under the same number; compared by reference, the changed appearance would read as
+        /// unchanged.
+        /// </summary>
+        private static void AppendAppearance(PdfDocument doc, System.Text.StringBuilder shown, PdfDictionary widget)
         {
-            shown.Append('|').Append(DocMdpAnalyzer.Canonical(widget[PdfName.AP]));
+            shown.Append('|');
+            if (doc.ResolveObject(widget[PdfName.AP]) is PdfDictionary ap)
+            {
+                foreach (var key in AppearanceKeys)
+                {
+                    shown.Append('/').Append(key.Value).Append(' ');
+                    var entry = doc.ResolveObject(ap[key]);
+                    if (entry is PdfDictionary states && !(entry is PdfStream))
+                        foreach (var state in states)
+                            shown.Append('/').Append(state.Key.Value).Append('=').Append(Drawn(doc, state.Value)).Append(';');
+                    else shown.Append(Drawn(doc, ap[key]));
+                }
+            }
+            else shown.Append(DocMdpAnalyzer.Canonical(widget[PdfName.AP]));
             shown.Append('|').Append(DocMdpAnalyzer.Canonical(widget[PdfName.AS]));
         }
+
+        /// <summary>An appearance entry as compared: the stream it names, by content; anything else as written, a reference by its number.</summary>
+        private static string Drawn(PdfDocument doc, PdfObject value)
+            => doc.ResolveObject(value) is PdfStream stream ? DocMdpAnalyzer.Canonical(stream) : DocMdpAnalyzer.Canonical(value);
+
+        private static readonly PdfName[] AppearanceKeys = { PdfName.N, PdfName.R, PdfName.D };
     }
 
     /// <summary>One signature's field lock (§12.8.2.4) and what changed after it.</summary>

@@ -73,6 +73,34 @@ namespace Tetitulz.Pdf.Base.Operations.Images
         /// </summary>
         internal string AnnotationCut { get; private set; }
 
+        /// <summary>
+        /// The resource entries — <c>/XObject</c>, <c>/Pattern</c> and <c>/Font</c> — this index may still examine,
+        /// every page together (<see cref="PdfLimits.MaxImageIndexEntriesPerDocument"/>). The walk is per page, since
+        /// an image's pages are what it records, so pages sharing one resource dictionary read every entry of it on
+        /// every page: pages × entries, both the file's choice.
+        /// </summary>
+        private long _entriesLeft = PdfLimits.MaxImageIndexEntriesPerDocument;
+
+        /// <summary>
+        /// Why the walk stopped examining resource entries, or null when it examined every one; the same sentence
+        /// goes to <see cref="DocumentEditDiagnostics"/>.
+        /// </summary>
+        internal string EntryCut { get; private set; }
+
+        /// <summary>Charges one resource entry; false once the document's budget is spent, the cut said once.</summary>
+        private bool TakeEntry(int pageIndex)
+        {
+            if (--_entriesLeft >= 0) return true;
+            if (EntryCut == null)
+            {
+                EntryCut = $"the pages' resource dictionaries hold more than {PdfLimits.MaxImageIndexEntriesPerDocument} entries " +
+                           $"between them, read once a page (PdfLimits.MaxImageIndexEntriesPerDocument); the images from page {pageIndex} " +
+                           "on were not all indexed";
+                DocumentEditDiagnostics.Report("DocumentImageIndex.Build", EntryCut);
+            }
+            return false;
+        }
+
         /// <summary>The resource dictionaries this page walk has read.</summary>
         /// <remarks>
         /// The container guard stops a form from being entered twice, but not a resource dictionary
@@ -201,6 +229,7 @@ namespace Tetitulz.Pdf.Base.Operations.Images
             {
                 foreach (var kvp in xobj)
                 {
+                    if (!TakeEntry(pageIndex)) return;
                     if (!(doc.ResolveObject(kvp.Value) is PdfStream stream)) continue;
                     var subtype = PdfResolve.Name(doc, stream, PdfName.Subtype);
 
@@ -215,9 +244,12 @@ namespace Tetitulz.Pdf.Base.Operations.Images
             if (doc.ResolveObject(resources[PdfName.Pattern]) is PdfDictionary patterns)
             {
                 foreach (var kvp in patterns)
+                {
+                    if (!TakeEntry(pageIndex)) break;
                     if (doc.ResolveObject(kvp.Value) is PdfStream pattern
                         && PdfResolve.Int(doc, pattern, PdfName.PatternType, 0) == 1)
                         Descend(doc, pattern, pageIndex, depth, visitedForms, onResources, onContainer);
+                }
             }
 
             // A Type 3 font's glyph procedures paint with the font's /Resources (§9.6.4). One with
@@ -225,9 +257,12 @@ namespace Tetitulz.Pdf.Base.Operations.Images
             if (doc.ResolveObject(resources[PdfName.Font]) is PdfDictionary fonts)
             {
                 foreach (var kvp in fonts)
+                {
+                    if (!TakeEntry(pageIndex)) break;
                     if (doc.ResolveObject(kvp.Value) is PdfDictionary font
                         && PdfResolve.Name(doc, font, PdfName.Subtype) == PdfName.Type3)
                         Descend(doc, font, pageIndex, depth, visitedForms, onResources, onContainer);
+                }
             }
         }
 

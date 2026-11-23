@@ -588,7 +588,7 @@ public class PdfFormFillerTests
         using var input = new MemoryStream(encrypted.ToArray());
         using var output = new MemoryStream();
 
-        var ex = Assert.Throws<Tetitulz.Pdf.Core.PdfException>(
+        var ex = Assert.Throws<Tetitulz.Pdf.Core.PdfEncryptedDocumentException>(
             () => PdfFormFiller.Fill(input, output, Values(("name", "Ada")), new FormFillOptions()));
         Assert.Contains("encrypted", ex.Message, StringComparison.OrdinalIgnoreCase);
     }

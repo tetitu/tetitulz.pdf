@@ -66,4 +66,48 @@ public class XmlLegalTextTests
         Assert.Equal("", XmlLegalText.Replace(null, out bool changed));
         Assert.False(changed);
     }
+
+    /// <summary>
+    /// The other answer, for text read out of a PDF: what XML forbids is removed — a control character, a lone half
+    /// of a pair, U+FFFE — while tab, line feed, carriage return and a whole pair stay. Legal text comes back as the
+    /// same instance.
+    /// </summary>
+    [Theory]
+    [InlineData("a\u0001b", "ab")]
+    [InlineData("a\tb\nc\rd", "a\tb\nc\rd")]
+    [InlineData("😀\u0001😀", "😀😀")]
+    public void Remove_DropsWhatXmlForbids_AndKeepsTheRest(string input, string expected)
+    {
+        Assert.Equal(expected, XmlLegalText.Remove(input));
+    }
+
+    /// <summary>
+    /// U+FFFE and U+FFFF are not XML <c>Char</c> though <c>XmlConvert.IsXmlChar</c> admits them, and a lone half of a pair is not
+    /// one either. Built in code: an attribute's string argument does not carry them intact.
+    /// </summary>
+    [Fact]
+    public void Remove_DropsTheTwoNoncharactersXmlForbids()
+    {
+        string input = "x" + (char)0xFFFE + "y" + (char)0xFFFF;
+        Assert.Equal("xy", XmlLegalText.Remove(input));
+        Assert.Equal("x" + (char)0xFFFD + "y" + (char)0xFFFD, XmlLegalText.Replace(input, out bool changed));
+        Assert.Equal("xy", XmlLegalText.Remove("x" + (char)0xD800 + "y"));   // a lone half, each way round
+        Assert.Equal("xy", XmlLegalText.Remove("x" + (char)0xDC00 + "y"));
+        Assert.True(changed);
+    }
+
+    [Fact]
+    public void Remove_LeavesLegalTextAsItIs()
+    {
+        const string legal = "שלום, world\t1";
+        Assert.Same(legal, XmlLegalText.Remove(legal));
+        Assert.Equal("", XmlLegalText.Remove(null));
+    }
+
+    /// <summary>The SVG export's escape drops by the same rule: it is one rule, not two that agree.</summary>
+    [Fact]
+    public void TheSvgEscape_RemovesByTheSameRule()
+    {
+        Assert.Equal("ab&amp;", XmlEscape.EscapeText("a\u0001\uD800b&"));
+    }
 }

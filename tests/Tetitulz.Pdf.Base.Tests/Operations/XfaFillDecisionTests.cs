@@ -57,7 +57,7 @@ public class XfaFillDecisionTests
         using var input = new MemoryStream(encrypted.ToArray());
         using var output = new MemoryStream();
 
-        var ex = Assert.Throws<Tetitulz.Pdf.Core.PdfException>(
+        var ex = Assert.Throws<Tetitulz.Pdf.Core.PdfEncryptedDocumentException>(
             () => PdfXfaFormFiller.Fill(input, output, new Dictionary<string, string>
             {
                 ["form1[0].total[0]"] = "NEW",

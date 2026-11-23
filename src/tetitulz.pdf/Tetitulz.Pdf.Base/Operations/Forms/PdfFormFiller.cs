@@ -95,13 +95,9 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
             // An encrypted document's strings and streams are ciphertext under a per-object key.
             // The values and appearance streams written here are clear text, so the reader would
             // "decrypt" them into garbage. Fail closed rather than emit a form full of noise.
-            if (doc.IsEncrypted)
-                throw new Core.PdfException(
-                    "Cannot fill an encrypted document here: the field values and appearance " +
-                    "streams would be written in clear text where the reader expects per-object " +
-                    "ciphertext, and this assembly cannot decrypt. Use " +
-                    "Tetitulz.Pdf.Encryption.PdfEncryptedForms.Fill, which reads the form from a " +
-                    "decrypted view and appends the revision encrypted with the document's own key.");
+            EncryptedRevision.Refuse(doc, "fill", "the field values and appearance streams",
+                "Use Tetitulz.Pdf.Encryption.PdfEncryptedForms.Fill, which reads the form from a decrypted view " +
+                "and appends the revision encrypted with the document's own key.");
 
             FormFillPlan plan = Plan(doc, values, options);
 

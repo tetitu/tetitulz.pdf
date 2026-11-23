@@ -766,8 +766,9 @@ namespace Tetitulz.Pdf.Core.Writing
                     PdfLimits.MaxObjectGraphDepth.ToString(CultureInfo.InvariantCulture) +
                     " levels, which is what a cyclic object graph does; it cannot be serialised.");
 
+            // A file's own content reaches this (the parser caps no array's length), so it is the file's refusal.
             if (--budget < 0)
-                throw new InvalidOperationException(
+                throw new PdfException(
                     "Object " + objectNumber.ToString(CultureInfo.InvariantCulture) +
                     " reaches more than " + MaxDirectNodesPerObject.ToString(CultureInfo.InvariantCulture) +
                     " direct nodes; it cannot be serialised.");

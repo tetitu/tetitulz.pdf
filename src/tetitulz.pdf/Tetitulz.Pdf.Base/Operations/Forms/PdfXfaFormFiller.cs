@@ -56,7 +56,7 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
         /// </param>
         /// <param name="options">Fill policy for the AcroForm half; may be null.</param>
         /// <exception cref="ArgumentNullException">Any of the first three arguments is null.</exception>
-        /// <exception cref="Core.PdfException">The document is encrypted.</exception>
+        /// <exception cref="Core.PdfEncryptedDocumentException">The document is encrypted.</exception>
         public static XfaFillResult Fill(
             Stream input,
             Stream output,
@@ -72,12 +72,7 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
 
             // Before the AcroForm read, for PdfFormFiller's reason: an encrypted document loads no
             // catalog, so its form always reads as absent and "no AcroForm" is the wrong diagnosis.
-            if (doc.IsEncrypted)
-                throw new Core.PdfException(
-                    "Cannot fill an encrypted XFA document here: the datasets packet and the " +
-                    "AcroForm values would be written in clear text where the reader expects " +
-                    "per-object ciphertext, and this assembly cannot decrypt. Decrypt with " +
-                    "Tetitulz.Pdf.Encryption first.");
+            EncryptedRevision.Refuse(doc, "fill the XFA form of", "the datasets packet and the AcroForm values");
 
             FormFillPlan plan = PdfFormFiller.Plan(doc, values, options);
             var objects = new List<IndirectObject>(plan.Objects);

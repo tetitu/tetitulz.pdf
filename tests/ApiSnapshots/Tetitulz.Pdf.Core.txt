@@ -259,6 +259,7 @@ Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxDocxTableColumns : System.Int32
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxDocxXmlDepth : System.Int32 = 256
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxDrawingShapes : System.Int32 = 5000
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxEndStreamSearchBytes : System.Int64 = 8388608
+Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxExtractedImageBytesPerCall : System.Int64 = 1073741824
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxFieldExtractionWork : System.Int32 = 67108864
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxFieldInheritanceDepth : System.Int32 = 50
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxFilterChainLength : System.Int32 = 16
@@ -273,11 +274,13 @@ Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxFunctionWorkPerPage : System.In
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxGlyphOutlinePoints : System.Int32 = 131072
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxGraphicsStateStackDepth : System.Int32 = 4096
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxHalftoneCellPixels : System.Int32 = 1048576
+Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxHtmlRasterizedSvgBytes : System.Int64 = 268435456
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxIccCurvePoints : System.Int32 = 65536
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxIccProfileBytes : System.Int32 = 16777216
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxIccTagCount : System.Int32 = 1024
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxImageDecodeWorkPerPage : System.Int64 = 536870912
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxImageDimension : System.Int32 = 16384
+Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxImageIndexEntriesPerDocument : System.Int64 = 10000000
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxImagePixelArea : System.Int64 = 100000000
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxImagePixelsPerExport : System.Int64 = 2000000000
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxIndirectReferenceChain : System.Int32 = 64
@@ -383,6 +386,7 @@ Tetitulz.Pdf.Core.Constants.PdfLimits::MaxDocxTableColumns : System.Int32 { get;
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxDocxXmlDepth : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxDrawingShapes : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxEndStreamSearchBytes : System.Int64 { get; set }
+Tetitulz.Pdf.Core.Constants.PdfLimits::MaxExtractedImageBytesPerCall : System.Int64 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxFieldExtractionWork : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxFieldInheritanceDepth : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxFilterChainLength : System.Int32 { get; set }
@@ -397,11 +401,13 @@ Tetitulz.Pdf.Core.Constants.PdfLimits::MaxFunctionWorkPerPage : System.Int64 { g
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxGlyphOutlinePoints : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxGraphicsStateStackDepth : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxHalftoneCellPixels : System.Int32 { get; set }
+Tetitulz.Pdf.Core.Constants.PdfLimits::MaxHtmlRasterizedSvgBytes : System.Int64 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxIccCurvePoints : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxIccProfileBytes : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxIccTagCount : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxImageDecodeWorkPerPage : System.Int64 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxImageDimension : System.Int32 { get; set }
+Tetitulz.Pdf.Core.Constants.PdfLimits::MaxImageIndexEntriesPerDocument : System.Int64 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxImagePixelArea : System.Int64 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxImagePixelsPerExport : System.Int64 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxIndirectReferenceChain : System.Int32 { get; set }
@@ -1113,6 +1119,7 @@ Tetitulz.Pdf.Core.Forms.PdfAcroForm::FindSignatureField(System.String) : Tetitul
 Tetitulz.Pdf.Core.Forms.PdfAcroForm::GetSignatureFields() : System.Collections.Generic.List<Tetitulz.Pdf.Core.Forms.PdfSignatureField>
 Tetitulz.Pdf.Core.Forms.PdfAcroForm::NeedAppearances : System.Boolean { get }
 Tetitulz.Pdf.Core.Forms.PdfAcroForm::SigFlags : System.Int32 { get }
+Tetitulz.Pdf.Core.Forms.PdfAcroForm::UnreadableNodes : System.Collections.Generic.IReadOnlyList<System.String> { get }
 Tetitulz.Pdf.Core.Forms.PdfFieldType::Button : Tetitulz.Pdf.Core.Forms.PdfFieldType = 2
 Tetitulz.Pdf.Core.Forms.PdfFieldType::Choice : Tetitulz.Pdf.Core.Forms.PdfFieldType = 3
 Tetitulz.Pdf.Core.Forms.PdfFieldType::Signature : Tetitulz.Pdf.Core.Forms.PdfFieldType = 4
@@ -2354,6 +2361,7 @@ Tetitulz.Pdf.Core.Text.UnicodeBidi::Reorder(System.String, Tetitulz.Pdf.Core.Tex
 Tetitulz.Pdf.Core.Text.UnicodeBidi::ResolveParagraph(System.String, Tetitulz.Pdf.Core.Text.BaseDirection) : Tetitulz.Pdf.Core.Text.BidiParagraph
 Tetitulz.Pdf.Core.Text.UnicodeBidi::StripBidiControls(System.String) : System.String
 Tetitulz.Pdf.Core.Text.XmlEscape::EscapeText(System.String) : System.String
+Tetitulz.Pdf.Core.Text.XmlLegalText::Remove(System.String) : System.String
 Tetitulz.Pdf.Core.UsageRights::Annotation : Tetitulz.Pdf.Core.UsageRights = 8
 Tetitulz.Pdf.Core.UsageRights::DocumentSave : Tetitulz.Pdf.Core.UsageRights = 16
 Tetitulz.Pdf.Core.UsageRights::FormFillIn : Tetitulz.Pdf.Core.UsageRights = 1
@@ -2811,6 +2819,7 @@ class Tetitulz.Pdf.Core.Text.TextRunOptions
 class Tetitulz.Pdf.Core.Text.UnicodeBidi
 class Tetitulz.Pdf.Core.Text.UnicodeBidi+Controls
 class Tetitulz.Pdf.Core.Text.XmlEscape
+class Tetitulz.Pdf.Core.Text.XmlLegalText
 class Tetitulz.Pdf.Core.Util.DiagnosticFanOut
 class Tetitulz.Pdf.Core.Util.DiagnosticMessage
 class Tetitulz.Pdf.Core.Util.NumericArguments

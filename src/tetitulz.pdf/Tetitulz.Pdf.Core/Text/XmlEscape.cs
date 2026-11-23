@@ -81,45 +81,6 @@ namespace Tetitulz.Pdf.Core.Text
         /// <para>The scan allocates nothing when the string is already representable, which is
         /// every string but a handful.</para>
         /// </remarks>
-        private static string StripUnrepresentable(string s)
-        {
-            int first = -1;
-            for (int i = 0; i < s.Length; i++)
-            {
-                if (IsRepresentable(s, i)) continue;
-                first = i;
-                break;
-            }
-            if (first < 0) return s;
-
-            var sb = new System.Text.StringBuilder(s.Length);
-            sb.Append(s, 0, first);
-            for (int i = first; i < s.Length; i++)
-                if (IsRepresentable(s, i)) sb.Append(s[i]);
-
-            return sb.ToString();
-        }
-
-        /// <summary>Whether the code unit at <paramref name="i"/> is XML 1.0 <c>Char</c> content.</summary>
-        /// <remarks>
-        /// A surrogate is judged by its <i>pair</i>: both halves of a well-formed pair are kept, and
-        /// a half without its partner is not. Testing the code unit alone would either delete every
-        /// astral character or keep every broken one.
-        /// </remarks>
-        private static bool IsRepresentable(string s, int i)
-        {
-            char c = s[i];
-
-            if (c == '\t' || c == '\n' || c == '\r') return true;
-            if (c < 0x20) return false;
-            if (c == 0xFFFE || c == 0xFFFF) return false;
-
-            if (char.IsHighSurrogate(c))
-                return i + 1 < s.Length && char.IsLowSurrogate(s[i + 1]);
-            if (char.IsLowSurrogate(c))
-                return i > 0 && char.IsHighSurrogate(s[i - 1]);
-
-            return true;
-        }
+        private static string StripUnrepresentable(string s) => XmlLegalText.Remove(s);
     }
 }

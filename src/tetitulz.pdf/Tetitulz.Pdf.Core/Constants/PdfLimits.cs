@@ -1251,6 +1251,40 @@ namespace Tetitulz.Pdf.Core.Constants
         /// <summary>Built-in value of <see cref="MaxImagePixelsPerExport"/>; for a compile-time constant context.</summary>
         public const long DefaultMaxImagePixelsPerExport = 2_000_000_000;
 
+        /// <summary>
+        /// Most resource entries (<c>/XObject</c>, <c>/Pattern</c>, <c>/Font</c>) the document image index examines, every
+        /// page together — the walk behind image listing, extraction, replacement, the JPEG 2000 transcoder and the
+        /// transparency scan. Each page reads the resource dictionaries it reaches, and pages may share one, so ten
+        /// thousand pages sharing a dictionary of a hundred thousand images are a billion entry reads. Past it the
+        /// walk stops, the images it had not reached are not indexed, and the cut is reported once.
+        /// </summary>
+        public static long MaxImageIndexEntriesPerDocument { get; set; } = DefaultMaxImageIndexEntriesPerDocument;
+
+        /// <summary>Built-in value of <see cref="MaxImageIndexEntriesPerDocument"/>; for a compile-time constant context.</summary>
+        public const long DefaultMaxImageIndexEntriesPerDocument = 10_000_000;
+
+        /// <summary>
+        /// Most bytes one <c>PdfImageExtractor.ExtractImages</c> call writes, every image file together. Each image is
+        /// decoded no further than 256 MB, and Deflate's ratio of about a thousand to one makes a one-megabyte PDF
+        /// of such images a gigabyte of files. Past it the images not yet written are not written, and
+        /// <c>LastExtractionWarning</c> names them.
+        /// </summary>
+        public static long MaxExtractedImageBytesPerCall { get; set; } = DefaultMaxExtractedImageBytesPerCall;
+
+        /// <summary>Built-in value of <see cref="MaxExtractedImageBytesPerCall"/>; for a compile-time constant context.</summary>
+        public const long DefaultMaxExtractedImageBytesPerCall = 1L << 30;
+
+        /// <summary>
+        /// Most raster bytes one HTML conversion keeps from <c>HtmlToPdfOptions.SvgRasterizer</c>, every SVG together.
+        /// Each distinct markup is rasterised once and its raster shared by every occurrence; the rasters are held
+        /// in the document until it is written, so a page of many distinct tiny SVGs that rasterise large is held to
+        /// this. Past it the SVGs not yet rasterised are not drawn, and the cut is reported once.
+        /// </summary>
+        public static long MaxHtmlRasterizedSvgBytes { get; set; } = DefaultMaxHtmlRasterizedSvgBytes;
+
+        /// <summary>Built-in value of <see cref="MaxHtmlRasterizedSvgBytes"/>; for a compile-time constant context.</summary>
+        public const long DefaultMaxHtmlRasterizedSvgBytes = 256L * 1024 * 1024;
+
         /// <summary>Maximum vertex count in a mesh shading.</summary>
         public static int MaxMeshVertices { get; set; } = DefaultMaxMeshVertices;
 
@@ -1962,6 +1996,9 @@ namespace Tetitulz.Pdf.Core.Constants
             MaxShadingDimension = DefaultMaxShadingDimension;
             MaxSpotPlatesPerPage = DefaultMaxSpotPlatesPerPage;
             MaxImagePixelsPerExport = DefaultMaxImagePixelsPerExport;
+            MaxImageIndexEntriesPerDocument = DefaultMaxImageIndexEntriesPerDocument;
+            MaxExtractedImageBytesPerCall = DefaultMaxExtractedImageBytesPerCall;
+            MaxHtmlRasterizedSvgBytes = DefaultMaxHtmlRasterizedSvgBytes;
             MaxMeshVertices = DefaultMaxMeshVertices;
             MaxMeshTrianglesPerBatch = DefaultMaxMeshTrianglesPerBatch;
             MaxJbig2CompositionPixels = DefaultMaxJbig2CompositionPixels;

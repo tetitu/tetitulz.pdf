@@ -188,6 +188,11 @@ namespace Tetitulz.Pdf.Signing
             var context = new VerificationContext(document, original, openSignedRevision, options);
 
             var sigFields = document.AcroForm.GetSignatureFields();
+            // A field the walk could not read is not a signature it can list: said, not read as "unsigned".
+            if (document.AcroForm.UnreadableNodes.Count > 0)
+                _lastVerificationError ??= "The form's field tree holds " + document.AcroForm.UnreadableNodes.Count.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                    + " entr" + (document.AcroForm.UnreadableNodes.Count == 1 ? "y" : "ies") + " that could not be read, so a signature among them is not listed: "
+                    + string.Join("; ", System.Linq.Enumerable.Take(document.AcroForm.UnreadableNodes, 20)) + ".";
             var signatures = new List<(SignatureVerificationResult Result, PdfDictionary? Signature)>();
             foreach (var field in sigFields)
             {

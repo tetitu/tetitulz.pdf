@@ -279,8 +279,8 @@ namespace Tetitulz.Pdf.Core.Forms
             // null document tolerated because this constructor is public — is FormTreeChildren's,
             // shared with PdfAcroForm.LoadFields.
             var kids = new List<PdfFormField>();
-            foreach (var kidObj in FormTreeChildren.Resolve(Dictionary, PdfName.Kids, _document))
-                kids.Add(Create(kidObj, _document, this));
+            foreach (var kidObj in FormTreeChildren.Resolve(Dictionary, PdfName.Kids, _document, _unreadable))
+                kids.Add(Create(kidObj, _document, this, _unreadable));
 
             return kids;
         }
@@ -445,16 +445,25 @@ namespace Tetitulz.Pdf.Core.Forms
         private static Func<PdfObject, PdfObject> Resolver(PdfDocument document)
             => document == null ? (Func<PdfObject, PdfObject>)null : document.ResolveObject;
 
-        internal static PdfFormField Create(PdfDictionary dict, PdfDocument document, PdfFormField parent)
+        /// <summary>
+        /// The node for <paramref name="dict"/>: a signature field or another. <paramref name="unreadable"/> is the
+        /// form's record of the entries it could not read, which the node's own kids add to.
+        /// </summary>
+        internal static PdfFormField Create(PdfDictionary dict, PdfDocument document, PdfFormField parent,
+            Util.DistinctStrings unreadable = null)
         {
             // The same ladder FieldType uses — see ResolveFieldType for what the second copy that
             // stood here cost. PdfName defines value equality and a null-safe operator==, so this
             // covers the "no /FT anywhere" case too.
-            if (ResolveFieldType(dict, document, parent) == PdfName.Sig)
-                return new PdfSignatureField(dict, document, parent);
-
-            return new PdfFormField(dict, document, parent);
+            PdfFormField node = ResolveFieldType(dict, document, parent) == PdfName.Sig
+                ? new PdfSignatureField(dict, document, parent)
+                : new PdfFormField(dict, document, parent);
+            node._unreadable = unreadable ?? parent?._unreadable;
+            return node;
         }
+
+        /// <summary>The form's record of the tree entries it could not read; null for a node built outside a form.</summary>
+        private Util.DistinctStrings _unreadable;
 
         public override string ToString() => $"{FieldType}: {FullyQualifiedName}";
     }

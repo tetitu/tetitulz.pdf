@@ -129,6 +129,21 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
             Tetitulz.Pdf.Core.Writing.IncrementalUpdateWriter.WriteUpdate(
                 ms, output, modified, doc.Trailer, doc.Parser.StartXrefOffset, collectionObj + 1);
         }
+        [ThreadStatic] private static string _lastReadWarning;
+
+        /// <summary>
+        /// What the last <see cref="ListItems(Stream)"/>, <see cref="GetSchema(Stream)"/> or <see cref="IsPortfolio(Stream)"/>
+        /// on this thread left out — the embedded-files name tree read short, an item whose size could not be
+        /// measured — or <see langword="null"/> when it read everything. Reset at the start of every call.
+        /// </summary>
+        public static string LastReadWarning => _lastReadWarning;
+
+        /// <summary>
+        /// The most one item's embedded file is decoded to measure it when its <c>/Params</c> gives no <c>/Size</c>;
+        /// past it the size reads 0 and <see cref="LastReadWarning"/> says why.
+        /// </summary>
+        public const long MaxMeasuredItemBytes = 64L * 1024 * 1024;
+
         /// <summary>Returns true if the PDF is a Portfolio (has /Collection dict in catalog).</summary>
         public static bool IsPortfolio(string inputPath)
         {
@@ -140,8 +155,12 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         /// <summary>Returns true if the PDF stream is a Portfolio (has /Collection dict).</summary>
         public static bool IsPortfolio(Stream input)
         {
+            _lastReadWarning = null;
             if (input == null) throw new ArgumentNullException(nameof(input));
             using var doc = PdfDocument.Open(input);
+            // An encrypted document loads no catalog, and "not a portfolio" would be an answer about a
+            // document this door never read.
+            EncryptedRead.Refuse(doc, "the portfolio collection", null);
             return HasCollection(doc);
         }
 
@@ -156,8 +175,10 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         /// <summary>Returns the portfolio schema field names and types.</summary>
         public static IReadOnlyList<PortfolioField> GetSchema(Stream input)
         {
+            _lastReadWarning = null;
             if (input == null) throw new ArgumentNullException(nameof(input));
             using var doc = PdfDocument.Open(input);
+            EncryptedRead.Refuse(doc, "the portfolio schema", null);
             return ReadSchema(doc);
         }
 
@@ -172,8 +193,10 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         /// <summary>Lists portfolio items with their metadata.</summary>
         public static IReadOnlyList<PortfolioItem> ListItems(Stream input)
         {
+            _lastReadWarning = null;
             if (input == null) throw new ArgumentNullException(nameof(input));
             using var doc = PdfDocument.Open(input);
+            EncryptedRead.Refuse(doc, "the portfolio items", null);
             return ReadItems(doc);
         }
 
@@ -257,6 +280,8 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
             // Collect all name-filespec pairs from the name tree
             var pairs = new List<(string name, PdfDictionary fileSpec)>();
             CollectNameTreePairs(efDict, pairs, doc);
+            var unmeasured = new Core.Util.DistinctStrings();
+            var lengths = new Extraction.DecodedLengths(MaxMeasuredItemBytes);
 
             foreach (var (name, fileSpec) in pairs)
             {
@@ -290,8 +315,10 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
                         }
                         if (size == 0)
                         {
-                            var data = embStream.GetDecodedData();
-                            size = data?.Length ?? 0;
+                            // Measured once a stream, under a ceiling: a stream refused at the ceiling is not
+                            // cached by the stream, and items naming one were each a decode to it.
+                            size = lengths.Of(embStream, "it does not decode", out string why);
+                            if (why != null) unmeasured.Add("'" + name + "' (" + why + ")");
                         }
                     }
                 }
@@ -319,6 +346,8 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
                     Fields       = fields
                 });
             }
+            if (unmeasured.Count > 0)
+                _lastReadWarning ??= "The size of " + unmeasured.Joined(", ") + " could not be measured and reads 0.";
 
             return result.AsReadOnly();
         }
@@ -332,7 +361,9 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         {
             var flat = new List<KeyValuePair<PdfObject, PdfObject>>();
             int budget = PdfLimits.MaxNameTreeEntries;
-            PdfNameTree.TryFlatten(node, doc, flat, ref budget);
+            if (!PdfNameTree.TryFlatten(node, doc, flat, ref budget))
+                _lastReadWarning = "The embedded-files name tree could not be read whole (an unreadable or overdeep node, a cycle, or past " +
+                                   "PdfLimits.MaxNameTreeEntries); the items past where it stopped are not listed.";
 
             foreach (var entry in flat)
             {
