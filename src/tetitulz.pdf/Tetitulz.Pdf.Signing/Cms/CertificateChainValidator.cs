@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.X509;
+using Org.BouncyCastle.X509.Extension;
 using Tetitulz.Pdf.Core.Constants;
 using Tetitulz.Pdf.Signing;
 
@@ -311,9 +312,10 @@ namespace Tetitulz.Pdf.Signing.Cms
         /// </para>
         /// <para>
         /// <paramref name="budget"/> — hops first, then <see cref="MaxIssuerVerifications"/> — is a
-        /// single allowance shared across the WHOLE search (not per path) and
-        /// <paramref name="visited"/> is never unwound, so a crafted bag cannot make this
-        /// exponential or cyclic.
+        /// single allowance shared across the WHOLE search (not per path), so a crafted bag cannot make
+        /// this exponential; <paramref name="visited"/> holds the current path, so it cannot be cyclic,
+        /// and is unwound as the path is, since what a certificate fails on one path (its path length,
+        /// its name constraints) it may pass on another.
         /// </para>
         /// </remarks>
         private static PdfSignatureChainStatus SearchIssuers(
@@ -338,7 +340,7 @@ namespace Tetitulz.Pdf.Signing.Cms
             if (budget[0]-- <= 0)
                 return PdfSignatureChainStatus.UntrustedRoot;
 
-            List<X509Certificate> candidates = FindIssuers(current, certStore, trustAnchors);
+            List<X509Certificate> candidates = MostLikelyFirst(current, FindIssuers(current, certStore, trustAnchors), trustAnchors);
             if (candidates.Count == 0)
             {
                 warnings.Add($"{leafRole} issuer certificate not found in the accompanying certificates or the trust anchors");
@@ -386,9 +388,40 @@ namespace Tetitulz.Pdf.Signing.Cms
             List<X509Certificate> path,
             List<X509Certificate> anchored)
         {
-            if (!visited.Add(Fingerprint(issuer)))
-                return PdfSignatureChainStatus.UntrustedRoot;   // already on this search's frontier
+            // On THIS path, not the whole search: path length and name constraints depend on the path that
+            // reached a certificate, so a refusal there says nothing of another path to it. Marked for the
+            // search, a decoy path that reached the genuine issuer by a longer route and failed its path
+            // length left the issuer "already visited" for the genuine one. The shared budget bounds the
+            // search instead.
+            string fingerprint = Fingerprint(issuer);
+            if (!visited.Add(fingerprint))
+                return PdfSignatureChainStatus.UntrustedRoot;   // already on this path: a cycle
+            try
+            {
+                return TryVisitedIssuer(current, issuer, intermediates, certStore, trustAnchors, validationTime,
+                    leafRole, visited, budget, warnings, path, anchored);
+            }
+            finally
+            {
+                visited.Remove(fingerprint);
+            }
+        }
 
+        /// <summary><see cref="TryIssuer"/>'s checks of an issuer the path has not visited.</summary>
+        private static PdfSignatureChainStatus TryVisitedIssuer(
+            X509Certificate current,
+            X509Certificate issuer,
+            int intermediates,
+            IStore<X509Certificate>? certStore,
+            IEnumerable<X509Certificate>? trustAnchors,
+            DateTime validationTime,
+            string leafRole,
+            HashSet<string> visited,
+            int[] budget,
+            List<string> warnings,
+            List<X509Certificate> path,
+            List<X509Certificate> anchored)
+        {
             if (!CheckValidity(issuer, validationTime, "Issuer", warnings))
                 return PdfSignatureChainStatus.Invalid;
             if (!CheckCaConstraints(issuer, intermediates, warnings))
@@ -443,6 +476,57 @@ namespace Tetitulz.Pdf.Signing.Cms
             {
                 path.RemoveAt(path.Count - 1);
             }
+        }
+
+        /// <summary>
+        /// <paramref name="candidates"/> in the order the search tries them: the relying party's own anchors first,
+        /// then the bag's certificates whose subject key identifier is the one <paramref name="cert"/>'s authority key
+        /// identifier names, then the rest, each group in its own order.
+        /// </summary>
+        /// <remarks>
+        /// The bag is unsigned and its order the sender's, and the search's verification allowance is shared, so a
+        /// bag that put same-named decoys first spent it before the genuine issuer was tried. An anchor is not the
+        /// sender's to forge, and a decoy that does not claim the issuer's key identifier is tried last.
+        /// </remarks>
+        internal static List<X509Certificate> MostLikelyFirst(
+            X509Certificate cert, List<X509Certificate> candidates, IEnumerable<X509Certificate>? trustAnchors)
+        {
+            if (candidates.Count < 2) return candidates;
+            byte[]? wanted = AuthorityKeyIdentifierOf(cert);
+            var anchors = new List<X509Certificate>();
+            var claimed = new List<X509Certificate>();
+            var rest = new List<X509Certificate>();
+            foreach (X509Certificate candidate in candidates)
+            {
+                if (trustAnchors != null && ContainsCert(trustAnchors, candidate)) anchors.Add(candidate);
+                else if (wanted != null && SubjectKeyIdentifierOf(candidate) is byte[] own && own.AsSpan().SequenceEqual(wanted)) claimed.Add(candidate);
+                else rest.Add(candidate);
+            }
+            anchors.AddRange(claimed);
+            anchors.AddRange(rest);
+            return anchors;
+        }
+
+        private static byte[]? AuthorityKeyIdentifierOf(X509Certificate cert)
+        {
+            try
+            {
+                var value = cert.GetExtensionValue(X509Extensions.AuthorityKeyIdentifier);
+                return value == null ? null
+                    : AuthorityKeyIdentifier.GetInstance(X509ExtensionUtilities.FromExtensionValue(value)).GetKeyIdentifier();
+            }
+            catch (Exception) { return null; }
+        }
+
+        private static byte[]? SubjectKeyIdentifierOf(X509Certificate cert)
+        {
+            try
+            {
+                var value = cert.GetExtensionValue(X509Extensions.SubjectKeyIdentifier);
+                return value == null ? null
+                    : SubjectKeyIdentifier.GetInstance(X509ExtensionUtilities.FromExtensionValue(value)).GetKeyIdentifier();
+            }
+            catch (Exception) { return null; }
         }
 
         /// <summary>Preference order when several candidate paths fail differently.</summary>

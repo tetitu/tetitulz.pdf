@@ -481,6 +481,9 @@ namespace Tetitulz.Pdf.Signing.Timestamping
                 // the first reachable one.
                 if (!gotRevocationData)
                 {
+                    if (HttpCrlUrlCount(subject) > MaxCrlUrlsPerCertificate)
+                        warnings.Add($"Certificate '{subject.SubjectDN}' lists more than {MaxCrlUrlsPerCertificate} " +
+                                     "http(s) CRL distribution points; only the first were tried.");
                     try
                     {
                         var fetch = FetchCrlCore(subject, network, sync, ct);
@@ -586,12 +589,14 @@ namespace Tetitulz.Pdf.Signing.Timestamping
         /// </remarks>
         internal static IEnumerable<Uri> SafeCrlDistributionUrls(X509Certificate cert)
         {
+            LastCrlUrlsCut = null;
             byte[]? crlDpExt = cert.GetExtensionValue(X509Extensions.CrlDistributionPoints)?.GetOctets();
             if (crlDpExt == null) yield break;
 
             CrlDistPoint? dist = ParseCrlDistributionPoints(crlDpExt);
             if (dist == null) yield break;
 
+            int considered = 0;
             foreach (var dp in dist.GetDistributionPoints())
             {
                 var dpName = dp.DistributionPointName;
@@ -607,12 +612,55 @@ namespace Tetitulz.Pdf.Signing.Timestamping
                     if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? crlUri)) continue;
                     if (crlUri.Scheme != Uri.UriSchemeHttps && crlUri.Scheme != Uri.UriSchemeHttp)
                         continue;
+
+                    // The certificate chooses how many it lists, and each from here costs a name resolution
+                    // and a fetch with its own budget in the caller: a few, the way issuers publish them, and
+                    // no more.
+                    if (++considered > MaxCrlUrlsPerCertificate)
+                    {
+                        LastCrlUrlsCut = $"the certificate lists more than {MaxCrlUrlsPerCertificate} http(s) CRL URLs; the rest were not tried.";
+                        yield break;
+                    }
                     if (!PrivateAddressGuard.IsSafeHost(crlUri.DnsSafeHost)) continue;
 
                     yield return crlUri;
                 }
             }
         }
+
+        /// <summary>
+        /// The most CRL distribution-point URIs considered for one certificate — each a name resolution and a
+        /// fetch with its own budget, and a certificate's extension may list any number.
+        /// </summary>
+        internal const int MaxCrlUrlsPerCertificate = 4;
+
+        /// <summary>
+        /// How many http(s) CRL distribution-point URIs <paramref name="cert"/> lists, counted from the extension
+        /// alone — no name is resolved — so a walk can say it tried fewer than the certificate names.
+        /// </summary>
+        internal static int HttpCrlUrlCount(X509Certificate cert)
+        {
+            byte[]? ext = cert.GetExtensionValue(X509Extensions.CrlDistributionPoints)?.GetOctets();
+            CrlDistPoint? dist = ext == null ? null : ParseCrlDistributionPoints(ext);
+            if (dist == null) return 0;
+            int count = 0;
+            foreach (var dp in dist.GetDistributionPoints())
+            {
+                if (dp.DistributionPointName?.Type != DistributionPointName.FullName) continue;
+                foreach (var gn in ((GeneralNames)dp.DistributionPointName.Name).GetNames())
+                    if (gn.TagNo == GeneralName.UniformResourceIdentifier
+                        && Uri.TryCreate(((DerIA5String)gn.Name).GetString(), UriKind.Absolute, out Uri? u)
+                        && (u.Scheme == Uri.UriSchemeHttps || u.Scheme == Uri.UriSchemeHttp))
+                        count++;
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Why the last <see cref="SafeCrlDistributionUrls"/> on this thread stopped before the certificate's last
+        /// URI, or <c>null</c> when it considered them all.
+        /// </summary>
+        [ThreadStatic] internal static string? LastCrlUrlsCut;
 
         /// <summary>
         /// Separate from the iterator above because C# forbids <c>yield</c> inside a <c>try</c>

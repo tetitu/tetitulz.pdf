@@ -403,6 +403,13 @@ namespace Tetitulz.Pdf.Signing
         internal static void FindContentsDelimiters(
             Stream file, long holeStart, long holeEnd, out long contentsStart, out long contentsEnd)
         {
+            // The hole is the file's to name, so it is held to the file before anything is sized from it:
+            // a /ByteRange naming a hole past the end allocated up to 2 GB before the read failed, and a
+            // negative start reached Stream.Position, which throws no PdfException.
+            if (holeStart < 0 || holeEnd > file.Length)
+                throw new PdfSigningException(
+                    "The region excluded by /ByteRange is not inside the file, so the /Contents placeholder " +
+                    "cannot be located.");
             long span = holeEnd - holeStart;
             if (span <= 0 || span > int.MaxValue)
                 throw new PdfSigningException(

@@ -159,4 +159,26 @@ public class CrlDistributionPointFilterTests
     {
         Assert.Empty(DssBuilder.SafeCrlDistributionUrls(SigningTestCrypto.Ca().Cert));
     }
+
+    /// <summary>
+    /// A certificate listing more http(s) distribution points than the cap is tried to the cap, and the cut is said:
+    /// each costs a name resolution and a fetch with its own budget, and the certificate chooses how many it lists.
+    /// The non-http entries before them are not counted, and a certificate at the cap is read whole.
+    /// </summary>
+    [Fact]
+    public void ACertificateListingManyCrlUrls_IsTriedToTheCap_AndSaid()
+    {
+        var many = new List<string> { "ldap://93.184.216.34/cn=CRL" };
+        for (int i = 0; i < DssBuilder.MaxCrlUrlsPerCertificate + 6; i++) many.Add($"https://93.184.216.34/crl{i}.crl");
+        X509Certificate cert = CertWithCrlUrls(many.ToArray());
+
+        Assert.Equal(DssBuilder.MaxCrlUrlsPerCertificate, DssBuilder.SafeCrlDistributionUrls(cert).Count());
+        Assert.NotNull(DssBuilder.LastCrlUrlsCut);
+        Assert.Equal(DssBuilder.MaxCrlUrlsPerCertificate + 6, DssBuilder.HttpCrlUrlCount(cert));
+
+        var atCap = new List<string>();
+        for (int i = 0; i < DssBuilder.MaxCrlUrlsPerCertificate; i++) atCap.Add($"https://93.184.216.34/crl{i}.crl");
+        Assert.Equal(DssBuilder.MaxCrlUrlsPerCertificate, DssBuilder.SafeCrlDistributionUrls(CertWithCrlUrls(atCap.ToArray())).Count());
+        Assert.Null(DssBuilder.LastCrlUrlsCut);
+    }
 }

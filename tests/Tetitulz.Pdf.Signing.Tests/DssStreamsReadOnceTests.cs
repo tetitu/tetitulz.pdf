@@ -46,8 +46,64 @@ public sealed class DssStreamsReadOnceTests
 
         Assert.Equal(PdfRevocationStatus.Good, first);
         Assert.Equal(PdfRevocationStatus.Good, again);
-        Assert.Equal(2L, RevocationChecker.StreamsRead);   // once a check, not once a listing
+        Assert.Equal(1L, RevocationChecker.StreamsRead);   // once a document, not once a listing or a check
         Assert.Equal(1L, RevocationChecker.ParsesMade);    // once a document
+    }
+
+    /// <summary>
+    /// The inventory's /VRI entries naming one list read each stream of it once for the document — each entry
+    /// decoded every stream again once the parser's memo was full, about 1.8 s an entry for twenty 19 MB streams.
+    /// </summary>
+    [Fact]
+    public void AdversarialVriEntriesNamingOneList_DecodeEachStreamOncePerDocument()
+    {
+        var ca = SigningTestCrypto.Ca();
+        const int entries = 40;
+        var vri = new StringBuilder("<<");
+        for (int i = 0; i < entries; i++) vri.Append(" /K").Append(i.ToString("X40")).Append(" << /CRL 5 0 R >>");
+        vri.Append(" >>");
+        var bodies = new List<string>
+        {
+            "<< /Type /Catalog /Pages 2 0 R /DSS 4 0 R >>",
+            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 100 100] >>",
+            "<< /CRLs 5 0 R /VRI " + vri + " >>",
+            "[6 0 R 7 0 R 8 0 R]",
+        };
+        for (int i = 0; i < 3; i++)
+        {
+            byte[] crl = CurrentCrl(ca);
+            bodies.Add("<< /Length " + crl.Length + " >>\nstream\n" + Encoding.Latin1.GetString(crl) + "\nendstream");
+        }
+        using var doc = Open(bodies);
+
+        RevocationChecker.StreamsRead = 0;
+        DssInventoryReader.Read(doc, DateTime.UtcNow);
+
+        Assert.Equal(3L, RevocationChecker.StreamsRead);
+    }
+
+    /// <summary>
+    /// What one document's revocation streams decode to together is bounded: past the budget a stream is not read,
+    /// and the check says so. The control is the same document under the default budget, whose CRL vouches.
+    /// </summary>
+    [Fact]
+    public void RevocationStreamsPastTheDocumentBudget_AreNotRead_AndSaid()
+    {
+        var ca = SigningTestCrypto.Ca();
+        var leaf = SigningTestCrypto.Leaf(ca);
+        byte[] crl = CurrentCrl(ca);
+
+        using (var starved = Document("[5 0 R]", crl, flate: true))
+        {
+            RevocationChecker.LimitReads(starved, crl.Length - 1);
+            var warnings = new List<string>();
+            Assert.Equal(PdfRevocationStatus.NotChecked, RevocationChecker.Check(starved, leaf.Cert, ca.Cert, warnings));
+            Assert.Contains(warnings, w => w.Contains("could not be read", StringComparison.Ordinal));
+        }
+
+        using var fed = Document("[5 0 R]", crl, flate: true);
+        Assert.Equal(PdfRevocationStatus.Good, RevocationChecker.Check(fed, leaf.Cert, ca.Cert, new List<string>()));
     }
 
     /// <summary>The control: a listed CRL that lists the certificate still revokes it.</summary>

@@ -169,31 +169,35 @@ public sealed class CostlyPublicKeyTests
     }
 
     /// <summary>
-    /// A bag of a hundred same-name decoys whose keys do not verify the leaf: the search tries
-    /// <see cref="CertificateChainValidator.MaxIssuerVerifications"/> of them and stops, saying so.
-    /// The control is three decoys before the genuine issuer: four verifications, and trusted.
+    /// A bag of a hundred same-name decoys of an issuer the bag carries, whose keys do not verify the leaf: the search
+    /// tries <see cref="CertificateChainValidator.MaxIssuerVerifications"/> of them and stops, saying so. The control is
+    /// three decoys before the genuine issuer: four verifications, then the issuer's own check under the anchor, and
+    /// trusted. (An issuer that is itself an anchor is tried before the bag — <c>ChainDecoyPathTests</c>.)
     /// </summary>
     [Fact]
     public void AdversarialResolve_ManySameNameDecoys_SpendsOneAllowanceOfVerifications()
     {
         var ca = SigningTestCrypto.Ca();
-        var leaf = SigningTestCrypto.Leaf(ca);
+        var issuing = SigningTestCrypto.IssuedIntermediate(ca, SigningTestCrypto.Keys(), "CN=Costly Issuing CA");
+        var leaf = SigningTestCrypto.Leaf(issuing);
 
         var warnings = new List<string>();
         int before = CertificateChainValidator.IssuerVerifications;
+        var decoys = Decoys(issuing, 100);
+        decoys.Add(issuing.Cert);
         var status = CertificateChainValidator.Resolve(leaf.Cert,
-            CollectionUtilities.CreateStore(Decoys(ca, 100)), new[] { ca.Cert }, DateTime.UtcNow, warnings);
+            CollectionUtilities.CreateStore(decoys), new[] { ca.Cert }, DateTime.UtcNow, warnings);
 
         Assert.NotEqual(PdfSignatureChainStatus.Trusted, status);
         Assert.Equal(CertificateChainValidator.MaxIssuerVerifications, CertificateChainValidator.IssuerVerifications - before);
         Assert.Contains(warnings, w => w.Contains("verifications", StringComparison.Ordinal));
 
-        var bag = Decoys(ca, 3);
-        bag.Add(ca.Cert);
+        var bag = Decoys(issuing, 3);
+        bag.Add(issuing.Cert);
         before = CertificateChainValidator.IssuerVerifications;
         Assert.Equal(PdfSignatureChainStatus.Trusted, CertificateChainValidator.Resolve(leaf.Cert,
             CollectionUtilities.CreateStore(bag), new[] { ca.Cert }, DateTime.UtcNow, new List<string>()));
-        Assert.Equal(4, CertificateChainValidator.IssuerVerifications - before);
+        Assert.Equal(5, CertificateChainValidator.IssuerVerifications - before);
     }
 
     /// <summary>
