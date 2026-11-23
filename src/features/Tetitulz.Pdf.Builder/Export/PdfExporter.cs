@@ -499,6 +499,9 @@ namespace Tetitulz.Pdf.Builder.Export
             public readonly Dictionary<object, DecodedImage?> DecodedImages =
                 new Dictionary<object, DecodedImage?>(Tetitulz.Pdf.Core.Objects.PdfReferenceEquality.Instance);
 
+            /// <summary>The image pixels this export may still decode (<see cref="PdfLimits.MaxImagePixelsPerExport"/>).</summary>
+            public long ImagePixelsLeft = PdfLimits.MaxImagePixelsPerExport;
+
             /// <summary>
             /// Charges <paramref name="blocks"/> to <see cref="KeepMeasureBudget"/>, or, past it, reports once
             /// and answers false — the decision then keeps nothing.
@@ -3325,7 +3328,20 @@ namespace Tetitulz.Pdf.Builder.Export
         {
             if (data == null) return null;
             if (ctx.DecodedImages.TryGetValue(data, out DecodedImage? dec)) return dec;
-            dec = BuilderImageDecoder.Decode(data);
+            // Each picture decodes once, and the export's pictures together are held to one budget of pixels: a
+            // picture past it is not drawn (its alt text stands in), and the cut is said once.
+            dec = ctx.ImagePixelsLeft > 0 ? BuilderImageDecoder.Decode(data) : null;
+            if (dec != null)
+            {
+                ctx.ImagePixelsLeft -= (long)dec.Width * dec.Height;
+                if (ctx.ImagePixelsLeft < 0)
+                {
+                    BuilderDiagnostics.Report(BuilderDiagnosticKind.ImageDecodeFailed,
+                        $"the export's pictures decode to more than {PdfLimits.MaxImagePixelsPerExport:N0} pixels " +
+                        "(PdfLimits.MaxImagePixelsPerExport); the pictures past it are not drawn");
+                    dec = null;
+                }
+            }
             ctx.DecodedImages[data] = dec;
             return dec;
         }

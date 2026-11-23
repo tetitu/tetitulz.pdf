@@ -1235,6 +1235,22 @@ namespace Tetitulz.Pdf.Core.Constants
         /// <summary>Built-in value of <see cref="MaxSpotPlatesPerPage"/>; for a compile-time constant context.</summary>
         public const int DefaultMaxSpotPlatesPerPage = 64;
 
+        /// <summary>
+        /// Most image pixels one Builder export decodes, every picture together — the Builder's own documents and
+        /// the HTML and DOCX converters that export through it. Each picture is decoded once an export and held to
+        /// the authored-image size, and neither bounds how many there are: a page of distinct pictures of a few
+        /// kilobytes each, every one declaring forty megapixels, decodes and compresses each one whole. Past this the
+        /// pictures not yet decoded are not drawn, their alt text standing in, and the cut is reported once.
+        /// </summary>
+        /// <remarks>
+        /// Measured on the shipped build at about 5 ns a pixel, decoded and compressed (a 16-megapixel GIF in
+        /// 80 ms): the default is some ten seconds of decoding, five hundred twelve-megapixel photographs.
+        /// </remarks>
+        public static long MaxImagePixelsPerExport { get; set; } = DefaultMaxImagePixelsPerExport;
+
+        /// <summary>Built-in value of <see cref="MaxImagePixelsPerExport"/>; for a compile-time constant context.</summary>
+        public const long DefaultMaxImagePixelsPerExport = 2_000_000_000;
+
         /// <summary>Maximum vertex count in a mesh shading.</summary>
         public static int MaxMeshVertices { get; set; } = DefaultMaxMeshVertices;
 
@@ -1786,7 +1802,9 @@ namespace Tetitulz.Pdf.Core.Constants
         /// its target again, and a target may itself hold references, so a few kilobytes of SVG —
         /// each level referencing the next twice — ask for 2^n copies: the "billion laughs" of
         /// SVG. Past this, a reference is skipped and reported. Depth alone cannot bound it; the
-        /// count does.
+        /// count does. A marker drawn at a vertex and an SVG document drawn as an <c>&lt;image&gt;</c>
+        /// count as references do: a chain of markers, each marking with the next, multiplies by the
+        /// vertex count at every level.
         /// </summary>
         public static int MaxSvgUseExpansions { get; set; } = DefaultMaxSvgUseExpansions;
 
@@ -1796,7 +1814,8 @@ namespace Tetitulz.Pdf.Core.Constants
         /// <summary>
         /// Most elements one SVG-to-PDF conversion copies through <c>&lt;use&gt;</c>, all references
         /// together: each reference clones its target whole, so <see cref="MaxSvgUseExpansions"/> bounds
-        /// the references and not what each one costs. Past it a reference is skipped and reported.
+        /// the references and not what each one costs. Past it a reference is skipped and reported. A
+        /// marker's content at each vertex it marks and an SVG image's document count too.
         /// </summary>
         /// <remarks>
         /// Measured on the shipped build: a group of 2 000 rectangles referenced 2 000 times — 86 KB
@@ -1942,6 +1961,7 @@ namespace Tetitulz.Pdf.Core.Constants
             MaxCcittPixels = DefaultMaxCcittPixels;
             MaxShadingDimension = DefaultMaxShadingDimension;
             MaxSpotPlatesPerPage = DefaultMaxSpotPlatesPerPage;
+            MaxImagePixelsPerExport = DefaultMaxImagePixelsPerExport;
             MaxMeshVertices = DefaultMaxMeshVertices;
             MaxMeshTrianglesPerBatch = DefaultMaxMeshTrianglesPerBatch;
             MaxJbig2CompositionPixels = DefaultMaxJbig2CompositionPixels;

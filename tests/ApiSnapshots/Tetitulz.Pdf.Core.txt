@@ -279,6 +279,7 @@ Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxIccTagCount : System.Int32 = 10
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxImageDecodeWorkPerPage : System.Int64 = 536870912
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxImageDimension : System.Int32 = 16384
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxImagePixelArea : System.Int64 = 100000000
+Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxImagePixelsPerExport : System.Int64 = 2000000000
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxIndirectReferenceChain : System.Int32 = 64
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxInvisibleGlyphCoverCandidates : System.Int32 = 256
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxJbig2CompositionPixels : System.Int64 = 134217728
@@ -402,6 +403,7 @@ Tetitulz.Pdf.Core.Constants.PdfLimits::MaxIccTagCount : System.Int32 { get; set 
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxImageDecodeWorkPerPage : System.Int64 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxImageDimension : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxImagePixelArea : System.Int64 { get; set }
+Tetitulz.Pdf.Core.Constants.PdfLimits::MaxImagePixelsPerExport : System.Int64 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxIndirectReferenceChain : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxInvisibleGlyphCoverCandidates : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxJbig2CompositionPixels : System.Int64 { get; set }
