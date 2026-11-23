@@ -71,6 +71,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Engines
                 using (var source = new ZipArchive(package, ZipArchiveMode.Read, leaveOpen: true))
                 {
                     RequireOfficePackage(source);
+                    // Each relationships part's owner is found by name; searched for, it was entries × entries.
+                    var parts = PartIndex(source);
 
                     using (var target = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: true))
                     {
@@ -87,7 +89,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Engines
                             using (Stream to = copy.Open())
                             {
                                 if (IsRelationshipsPart(entry.FullName))
-                                    WriteCleanedRelationships(from, to, entry.FullName, IdsNamedOtherThanAsALink(source, entry.FullName));
+                                    WriteCleanedRelationships(from, to, entry.FullName, IdsNamedOtherThanAsALink(parts, entry.FullName));
                                 else from.CopyTo(to);
                             }
                         }
@@ -151,7 +153,26 @@ namespace Tetitulz.Pdf.DocxToPdf.Engines
         private const string MainDocumentType = "/officeDocument";
 
         /// <summary>A ZIP entry's name, or a root relationship's target, as a part name: unescaped, forward slashes, no leading one.</summary>
-        private static string PartName(string name) => Uri.UnescapeDataString(name).Replace('\\', '/').TrimStart('/');
+        private static string PartName(string name)
+        {
+            PartNamesRead++;
+            return Uri.UnescapeDataString(name).Replace('\\', '/').TrimStart('/');
+        }
+
+        /// <summary>Part names this thread has unescaped: the evidence that a clean reads each entry's name a bounded number of times.</summary>
+        [ThreadStatic] internal static long PartNamesRead;
+
+        /// <summary>The package's entries by part name, case folded — the first of a name, as a search in entry order finds it.</summary>
+        private static System.Collections.Generic.Dictionary<string, ZipArchiveEntry> PartIndex(ZipArchive source)
+        {
+            var parts = new System.Collections.Generic.Dictionary<string, ZipArchiveEntry>(StringComparer.OrdinalIgnoreCase);
+            foreach (ZipArchiveEntry e in source.Entries)
+            {
+                string name = PartName(e.FullName);
+                if (!parts.ContainsKey(name)) parts.Add(name, e);
+            }
+            return parts;
+        }
 
         private static XmlReaderSettings HardenedXml() => new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null };
 
@@ -166,7 +187,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Engines
         /// these is fetched as what names it. <c>null</c> when the part cannot be read: then no hyperlink
         /// of it is kept.
         /// </summary>
-        private static System.Collections.Generic.HashSet<string> IdsNamedOtherThanAsALink(ZipArchive source, string relationshipsPart)
+        private static System.Collections.Generic.HashSet<string> IdsNamedOtherThanAsALink(System.Collections.Generic.Dictionary<string, ZipArchiveEntry> parts, string relationshipsPart)
         {
             var ids = new System.Collections.Generic.HashSet<string>(StringComparer.Ordinal);
             string name = PartName(relationshipsPart);
@@ -175,8 +196,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Engines
             string owner = name.Substring(0, folder) + name.Substring(folder + "_rels/".Length, name.Length - folder - "_rels/".Length - ".rels".Length);
             if (owner.Length == 0) return ids;                     // the package's own: no part names its ids
 
-            ZipArchiveEntry part = source.Entries.FirstOrDefault(e => string.Equals(PartName(e.FullName), owner, StringComparison.OrdinalIgnoreCase));
-            if (part == null) return ids;
+            if (!parts.TryGetValue(owner, out ZipArchiveEntry part)) return ids;
             try
             {
                 using (Stream s = part.Open())
