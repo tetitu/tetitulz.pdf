@@ -124,7 +124,7 @@
     -->
     <!-- Also Plugins.HtmlScript (Wave 16), which vendors AngleSharp.Js 1.1.0 (it wants Jint
          [4.15.3, 5.0.0)) - see that plugin's VENDORED.md before moving this pin. -->
-    <PackageVersion Include="Jint" Version="4.18.0" />
+    <PackageVersion Include="Jint" Version="4.18.1" />
     <PackageVersion Include="Nethereum.Web3" Version="6.1.0" />
     <!-- Pinned to 13.0.3 to avoid GHSA-5crp-9r3c-p9vr in older transitive versions. -->
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
