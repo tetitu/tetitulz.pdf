@@ -426,7 +426,7 @@ namespace Tetitulz.Pdf.Base.Rendering
             // The page's image-decoding budget: once spent, no further image is decoded, and the
             // refusal was reported once — a page of a hundred hostile JBIG2 streams is not a hundred
             // stream budgets of work (GAPS.md §7c).
-            if (FormBudget != null && !FormBudget.TryDecodeImage()) return null;
+            if (FormBudget != null && !FormBudget.TryChargeRepeatedImageDecode(stream, (long)w * h)) return null;
 
             // Drawn far smaller than it is stored, a FlateDecode image is decimated as it is
             // inflated — the samples the decimation below would keep, without the whole buffer.

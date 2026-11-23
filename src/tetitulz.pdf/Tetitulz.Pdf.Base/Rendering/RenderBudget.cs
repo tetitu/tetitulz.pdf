@@ -276,6 +276,33 @@ namespace Tetitulz.Pdf.Base.Rendering
             return false;
         }
 
+        private System.Collections.Generic.HashSet<Core.Objects.PdfStream> _decodedImages;
+
+        /// <summary>
+        /// Charges a decode of <paramref name="stream"/>, an image of <paramref name="pixels"/> samples, that this
+        /// page has decoded before — an image the decoded-image cache does not hold (too large, a stencil, drawn at
+        /// a downsampled size) is decoded again at every <c>Do</c>, and a Flate decode spends no codec budget of its
+        /// own — against the page's image-decoding budget, by its pixels. A first decode is the image's own codec's
+        /// to bound, so a page of many distinct images is not refused for their number. False once
+        /// the budget is spent, reported once; the caller draws nothing.
+        /// </summary>
+        internal bool TryChargeRepeatedImageDecode(Core.Objects.PdfStream stream, long pixels)
+        {
+            if (stream == null) return true;
+            _decodedImages ??= new System.Collections.Generic.HashSet<Core.Objects.PdfStream>(Core.Objects.PdfReferenceEquality.Instance);
+            if (_decodedImages.Add(stream)) return TryDecodeImage();
+            try
+            {
+                ImageWork.Tick(Math.Max(1L, pixels));
+                return true;
+            }
+            catch (WorkBudgetExceededException ex) when (ex.Budget == _imageWork)
+            {
+                RefuseImageWork();
+                return false;
+            }
+        }
+
         /// <summary>
         /// Whether <paramref name="ex"/> is the page's image-decoding budget refusing — not a
         /// stream's own — in which case the refusal is recorded and reported once, and the caller

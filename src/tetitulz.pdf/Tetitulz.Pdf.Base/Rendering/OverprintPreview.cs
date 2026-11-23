@@ -151,7 +151,11 @@ namespace Tetitulz.Pdf.Base.Rendering
             byte[] c = plates["Cyan"].Tints, m = plates["Magenta"].Tints, y = plates["Yellow"].Tints, k = plates["Black"].Tints;
             var spotPlates = new List<(byte[] Tints, SKColor[] Appearance)>();
             foreach (string name in spots.Names)
-                spotPlates.Add((plates[name].Tints, Appearance(doc, spots.SpaceOf(name), name)));
+            {
+                // A spot ink past PdfLimits.MaxSpotPlatesPerPage has no plate; RenderPlates reported it.
+                var plate = plates[name];
+                if (plate != null) spotPlates.Add((plate.Tints, Appearance(doc, spots.SpaceOf(name), name)));
+            }
 
             Func<byte, byte, byte, byte, SKColor> pressInks = press?.Session();
             var bitmap = new SKBitmap(w, h, SKColorType.Rgba8888, SKAlphaType.Premul);

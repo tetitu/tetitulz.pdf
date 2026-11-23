@@ -322,6 +322,7 @@ Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxShadingStops : System.Int32 = 3
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxShapeTreeDepth : System.Int32 = 16
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxSignatureCoverageMultiple : System.Int32 = 64
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxSignaturesPerDocument : System.Int32 = 500
+Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxSpotPlatesPerPage : System.Int32 = 64
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxSpreadsheetColumns : System.Int32 = 16384
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxSpreadsheetRows : System.Int32 = 1048576
 Tetitulz.Pdf.Core.Constants.PdfLimits::DefaultMaxStructTreeDepth : System.Int32 = 1000
@@ -444,6 +445,7 @@ Tetitulz.Pdf.Core.Constants.PdfLimits::MaxShadingStops : System.Int32 { get; set
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxShapeTreeDepth : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxSignatureCoverageMultiple : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxSignaturesPerDocument : System.Int32 { get; set }
+Tetitulz.Pdf.Core.Constants.PdfLimits::MaxSpotPlatesPerPage : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxSpreadsheetColumns : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxSpreadsheetRows : System.Int32 { get; set }
 Tetitulz.Pdf.Core.Constants.PdfLimits::MaxStructTreeDepth : System.Int32 { get; set }

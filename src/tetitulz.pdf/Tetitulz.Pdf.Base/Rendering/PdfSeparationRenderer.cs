@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SkiaSharp;
+using Tetitulz.Pdf.Core.Constants;
 using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Base.Rendering
@@ -92,7 +93,11 @@ namespace Tetitulz.Pdf.Base.Rendering
                     var plates = RenderPlates(
                         plate => PdfPageRenderer.RenderPageToBitmap(page, doc, dpi, renderOptions, null, cancellationToken, plate),
                         dpi, out found, output);
-                    foreach (string name in found.Names) plates[name].Display = Display(doc, found.SpaceOf(name), name);
+                    foreach (string name in found.Names)
+                    {
+                        var plate = plates[name];
+                        if (plate != null) plate.Display = Display(doc, found.SpaceOf(name), name);
+                    }
                     return plates;
                 });
             spots = found;
@@ -145,7 +150,14 @@ namespace Tetitulz.Pdf.Base.Rendering
             }
 
             foreach (var colorant in SeparationPlate.Process) Render(colorant);
-            for (int i = 0; i < found.Names.Count; i++) Render(found.Names[i]);
+            // Each spot plate is a whole render of the page and a page-sized plate kept, and the page chooses how
+            // many inks it names: past the cap the rest have no plate, and that is said.
+            int kept = Math.Min(found.Names.Count, Math.Max(0, PdfLimits.MaxSpotPlatesPerPage));
+            for (int i = 0; i < kept; i++) Render(found.Names[i]);
+            if (found.Names.Count > kept)
+                RenderDiagnostics.Report(RenderDiagnosticKind.SpotPlatesCapped,
+                    $"The page names {found.Names.Count} spot inks, more than PdfLimits.MaxSpotPlatesPerPage ({kept}); " +
+                    "the inks past it have no plate of their own.", null);
             spots = found;
             return new PdfSeparations(width, height, SaturatingCast.ToInt(Math.Round(dpi)), plates);
         }

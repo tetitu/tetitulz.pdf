@@ -219,7 +219,14 @@ internal sealed partial class SvgContentWriter
                     res.Set(PdfName.Shading, shadingCat);
 
                     using var fc = new FontCache();
-                    var interp = new ContentStreamInterpreter(ctx, _doc, res, fc) { HiddenOcgs = HiddenOcgs };
+                    // Under the page's budget and the caller's cancellation, as every other interpreter runs: the
+                    // mesh build's bitmap and its pieces' area, the functions it samples, are the page's work.
+                    var interp = new ContentStreamInterpreter(ctx, _doc, res, fc)
+                    {
+                        HiddenOcgs = HiddenOcgs,
+                        FormBudget = Shared?.FormBudget,
+                        CancellationToken = CancellationToken,
+                    };
                     interp.Execute(System.Text.Encoding.ASCII.GetBytes("/S0 " + PdfOperators.ShadingFill));
                 }
 

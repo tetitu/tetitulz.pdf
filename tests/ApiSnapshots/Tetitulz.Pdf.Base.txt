@@ -2289,6 +2289,7 @@ Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::ProofProfileUnsupported : Teti
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::RenderParameterIgnored : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 23
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::RenderResolutionReduced : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 2
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::SeparationApproximated : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 31
+Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::SpotPlatesCapped : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 40
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::TilingPatternDecodeFailed : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 6
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::TilingPatternShaderFailed : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 16
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::TransparencyGroupApproximated : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 3

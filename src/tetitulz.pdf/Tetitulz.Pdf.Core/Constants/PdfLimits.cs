@@ -1225,6 +1225,16 @@ namespace Tetitulz.Pdf.Core.Constants
         /// <summary>Built-in value of <see cref="MaxShadingDimension"/>; for a compile-time constant context.</summary>
         public const int DefaultMaxShadingDimension = 4096;
 
+        /// <summary>
+        /// The most spot-ink plates one page's separations render beside the four process plates: each is a
+        /// whole render of the page and a page-sized plate kept in the result, and a page names as many inks
+        /// as it holds colour spaces, a few dozen bytes each. The inks past it are reported, not rendered.
+        /// </summary>
+        public static int MaxSpotPlatesPerPage { get; set; } = DefaultMaxSpotPlatesPerPage;
+
+        /// <summary>Built-in value of <see cref="MaxSpotPlatesPerPage"/>; for a compile-time constant context.</summary>
+        public const int DefaultMaxSpotPlatesPerPage = 64;
+
         /// <summary>Maximum vertex count in a mesh shading.</summary>
         public static int MaxMeshVertices { get; set; } = DefaultMaxMeshVertices;
 
@@ -1931,6 +1941,7 @@ namespace Tetitulz.Pdf.Core.Constants
             MaxCcittRows = DefaultMaxCcittRows;
             MaxCcittPixels = DefaultMaxCcittPixels;
             MaxShadingDimension = DefaultMaxShadingDimension;
+            MaxSpotPlatesPerPage = DefaultMaxSpotPlatesPerPage;
             MaxMeshVertices = DefaultMaxMeshVertices;
             MaxMeshTrianglesPerBatch = DefaultMaxMeshTrianglesPerBatch;
             MaxJbig2CompositionPixels = DefaultMaxJbig2CompositionPixels;

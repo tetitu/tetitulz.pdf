@@ -389,6 +389,13 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// </summary>
         /// <remarks>Appended last because the API snapshot records numeric enum values.</remarks>
         PaintWorkExceeded,
+
+        /// <summary>
+        /// A separation render named more spot inks than <c>PdfLimits.MaxSpotPlatesPerPage</c>, so the inks past it
+        /// have no plate of their own; reported once a render.
+        /// </summary>
+        /// <remarks>Appended last because the API snapshot records numeric enum values.</remarks>
+        SpotPlatesCapped,
     }
 
     /// <summary>
