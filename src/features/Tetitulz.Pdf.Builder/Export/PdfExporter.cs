@@ -3331,7 +3331,8 @@ namespace Tetitulz.Pdf.Builder.Export
             // Each picture decodes once, and the export's pictures together are held to one budget of pixels: a
             // picture past it is not drawn (its alt text stands in), and the cut is said once.
             dec = ctx.ImagePixelsLeft > 0 ? BuilderImageDecoder.Decode(data) : null;
-            if (dec != null)
+            // A picture the authored-image size refuses is never drawn and is reported by that rule; it spends nothing.
+            if (dec != null && AuthoredImageSize.Refusal(dec.Width, dec.Height) == null)
             {
                 ctx.ImagePixelsLeft -= (long)dec.Width * dec.Height;
                 if (ctx.ImagePixelsLeft < 0)
