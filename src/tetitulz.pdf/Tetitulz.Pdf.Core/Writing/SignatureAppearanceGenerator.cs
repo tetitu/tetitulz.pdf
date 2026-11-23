@@ -28,7 +28,7 @@ namespace Tetitulz.Pdf.Core.Writing
     /// </summary>
     public static class SignatureAppearanceGenerator
     {
-        // ---- Resource names declared in the Form XObject's /Resources ----
+        // ---- Resource names: the font in the appearance's /Resources, the logo in its inner form's ----
         private const string FontResourceName = "F1";
         private const string LogoResourceName = "Im1";
 
@@ -95,7 +95,7 @@ namespace Tetitulz.Pdf.Core.Writing
         ///   A tuple of:
         ///   <list type="bullet">
         ///     <item><term>stream</term><description>The Form XObject PdfStream (already has ObjectNumber set).</description></item>
-        ///     <item><term>sideObjects</term><description>Font and image indirect objects to add to the update.</description></item>
+        ///     <item><term>sideObjects</term><description>Font, image and the logo's inner form: the indirect objects to add to the update.</description></item>
         ///   </list>
         /// </returns>
         public static (PdfStream stream, System.Collections.Generic.List<(int objNum, PdfObject obj)> sideObjects)
@@ -320,16 +320,35 @@ namespace Tetitulz.Pdf.Core.Writing
                 side.Add((imgObjNum, pngStream));
             }
 
+            // ---- The logo's inner form ----
+            // The appearance draws the logo through a form whose own /Resources names the image, and
+            // names that form alone under /XObject: Acrobat does not validate a signature whose
+            // appearance names an image there (SignatureAppearanceImage). The form takes the
+            // appearance's box, and the logo column's placement is its content.
+            int logoFormObjNum = -1;
+            if (imgObjNum > 0)
+            {
+                double logoW = logoColW - LogoMargin * 2;
+                double logoH = h - LogoMargin * 2;
+                string drawLogo =
+                    PdfOperators.Save + "\n" +
+                    string.Format(CultureInfo.InvariantCulture,
+                        "{0} 0 0 {1} {2} {3} " + PdfOperators.ConcatMatrix + "\n",
+                        Fmt(logoW), Fmt(logoH), Fmt(LogoMargin), Fmt(LogoMargin)) +
+                    "/" + LogoResourceName + " " + PdfOperators.InvokeXObject + "\n" +
+                    PdfOperators.Restore + "\n";
+
+                logoFormObjNum = next++;
+                side.Add((logoFormObjNum, SignatureAppearanceImage.InnerForm(
+                    logoFormObjNum, w, h, LogoResourceName, imgObjNum, drawLogo)));
+            }
+
             // ---- Resources dictionary ----
             var resources = new PdfDictionary();
             resources.Set(PdfName.Font, fontResDict);
 
-            if (imgObjNum > 0)
-            {
-                var xobjDict = new PdfDictionary();
-                xobjDict.Set(new PdfName(LogoResourceName), new PdfReference(imgObjNum, 0));
-                resources.Set(PdfName.XObject, xobjDict);
-            }
+            if (logoFormObjNum > 0)
+                resources.Set(PdfName.XObject, SignatureAppearanceImage.AppearanceXObjects(logoFormObjNum));
 
             // One show-text operation, whichever font is in play: a WinAnsi literal string, or the
             // glyph ids of a shaped, bidi-reordered run — Identity-H makes the two-byte codes the
@@ -374,18 +393,9 @@ namespace Tetitulz.Pdf.Core.Writing
                     Fmt(w), Fmt(h));
             }
 
-            // Logo column, inset on the left.
-            if (imgObjNum > 0)
-            {
-                double logoW = logoColW - LogoMargin * 2;
-                double logoH = h - LogoMargin * 2;
-
-                sb.Append(PdfOperators.Save + "\n");
-                sb.AppendFormat("{0} 0 0 {1} {2} {3} " + PdfOperators.ConcatMatrix + "\n",
-                    Fmt(logoW), Fmt(logoH), Fmt(LogoMargin), Fmt(LogoMargin));
-                sb.Append("/" + LogoResourceName + " " + PdfOperators.InvokeXObject + "\n");
-                sb.Append(PdfOperators.Restore + "\n");
-            }
+            // Logo column, inset on the left: the inner form places and draws it.
+            if (logoFormObjNum > 0)
+                sb.Append(SignatureAppearanceImage.Invocation + "\n");
 
             // Text rows, as a block vertically centred in the appearance box.
             double lineH = opts.FontSize + LineSpacing;

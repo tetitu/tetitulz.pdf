@@ -22,6 +22,9 @@ namespace Tetitulz.Pdf.Signing
     /// </summary>
     public sealed class VisualSignatureBuilder
     {
+        /// <summary>The name the image-only stamp's inner form gives the image in its <c>/Resources</c>.</summary>
+        private const string StampImageResourceName = "SigImg";
+
         /// <summary>
         /// Signs a PDF with a visible JPEG image stamp on the specified page.
         /// </summary>
@@ -344,8 +347,9 @@ namespace Tetitulz.Pdf.Signing
                 // Object numbers come off a running counter rather than fixed offsets from
                 // maxObjNum, because the appearance path allocates a number of objects only
                 // SignatureAppearanceGenerator knows (a form, plus a font and its descendants, plus
-                // a logo). For the image-only path the counter hands out +1 image, +2 appearance,
-                // +3 widget, +4 size.
+                // a logo and its inner form). For the image-only path the counter hands out the
+                // image (after a PNG's soft mask), then its inner form, the appearance and the
+                // widget, and /Size is one past the widget.
                 int nextObjNum       = maxObjNum + 1;
                 int catalogObjNum    = SigningHelpers.ObjectNumberOf(trailer[PdfName.Root]);
 
@@ -433,11 +437,19 @@ namespace Tetitulz.Pdf.Signing
                     // 1. Write the image XObject (and a PNG's soft mask).
                     int imageObjNum = WriteStampImage(writer, logoBytes, ref nextObjNum);
 
-                    // 2. Write appearance stream (Form XObject that draws the image)
+                    // 2. The inner form that scales the image over the box and draws it. The
+                    // appearance names this form, never the image: Acrobat does not validate a
+                    // signature whose appearance names an image under /XObject
+                    // (Core.Writing.SignatureAppearanceImage).
+                    int innerFormObjNum = nextObjNum++;
+                    string drawImage = string.Format(CultureInfo.InvariantCulture,
+                        "q {0:F2} 0 0 {1:F2} 0 0 cm /{2} Do Q", width, height, StampImageResourceName);
+                    writer.WriteIndirectObject(innerFormObjNum, 0, SignatureAppearanceImage.InnerForm(
+                        innerFormObjNum, width, height, StampImageResourceName, imageObjNum, drawImage));
+
+                    // 3. The appearance stream: a form XObject that draws the inner form.
                     appearanceObjNum = nextObjNum++;
-                    string apContent = string.Format(CultureInfo.InvariantCulture,
-                        "q {0:F2} 0 0 {1:F2} 0 0 cm /SigImg Do Q", width, height);
-                    byte[] apBytes = Encoding.ASCII.GetBytes(apContent);
+                    byte[] apBytes = Encoding.ASCII.GetBytes(SignatureAppearanceImage.Invocation);
 
                     var apStream = new PdfStream();
                     apStream.Set(PdfName.Type, PdfName.XObject);
@@ -445,11 +457,8 @@ namespace Tetitulz.Pdf.Signing
                     apStream.Set(PdfName.BBox, CreateRectArray(0, 0, width, height));
                     apStream.Set(PdfName.Length, new PdfNumber(apBytes.Length));
 
-                    // Resources for the appearance: reference to the image XObject
                     var apResources = new PdfDictionary();
-                    var xObjectDict = new PdfDictionary();
-                    xObjectDict.Set(new PdfName("SigImg"), new PdfReference(imageObjNum, 0));
-                    apResources.Set(PdfName.XObject, xObjectDict);
+                    apResources.Set(PdfName.XObject, SignatureAppearanceImage.AppearanceXObjects(innerFormObjNum));
                     apStream.Set(PdfName.Resources, apResources);
                     apStream.RawData = apBytes;
 

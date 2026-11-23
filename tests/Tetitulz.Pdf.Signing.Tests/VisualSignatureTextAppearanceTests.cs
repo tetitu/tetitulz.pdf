@@ -61,18 +61,23 @@ public sealed class VisualSignatureTextAppearanceTests
 
     /// <summary>
     /// The control that stops the test above from passing for the wrong reason: the <b>image</b>
-    /// overload, same document, draws the image operator and no text at all. Without it, "the
-    /// appearance contains text" could be true of a builder that ignored the options entirely and
-    /// happened to leave the signer name somewhere in the file.
+    /// overload, same document, draws the image — through the inner form its appearance names —
+    /// and no text at all. Without it, "the appearance contains text" could be true of a builder
+    /// that ignored the options entirely and happened to leave the signer name somewhere in the file.
     /// </summary>
     [Fact]
-    public void TheImageOverloadStillDrawsOnlyTheImage()
+    public void TheImageOverloadDrawsOnlyTheImage_ThroughItsInnerForm()
     {
         byte[] signed = SignWithImage(Jpeg());
 
         string content = AppearanceContent(signed);
-        Assert.Contains("/SigImg Do", content, StringComparison.Ordinal);
-        Assert.DoesNotContain("Tj", content, StringComparison.Ordinal);
+        Assert.Equal("q /SigForm Do Q", content);
+
+        using var doc = PdfDocument.Open(new MemoryStream(signed));
+        var inner = InnerForm(doc);
+        string drawn = Encoding.Latin1.GetString(inner.GetDecodedData());
+        Assert.Equal("q 200.00 0 0 60.00 0 0 cm /SigImg Do Q", drawn);
+        Assert.DoesNotContain("Tj", drawn, StringComparison.Ordinal);
     }
 
     /// <summary>
@@ -691,18 +696,35 @@ public sealed class VisualSignatureTextAppearanceTests
             || raw.Contains("/FontFile3", StringComparison.Ordinal);
     }
 
-    /// <summary>The logo image XObject from the appearance's resources.</summary>
-    private static PdfDictionary LogoXObject(PdfDocument doc)
+    /// <summary>
+    /// The inner form the appearance names under <c>/XObject</c> — the one entry there, a form
+    /// XObject, which draws the image.
+    /// </summary>
+    private static PdfStream InnerForm(PdfDocument doc)
     {
         var resources = doc.ResolveObject(Appearance(doc)[PdfName.Resources]) as PdfDictionary;
         var xobjects = doc.ResolveObject(resources?[PdfName.XObject]) as PdfDictionary;
+        Assert.True(xobjects != null && xobjects.Count == 1,
+            "the appearance should name exactly one XObject, its inner form");
+
+        var form = doc.ResolveObject(xobjects![new PdfName("SigForm")]) as PdfStream;
+        Assert.True(form != null, "the appearance's /SigForm does not resolve to a stream");
+        Assert.Equal("Form", (doc.ResolveObject(form![PdfName.Subtype]) as PdfName)?.Value);
+        return form;
+    }
+
+    /// <summary>The logo image XObject, from the resources of the inner form the appearance names.</summary>
+    private static PdfDictionary LogoXObject(PdfDocument doc)
+    {
+        var resources = doc.ResolveObject(InnerForm(doc)[PdfName.Resources]) as PdfDictionary;
+        var xobjects = doc.ResolveObject(resources?[PdfName.XObject]) as PdfDictionary;
         Assert.True(xobjects != null && xobjects.Count > 0,
-            "the appearance declares no XObject resources, so no logo was embedded");
+            "the inner form declares no XObject resources, so no logo was embedded");
 
         foreach (var entry in xobjects!)
             if (doc.ResolveObject(entry.Value) is PdfStream image) return image;
 
-        throw new Xunit.Sdk.XunitException("the appearance's XObject resource does not resolve");
+        throw new Xunit.Sdk.XunitException("the inner form's XObject resource does not resolve");
     }
 
     /// <summary>A colour-type-6 PNG whose alpha is a function of x.</summary>
