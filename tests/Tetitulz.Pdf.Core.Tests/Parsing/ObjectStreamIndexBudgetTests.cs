@@ -40,7 +40,7 @@ public class ObjectStreamIndexBudgetTests
         try
         {
             PdfLimits.MaxObjStmIndexEntriesRead = 20;
-            PdfLimits.MaxObjStmIndexCacheBytes = 4 * 8; // one index of four entries, eight bytes an entry
+            PdfLimits.MaxObjStmIndexCacheBytes = 4 * 12; // one index of four entries, twelve bytes an entry (offset pair and end)
             PdfParser parser = ParserOver(pdf);
 
             foreach (int n in new[] { 3, 5, 9, 4, 6 })
@@ -71,14 +71,14 @@ public class ObjectStreamIndexBudgetTests
     /// A reader's retained bytes are its index and, when its stream did not keep the decoded body,
     /// that body too — past the document's memo ceiling the reader is the body's only owner. Under a
     /// ceiling of one byte, which the cross-reference stream's decode spends, no object stream keeps
-    /// its body, so each reader is charged more than its four eight-byte entries; under the default
+    /// its body, so each reader is charged more than its four twelve-byte entries; under the default
     /// each is charged its entries alone.
     /// </summary>
     [Fact]
     public void AReaderWhoseStreamDidNotKeepItsBody_IsChargedTheBodyToo()
     {
         byte[] pdf = FourStreamsOfFour();
-        const long entries = 4 * 8;
+        const long entries = 4 * 12;
         try
         {
             PdfLimits.MaxMemoizedDecodedBytesPerDocument = 1;

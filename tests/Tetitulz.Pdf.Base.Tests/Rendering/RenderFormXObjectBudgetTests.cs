@@ -825,6 +825,121 @@ public class RenderFormContentBudgetTests
         finally { PdfLimits.ResetToDefaults(); }
     }
 
+    /// <summary>
+    /// A JPEG 2000 codestream of 82 bytes declares as many pixels as it likes — a blank tile with no
+    /// decomposition levels decodes to its full area, and a bitmap past the render context's cache is
+    /// decoded again at every <c>Do</c> — so each decode charges the page its pixels before it starts.
+    /// Under a page budget of two and a half million pixels, a page of four 1024² images decodes two and
+    /// the page refuses the third, reported once; in both renderers.
+    /// </summary>
+    [Theory]
+    [InlineData("raster")]
+    [InlineData("SVG")]
+    public void APageOfJpxImages_IsBoundedByThePagesImageBudget_AndReportedOnce(string renderer)
+    {
+        byte[] pdf = JpxPagePdf(images: 4, side: 1024);
+        try
+        {
+            PdfLimits.MaxImageDecodeWorkPerPage = 2_500_000;
+
+            var reported = RenderFormXObjectBudgetTests.CaptureDiagnostics(() => Render(renderer, pdf));
+
+            Assert.Equal(1, reported.Count(d => d.Detail != null
+                && d.Detail.IndexOf("PdfLimits.MaxImageDecodeWorkPerPage", StringComparison.Ordinal) >= 0));
+            Assert.DoesNotContain(reported, d => d.Detail != null
+                && d.Detail.IndexOf("the decoder declined", StringComparison.Ordinal) >= 0);
+        }
+        finally { PdfLimits.ResetToDefaults(); }
+    }
+
+    /// <summary>The floor: two such images spend two million of the page's two and a half and are drawn — the blank tile's mid grey.</summary>
+    [Theory]
+    [InlineData("raster")]
+    [InlineData("SVG")]
+    public void TwoJpxImagesInsideThePagesImageBudget_AreDrawn(string renderer)
+    {
+        byte[] pdf = JpxPagePdf(images: 2, side: 1024);
+        try
+        {
+            PdfLimits.MaxImageDecodeWorkPerPage = 2_500_000;
+
+            string svg = null;
+            Tetitulz.Pdf.Base.Rendering.RenderedPage page = null;
+            var reported = RenderFormXObjectBudgetTests.CaptureDiagnostics(() =>
+            {
+                using var ms = new MemoryStream(pdf);
+                if (renderer == "raster") page = PdfOperations.RenderPageToPixels(ms, 0, 72);
+                else svg = PdfOperations.RenderPageToSvg(ms, 0);
+            });
+
+            Assert.DoesNotContain(reported, d => d.Detail != null
+                && d.Detail.IndexOf("PdfLimits.MaxImageDecodeWorkPerPage", StringComparison.Ordinal) >= 0);
+            if (renderer == "raster")
+            {
+                // The first image covers (10, 10)-(50, 50) in a 200 x 100 page; its centre, rows from the top.
+                int at = (100 - 30) * page.Stride + 30 * 4;
+                Assert.InRange(page.Pixels[at], 100, 156);
+            }
+            else
+            {
+                Assert.Equal(2, CountOccurrences(svg, "data:image/png"));
+            }
+        }
+        finally { PdfLimits.ResetToDefaults(); }
+    }
+
+    private static int CountOccurrences(string text, string what)
+    {
+        int count = 0;
+        for (int at = text.IndexOf(what, StringComparison.Ordinal); at >= 0; at = text.IndexOf(what, at + what.Length, StringComparison.Ordinal))
+            count++;
+        return count;
+    }
+
+    /// <summary>
+    /// A page drawing <paramref name="images"/> JPXDecode image XObjects, each its own object holding
+    /// the same raw codestream: one blank <paramref name="side"/>² tile, one 8-bit component, no
+    /// decomposition levels, 64 × 64 code-blocks, one empty packet.
+    /// </summary>
+    private static byte[] JpxPagePdf(int images, int side)
+    {
+        var cs = new List<byte>();
+        void U16(int v) { cs.Add((byte)(v >> 8)); cs.Add((byte)v); }
+        void U32(long v) { U16((int)(v >> 16)); U16((int)(v & 0xFFFF)); }
+        U16(0xFF4F);
+        U16(0xFF51); U16(41); U16(0);
+        U32(side); U32(side); U32(0); U32(0);
+        U32(side); U32(side); U32(0); U32(0);
+        U16(1); cs.Add(7); cs.Add(1); cs.Add(1);
+        U16(0xFF52); U16(12); cs.Add(0x00); cs.Add(0); U16(1); cs.Add(0); cs.Add(0); cs.Add(4); cs.Add(4); cs.Add(0); cs.Add(1);
+        U16(0xFF5C); U16(4); cs.Add(0x40); cs.Add(8 << 3);
+        U16(0xFF90); U16(10); U16(0); U32(12 + 2 + 1); cs.Add(0); cs.Add(1);
+        U16(0xFF93); cs.Add(0x00);
+        U16(0xFFD9);
+        string streamText = Encoding.Latin1.GetString(cs.ToArray());
+
+        var bodies = new List<string>
+        {
+            RenderFormXObjectBudgetTests.Obj(1, "<< /Type /Catalog /Pages 2 0 R >>"),
+            RenderFormXObjectBudgetTests.Obj(2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>"),
+        };
+        var xobjects = new StringBuilder();
+        var content = new StringBuilder();
+        for (int i = 0; i < images; i++)
+        {
+            xobjects.Append("/Im").Append(i).Append(' ').Append(5 + i).Append(" 0 R ");
+            content.Append("q 40 0 0 40 ").Append(10 + 45 * i).Append(" 10 cm /Im").Append(i).Append(" Do Q\n");
+        }
+        bodies.Add(RenderFormXObjectBudgetTests.Obj(3, "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 100] /Contents 4 0 R " +
+                           "/Resources << /XObject << " + xobjects + ">> >> >>"));
+        bodies.Add(RenderFormXObjectBudgetTests.StreamObj(4, "", content.ToString()));
+        for (int i = 0; i < images; i++)
+            bodies.Add(RenderFormXObjectBudgetTests.StreamObj(5 + i,
+                " /Type /XObject /Subtype /Image /Width " + side + " /Height " + side + " /ColorSpace /DeviceGray " +
+                "/BitsPerComponent 8 /Filter /JPXDecode", streamText));
+        return RenderFormXObjectBudgetTests.Assemble(bodies);
+    }
+
     private static void Render(string renderer, byte[] pdf)
     {
         using var ms = new MemoryStream(pdf);

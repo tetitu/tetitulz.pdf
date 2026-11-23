@@ -125,24 +125,26 @@ public sealed class JpxDecoderTests
     /// allocates anything: a 4096x4096x3 codestream of a few hundred bytes — 50 million samples,
     /// 855 MB at the price, inside every other ceiling — is refused with nothing allocated for its
     /// samples (the first tile's tier 1 values alone would be 201 MB); at exactly the price it decodes.
-    /// A reduced decode is charged for the reduced area: the 40x24 grey fixture at one level short
-    /// is 20x12.
+    /// The price is the planes' and the tiles' layouts' (<see cref="JpxTileLayout.BytesPerStructure"/>
+    /// a code-block or precinct-band, held until tier 1). A reduced decode is charged for the reduced
+    /// area: the 40x24 grey fixture at one level short is 20x12.
     /// </summary>
     [Fact]
     public void AdversarialSmallCodestreamDeclaringALargeImage_IsRefusedByTheWorkingSetCeiling_BeforeTier1Allocates()
     {
         byte[] large = J.Concat(J.Soc, J.Siz(4096, 4096, 0, 0, 4096, 4096, 0, 0, new[] { (0x07, 1, 1), (0x07, 1, 1), (0x07, 1, 1) }), J.Cod(), J.QcdNone(),
             J.TilePart(0, 0, Array.Empty<byte>(), new byte[] { 0 }), J.Eoc);
-        long price = 4096L * 4096 * 3 * JpxDecodedImage.WorkingBytesPerSample;
+        long largeStructures = Structures(large);
+        long price = 4096L * 4096 * 3 * JpxDecodedImage.WorkingBytesPerSample + largeStructures * JpxTileLayout.BytesPerStructure;
         byte[] grey = JpxLosslessFixtures.Gray40x24_TwoLevels_Rpcl_ThreeLayers.Codestream;
-        long reducedPrice = 20L * 12 * JpxDecodedImage.WorkingBytesPerSample;
+        long reducedPrice = 20L * 12 * JpxDecodedImage.WorkingBytesPerSample + Structures(grey) * JpxTileLayout.BytesPerStructure;
         try
         {
             PdfLimits.MaxJpxWorkingSetBytes = price - 1;
             long before = GC.GetAllocatedBytesForCurrentThread();
             Assert.False(JpxDecoder.TryDecode(large, 0, out _, out string reason));
             long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
-            Assert.Contains($"50331648 samples at reduction 0 (4096x4096, 3 planes), {price} bytes at {JpxDecodedImage.WorkingBytesPerSample} a sample; PdfLimits.MaxJpxWorkingSetBytes is {price - 1}", reason, StringComparison.Ordinal);
+            Assert.Contains($"50331648 samples at reduction 0 (4096x4096, 3 planes) and {largeStructures} code-blocks and precinct-bands, {price} bytes at {JpxDecodedImage.WorkingBytesPerSample} a sample and {JpxTileLayout.BytesPerStructure} a structure; PdfLimits.MaxJpxWorkingSetBytes is {price - 1}", reason, StringComparison.Ordinal);
             Assert.True(allocated < 16 * 1024 * 1024, $"the refusal allocated {allocated} bytes; tier 1's values alone would be 201 MB");
 
             PdfLimits.MaxJpxWorkingSetBytes = price;
@@ -443,6 +445,20 @@ public sealed class JpxDecoderTests
     /// spans the tile-part from the marker on), so the parser sees a well-formed codestream whose
     /// tiles each carry bytes after their last packet.
     /// </summary>
+    /// <summary>The code-blocks and precinct-bands every tile's layout of <paramref name="codestream"/> holds.</summary>
+    private static long Structures(byte[] codestream)
+    {
+        Assert.True(JpxCodestreamParser.TryParse(codestream, out JpxCodestream cs, out string reason), reason);
+        long structures = 0;
+        foreach (int t in cs.Tiles.Keys)
+        {
+            Assert.True(JpxTileLayout.TryBuild(cs, t, out JpxTileLayout layout, out reason), reason);
+            structures += layout.Structures;
+        }
+        Assert.True(structures > 0);
+        return structures;
+    }
+
     private static byte[] WithBytesAfterEachTilePart(byte[] codestream, int extra)
     {
         var output = new List<byte>();

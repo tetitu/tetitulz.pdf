@@ -86,11 +86,20 @@ namespace Tetitulz.Pdf.Core.Fonts.Type1
         /// Runs <paramref name="charstring"/>, or answers <c>null</c> when it could not be read.
         /// </summary>
         internal static Glyph Run(byte[] charstring, IReadOnlyList<byte[]> subrs)
+            => Run(charstring, subrs, MaxSteps, out _);
+
+        /// <summary>
+        /// As <see cref="Run(byte[], IReadOnlyList{byte[]})"/>, stopping at <paramref name="stepLimit"/>
+        /// operators (at most <see cref="MaxSteps"/>) — what a whole-font or page budget has left — with
+        /// <paramref name="steps"/> the operators it ran, one past the limit when the limit stopped it.
+        /// </summary>
+        internal static Glyph Run(byte[] charstring, IReadOnlyList<byte[]> subrs, int stepLimit, out int steps)
         {
+            steps = 0;
             if (charstring == null) return null;
 
             var glyph = new Glyph();
-            var state = new State { Subrs = subrs, Glyph = glyph };
+            var state = new State { Subrs = subrs, Glyph = glyph, StepLimit = Math.Max(0, Math.Min(stepLimit, MaxSteps)) };
 
             try
             {
@@ -98,11 +107,16 @@ namespace Tetitulz.Pdf.Core.Fonts.Type1
             }
             catch (Exception)
             {
+                steps = state.Steps;
                 return null;
             }
 
+            steps = state.Steps;
             return glyph;
         }
+
+        /// <summary>The most operators one glyph may execute, for a caller sizing what it allows each glyph.</summary>
+        internal static int MaxStepsPerGlyph => MaxSteps;
 
         private sealed class State
         {
@@ -114,6 +128,7 @@ namespace Tetitulz.Pdf.Core.Fonts.Type1
 
             internal double X, Y;
             internal int Steps;
+            internal int StepLimit = MaxSteps;
 
             internal bool Flexing;
             internal readonly List<double> FlexPoints = new List<double>(16);
@@ -129,7 +144,7 @@ namespace Tetitulz.Pdf.Core.Fonts.Type1
             while (i < cs.Length)
             {
                 if (s.Done) return;
-                if (++s.Steps > MaxSteps) throw new InvalidOperationException("charstring too long");
+                if (++s.Steps > s.StepLimit) throw new InvalidOperationException("charstring too long");
 
                 int v = cs[i++];
 

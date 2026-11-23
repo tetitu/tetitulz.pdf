@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using Tetitulz.Pdf.Core.Constants;
+using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Core.Imaging.Jpx
 {
@@ -263,7 +264,30 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
         /// <summary>Code-blocks plus precinct-bands, the count the limit bounds.</summary>
         internal long Structures { get; private set; }
 
-        internal static bool TryBuild(JpxCodestream cs, int tileIndex, out JpxTileLayout layout, out string reason)
+        /// <summary>
+        /// Structures one unit of a decode's work budget pays for as they are made: a unit is a pass
+        /// over <see cref="JpxDecoder.SamplesPerUnit"/> samples, about 30 µs, and a code-block or
+        /// precinct-band with its tag trees about a microsecond. A layout of ordinary code-blocks (64 ×
+        /// 64, or 4 × 4 at the smallest) costs less than the reconstruction share its samples bring;
+        /// one of a code-block and a precinct per sample costs sixteen times it.
+        /// </summary>
+        internal const int StructuresPerUnit = 32;
+
+        /// <summary>
+        /// The memory a structure holds while the decode keeps its tile's layout (a code-block, a
+        /// precinct-band, their tag trees and arrays), measured: a tile of 1 × 1 precincts and
+        /// code-blocks held 1.35 GB for 3.9 million. The working-set check adds it to the planes'.
+        /// </summary>
+        internal const int BytesPerStructure = 344;
+
+        /// <summary>
+        /// The layout of tile <paramref name="tileIndex"/>; false with <paramref name="reason"/> past
+        /// <see cref="PdfLimits.MaxJpxCodeBlocks"/>. <paramref name="budget"/>, when given, is charged
+        /// a unit per <see cref="StructuresPerUnit"/> structures as they are made, so a header declaring
+        /// a structure per sample spends the decode's budget before it has built the tile.
+        /// </summary>
+        internal static bool TryBuild(JpxCodestream cs, int tileIndex, out JpxTileLayout layout, out string reason,
+            WorkBudget budget = null)
         {
             layout = null;
             reason = null;
@@ -306,7 +330,7 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
 
                     var resolution = new JpxResolution(r, res, ppx, ppy, wide, high, xcb, ycb, bands);
                     long precinctBands = wide * high * bands.Length;
-                    if (!Count(ref structures, precinctBands, limit, tileIndex, out reason)) return false;
+                    if (!Count(ref structures, precinctBands, limit, tileIndex, budget, out reason)) return false;
 
                     // The precinct partition in a band's coordinates: the resolution's, halved above r = 0.
                     int bpx = r == 0 ? ppx : ppx - 1, bpy = r == 0 ? ppy : ppy - 1;
@@ -334,7 +358,7 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
                                 long cbx0 = JpxGeometry.FloorDiv(pb.X0, 1L << xcb), cbx1 = JpxGeometry.CeilDiv(pb.X1, 1L << xcb);
                                 long cby0 = JpxGeometry.FloorDiv(pb.Y0, 1L << ycb), cby1 = JpxGeometry.CeilDiv(pb.Y1, 1L << ycb);
                                 long count = (cbx1 - cbx0) * (cby1 - cby0);
-                                if (!Count(ref structures, count, limit, tileIndex, out reason)) return false;
+                                if (!Count(ref structures, count, limit, tileIndex, budget, out reason)) return false;
                                 blocksWide = (int)(cbx1 - cbx0);
                                 blocksHigh = (int)(cby1 - cby0);
                                 blocks = new JpxCodeBlock[count];
@@ -360,7 +384,7 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
             return true;
         }
 
-        private static bool Count(ref long structures, long added, long limit, int tile, out string reason)
+        private static bool Count(ref long structures, long added, long limit, int tile, WorkBudget budget, out string reason)
         {
             reason = null;
             // The addition cannot overflow under the default ceilings: the tile's area was checked by
@@ -368,10 +392,16 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
             // three bands over a precinct grid halved per side stay below 3 × 2^61. A host that
             // raises that limit past about 2^61 re-opens the question; the invariant is the default's magnitude, not this line. (A guard on a
             // negative addition survived mutation — no input reaches it — and was removed.)
+            long before = structures;
             structures += added;
-            if (structures <= limit) return true;
-            reason = $"tile {tile} declares more than {limit} code-blocks and precinct-bands; PdfLimits.MaxJpxCodeBlocks is {limit}";
-            return false;
+            if (structures > limit)
+            {
+                reason = $"tile {tile} declares more than {limit} code-blocks and precinct-bands; PdfLimits.MaxJpxCodeBlocks is {limit}";
+                return false;
+            }
+            // Charged before they are made: the units the running count has crossed.
+            budget?.Tick(structures / StructuresPerUnit - before / StructuresPerUnit);
+            return true;
         }
     }
 }

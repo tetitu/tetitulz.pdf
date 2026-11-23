@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -339,6 +340,12 @@ public sealed class ExternalEngineInputTests
     /// other account's files, where a copy takes its source's mode. The watcher's potency is a sentinel
     /// written after the call, whose event also marks every earlier event as delivered.
     /// </summary>
+    /// <remarks>
+    /// The temporary directory is shared with every test assembly running beside this one, and a watcher
+    /// whose buffer overflows drops events — the sentinel's among them — reporting it only through its
+    /// <c>Error</c> event. An observation that overflowed, or did not see its sentinel, establishes nothing,
+    /// so it is taken again, up to <see cref="WatchAttempts"/> times; a loose PDF seen in any attempt fails.
+    /// </remarks>
     [Fact]
     public void ConvertToBytes_WithAnExternalEngine_LeavesNoPdfInTheTemporaryDirectory()
     {
@@ -349,36 +356,69 @@ public sealed class ExternalEngineInputTests
             File.WriteAllBytes(input, Package());
             var options = new DocxToPdfOptions { Engine = ConversionEngine.LibreOffice, LibreOfficePath = StandInSoffice(dir) };
 
-            string temp = Path.GetTempPath();
-            string sentinel = Path.Combine(temp, "tetitulz-sentinel-" + Guid.NewGuid().ToString("N") + ".pdf");
             var loose = new System.Collections.Concurrent.ConcurrentBag<string>();
-            using var sentinelSeen = new System.Threading.ManualResetEventSlim();
-            using var watcher = new FileSystemWatcher(temp, "*.pdf") { IncludeSubdirectories = false };
-            watcher.Created += (_, e) =>
+            byte[]? pdf = null;
+            var failures = new List<string>();
+            bool observed = false;
+            for (int attempt = 1; attempt <= WatchAttempts && !observed; attempt++)
             {
-                if (string.Equals(e.FullPath, sentinel, StringComparison.OrdinalIgnoreCase)) sentinelSeen.Set();
-                else if (System.Text.RegularExpressions.Regex.IsMatch(e.Name ?? "", "^[0-9a-f]{32}\\.pdf$")) loose.Add(e.Name!);
-            };
-            watcher.EnableRaisingEvents = true;
-
-            byte[] pdf = DocxToPdfConverter.ConvertToBytes(input, options);
-
-            File.WriteAllBytes(sentinel, Array.Empty<byte>());
-            try
-            {
-                Assert.True(sentinelSeen.Wait(TimeSpan.FromSeconds(30)), "The watcher saw the sentinel.");
-            }
-            finally
-            {
-                File.Delete(sentinel);
+                observed = WatchTemporaryDirectory(() => pdf = DocxToPdfConverter.ConvertToBytes(input, options), loose, out string? failure);
+                if (!observed) failures.Add($"attempt {attempt}: {failure}");
             }
 
-            Assert.StartsWith("%PDF-1.4 stand-in", Encoding.ASCII.GetString(pdf), StringComparison.Ordinal);
+            Assert.True(observed, "The watcher saw the sentinel without losing events: " + string.Join("; ", failures));
+            Assert.StartsWith("%PDF-1.4 stand-in", Encoding.ASCII.GetString(pdf!), StringComparison.Ordinal);
             Assert.Empty(loose);
         }
         finally
         {
             Directory.Delete(dir, recursive: true);
+        }
+    }
+
+    /// <summary>How many times the temporary directory is watched before the observation is called failed.</summary>
+    private const int WatchAttempts = 3;
+
+    /// <summary>
+    /// Runs <paramref name="act"/> under a watcher of the temporary directory, adding every engine-named PDF
+    /// (32 hexadecimal digits) created there to <paramref name="loose"/>; true when a sentinel written after
+    /// the act was seen and the watcher reported no lost events, else false with <paramref name="failure"/>.
+    /// </summary>
+    private static bool WatchTemporaryDirectory(Action act, System.Collections.Concurrent.ConcurrentBag<string> loose, out string? failure)
+    {
+        string temp = Path.GetTempPath();
+        string sentinel = Path.Combine(temp, "tetitulz-sentinel-" + Guid.NewGuid().ToString("N") + ".pdf");
+        using var sentinelSeen = new System.Threading.ManualResetEventSlim();
+        Exception? lost = null;
+        using var watcher = new FileSystemWatcher(temp, "*.pdf")
+        {
+            IncludeSubdirectories = false,
+            NotifyFilter = NotifyFilters.FileName,
+            InternalBufferSize = 64 * 1024,
+        };
+        watcher.Created += (_, e) =>
+        {
+            if (string.Equals(e.FullPath, sentinel, StringComparison.OrdinalIgnoreCase)) sentinelSeen.Set();
+            else if (System.Text.RegularExpressions.Regex.IsMatch(e.Name ?? "", "^[0-9a-f]{32}\\.pdf$")) loose.Add(e.Name!);
+        };
+        watcher.Error += (_, e) => lost ??= e.GetException();
+        watcher.EnableRaisingEvents = true;
+
+        act();
+
+        File.WriteAllBytes(sentinel, Array.Empty<byte>());
+        try
+        {
+            bool seen = sentinelSeen.Wait(TimeSpan.FromSeconds(30));
+            Exception? error = System.Threading.Volatile.Read(ref lost);
+            failure = error != null ? "the watcher lost events (" + error.GetType().Name + ": " + error.Message + ")"
+                : !seen ? "the sentinel was not seen within 30 s"
+                : null;
+            return failure == null;
+        }
+        finally
+        {
+            File.Delete(sentinel);
         }
     }
 

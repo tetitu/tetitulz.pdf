@@ -142,11 +142,18 @@ namespace Tetitulz.Pdf.Base.Images
         /// decoder alone reduces; the plugin decodes at native size. A stencil mask is never
         /// reduced: its bits are read by the dictionary's geometry, and thinning a mask by resolution
         /// level is not the nearest-neighbour rule the raw path applies to a stencil.</para>
+        /// <para><c>imageWork</c> is the page's image-decoding budget (<c>RenderBudget.ImageWork</c>),
+        /// or null: the pixels the decode will produce — the SIZ's area at the chosen reduction — are
+        /// charged to it before anything is decoded, as a JBIG2 or CCITT stream charges its pixels,
+        /// so a page drawing one large codestream many times (a decoded bitmap past the render
+        /// context's cache is decoded again at every <c>Do</c>) is refused once the page has spent
+        /// its share. The page's refusal is thrown as its own <c>WorkBudgetExceededException</c>.</para>
         /// </remarks>
         internal static SKBitmap DecodeToBitmap(byte[] data, PdfDictionary imageDict, PdfDocument doc,
             SKAlphaType alphaTypeWithAlpha, out JpxDecodeOutcome outcome,
             IccRenderingIntent graphicsStateIntent = IccRenderingIntents.Default,
-            int targetWidth = 0, int targetHeight = 0, int maxThreads = 0)
+            int targetWidth = 0, int targetHeight = 0, int maxThreads = 0,
+            Core.Util.WorkBudget imageWork = null)
         {
             _lastDecodeError = null;
             _lastDecodeThreads = 0;
@@ -157,6 +164,8 @@ namespace Tetitulz.Pdf.Base.Images
 
             Jp2PdfImageFacts facts = FactsOf(imageDict, doc);
             int reduction = ReductionFor(data, facts, targetWidth, targetHeight);
+            if (imageWork != null && JpxHeader.TryReadImageSize(data, out long nativeWidth, out long nativeHeight, out _))
+                imageWork.Tick(DecodedPixels(nativeWidth, nativeHeight, reduction));
             string reason;
             if (JpxPdfImage.TryDecode(data, facts, IccProfileUsable, reduction, out JpxPdfImage image, out reason, maxThreads))
             {
@@ -223,11 +232,27 @@ namespace Tetitulz.Pdf.Base.Images
         }
 
         /// <summary>
+        /// The pixels a decode <paramref name="reduction"/> resolution levels short of a
+        /// <paramref name="width"/> by <paramref name="height"/> image produces: each level halves
+        /// both sides, rounding up (T.800 B-15), and at least one.
+        /// </summary>
+        internal static long DecodedPixels(long width, long height, int reduction)
+        {
+            for (int r = 0; r < reduction && (width > 1 || height > 1); r++)
+            {
+                width = (width + 1) / 2;
+                height = (height + 1) / 2;
+            }
+            return Math.Max(1, width) * Math.Max(1, height);
+        }
+
+        /// <summary>
         /// The resolution levels to decode short of the codestream's size for a device target (see
         /// <see cref="DecodeToBitmap"/>'s remarks): <see cref="ImageDownsampling.HalvingsFor"/> over
         /// the SIZ's image area — 0 with no target, for a stencil mask, or when the header cannot be
         /// read (the decoder will say why).
         /// </summary>
+
         private static int ReductionFor(byte[] data, Jp2PdfImageFacts facts, int targetWidth, int targetHeight)
         {
             if (targetWidth <= 0 || targetHeight <= 0 || facts.ImageMask) return 0;

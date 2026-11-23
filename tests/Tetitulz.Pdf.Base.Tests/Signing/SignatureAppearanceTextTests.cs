@@ -303,4 +303,120 @@ public sealed class SignatureAppearanceTextTests
         foreach (var ap in new[] { normal, rollover, down })
             Assert.Equal(Hebrew.Length, DrawnGlyphs(Content(ap)).Count);
     }
+
+    // ---------------------------------------------------------------- the logo's inner form
+
+    /// <summary>
+    /// <b>A logo is drawn through an inner form that carries its own <c>/Resources</c></b>, and the
+    /// appearance names that form, never the image: Acrobat Reader does not validate a signature
+    /// whose appearance names an image under <c>/XObject</c> ("Expected a dict object").
+    /// </summary>
+    /// <remarks>
+    /// The inner form places the logo where the appearance placed it — the logo column, inset by
+    /// the margin — inside a box that is the appearance's own, so the stamp renders as before.
+    /// </remarks>
+    [Theory]
+    [InlineData("jpeg")]
+    [InlineData("png")]
+    public void ALogo_IsDrawnThroughAnInnerFormThatCarriesItsOwnResources(string format)
+    {
+        int next = 10;
+        var opts = new SignatureAppearanceOptions { SignerName = "Ada Lovelace", Width = 200, Height = 60 };
+        if (format == "jpeg") opts.LogoJpegBytes = Jpeg(40, 20);
+        else opts.LogoPngBytes = Png(40, 20);
+
+        var (ap, side) = SignatureAppearanceGenerator.Build(opts, ref next);
+        Func<PdfObject, PdfObject> resolve = o => Resolve(o, side);
+
+        Assert.Equal(1, SignatureAppearanceXObjectRule.AssertAndCountImages(ap, resolve));
+
+        string outer = Content(ap);
+        Assert.Contains("q /SigForm Do Q", outer, StringComparison.Ordinal);
+        Assert.DoesNotContain("/Im1", outer, StringComparison.Ordinal);
+
+        var xobjects = (PdfDictionary)resolve(((PdfDictionary)ap[PdfName.Resources])[PdfName.XObject]);
+        var inner = (PdfStream)resolve(xobjects[new PdfName("SigForm")]);
+        Assert.Equal(new double[] { 0, 0, 200, 60 }, Numbers((PdfArray)inner[PdfName.BBox]));
+        Assert.Null(inner[PdfName.Matrix]);
+
+        // The logo column: 30% of the width less a 4 pt margin each side, the height less the same.
+        var place = Regex.Match(Content(inner), @"([\d.]+) 0 0 ([\d.]+) ([\d.]+) ([\d.]+) cm\s+/Im1 Do");
+        Assert.True(place.Success, "the inner form does not place and draw /Im1: " + Content(inner));
+        Assert.Equal(new double[] { 52, 52, 4, 4 },
+            Enumerable.Range(1, 4).Select(i => double.Parse(place.Groups[i].Value, CultureInfo.InvariantCulture)));
+    }
+
+    /// <summary>
+    /// The control beside the test above: a text-only appearance names its font and no XObject at
+    /// all — the shape pyHanko's text appearance has, which Acrobat validates.
+    /// </summary>
+    [Fact]
+    public void ATextOnlyAppearance_NamesAFontAndNoXObject()
+    {
+        int next = 10;
+        var (ap, side) = SignatureAppearanceGenerator.Build(
+            new SignatureAppearanceOptions { SignerName = "Ada Lovelace", Width = 200, Height = 60 }, ref next);
+
+        var resources = (PdfDictionary)ap[PdfName.Resources];
+        Assert.NotNull(resources[PdfName.Font]);
+        Assert.Null(resources[PdfName.XObject]);
+        Assert.Equal(0, SignatureAppearanceXObjectRule.AssertAndCountImages(ap, o => Resolve(o, side)));
+        Assert.DoesNotContain(" Do", Content(ap), StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// <c>BuildAllVariants</c> builds /R and /D through the same <c>Build</c>, so the rollover and
+    /// down appearances draw their logo through an inner form of their own too.
+    /// </summary>
+    [Fact]
+    public void AllVariants_DrawTheLogoThroughAnInnerForm()
+    {
+        int next = 10;
+        var (normal, rollover, down, side) = SignatureAppearanceGenerator.BuildAllVariants(
+            new SignatureAppearanceOptions
+            {
+                SignerName = "Ada Lovelace", LogoJpegBytes = Jpeg(40, 20), Width = 200, Height = 60,
+            },
+            ref next);
+
+        // Each variant's own objects are among the side objects except its form, which is returned.
+        var all = new List<(int objNum, PdfObject obj)>(side)
+        {
+            (normal.ObjectNumber, normal), (rollover.ObjectNumber, rollover), (down.ObjectNumber, down),
+        };
+        foreach (var ap in new[] { normal, rollover, down })
+            Assert.Equal(1, SignatureAppearanceXObjectRule.AssertAndCountImages(ap, o => Resolve(o, all)));
+    }
+
+    private static PdfObject Resolve(PdfObject o, IReadOnlyList<(int objNum, PdfObject obj)> objects)
+    {
+        if (o is not PdfReference r) return o;
+        foreach (var (objNum, obj) in objects)
+            if (objNum == r.ReferenceObjectNumber) return obj;
+        return null;
+    }
+
+    private static double[] Numbers(PdfArray array)
+        => Enumerable.Range(0, array.Count).Select(i => ((PdfNumber)array[i]).DoubleValue).ToArray();
+
+    /// <summary>A baseline JFIF frame header of three components — what the generator reads, not pixels.</summary>
+    private static byte[] Jpeg(int width, int height)
+    {
+        var bytes = new List<byte> { 0xFF, 0xD8 };                          // SOI
+        bytes.AddRange(new byte[] { 0xFF, 0xC0, 0x00, 0x11, 0x08 });        // SOF0, length 17, 8-bit
+        bytes.Add((byte)(height >> 8)); bytes.Add((byte)(height & 0xFF));
+        bytes.Add((byte)(width >> 8));  bytes.Add((byte)(width & 0xFF));
+        bytes.Add(0x03);
+        bytes.AddRange(new byte[] { 0x01, 0x11, 0x00, 0x02, 0x11, 0x01, 0x03, 0x11, 0x01 });
+        bytes.AddRange(new byte[] { 0xFF, 0xD9 });                          // EOI
+        return bytes.ToArray();
+    }
+
+    /// <summary>An opaque red RGB PNG.</summary>
+    private static byte[] Png(int width, int height)
+    {
+        var rgb = new byte[width * height * 3];
+        for (int i = 0; i < rgb.Length; i += 3) rgb[i] = 220;
+        return Tetitulz.Pdf.Base.Rendering.PdfRawImageEncoder.EncodePng(rgb, width, height, 3);
+    }
 }

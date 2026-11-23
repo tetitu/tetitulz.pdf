@@ -141,7 +141,7 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
         internal static bool TryDecodeTile(JpxCodestream cs, int tileIndex, WorkBudget budget, out JpxTileDecode result, out string reason)
         {
             result = null;
-            if (!JpxTileLayout.TryBuild(cs, tileIndex, out JpxTileLayout layout, out reason)) return false;
+            if (!JpxTileLayout.TryBuild(cs, tileIndex, out JpxTileLayout layout, out reason, budget)) return false;
             if (!cs.Tiles.TryGetValue(tileIndex, out JpxTile tile) || tile.Parts.Count == 0)
             {
                 reason = $"tile {tileIndex} has no tile-part";

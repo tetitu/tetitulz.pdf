@@ -222,20 +222,6 @@ namespace Tetitulz.Pdf.Core.Text
         /// </summary>
         private const double FallbackGlyphWidth = 500;
 
-        private static string InterpretTextOperations(List<ContentStreamOperation> operations,
-            Dictionary<string, PdfFont> fonts)
-        {
-            return InterpretTextOperations(operations, fonts, null, null,
-                depth: 0, visited: null, budget: null, cache: null);
-        }
-
-        private static string InterpretTextOperations(List<ContentStreamOperation> operations,
-            Dictionary<string, PdfFont> fonts, PdfDocument document, PdfDictionary resources)
-        {
-            return InterpretTextOperations(operations, fonts, document, resources,
-                depth: 0, visited: null, budget: null, cache: null);
-        }
-
         /// <summary>
         /// Charges <paramref name="cost"/> against the extraction budget.
         /// Returns false — recording the reason on <see cref="LastFormXObjectError"/> — when the

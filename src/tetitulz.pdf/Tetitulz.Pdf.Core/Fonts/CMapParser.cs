@@ -132,6 +132,28 @@ namespace Tetitulz.Pdf.Core.Fonts
         private const int MaxUsecmapDepth = 16;
 
         /// <summary>
+        /// Characters the section scans (<see cref="SectionTokens"/>, <see cref="TryReadHexToken"/>)
+        /// examined looking for a hex string's brackets since the outermost <c>Parse</c> began: the evidence that each search stops at its section's end, so a CMap of unclosed
+        /// hex strings costs its length and not its length times its sections.
+        /// </summary>
+        internal static long LastScanCharactersExamined => _scanCharacters;
+
+        [ThreadStatic] private static long _scanCharacters;
+
+        /// <summary>
+        /// The first <paramref name="c"/> in <paramref name="text"/> from <paramref name="start"/>
+        /// up to <paramref name="limit"/> (exclusive), or -1: a bracket's search never leaves its
+        /// section, since a bracket found past it is discarded anyway.
+        /// </summary>
+        private static int IndexWithin(string text, char c, int start, int limit)
+        {
+            if (start >= limit) return -1;
+            int found = text.IndexOf(c, start, limit - start);
+            _scanCharacters += (found < 0 ? limit : found + 1) - start;
+            return found;
+        }
+
+        /// <summary>
         /// Parses a ToUnicode CMap with full codespace range extraction for variable-length decoding.
         /// </summary>
         public static Dictionary<int, string> Parse(byte[] cmapData, out int maxCodeBytes,
@@ -153,6 +175,7 @@ namespace Tetitulz.Pdf.Core.Fonts
             {
                 LastUsecmapName = null;
                 _lastBudgetError = null;
+                _scanCharacters = 0;
                 // ONE budget for the whole parse, chained usecmap targets included: the per-line
                 // 0x10000 clamp bounds a single range and the line count multiplies it. Created
                 // here rather than per helper so the four range parsers cannot each get a fresh
@@ -395,8 +418,8 @@ namespace Tetitulz.Pdf.Core.Fonts
 
                     if (c == '<')
                     {
-                        int close = text.IndexOf('>', i + 1);
-                        if (close < 0 || close > end) break;
+                        int close = IndexWithin(text, '>', i + 1, end);
+                        if (close < 0) break;
                         yield return (SectionTokenKind.Hex, HexDigits(text, i + 1, close));
                         i = close + 1;
                         continue;
@@ -608,10 +631,10 @@ namespace Tetitulz.Pdf.Core.Fonts
         private static bool TryReadHexToken(string text, ref int pos, int limit, out string token)
         {
             token = null;
-            int lt = text.IndexOf('<', pos);
-            if (lt < 0 || lt >= limit) return false;
-            int gt = text.IndexOf('>', lt + 1);
-            if (gt < 0 || gt >= limit) return false;
+            int lt = IndexWithin(text, '<', pos, limit);
+            if (lt < 0) return false;
+            int gt = IndexWithin(text, '>', lt + 1, limit);
+            if (gt < 0) return false;
             token = HexDigits(text, lt + 1, gt);
             pos = gt + 1;
             return true;

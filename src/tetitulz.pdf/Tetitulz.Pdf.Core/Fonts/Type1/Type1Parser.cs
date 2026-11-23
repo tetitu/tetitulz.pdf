@@ -277,6 +277,9 @@ namespace Tetitulz.Pdf.Core.Fonts.Type1
         //  Pattern: dup I N RD [N bytes] NP  (or |-  instead of RD)
         // ----------------------------------------------------------------
 
+        /// <summary>The fewest bytes a <c>/Subrs</c> entry takes: <c>dup 0 0 RD </c> and <c>NP</c>.</summary>
+        private const int MinSubrEntryBytes = 10;
+
         private static IReadOnlyList<byte[]> ParseSubrs(byte[] decrypted, int lenIV)
         {
             // Find "/Subrs" in the text
@@ -287,9 +290,11 @@ namespace Tetitulz.Pdf.Core.Fonts.Type1
             int p = subrsOff + 6;
             SkipWSBytes(decrypted, ref p);
             if (!ReadIntBytes(decrypted, ref p, out int count) || count <= 0) return Array.Empty<byte[]>();
-            // Every entry takes bytes of the section, so the section's length bounds the count. The
-            // declared count was allocated as it stood: "/Subrs 2000000000 array" asked for 16 GB.
-            count = Math.Min(count, decrypted.Length);
+            // Every entry takes bytes of the section — "dup i n RD " and its "NP", ten at the least —
+            // so the section's length over ten bounds the count; a declared count is never allocated
+            // as it stands ("/Subrs 2000000000 array" would be 16 GB, and one reference a byte of the
+            // section would still be eight times a program of 64 MB).
+            count = Math.Min(count, decrypted.Length / MinSubrEntryBytes + 1);
             SkipToToken(decrypted, ref p, "array");
             p += 5;
 

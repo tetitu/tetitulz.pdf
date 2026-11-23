@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Tetitulz.Pdf.Core.Constants;
 using Tetitulz.Pdf.Core.Fonts.Cff;
 using Tetitulz.Pdf.Core.Util;
 
@@ -71,6 +72,11 @@ namespace Tetitulz.Pdf.Core.Fonts.Type1
             rest.Sort(StringComparer.Ordinal);
             names.AddRange(rest);
 
+            // Every glyph is interpreted and held until the CFF is written, so the per-glyph step cap
+            // bounds one glyph and the glyph count multiplies it: the whole font spends one account
+            // (PdfLimits.MaxCharstringStepsPerFont, as a CFF font's scans do), and the page's
+            // charstring budget too when a page has one open (the SVG renderer's).
+            var account = new CharstringWork.FontAccount();
             var glyphs = new List<Type1CharstringInterpreter.Glyph>(names.Count);
             foreach (string name in names)
             {
@@ -79,9 +85,24 @@ namespace Tetitulz.Pdf.Core.Fonts.Type1
                 // A .notdef the font does not define is still a glyph the CFF must have: index 0
                 // is where a reader lands for anything it cannot map, and an absent one is a font
                 // that cannot answer.
-                Type1CharstringInterpreter.Glyph glyph = charstring == null
-                    ? new Type1CharstringInterpreter.Glyph()
-                    : Type1CharstringInterpreter.Run(charstring, font.Subrs);
+                Type1CharstringInterpreter.Glyph glyph;
+                if (charstring == null)
+                {
+                    glyph = new Type1CharstringInterpreter.Glyph();
+                }
+                else
+                {
+                    int allowed = Math.Min(Type1CharstringInterpreter.MaxStepsPerGlyph, CharstringWork.StepsAllowed(account.Left));
+                    glyph = Type1CharstringInterpreter.Run(charstring, font.Subrs, allowed, out int steps);
+                    account.Spend(steps);
+                    CharstringWork.Charge(steps, allowed);
+                    if (glyph == null && steps > allowed && allowed < Type1CharstringInterpreter.MaxStepsPerGlyph)
+                    {
+                        _lastError = $"the program's charstrings run past the steps a font may spend (PdfLimits.MaxCharstringStepsPerFont, " +
+                                     $"{PdfLimits.MaxCharstringStepsPerFont}) or the page has left, at '{name}' after {glyphs.Count} of {names.Count} glyphs";
+                        return null;
+                    }
+                }
 
                 if (glyph == null)
                 {

@@ -493,6 +493,7 @@ same question. Before writing any of these, use the one implementation:
 | CMS into `/Contents`; **DER** encoding | `SigningHelpers.WriteContents`; `CmsSignatureGenerator.EncodeForContents` |
 | A signature dictionary's text strings (`/Reason`, `/Location`, `/ContactInfo`, a new field's `/T`) — a literal when ASCII, else UTF-16BE hex, never the raw writer's ASCII | `SigningHelpers.TextStringToken` |
 | Add a signature field; list signatures once each | `SignatureFieldRegistration`; `SignatureFieldWalk.DistinctSignatures` |
+| A visible signature's image — drawn through an inner form whose own `/Resources` names it, the appearance's `/Resources /XObject` naming that form alone (Acrobat does not validate a signature whose appearance names an image there: "Expected a dict object") — the image stamp and the text block's logo alike | `Core.Writing.SignatureAppearanceImage` (`InnerForm`, `AppearanceXObjects`, `Invocation`) |
 | `/DSS` revision; superseded object number | `PdfLtvRefresher.DssRevision`; `SigningHelpers.ObjectNumberOf` |
 | Signature ordering / certification rules | `SignatureOrdering` over `DocMdpAnalyzer`; `DocMdpAnalyzer.FindCertification` |
 | Signature timestamp imprint | `Signing/Timestamping/SignatureTimestamp` |

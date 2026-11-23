@@ -30,6 +30,16 @@ namespace Tetitulz.Pdf.Core.Text
     /// </summary>
     public sealed class ContentStreamParser
     {
+        /// <summary>The default of <see cref="MaxInlineImageBytes"/>: 256 MiB.</summary>
+        internal const int DefaultMaxInlineImageBytes = 256 * 1024 * 1024;
+
+        /// <summary>
+        /// The most bytes an inline image's data is scanned for its <c>EI</c> before the parse is
+        /// refused with a <see cref="PdfParseException"/>. Process-global, read at each parse; a test
+        /// that lowers it restores <see cref="DefaultMaxInlineImageBytes"/> in a <c>finally</c>.
+        /// </summary>
+        internal static int MaxInlineImageBytes { get; set; } = DefaultMaxInlineImageBytes;
+
         // ISO-8859-1 (Latin-1) round-trips raw PDF string bytes 1:1.  Cache one instance —
         // Encoding.GetEncoding does a provider lookup, and a content stream can hold many
         // literal-string operands, so re-resolving it per token is wasteful.
@@ -402,12 +412,10 @@ namespace Tetitulz.Pdf.Core.Text
                     return new ContentStreamOperation(PdfOperators.BeginInlineImage, new PdfObject[] { exactStream });
             }
 
-            // 3b. Read raw pixel bytes until the sequence (whitespace)(E)(I).
-            // Defence-in-depth: cap inline-image bytes at 256 MiB.  A PDF
-            // content stream with BI ... ID ... (no valid EI marker) and
-            // gigabytes of binary data would otherwise drive the scanner
-            // until EOF, pinning memory in the process.
-            const int MaxInlineImageBytes = 256 * 1024 * 1024;
+            // 3b. Read raw pixel bytes until the sequence (whitespace)(E)(I), at most
+            // MaxInlineImageBytes of them: a PDF content stream with BI ... ID ... (no valid EI
+            // marker) and gigabytes of binary data would otherwise drive the scanner until EOF,
+            // pinning memory in the process.
             // Scanned over `data` directly rather than one tokenizer read per byte.
             //
             // `tokenizer.ReadRawBytes(pos, 1)` per byte would allocate a `byte[1]` AND save, seek
@@ -432,10 +440,10 @@ namespace Tetitulz.Pdf.Core.Text
 
             for (; scan < limit; scan++)
             {
-                // Defence-in-depth: cap inline-image bytes at 256 MiB. A content stream with
-                // BI ... ID ... and no valid EI marker would otherwise scan to EOF.
+                // A content stream with BI ... ID ... and no valid EI marker would otherwise scan to
+                // EOF. A refusal of the file's own content, so a PdfException, as every caller expects.
                 if (scan - scanStart > MaxInlineImageBytes)
-                    throw new System.IO.InvalidDataException(
+                    throw new PdfParseException(
                         $"Inline image exceeds {MaxInlineImageBytes} bytes without EI terminator");
 
                 int cur = data[scan];
