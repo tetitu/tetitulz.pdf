@@ -190,7 +190,10 @@ namespace Tetitulz.Pdf.Plugins.Conformance
                         Visit(kvp.Value, depth + 1);
                     }
             }
-            foreach (var kvp in doc.Parser.EnumerateAllObjects())
+            // An object that does not parse is not an absent one: a file specification associated only from it
+            // would read as unassociated, so the check says it was partial.
+            int unreadable = 0;
+            foreach (var kvp in doc.Parser.EnumerateAllObjects((number, ex) => unreadable++))
             {
                 Visit(kvp.Value, 0);
                 if (nodes > MaxLimitWalkNodes)
@@ -199,6 +202,8 @@ namespace Tetitulz.Pdf.Plugins.Conformance
                     break;
                 }
             }
+            if (unreadable > 0)
+                ReportPartial($"The A67 association check could not read {unreadable.ToString(CultureInfo.InvariantCulture)} object(s).", "A67");
             return found;
         }
 
