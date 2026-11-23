@@ -29,10 +29,10 @@
       2026-08-04, which is what made the library Windows-only in practice; macOS was already
       arriving transitively, so Linux was the sole real gap.
     -->
-    <PackageVersion Include="SkiaSharp" Version="4.156.1" />
-    <PackageVersion Include="SkiaSharp.NativeAssets.Win32" Version="4.156.1" />
-    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="4.156.1" />
-    <PackageVersion Include="SkiaSharp.NativeAssets.macOS" Version="4.156.1" />
+    <PackageVersion Include="SkiaSharp" Version="4.157.0" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Win32" Version="4.157.0" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="4.157.0" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.macOS" Version="4.157.0" />
     <!--
       DO NOT ADD HARFBUZZ BACK, and in particular not "to support Arabic/Hebrew". SkiaSharp.HarfBuzz
       and HarfBuzzSharp.NativeAssets.{Linux,macOS} were removed on 2026-08-07 along with their only
