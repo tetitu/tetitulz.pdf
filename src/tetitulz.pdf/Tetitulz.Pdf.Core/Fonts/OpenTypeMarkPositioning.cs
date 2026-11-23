@@ -108,6 +108,22 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// <summary>Lookup positions examined on the calling thread: the evidence for <see cref="MaxExaminationsPerGlyph"/>.</summary>
         [System.ThreadStatic] internal static long PositionsExamined;
 
+        /// <summary>
+        /// Context and chained-context rules tried on the calling thread. Each is one of
+        /// <see cref="MaxSteps"/>, as a subtable trial and a ligature are: a rule set may list
+        /// 65 535 rules (all naming one), and uncounted they would multiply the rule count into
+        /// every step.
+        /// </summary>
+        [System.ThreadStatic] internal static long RulesTried;
+
+        /// <summary>Counts one context rule against the run's steps; false once the run has none left.</summary>
+        private static bool MayTryRule(Run run)
+        {
+            if (++run.Steps > MaxSteps) return false;
+            RulesTried++;
+            return true;
+        }
+
         private readonly byte[] _d;
         private readonly int _classDef;
         private int _markAttachClassDef = -1;         // GDEF's mark-attachment class definition, or -1
@@ -1093,6 +1109,7 @@ namespace Tetitulz.Pdf.Core.Fonts
                     int rules = RuleSet(r, sub, sub + 4, CoverageIndex(r, r.Offset(sub, sub + 2), first));
                     for (int k = 0, n = rules < 0 ? 0 : r.U16(rules); k < n; k++)
                     {
+                        if (!MayTryRule(run)) return false;
                         int rule = r.Offset(rules, rules + 2 + 2 * k);
                         int glyphCount = r.U16(rule), recordCount = r.U16(rule + 2);
                         if (rule < 0 || glyphCount <= 0 || recordCount < 0) continue;
@@ -1112,6 +1129,7 @@ namespace Tetitulz.Pdf.Core.Fonts
                     int rules = RuleSet(r, sub, sub + 6, ClassOf(r, classDef, first));
                     for (int k = 0, n = rules < 0 ? 0 : r.U16(rules); k < n; k++)
                     {
+                        if (!MayTryRule(run)) return false;
                         int rule = r.Offset(rules, rules + 2 + 2 * k);
                         int glyphCount = r.U16(rule), recordCount = r.U16(rule + 2);
                         if (rule < 0 || glyphCount <= 0 || recordCount < 0) continue;
@@ -1169,6 +1187,7 @@ namespace Tetitulz.Pdf.Core.Fonts
                 // lookahead count and values, record count and records.
                 for (int k = 0, n = rules < 0 ? 0 : r.U16(rules); k < n; k++)
                 {
+                    if (!MayTryRule(run)) return false;
                     int rule = r.Offset(rules, rules + 2 + 2 * k);
                     if (rule < 0) continue;
                     int backtrackCount = r.U16(rule);
@@ -1244,6 +1263,9 @@ namespace Tetitulz.Pdf.Core.Fonts
                                    int records, int recordCount, bool firstChecked = true)
         {
             if (!r.InRange(records, 4 * recordCount)) return false;
+            // The input's glyphs are distinct positions from i on: a sequence longer than what is
+            // left of the run cannot match, and is refused before its positions are allocated.
+            if (inputCount > run.Glyphs.Length - i) return false;
             var positions = new int[inputCount];
             int at = i;
             for (int k = 0; k < inputCount; k++)
