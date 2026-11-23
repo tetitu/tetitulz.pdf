@@ -250,10 +250,10 @@ namespace Tetitulz.Pdf.Base.Operations
             /// </summary>
             public Dictionary<string, XmlElement> ElementsById;
 
-            /// <summary><c>&lt;use&gt;</c> references expanded so far, against <see cref="PdfLimits.MaxSvgUseExpansions"/>.</summary>
+            /// <summary>Subtrees drawn again so far — <c>&lt;use&gt;</c> references, markers at their vertices, SVG images — against <see cref="PdfLimits.MaxSvgUseExpansions"/>.</summary>
             public int UseExpansions;
 
-            /// <summary>Elements those references copied, all together, against <see cref="PdfLimits.MaxSvgUseExpandedElements"/>.</summary>
+            /// <summary>Elements those drawings processed, all together, against <see cref="PdfLimits.MaxSvgUseExpandedElements"/>.</summary>
             public long UseExpandedElements;
 
             /// <summary>
@@ -1155,6 +1155,8 @@ namespace Tetitulz.Pdf.Base.Operations
             if (width != null) root.SetAttribute("width", width); else root.RemoveAttribute("width");
             if (height != null) root.SetAttribute("height", height); else root.RemoveAttribute("height");
             if (image.HasAttribute("preserveAspectRatio")) root.SetAttribute("preserveAspectRatio", image.GetAttribute("preserveAspectRatio"));
+            // Each such image is its own document drawn whole, charged as a reference's copy is.
+            if (!ChargeRedraw(root, "SVG images", "each draws its document whole", ctx)) return;
             foreach (var pair in IndexIds(root))
                 if (!ctx.ElementsById.ContainsKey(pair.Key)) ctx.ElementsById.Add(pair.Key, pair.Value);
             image.AppendChild(root);
@@ -1349,6 +1351,12 @@ namespace Tetitulz.Pdf.Base.Operations
             {
                 ctx.MarkersBeingDrawn.Remove(marker);
                 ReportOnce($"markers nested more than {PdfLimits.MaxTreeDepth} deep are not drawn");
+                return;
+            }
+            // Drawn again at every vertex it marks, its content charged as a reference's copy is.
+            if (!ChargeRedraw(marker, "markers drawn", "each draws its content whole", ctx))
+            {
+                ctx.MarkersBeingDrawn.Remove(marker);
                 return;
             }
             ctx.MarkerDepth++;
@@ -3244,25 +3252,7 @@ namespace Tetitulz.Pdf.Base.Operations
                     ReportOnce($"<use> of '{href}' was skipped: it refers to an element that contains it");
                     return;
                 }
-            if (++ctx.UseExpansions > PdfLimits.MaxSvgUseExpansions)
-            {
-                ReportOnce($"<use> references past {PdfLimits.MaxSvgUseExpansions} were skipped: each draws " +
-                           "its target again, and a chain of them multiplies");
-                return;
-            }
-            // Charged the elements it copies, before the copy: the count above bounds the references
-            // and not their size, and a group of 2 000 rectangles referenced 2 000 times was 8 GB.
-            long room = PdfLimits.MaxSvgUseExpandedElements - ctx.UseExpandedElements;
-            long size = ElementCount(target, room);
-            if (size > room)
-            {
-                // Spent: a later reference to the same target would count it again, up to the room.
-                ctx.UseExpandedElements = PdfLimits.MaxSvgUseExpandedElements;
-                ReportOnce($"<use> references past {PdfLimits.MaxSvgUseExpandedElements} copied elements were skipped: " +
-                           "each copies its target whole");
-                return;
-            }
-            ctx.UseExpandedElements += size;
+            if (!ChargeRedraw(target, "<use> references", "each copies its target whole", ctx)) return;
 
             float x = TryParseAttrF(node, "x", 0f, ctx), y = TryParseAttrF(node, "y", 0f, ctx);
             var placed = Transform.Multiply(xform, new Transform(1, 0, 0, 1, x, y));
@@ -3270,6 +3260,40 @@ namespace Tetitulz.Pdf.Base.Operations
             use.AppendChild(copy);
             try { ProcessNode(copy, sb, ctx, placed, depth + 1); }
             finally { use.RemoveChild(copy); }
+        }
+
+        /// <summary>
+        /// Charges one more drawing of <paramref name="target"/>'s subtree — a <c>&lt;use&gt;</c> reference's copy, a
+        /// marker's content at each vertex it marks, an SVG image's document — against
+        /// <see cref="PdfLimits.MaxSvgUseExpansions"/> drawings and <see cref="PdfLimits.MaxSvgUseExpandedElements"/>
+        /// elements, all of them together. False, reported once in <paramref name="what"/>'s words, once either is spent;
+        /// the caller draws nothing.
+        /// </summary>
+        /// <remarks>
+        /// Each drawing processes its subtree again, and a subtree may itself draw others: references double at every
+        /// level of a chain, and a marker whose content marks with the next marker multiplies by the vertex count at
+        /// every level. The count bounds the drawings and the elements bound what each costs — a group of 2 000
+        /// rectangles referenced 2 000 times was 8 GB.
+        /// </remarks>
+        private static bool ChargeRedraw(XmlNode target, string what, string eachCopies, ConvertContext ctx)
+        {
+            if (++ctx.UseExpansions > PdfLimits.MaxSvgUseExpansions)
+            {
+                ReportOnce($"{what} past {PdfLimits.MaxSvgUseExpansions} were skipped: each draws " +
+                           "its target again, and a chain of them multiplies");
+                return false;
+            }
+            long room = PdfLimits.MaxSvgUseExpandedElements - ctx.UseExpandedElements;
+            long size = ElementCount(target, room);
+            if (size > room)
+            {
+                // Spent: a later drawing of the same target would count it again, up to the room.
+                ctx.UseExpandedElements = PdfLimits.MaxSvgUseExpandedElements;
+                ReportOnce($"{what} past {PdfLimits.MaxSvgUseExpandedElements} copied elements were skipped: " + eachCopies);
+                return false;
+            }
+            ctx.UseExpandedElements += size;
+            return true;
         }
 
         /// <summary>The elements of <paramref name="root"/>'s subtree, itself included, counted no further than one past <paramref name="limit"/>.</summary>
