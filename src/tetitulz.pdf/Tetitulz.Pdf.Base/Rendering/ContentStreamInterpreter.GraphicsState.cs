@@ -611,7 +611,7 @@ namespace Tetitulz.Pdf.Base.Rendering
                     full.Erase(new SKColor(outside, outside, outside, outside));
                     using (var fullCanvas = new SKCanvas(full))
                     using (var copy = new SKPaint { BlendMode = SKBlendMode.Src })
-                        fullCanvas.DrawBitmap(groupBitmap, maskOffsetX, maskOffsetY, copy);
+                        fullCanvas.DrawBitmap(groupBitmap, maskOffsetX, maskOffsetY, SKSamplingOptions.Default, copy);
                     groupBitmap.Dispose();
                     groupBitmap = full;
                     maskOffsetX = 0;
