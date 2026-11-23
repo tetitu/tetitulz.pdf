@@ -299,20 +299,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking
             Dictionary<string, string> map = ctx.RoleMap;
             if (map.Count == 0) return role;
 
-            var seen = new HashSet<string>(StringComparer.Ordinal);
-            string current = role;
-
-            while (seen.Add(current) && map.TryGetValue(current, out string next))
-            {
-                // A null target is an entry whose value was not a name — PdfRoleMap keeps it so
-                // UA13 can report it. There is nothing to follow, and Dictionary.TryGetValue(null)
-                // throws, so the chain ends here.
-                if (next == null) break;
-                if (IsStandardRole(next)) return next;
-                current = next;
-            }
-
-            return role;
+            // Every chain through the map is walked once, its result kept for each role on it: an element
+            // asked for its role again, or a role a chain passed through, is answered from that.
+            var (result, standard) = Chain(map, role);
+            return result == RoleChainResult.Standard ? standard : role;
         }
 
         /// <summary>
@@ -367,17 +357,49 @@ namespace Tetitulz.Pdf.Accessibility.Checking
         private enum RoleChainResult { Standard, Unresolved, Cycle }
 
         private static RoleChainResult ResolveRoleChain(Dictionary<string, string> rolemap, string role)
-        {
-            var seen = new HashSet<string>(StringComparer.Ordinal);
-            string current = role;
+            => Chain(rolemap, role).Result;
 
-            while (true)
+        /// <summary>The chains already walked through each role map, by the role each passed through.</summary>
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Dictionary<string, string>, Dictionary<string, (RoleChainResult Result, string Standard)>>
+            RoleChains = new System.Runtime.CompilerServices.ConditionalWeakTable<Dictionary<string, string>, Dictionary<string, (RoleChainResult Result, string Standard)>>();
+
+        /// <summary>
+        /// How many chain steps this thread has taken, all role maps together: the evidence that each chain is walked
+        /// once. A test reads the difference across one check.
+        /// </summary>
+        [ThreadStatic] internal static long RoleChainSteps;
+
+        /// <summary>
+        /// Where <paramref name="role"/>'s chain through <paramref name="rolemap"/> ends — a standard type (and which),
+        /// a role the map does not name or names as nothing, or a cycle — followed with no hop cap, each role the walk
+        /// passes given the same answer. One chain R0 → R1 → … → RN asked from each of its N entries is then N steps,
+        /// not N² ÷ 2.
+        /// </summary>
+        private static (RoleChainResult Result, string Standard) Chain(Dictionary<string, string> rolemap, string role)
+        {
+            if (role == null) return (RoleChainResult.Unresolved, null);
+            if (IsStandardRole(role)) return (RoleChainResult.Standard, role);
+            var known = RoleChains.GetValue(rolemap, _ => new Dictionary<string, (RoleChainResult, string)>(StringComparer.Ordinal));
+            lock (known)
             {
-                if (current == null) return RoleChainResult.Unresolved;
-                if (IsStandardRole(current)) return RoleChainResult.Standard;
-                if (!seen.Add(current)) return RoleChainResult.Cycle;
-                if (!rolemap.TryGetValue(current, out string next)) return RoleChainResult.Unresolved;
-                current = next;
+                if (known.TryGetValue(role, out var answer)) return answer;
+
+                var path = new List<string>();
+                var onPath = new HashSet<string>(StringComparer.Ordinal);
+                string current = role;
+                while (true)
+                {
+                    RoleChainSteps++;
+                    if (current == null) { answer = (RoleChainResult.Unresolved, null); break; }
+                    if (IsStandardRole(current)) { answer = (RoleChainResult.Standard, current); break; }
+                    if (known.TryGetValue(current, out answer)) break;
+                    if (!onPath.Add(current)) { answer = (RoleChainResult.Cycle, null); break; }
+                    path.Add(current);
+                    if (!rolemap.TryGetValue(current, out string next)) { answer = (RoleChainResult.Unresolved, null); break; }
+                    current = next;
+                }
+                foreach (string passed in path) known[passed] = answer;
+                return answer;
             }
         }
 
