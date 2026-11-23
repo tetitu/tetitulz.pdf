@@ -195,16 +195,15 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             var vRaw   = new List<VRuling>();
             var images = new List<ImageBbox>();
 
-            // One aggregate budget per page, charged per content walk. The depth cap bounds one
+            // One aggregate budget per page, charged per content walk and by each form's decoded content. The depth cap bounds one
             // branch and never the number of branches: a form that draws another ten times, eight
             // levels deep, is 10^8 walks under a cap of 8 — the same product PdfStructuredTextExtractor
             // bounds with this same limit.
-            var budget = new WalkBudget(PdfLimits.MaxFormXObjectInvocationsPerPage);
+            var budget = new FormContentBudget();
             Walk(ContentStreamParser.Parse(content), page.Resources, doc, hRaw, vRaw, images, 0,
                  budget: budget);
             if (budget.Exhausted)
-                LastError = $"Page {pageIndex + 1}: form-XObject invocations exceeded " +
-                            $"{PdfLimits.MaxFormXObjectInvocationsPerPage}; the page's graphics are partial.";
+                LastError = budget.Shortfall(pageIndex, "the page's graphics are partial.");
 
             return new PdfPageGraphics(pageIndex, MergeH(hRaw), MergeV(vRaw), images);
         }
@@ -222,7 +221,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             List<ImageBbox> imgOut,
             int depth,
             Gs initialGs = null,
-            WalkBudget budget = null,
+            FormContentBudget budget = null,
             HashSet<int> visited = null)
         {
             if (depth > MaxXObjectDepth)
@@ -233,7 +232,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
 
             // Charged before the work, once per walk, so the aggregate is bounded even where every
             // branch is short.
-            if (budget != null && !budget.Take()) return;
+            if (budget != null && !budget.TakeInvocation()) return;
 
             var gsStack = new Stack<Gs>();
             // A form starts in the state at its Do with its /Matrix composed in (§8.10.1).
@@ -439,7 +438,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
         private static void HandleDo(
             string name, PdfDictionary resources, PdfDocument doc, Gs gs,
             List<HRuling> hOut, List<VRuling> vOut, List<ImageBbox> imgOut, int depth,
-            WalkBudget budget, HashSet<int> visited)
+            FormContentBudget budget, HashSet<int> visited)
         {
             var cat = resources?[PdfName.XObject];
             if (cat == null) return;
@@ -492,8 +491,10 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
                 {
                     // `cg` was built above and then not passed, so every ruling and image inside a
                     // form came out in form space — the same defect PdfStructuredTextExtractor had.
-                    Walk(ContentStreamParser.Parse(data), res, doc, hOut, vOut, imgOut, depth + 1, cg,
-                         budget, visited);
+                    // Charged its decoded length and parsed once a page (FormContentBudget).
+                    var formOps = budget != null ? budget.Operations(data) : ContentStreamParser.Parse(data);
+                    if (formOps == null) return;   // the page's form content is spent; the page's report says so
+                    Walk(formOps, res, doc, hOut, vOut, imgOut, depth + 1, cg, budget, visited);
                 }
                 finally
                 {

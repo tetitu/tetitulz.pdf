@@ -57,6 +57,9 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// <summary>Entries currently held — for tests and diagnostics.</summary>
         internal int Count => _map?.Count ?? 0;
 
+        /// <summary>How many times <see cref="GetOrParse"/> parsed rather than answered from the cache — for tests.</summary>
+        internal int Parses { get; private set; }
+
         /// <summary>
         /// Returns the parsed operations for <paramref name="data"/>, parsing on first use.
         /// Never returns null; the result is shared and must not be modified.
@@ -68,6 +71,7 @@ namespace Tetitulz.Pdf.Base.Rendering
             if (_map != null && _map.TryGetValue(data, out var hit)) return hit;
 
             var ops = ContentStreamParser.Parse(data);
+            Parses++;
 
             // Charge the graph, not the source bytes: the parsed form is what is retained, and it
             // runs tens of times the size of the stream it came from.

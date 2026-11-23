@@ -199,20 +199,18 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
 
             using var fontCache = new Rendering.FontCache();
 
-            // One aggregate budget per page, charged per form invocation. The depth cap and the
-            // branch-scoped visited set each bound one dimension and neither bounds the product —
-            // see PdfLimits.MaxFormXObjectInvocationsPerPage for the doubling chain that defeats
-            // both. WalkBudget rather than WorkBudget: extraction returns a partial page and says
-            // so on LastError, it does not abort the document.
-            var formBudget = new WalkBudget(PdfLimits.MaxFormXObjectInvocationsPerPage);
+            // One aggregate budget per page, charged per form invocation and by each invocation's decoded
+            // content (FormContentBudget). The depth cap and the branch-scoped visited set each bound one
+            // dimension and neither bounds the product — see PdfLimits.MaxFormXObjectInvocationsPerPage for
+            // the doubling chain that defeats both. Refused rather than thrown: extraction returns a partial
+            // page and says so on LastError, it does not abort the document.
+            var formBudget = new FormContentBudget();
             if (ops.Count > 0) InterpretOps(ops, page.Resources, doc, chars, fontCache, budget: formBudget);
             if (opts.IncludeAnnotationAppearances) AppendAnnotationText(page, doc, pageIndex, chars, fontCache, formBudget);
 
             if (formBudget.Exhausted)
-                LastError =
-                    $"Page {pageIndex + 1}: form-XObject invocations exceeded " +
-                    $"{PdfLimits.MaxFormXObjectInvocationsPerPage:N0}; the remaining forms were " +
-                    "not walked and the extracted text for this page is incomplete.";
+                LastError = formBudget.Shortfall(pageIndex,
+                    "the remaining forms were not walked and the extracted text for this page is incomplete.");
 
             DropInvisibleCopies(chars);
             DropOverlappingDuplicates(chars, drawn);
@@ -241,8 +239,9 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             LastError = null;
             var chars = new List<PdfTextChar>();
             using var fontCache = new Rendering.FontCache();
-            var budget = new WalkBudget(PdfLimits.MaxFormXObjectInvocationsPerPage);
+            var budget = new FormContentBudget();
             AppendAnnotationText(doc.Pages[pageIndex], doc, pageIndex, chars, fontCache, budget);
+            LastError ??= budget.Shortfall(pageIndex, "the remaining appearances were not read.");
             DropInvisibleCopies(chars);
             return BuildLines(chars, WordAssemblyOptions.Default);
         }
@@ -256,7 +255,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
         /// onto <c>/Rect</c> as they fit it, its text in page space.
         /// </summary>
         private static void AppendAnnotationText(PdfPage page, PdfDocument doc, int pageIndex,
-                                                 List<PdfTextChar> chars, Rendering.FontCache fontCache, WalkBudget budget)
+                                                 List<PdfTextChar> chars, Rendering.FontCache fontCache, FormContentBudget budget)
         {
             var annotsObj = page.Dictionary[PdfName.Annots];
             if (annotsObj == null) return;
@@ -385,7 +384,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             Rendering.FontCache fontCache,
             int depth = 0,
             HashSet<int> visited = null,
-            WalkBudget budget = null,
+            FormContentBudget budget = null,
             int streamObj = 0,
             TextGs initialGs = null,
             int inheritedMcid = -1,
@@ -873,14 +872,14 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             string name, PdfDictionary resources, PdfDocument doc,
             TextGs parentGs, List<PdfTextChar> output,
             Rendering.FontCache fontCache,
-            int depth, HashSet<int> visited, WalkBudget budget = null,
+            int depth, HashSet<int> visited, FormContentBudget budget = null,
             int enclosingMcid = -1, int enclosingMcidStream = 0)
         {
             // Charged before the work, once per invocation, so the aggregate is bounded even
             // where every path is short and no form repeats on its own branch. Returning here
             // leaves budget.Exhausted set, which ExtractPage turns into a LastError naming the
             // page as incomplete — a silent truncation would be worse than the hang.
-            if (budget != null && !budget.Take()) return;
+            if (budget != null && !budget.TakeInvocation()) return;
 
             var cat = resources?[PdfName.XObject];
             if (cat == null) return;
@@ -907,7 +906,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
         private static void RunFormStream(
             PdfStream formStream, string what, PdfDictionary formRes, PdfDocument doc,
             TextGs parentGs, List<PdfTextChar> output, Rendering.FontCache fontCache,
-            int depth, HashSet<int> visited, WalkBudget budget,
+            int depth, HashSet<int> visited, FormContentBudget budget,
             int enclosingMcid = -1, int enclosingMcidStream = 0)
         {
             // The cycle half of the guard. The depth cap alone bounds the stack but still walks the
@@ -932,7 +931,10 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
                 return;
             }
 
-            var ops = ContentStreamParser.Parse(data);
+            // Charged its decoded length, as the renderers charge a form's content: the invocation count
+            // alone bounds nothing a form's size chooses. Parsed once a page however often it is drawn.
+            var ops = budget != null ? budget.Operations(data) : ContentStreamParser.Parse(data);
+            if (ops == null) return;   // the page's form content is spent; the page's report says so
             var childGs = parentGs.Clone();
             if (formStream[PdfName.OC] != null
                 && Rendering.ContentStreamInterpreter.IsOcEntryHidden(formStream[PdfName.OC], childGs.HiddenLayers.Value, doc))
