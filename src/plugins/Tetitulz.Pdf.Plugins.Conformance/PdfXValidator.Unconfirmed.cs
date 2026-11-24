@@ -10,13 +10,11 @@ using Tetitulz.Pdf.Core.Objects;
 
 namespace Tetitulz.Pdf.Plugins.Conformance
 {
-    /// <summary>
-    /// Findings no public source settles (GAPS.md §12b): what ISO 15930 says of them is in the parts
-    /// that are not available, so a check written from recollection could fail a conforming file or
-    /// pass a broken one. Each is reported on <see cref="PdfXValidationResult.Informational"/> — the
-    /// file holds this, and the rule about it was not read — and never affects
-    /// <see cref="PdfXValidationResult.IsConforming"/>.
-    /// </summary>
+    // Findings no public source settles (GAPS.md §12b): what ISO 15930 says of them is in the parts
+    // that are not available, so a check written from recollection could fail a conforming file or
+    // pass a broken one. Each is reported on PdfXValidationResult.Informational — the
+    // file holds this, and the rule about it was not read — and never affects
+    // PdfXValidationResult.IsConforming.
     public static partial class PdfXValidator
     {
         /// <summary>

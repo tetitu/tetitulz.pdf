@@ -15,33 +15,29 @@ using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Plugins.Maintenance
 {
-    /// <summary>
-    /// <see cref="OptimizationOptions.MergeImageStrips"/>: a run of image strips drawn edge to edge
-    /// becomes one image (GAPS §19h).
-    /// </summary>
-    /// <remarks>
-    /// <para><b>What a strip is.</b> Exactly <c>q a 0 0 d e f cm /Name Do Q</c> — four operations, nothing
-    /// between them — with <c>a</c> and <c>d</c> positive and the shears zero: an upright image at a
-    /// known place. Printer drivers that rasterise a page emit one such group per band, dozens or
-    /// hundreds of them, each with its own image object and dictionary; the bands are the picture.</para>
-    /// <para><b>What a run is.</b> Four or more consecutive strips that share the
-    /// left edge <c>e</c> and the width <c>a</c>, each stacked directly on the one before — the next
-    /// one's top edge is this one's bottom, or the reverse — whose images share the pixel width, 8 bits
-    /// a component and a <c>/DeviceGray</c> or <c>/DeviceRGB</c> colour space, carry no mask,
-    /// <c>/Decode</c>, <c>/Alternates</c> or optional content, come under lossless filters (a JPEG strip
-    /// re-encoded losslessly would grow, and the merge promises to lose nothing), and are each drawn at
-    /// the run's scale — the pixel rows per point are the same for every strip, so the merged image is
-    /// not stretched anywhere. The order in the file is not the stacking order: the strips are sorted
-    /// by their top edge, since image space's first row is the top.</para>
-    /// <para><b>What is written.</b> One Flate-encoded image of the strips' samples in stacking order,
-    /// under a resource name the page's <c>/XObject</c> dictionary does not have, and one group in the
-    /// place of the run: <c>q a 0 0 D e F cm /Name Do Q</c> with <c>D</c> the summed height and <c>F</c>
-    /// the lowest bottom. The page's content comes out as one stream (an array is concatenated, as
-    /// <see cref="ConcatenateContentStreams"/> does, with the same refusal of a fragment another page
-    /// draws). The strips' images stay in the object map; the ones nothing else draws fall to the
-    /// unreachable-object pass. A page holding an inline image is left alone, like every other content
-    /// rewrite here: the tokenizer refuses the stream.</para>
-    /// </remarks>
+    // OptimizationOptions.MergeImageStrips: a run of image strips drawn edge to edge
+    // becomes one image (GAPS §19h).
+    // What a strip is. Exactly q a 0 0 d e f cm /Name Do Q — four operations, nothing
+    // between them — with a and d positive and the shears zero: an upright image at a
+    // known place. Printer drivers that rasterise a page emit one such group per band, dozens or
+    // hundreds of them, each with its own image object and dictionary; the bands are the picture.
+    // What a run is. Four or more consecutive strips that share the
+    // left edge e and the width a, each stacked directly on the one before — the next
+    // one's top edge is this one's bottom, or the reverse — whose images share the pixel width, 8 bits
+    // a component and a /DeviceGray or /DeviceRGB colour space, carry no mask,
+    // /Decode, /Alternates or optional content, come under lossless filters (a JPEG strip
+    // re-encoded losslessly would grow, and the merge promises to lose nothing), and are each drawn at
+    // the run's scale — the pixel rows per point are the same for every strip, so the merged image is
+    // not stretched anywhere. The order in the file is not the stacking order: the strips are sorted
+    // by their top edge, since image space's first row is the top.
+    // What is written. One Flate-encoded image of the strips' samples in stacking order,
+    // under a resource name the page's /XObject dictionary does not have, and one group in the
+    // place of the run: q a 0 0 D e F cm /Name Do Q with D the summed height and F
+    // the lowest bottom. The page's content comes out as one stream (an array is concatenated, as
+    // ConcatenateContentStreams does, with the same refusal of a fragment another page
+    // draws). The strips' images stay in the object map; the ones nothing else draws fall to the
+    // unreachable-object pass. A page holding an inline image is left alone, like every other content
+    // rewrite here: the tokenizer refuses the stream.
     public static partial class PdfOptimizer
     {
         /// <summary>The fewest strips a run merges; fewer saves little and risks a seam.</summary>

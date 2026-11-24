@@ -11,27 +11,23 @@ using Tetitulz.Pdf.Core.Objects;
 
 namespace Tetitulz.Pdf.Plugins.Conformance
 {
-    /// <summary>
-    /// PDF/X-6 (ISO 15930-9:2020), checked in part. The standard was not available; three public sources
-    /// were, and each check names the one it rests on:
-    /// <list type="bullet">
-    ///   <item>the standard's preview (§6.1–6.2, normative): "PDF/X-6 is a restricted subset of PDF 2.0
-    ///     … These features shall be used as prescribed in ISO 32000-2", and deprecated features "should
-    ///     not appear";</item>
-    ///   <item>the ISO TC 130 task force's <i>Application Notes for PDF/X-6</i> (APTech, 2022), which
-    ///     lists what changed from PDF/X-4: page-level output intents, annotations, forms and
-    ///     signatures, actions, black-point compensation, DPart;</item>
-    ///   <item>ISO 32000-2, whose requirements §6.1 makes PDF/X-6's.</item>
-    /// </list>
-    /// <para><b>Violations</b> are only what those state: PDF 2.0 (X12), a GTS_PDFX output intent for the
-    /// document or for every page (X02), no XFA (X28), ISO 32000-2's own optional content entries (X13).
-    /// <b>Informational</b>, never affecting <see cref="PdfXValidationResult.IsConforming"/>: X29, which
-    /// says what was not read; X-4's other rules, run and reported under their own codes as carried from
-    /// X-4 — the Notes list what changed, not every rule that stayed; X26 and X27; and the deprecated
-    /// features. X-4's rules the Notes say changed (actions X07, annotations X24, page intents X25), and
-    /// those whose X-4 reading cannot be X-6's (X03's version string, X10's <c>/Info</c>, which PDF 2.0
-    /// deprecates, X11 and X08 against one document-level intent), are not run.</para>
-    /// </summary>
+    // PDF/X-6 (ISO 15930-9:2020), checked in part. The standard was not available; three public sources
+    // were, and each check names the one it rests on:
+    //   - the standard's preview (§6.1–6.2, normative): "PDF/X-6 is a restricted subset of PDF 2.0
+    //     … These features shall be used as prescribed in ISO 32000-2", and deprecated features "should
+    //     not appear";
+    //   - the ISO TC 130 task force's Application Notes for PDF/X-6 (APTech, 2022), which
+    //     lists what changed from PDF/X-4: page-level output intents, annotations, forms and
+    //     signatures, actions, black-point compensation, DPart;
+    //   - ISO 32000-2, whose requirements §6.1 makes PDF/X-6's.
+    // Violations are only what those state: PDF 2.0 (X12), a GTS_PDFX output intent for the
+    // document or for every page (X02), no XFA (X28), ISO 32000-2's own optional content entries (X13).
+    // Informational, never affecting PdfXValidationResult.IsConforming: X29, which
+    // says what was not read; X-4's other rules, run and reported under their own codes as carried from
+    // X-4 — the Notes list what changed, not every rule that stayed; X26 and X27; and the deprecated
+    // features. X-4's rules the Notes say changed (actions X07, annotations X24, page intents X25), and
+    // those whose X-4 reading cannot be X-6's (X03's version string, X10's /Info, which PDF 2.0
+    // deprecates, X11 and X08 against one document-level intent), are not run.
     public static partial class PdfXValidator
     {
         /// <summary>The prefix of an X-4 rule's finding carried to X-6 as informational.</summary>

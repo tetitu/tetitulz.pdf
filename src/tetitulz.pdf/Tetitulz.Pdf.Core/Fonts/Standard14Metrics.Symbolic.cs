@@ -7,34 +7,32 @@ using Tetitulz.Pdf.Core.Constants;
 
 namespace Tetitulz.Pdf.Core.Fonts
 {
-    /// <summary>
-    /// The AFM metrics of <c>Symbol</c> and <c>ZapfDingbats</c> — the two Standard-14 fonts whose
-    /// encoding is their own (ISO 32000-1 §9.6.6.4: "always use their built-in encoding"), so a
-    /// Unicode-keyed table of the kind the twelve Latin faces have cannot carry them.
-    ///
-    /// <para><b>Stated as the AFM states them: code, glyph name, width.</b> The built-in encoding IS
-    /// the AFM's <c>C</c> column, so keying by code is not the transcription hazard the class
-    /// header warns about for the Latin faces — there, the tables are keyed by Unicode and the
-    /// AFM by StandardEncoding code, and the two disagree. Here there is no second key to disagree
-    /// with. A code of −1 (an unencoded glyph) does not occur in either font.</para>
-    ///
-    /// <para><b>Three lookups, one table each.</b> By code, for a byte shown through the built-in
-    /// encoding (a <c>/Symbol</c> font with no <c>/Widths</c>, PostScript's <c>show</c>); by glyph
-    /// name, for a <c>/Differences</c> entry; and by Unicode, through the Adobe Glyph List, for a
-    /// caller that has already resolved its code to a character — the reader's
-    /// <c>PdfSimpleFont.GetWidth</c> holds characters, not names. The Unicode map is derived from
-    /// the name map at first use, so the three can never disagree.</para>
-    ///
-    /// <para><b>Provenance.</b> The widths were read through the URW clones
-    /// (StandardSymbolsPS, Dingbats), which are metric-compatible with Adobe's Symbol and
-    /// ZapfDingbats by design, one <c>stringwidth</c> per encoded code at size 1000 — and spot-checked
-    /// against the published AFMs (Symbol: alpha 631, Omega 768, universal 713; ZapfDingbats: a1
-    /// 974, a191 918). 190 and 202 glyphs, the AFMs' own counts.</para>
-    ///
-    /// <para>Without them <c>GetWidthByUnicode</c> would answer 0 for every character, so a
-    /// <c>/Symbol</c> font with no <c>/Widths</c> would render at <c>/MissingWidth</c> — every glyph
-    /// on one point — and the PostScript plugin's <c>show</c> advance its pen by nothing.</para>
-    /// </summary>
+    // The AFM metrics of Symbol and ZapfDingbats — the two Standard-14 fonts whose
+    // encoding is their own (ISO 32000-1 §9.6.6.4: "always use their built-in encoding"), so a
+    // Unicode-keyed table of the kind the twelve Latin faces have cannot carry them.
+    //
+    // Stated as the AFM states them: code, glyph name, width. The built-in encoding IS
+    // the AFM's C column, so keying by code is not the transcription hazard the class
+    // header warns about for the Latin faces — there, the tables are keyed by Unicode and the
+    // AFM by StandardEncoding code, and the two disagree. Here there is no second key to disagree
+    // with. A code of −1 (an unencoded glyph) does not occur in either font.
+    //
+    // Three lookups, one table each. By code, for a byte shown through the built-in
+    // encoding (a /Symbol font with no /Widths, PostScript's show); by glyph
+    // name, for a /Differences entry; and by Unicode, through the Adobe Glyph List, for a
+    // caller that has already resolved its code to a character — the reader's
+    // PdfSimpleFont.GetWidth holds characters, not names. The Unicode map is derived from
+    // the name map at first use, so the three can never disagree.
+    //
+    // Provenance. The widths were read through the URW clones
+    // (StandardSymbolsPS, Dingbats), which are metric-compatible with Adobe's Symbol and
+    // ZapfDingbats by design, one stringwidth per encoded code at size 1000 — and spot-checked
+    // against the published AFMs (Symbol: alpha 631, Omega 768, universal 713; ZapfDingbats: a1
+    // 974, a191 918). 190 and 202 glyphs, the AFMs' own counts.
+    //
+    // Without them GetWidthByUnicode would answer 0 for every character, so a
+    // /Symbol font with no /Widths would render at /MissingWidth — every glyph
+    // on one point — and the PostScript plugin's show advance its pen by nothing.
     public static partial class Standard14Metrics
     {
         /// <summary>

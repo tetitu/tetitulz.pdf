@@ -11,24 +11,20 @@ using Tetitulz.Pdf.Core.Text;
 
 namespace Tetitulz.Pdf.Base.Operations.Documents
 {
-    /// <summary>
-    /// The reflowing half of find-and-replace — GAPS.md §19d — sharing this engine's glyph walk,
-    /// erasure and font resolution, and differing in what it draws back.
-    /// </summary>
-    /// <remarks>
-    /// <para><b>Why this is in the same engine and not a second one.</b> Locating text, deciding
-    /// whether a span can be edited, erasing it and embedding a font for what replaces it are the
-    /// same problems whether or not the paragraph is re-broken. A second copy of that walk is the
-    /// divergence this repository keeps finding defects in. What genuinely differs is one step —
-    /// the replacement is laid out over several lines instead of one — and that is what this file
-    /// holds.</para>
-    ///
-    /// <para><b>The contract is not this engine's, which is why the entry point is not either.</b>
-    /// <see cref="PdfTextReflow"/> is the public face, with its own options and its own result,
-    /// because reflow gives up the guarantee that makes <see cref="ReplaceText"/> safe: text the
-    /// caller did not name <i>does</i> move. A caller has to choose that knowingly, and an overload
-    /// on the same class would let them arrive at it by autocomplete.</para>
-    /// </remarks>
+    // The reflowing half of find-and-replace — GAPS.md §19d — sharing this engine's glyph walk,
+    // erasure and font resolution, and differing in what it draws back.
+    // Why this is in the same engine and not a second one. Locating text, deciding
+    // whether a span can be edited, erasing it and embedding a font for what replaces it are the
+    // same problems whether or not the paragraph is re-broken. A second copy of that walk is the
+    // divergence this repository keeps finding defects in. What genuinely differs is one step —
+    // the replacement is laid out over several lines instead of one — and that is what this file
+    // holds.
+    //
+    // The contract is not this engine's, which is why the entry point is not either.
+    // PdfTextReflow is the public face, with its own options and its own result,
+    // because reflow gives up the guarantee that makes ReplaceText safe: text the
+    // caller did not name does move. A caller has to choose that knowingly, and an overload
+    // on the same class would let them arrive at it by autocomplete.
     public static partial class PdfTemplateEngine
     {
         /// <summary>
