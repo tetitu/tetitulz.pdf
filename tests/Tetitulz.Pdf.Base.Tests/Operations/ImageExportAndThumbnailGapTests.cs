@@ -82,7 +82,6 @@ public sealed class ImageExportAndThumbnailGapTests
     //  PdfImageExporter — /ColorSpace is read, not guessed from the byte count
     // ================================================================
 
-    [Fact]
     /// <summary>
     /// A DeviceCMYK image exported as PNG must go through the subtractive conversion. The exporter
     /// derived its component count as <c>decoded.Length / (w*h)</c>, never read
@@ -90,6 +89,7 @@ public sealed class ImageExportAndThumbnailGapTests
     /// (C=255, M=Y=K=0) came out as pure RED, a colour negative returned successfully with
     /// MimeType "image/png" and no diagnostic.
     /// </summary>
+    [Fact]
     public void ExtractImage_DeviceCmyk_ConvertsSubtractivelyInsteadOfCopyingCmyAsRgb()
     {
         byte[] cyan = new byte[2 * 2 * 4];
@@ -102,12 +102,12 @@ public sealed class ImageExportAndThumbnailGapTests
         AssertColor(ExportedPixel(pdf), 0, 255, 255, "a pure-cyan CMYK sample");
     }
 
-    [Fact]
     /// <summary>
     /// An <c>/Indexed</c> image carries one palette INDEX per pixel. Byte-count guessing returned
     /// 1 component, treated the indices as grey levels and exported a 16-colour logo as a
     /// near-black smear.
     /// </summary>
+    [Fact]
     public void ExtractImage_IndexedColorSpace_ResolvesThePaletteInsteadOfShowingIndicesAsGrey()
     {
         // Palette: entry 0 = red, entry 1 = green. Samples: index 1 everywhere.
@@ -118,8 +118,8 @@ public sealed class ImageExportAndThumbnailGapTests
         AssertColor(ExportedPixel(pdf), 0, 255, 0, "palette entry 1");
     }
 
-    [Fact]
     /// <summary>Grey and RGB, the two the predecessor happened to get right, must not regress.</summary>
+    [Fact]
     public void ExtractImage_DeviceGrayAndRgb_AreUnchanged()
     {
         byte[] grey = { 0x40, 0x40, 0x40, 0x40 };
@@ -130,12 +130,12 @@ public sealed class ImageExportAndThumbnailGapTests
             10, 200, 30, "a DeviceRGB sample");
     }
 
-    [Fact]
     /// <summary>
     /// A <c>/Lab</c> image is converted as the renderer draws it. The exporter refused it while it
     /// had a decoder of its own for five colour spaces; it decodes through the renderer now, so
     /// L = 100, a = b = 0 is white. Black is the control: L = 0.
     /// </summary>
+    [Fact]
     public void ExtractImage_Lab_IsConvertedAsTheRendererDrawsIt()
     {
         const string lab = "[/Lab << /WhitePoint [0.9505 1.0 1.089] >>]";
@@ -174,7 +174,6 @@ public sealed class ImageExportAndThumbnailGapTests
         AssertColor(ExportedPixel(pdf), 10, 200, 30, "an sRGB-alternate /ICCBased sample");
     }
 
-    [Fact]
     /// <summary>
     /// A raw sample buffer shorter than <c>/Width</c> × <c>/Height</c> is refused, as the renderer
     /// refuses to draw it, and the complete buffer is the control.
@@ -185,6 +184,7 @@ public sealed class ImageExportAndThumbnailGapTests
     /// it had been: a partial image with black where the data ran out is the plausible-looking wrong
     /// PNG this class's remarks call worse than a refusal.
     /// </remarks>
+    [Fact]
     public void ExtractImage_ATruncatedSampleBufferIsRefusedAsTheRendererRefusesIt()
     {
         // 2×2 declared, three pixels of RGB supplied.
@@ -200,7 +200,6 @@ public sealed class ImageExportAndThumbnailGapTests
             9, 9, 9, "the fourth pixel of the complete buffer");
     }
 
-    [Fact]
     /// <summary>
     /// The raw-sample export writes through the bitmap's own buffer, not through the allocating
     /// <c>SKBitmap.Pixels</c> setter.
@@ -211,6 +210,7 @@ public sealed class ImageExportAndThumbnailGapTests
     /// is what <see cref="Tetitulz.Pdf.Base.Images.BitmapPixels.BufferWalks"/> is for. The counters are
     /// <c>[ThreadStatic]</c> and the export runs on the calling thread.
     /// </remarks>
+    [Fact]
     public void ExtractImage_RawSamplesAreWrittenThroughTheBitmapBuffer()
     {
         byte[] pdf = ImageFixtures.OneImagePdf(ImageFixtures.SolidRgb(4, 4, 10, 200, 30), 4, 4);
@@ -229,7 +229,6 @@ public sealed class ImageExportAndThumbnailGapTests
     //  PdfImageExporter — the decode is bounded before it allocates
     // ================================================================
 
-    [Fact]
     /// <summary>
     /// An adversarial image declares <c>/Width 1 /Height 1</c> — passing every cap in this method —
     /// while its Flate payload inflates to a PNG whose OWN header says 16384x12000. Raw
@@ -239,6 +238,7 @@ public sealed class ImageExportAndThumbnailGapTests
     /// <para>The assertion is the guard's own evidence — the refusal it reports — never a wall
     /// clock. A guard test that merely finishes fast has quite possibly not run.</para>
     /// </summary>
+    [Fact]
     public void ExtractImage_OversizedEmbeddedCodec_IsRefusedBeforeAllocating()
     {
         byte[] bomb = PngClaimingSize(16384, 12000);
@@ -368,13 +368,13 @@ public sealed class ImageExportAndThumbnailGapTests
         return n;
     }
 
-    [Fact]
     /// <summary>
     /// The reported count is the number of pages that actually carry a <c>/Thumb</c>, not the number
     /// of images written. Asserting the two against each other is the point: the predecessor emitted
     /// the image object and only then discovered it could not patch the page, so the two could
     /// disagree with nothing recording it.
     /// </summary>
+    [Fact]
     public void GenerateThumbnails_ReportedCountMatchesThePagesThatCarryAThumb()
     {
         using var input = new MemoryStream(TwoPagePdf());
@@ -388,11 +388,11 @@ public sealed class ImageExportAndThumbnailGapTests
         Assert.Null(PdfThumbnailManager.LastError);
     }
 
-    [Fact]
     /// <summary>
     /// The embedded thumbnail is a real DeviceRGB image of the page, not a placeholder: the fixture
     /// page is white with a blue square, so the thumbnail's samples must contain a blue pixel.
     /// </summary>
+    [Fact]
     public void GenerateThumbnails_EmbedsThePageContentAsDeviceRgbSamples()
     {
         using var input = new MemoryStream(TwoPagePdf());
@@ -471,7 +471,6 @@ public sealed class ImageExportAndThumbnailGapTests
             .StreamObj(4, "<<", "0 0 1 rg 10 10 50 50 re f")
             .Finish();
 
-    [Fact]
     /// <summary>
     /// A page the writer cannot patch must contribute <b>nothing</b> — no count, and no image
     /// object either. The predecessor wrote the /Thumb image and only then discovered it could not
@@ -479,6 +478,7 @@ public sealed class ImageExportAndThumbnailGapTests
     /// return value still counted it: "12 thumbnails generated" for a file that displays none, with
     /// the only trace a <c>Debug.WriteLine</c> that does not exist in a Release build.
     /// </summary>
+    [Fact]
     public void GenerateThumbnails_MalformedPageWithNoObjectNumber_CountsNothingAndWritesNoOrphan()
     {
         byte[] original = PdfWithUnnumberedPage();
@@ -499,13 +499,13 @@ public sealed class ImageExportAndThumbnailGapTests
         Assert.Contains("could not be located", PdfThumbnailManager.LastError, StringComparison.Ordinal);
     }
 
-    [Fact]
     /// <summary>
     /// A non-seekable destination — a server streaming the result straight to a response body — must
     /// work. The hand-rolled writer recorded every xref offset from <c>output.Position</c>, so it
     /// threw <see cref="NotSupportedException"/> from a method documenting only
     /// <see cref="ArgumentNullException"/>/<see cref="ArgumentOutOfRangeException"/>.
     /// </summary>
+    [Fact]
     public void GenerateThumbnails_NonSeekableOutput_StillProducesAReadableFile()
     {
         using var input = new MemoryStream(TwoPagePdf());
@@ -517,7 +517,6 @@ public sealed class ImageExportAndThumbnailGapTests
         Assert.Equal(2, PagesWithThumb(output.ToArray()));
     }
 
-    [Fact]
     /// <summary>
     /// A destination already holding bytes — <c>FileMode.Append</c>, or one part of a multipart
     /// body — must still emit a <c>startxref</c> that points at the cross-reference section it
@@ -530,6 +529,7 @@ public sealed class ImageExportAndThumbnailGapTests
     /// offsets wrong. Reading the emitted <c>startxref</c> and checking what is AT that byte is
     /// what makes the claim in the name checkable.</para>
     /// </summary>
+    [Fact]
     public void GenerateThumbnails_OutputPrePositioned_StartxrefCountsFromWhereTheOriginalLanded()
     {
         byte[] preamble = Encoding.ASCII.GetBytes("PREAMBLE-BYTES-NOT-PART-OF-THE-PDF\n");
@@ -576,13 +576,13 @@ public sealed class ImageExportAndThumbnailGapTests
     //  SvgRasterizer — a failure that says so
     // ================================================================
 
-    [Fact]
     /// <summary>
     /// <c>RasterizeToPng</c> wrapped the whole SVG → PDF → PNG chain in
     /// <c>catch { return null; }</c>, so a caller could not tell "no SVG supplied" from "the SVG was
     /// rejected" from "the converter is broken". HtmlToPdf's managed engine reaches this through
     /// <c>HtmlToPdfOptions.SvgRasterizer</c> and simply leaves a hole in the page.
     /// </summary>
+    [Fact]
     public void RasterizeToPng_MalformedSvg_ReportsWhyItReturnedNull()
     {
         Assert.Null(SvgRasterizer.RasterizeToPng("<svg><rect", 96));
@@ -590,8 +590,8 @@ public sealed class ImageExportAndThumbnailGapTests
         Assert.Contains("rasterization failed", SvgRasterizer.LastError, StringComparison.Ordinal);
     }
 
-    [Fact]
     /// <summary>"No SVG was supplied" is a different answer from "the SVG was rejected".</summary>
+    [Fact]
     public void RasterizeToPng_EmptyInput_SaysNothingWasSupplied()
     {
         Assert.Null(SvgRasterizer.RasterizeToPng("   ", 96));
@@ -599,13 +599,13 @@ public sealed class ImageExportAndThumbnailGapTests
         Assert.Contains("no SVG markup", SvgRasterizer.LastError, StringComparison.Ordinal);
     }
 
-    [Fact]
     /// <summary>
     /// A good SVG rasterizes to a PNG with the graphic's ink in it and reports nothing. Both halves
     /// matter: a blank page encodes to a perfectly valid non-empty PNG, so the pixel assertion is
     /// what makes the rasterizer's own behaviour checkable, and the null <c>LastError</c> is what
     /// stops the two tests above from passing against a rasterizer that reports unconditionally.
     /// </summary>
+    [Fact]
     public void RasterizeToPng_ValidSvg_ProducesInkAndReportsNothing()
     {
         byte[] png = SvgRasterizer.RasterizeToPng(
@@ -620,12 +620,12 @@ public sealed class ImageExportAndThumbnailGapTests
         AssertColor(bmp.GetPixel(bmp.Width / 2, bmp.Height / 2), 255, 0, 0, "the rasterized rectangle");
     }
 
-    [Fact]
     /// <summary>
     /// A rasterization that succeeded but dropped content is neither a clean success nor a null: the
     /// PNG comes back AND the converter's reason is relayed, so a partial result cannot be mistaken
     /// for a faithful one.
     /// </summary>
+    [Fact]
     public void RasterizeToPng_SvgWithUnencodableText_RelaysTheConverterWarningWithThePng()
     {
         const string hebrew = "שלום";
@@ -653,13 +653,13 @@ public sealed class ImageExportAndThumbnailGapTests
         return (bmp.Width, bmp.Height);
     }
 
-    [Fact]
     /// <summary>
     /// A unit on <c>width</c>/<c>height</c> ("120px") is stripped the same as no unit at all
     /// ("120") — <c>ParseDim</c> reads the leading number and ignores what follows. A rasterizer
     /// that failed to strip the unit would fail <c>double.TryParse("120px")</c>, read 0, and fall
     /// through to the viewBox this fixture also carries — a different, distinguishable size.
     /// </summary>
+    [Fact]
     public void RasterizeToPng_UnitOnWidthAndHeight_IsStrippedLikeNoUnit()
     {
         const string viewBox = "viewBox=\"0 0 999 999\""; // a decoy: only reached if width/height fail to parse
@@ -675,11 +675,11 @@ public sealed class ImageExportAndThumbnailGapTests
         Assert.True(withUnit.Width < withUnit.Height * 3, "the decoy viewBox was used instead of width/height");
     }
 
-    [Fact]
     /// <summary>
     /// With no <c>width</c>/<c>height</c>, the <c>viewBox</c>'s size is used — a 3:2 box reads as
     /// 3:2, distinct from the SVG default's 2:1.
     /// </summary>
+    [Fact]
     public void RasterizeToPng_NoWidthOrHeight_FallsBackToTheViewBoxSize()
     {
         var (w, h) = RasterizedSize(
@@ -689,11 +689,11 @@ public sealed class ImageExportAndThumbnailGapTests
         Assert.InRange((double)w / h, 1.4, 1.6); // 3:2, not the 2:1 default
     }
 
-    [Fact]
     /// <summary>
     /// With no <c>width</c>/<c>height</c> and no <c>viewBox</c>, the SVG 1.1 §7.2 replaced-element
     /// default (300x150, 2:1) applies.
     /// </summary>
+    [Fact]
     public void RasterizeToPng_NoSizingInformationAtAll_UsesTheSvgDefault()
     {
         var (w, h) = RasterizedSize(
@@ -702,12 +702,12 @@ public sealed class ImageExportAndThumbnailGapTests
         Assert.InRange((double)w / h, 1.9, 2.1); // 300:150
     }
 
-    [Fact]
     /// <summary>
     /// A non-positive <c>width</c>/<c>height</c> ("-10", matching a percentage or any other value
     /// <c>ParseDim</c> cannot resolve to a positive number) is not used — it falls back to the
     /// <c>viewBox</c>, the same as if <c>width</c>/<c>height</c> were absent.
     /// </summary>
+    [Fact]
     public void RasterizeToPng_NegativeWidthOrHeight_FallsBackToTheViewBoxSize()
     {
         var negative = RasterizedSize(
@@ -720,13 +720,13 @@ public sealed class ImageExportAndThumbnailGapTests
         Assert.Equal(absent, negative);
     }
 
-    [Fact]
     /// <summary>
     /// A percentage <c>width</c> is not a length — it resolves against a containing block nothing
     /// here has — so the <c>viewBox</c> sizes the page: 400×200 at 96 dpi is 533×267 pixels. The
     /// rasterizer's own copy of the size reading took "100%" for 100 points (133 pixels wide), the
     /// defect the converter's copy had already been fixed of; it asks the converter now.
     /// </summary>
+    [Fact]
     public void RasterizeToPng_PercentageWidth_FallsBackToTheViewBoxSize()
     {
         var (w, h) = RasterizedSize(

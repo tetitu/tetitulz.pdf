@@ -375,11 +375,11 @@ public class PdfPluginHostTests
         return Encoding.ASCII.GetBytes(sb.ToString());
     }
 
-    [Fact]
     /// <summary>
     /// The built-in optimizer must produce a document that still opens and still has its page.
     /// "Non-empty output" is satisfied by a truncated file.
     /// </summary>
+    [Fact]
     public void Optimize_ProducesADocumentThatStillOpens()
     {
         byte[] pdf = BuildMinimalPdf();
@@ -392,12 +392,12 @@ public class PdfPluginHostTests
         Assert.Single(doc.Pages);
     }
 
-    [Fact]
     /// <summary>
     /// Linearizing must actually linearize: the output carries a <c>/Linearized</c> dictionary,
     /// which the input does not, and still opens with its page intact. The predecessor would have
     /// passed on a plain copy of the input.
     /// </summary>
+    [Fact]
     public void Linearize_WritesALinearizedDictionary()
     {
         byte[] pdf = BuildMinimalPdf();
@@ -471,7 +471,6 @@ public class PdfPluginHostTests
         finally { host.Unregister(plugin.Name); }
     }
 
-    [Fact]
     /// <summary>
     /// <c>IOptimizePlugin</c> is a <b>discovery contract, not an auto-dispatch hook</b> (GAPS.md
     /// §5b): a host resolves it explicitly through <c>GetFirstPlugin&lt;T&gt;()</c>, and
@@ -483,6 +482,7 @@ public class PdfPluginHostTests
     /// back, so it verified nothing about plugins at all despite living in this file. The design
     /// rule it now pins had no test.</para>
     /// </summary>
+    [Fact]
     public void Optimize_RegisteredOptimizePlugin_IsNotAutoDispatched()
     {
         byte[] pdf = BuildMinimalPdf();

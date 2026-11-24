@@ -14,12 +14,12 @@ namespace Tetitulz.Pdf.Core.Tests.Document;
 
 public class PdfSanitizerTests
 {
-    [Fact]
     /// <summary>
     /// Sanitizing a document that has nothing dangerous in it must preserve it: same page count,
     /// same visible text. "At least one page" would hold for a document whose content the
     /// sanitizer had stripped along with the threats.
     /// </summary>
+    [Fact]
     public void Sanitize_HarmlessDocument_KeepsItsPagesAndText()
     {
         byte[] pdfBytes = MinimalPdfBuilder.CreateMinimalPdf("Sanitize Me");
@@ -58,13 +58,13 @@ public class PdfSanitizerTests
         Assert.False(catalogDict.ContainsKey(PdfName.OpenAction));
     }
 
-    [Fact]
     /// <summary>
     /// The <b>default</b> options must already remove active content — that is what makes
     /// <c>Sanitize(input, output)</c> safe to call without thinking. The predecessor was named
     /// "ProducesCleanPdf" and checked only that the result had a page, so it passed with every
     /// sanitisation option defaulted to off.
     /// </summary>
+    [Fact]
     public void Sanitize_WithDefaults_RemovesJavaScriptWithoutBeingAsked()
     {
         byte[] pdfBytes = MinimalPdfBuilder.CreatePdfWithJavaScript();

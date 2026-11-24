@@ -83,13 +83,13 @@ private static byte[] MinimalPdf()
             PdfAccessibilityFixer.Fix(new MemoryStream(MinimalPdf()), null!));
     }
 
-    [Fact]
     /// <summary>
     /// The default fix pass must actually change the document — and the result must name what it
     /// changed. On an untagged, language-less document that is the catalog <c>/Lang</c> and
     /// <c>/ViewerPreferences /DisplayDocTitle</c>; the produced bytes must differ from the input.
     /// "Output was written" is equally true of a passthrough that fixed nothing.
     /// </summary>
+    [Fact]
     public void Fix_MinimalPdf_AppliesTheLanguageAndDisplayDocTitleFixes()
     {
         byte[] pdf = MinimalPdf();
@@ -126,7 +126,6 @@ private static byte[] MinimalPdf()
             f => f.Contains("DisplayDocTitle") || f.Contains("title"));
     }
 
-    [Fact]
     /// <summary>
     /// Omitting the options argument must mean <i>exactly</i> a default-constructed
     /// <see cref="AccessibilityFixOptions"/> — same fixes, same warnings, byte-identical output
@@ -136,6 +135,7 @@ private static byte[] MinimalPdf()
     /// implicit defaults would break. "Fix did not throw" would not notice, and is equally true of
     /// a pass-through that copied the input across.</para>
     /// </summary>
+    [Fact]
     public void Fix_NoOptions_IsIdenticalToPassingDefaultOptions()
     {
         byte[] pdf = MinimalPdf();
@@ -183,12 +183,12 @@ private static byte[] MinimalPdf()
         Assert.True(opts.FixTabOrder);
     }
 
-    [Fact]
     /// <summary>
     /// The two report collections must describe the run, not merely exist: this document needs
     /// fixes and gets them cleanly, so <c>FixesApplied</c> is non-empty and <c>Warnings</c> is
     /// empty. <c>NotNull</c> on both is satisfied by a run that did nothing and said nothing.
     /// </summary>
+    [Fact]
     public void AccessibilityFixResult_ReportsTheFixesItMadeAndWarnsAboutNothing()
     {
         byte[] pdf = MinimalPdf();

@@ -116,12 +116,12 @@ public class Jbig2HuffmanAndMiscTests
     //  Huffman table structural sanity
     // ==================================================================
 
-    [Fact]
     /// <summary>
     /// Standard Table A is fixed by the JBIG2 spec (Annex B.1): four prefix codes covering
     /// 0-15, 16-271, 272-65807 and a 32-bit tail. Asserting those bounds is what pins the table
     /// as <i>Table A</i>; "has entries" would accept any table, including a copy of Table B.
     /// </summary>
+    [Fact]
     public void StandardTableA_MatchesTheSpecCodeLengthsAndRanges()
     {
         var table = Jbig2Decoder.StandardTableA;

@@ -16,12 +16,12 @@ public sealed class PdfTextSearchTests
     //  Search — basic hit detection
     // ----------------------------------------------------------------
 
-    [Fact]
     /// <summary>
     /// The name promises a <b>single</b> hit, so assert exactly that — plus what the hit says about
     /// itself. <c>NotEmpty</c> would pass on a search that returned one match per glyph, or one per
     /// page of a document that has only one page anyway.
     /// </summary>
+    [Fact]
     public void Search_ExactMatch_ReturnsSingleHit()
     {
         byte[] pdf = MinimalPdfBuilder.CreateMinimalPdf("Hello World");
@@ -43,13 +43,13 @@ public sealed class PdfTextSearchTests
         Assert.Empty(hits);
     }
 
-    [Fact]
     /// <summary>
     /// A case-insensitive search must find <b>the same occurrence</b> a correctly-cased search
     /// finds — same page, same offset — and report the text as it appears in the document rather
     /// than as it was typed in the query. Its `ignoreCase: false` sibling below asserts the
     /// opposite direction, so the pair pins the flag rather than the search.
     /// </summary>
+    [Fact]
     public void Search_CaseInsensitive_FindsMatch()
     {
         byte[] pdf = MinimalPdfBuilder.CreateMinimalPdf("Hello World");
@@ -76,11 +76,11 @@ public sealed class PdfTextSearchTests
         Assert.Empty(hits);
     }
 
-    [Fact]
     /// <summary>
     /// The positive half of the case-sensitivity pair: the exactly-cased query hits once, at the
     /// start of the text. (<c>Search_CaseSensitive_NoMatch</c> above is the negative half.)
     /// </summary>
+    [Fact]
     public void Search_CaseSensitive_ExactCaseHits()
     {
         byte[] pdf = MinimalPdfBuilder.CreateMinimalPdf("Hello World");

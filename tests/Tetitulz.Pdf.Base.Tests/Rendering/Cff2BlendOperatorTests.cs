@@ -60,7 +60,6 @@ public class Cff2BlendOperatorTests
         Assert.Equal(500f, outline.AdvanceWidth);
     }
 
-    [Fact]
     /// <summary>
     /// <c>blend</c> leaves only the default values on the stack and drops the region deltas.
     /// That is a <b>stack</b> effect, which a path cannot show on its own — so the charstring
@@ -71,6 +70,7 @@ public class Cff2BlendOperatorTests
     /// <para>The predecessor spelled the expected stack out in a comment and then asserted
     /// <c>NotNull(outline.Path)</c>, which is true for every one of those outcomes.</para>
     /// </summary>
+    [Fact]
     public void Blend_TwoAxes_RemovesDeltasKeepsDefaults()
     {
         // push 100 (default), 10 (delta axis0), 20 (delta axis1), n=1, blend -> stack = [100];
@@ -86,13 +86,13 @@ public class Cff2BlendOperatorTests
         Assert.Equal(100f, outline.Path.Bounds.Height);   // ...and it is the default, 100
     }
 
-    [Fact]
     /// <summary>
     /// Three defaults and six deltas in, three defaults out. <c>hlineto</c> then consumes the
     /// stack alternately, so the surviving count is visible as the number of segments: three
     /// values give three lines (50 across, 60 up, 70 across). Nine surviving values would give
     /// nine — which is exactly what the predecessor's <c>NotNull</c> could not tell apart.
     /// </summary>
+    [Fact]
     public void Blend_MultipleValues_TwoAxes_KeepsAllDefaults()
     {
         // n=3, k=2: stack before blend = [d0, d1, d2, Δ0_0, Δ0_1, Δ1_0, Δ1_1, Δ2_0, Δ2_1, 3]

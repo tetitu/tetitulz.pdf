@@ -66,13 +66,13 @@ public class Jbig2IntegerDecoderTests
             => new Jbig2Decoder.Jbig2IntegerDecoder(mq, 1));
     }
 
-    [Fact]
     /// <summary>
     /// A context table that fits its arena exactly (base 512 + 512 entries = the 1024 allocated)
     /// must construct <b>and be usable</b>. Constructing successfully is the easy half; the
     /// predecessor stopped there, so an off-by-one that corrupted neighbouring contexts on first
     /// use would still have passed.
     /// </summary>
+    [Fact]
     public void Constructor_ExactFit_ProducesAWorkingDecoder()
     {
         var mq = new MqDecoder(new byte[] { 0 }, 0, contextCount: 1024);

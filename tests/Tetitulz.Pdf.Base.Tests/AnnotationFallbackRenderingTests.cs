@@ -733,13 +733,13 @@ public sealed class AnnotationFallbackRenderingTests
     //  AcroForm /DR resource fallback (§12.7.3.3)
     // ------------------------------------------------------------------
 
-    [Fact]
     /// <summary>
     /// When a widget's appearance stream carries no <c>/Resources</c>, the renderer must resolve
     /// its font through the AcroForm <c>/DR</c> — <b>and actually draw the glyph</b>. If the
     /// fallback fails the font is not found and the page comes out blank, which is precisely what
     /// the predecessor's "a PNG came back" assertion could not distinguish.
     /// </summary>
+    [Fact]
     public void WidgetApStream_WithNoResources_FallsBackToAcroFormDr()
     {
         // Build a PDF where:

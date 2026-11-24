@@ -258,7 +258,6 @@ public class Jbig2ExtendedSupportTests
         Assert.Equal(stream, decoded);
     }
 
-    [Fact]
     /// <summary>
     /// The wrapper filter's contract for a region it decodes only experimentally: it must never
     /// throw on synthetic input, and it must return a <b>usable, deterministic</b> result — either
@@ -268,6 +267,7 @@ public class Jbig2ExtendedSupportTests
     /// Decode doesn't throw"). That admits garbage of any length, and cannot tell a stable
     /// fallback from one that returns something different on every call.</para>
     /// </summary>
+    [Fact]
     public void Decode_RefinementRegion_ProducesAUsableDeterministicResult()
     {
         var stream = Concat(

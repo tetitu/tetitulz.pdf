@@ -127,12 +127,12 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
             Assert.Equal((byte)'%', pdfBytes[0]);
         }
 
-        [Fact]
         /// <summary>
         /// Twenty paragraphs must survive the conversion as readable text in a parseable PDF.
         /// "Some bytes came back" is equally true of a converter that emitted an empty page — and
         /// for a converter, an empty page is the exact failure worth catching.
         /// </summary>
+        [Fact]
         public void Convert_MultiParagraph_KeepsTheParagraphTextInTheOutput()
         {
             var docxBytes = MinimalDocxBuilder.CreateMultiParagraphDocx(20);

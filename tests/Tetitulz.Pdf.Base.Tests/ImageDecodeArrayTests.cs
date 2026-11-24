@@ -21,13 +21,13 @@ public sealed class ImageDecodeArrayTests
     //  Raw-pixel images with /Decode
     // ------------------------------------------------------------------
 
-    [Fact]
     /// <summary>
     /// The name promises the identity <c>/Decode</c> renders <b>unchanged</b>, so compare it
     /// pixel-for-pixel against the same image with no <c>/Decode</c> at all. An inverted control
     /// proves the comparison can fail — without it, a renderer that ignored <c>/Decode</c>
     /// entirely would pass this test by definition.
     /// </summary>
+    [Fact]
     public void RawPixelImage_IdentityDecode_RendersUnchanged()
     {
         using var identity = PixelAssert.Render(BuildPdfWithRawImage(decode: "[0 1 0 1 0 1]"));
@@ -84,13 +84,13 @@ public sealed class ImageDecodeArrayTests
             "the baseline's 0-valued sample was not black, so the fixture is wrong");
     }
 
-    [Fact]
     /// <summary>
     /// The baseline: with no <c>/Decode</c> the sample values reach the page untouched. The
     /// fixture fills a 2x2 DeviceRGB image with the ramp 0, 64, 128, … so the first pixel is
     /// exactly RGB(0, 64, 128) — an assertion no "did not throw" check can make, and the anchor
     /// every other case in this file is compared against.
     /// </summary>
+    [Fact]
     public void RawPixelImage_NoDecode_RendersTheRawSampleValues()
     {
         using var bmp = PixelAssert.Render(BuildPdfWithRawImage(decode: null));

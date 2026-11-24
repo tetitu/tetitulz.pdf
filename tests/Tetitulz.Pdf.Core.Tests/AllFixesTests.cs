@@ -184,12 +184,12 @@ public class AllFixesTests
 
     #region 6. StandardEncodings: MacExpertEncoding + uniXXXX convention
 
-    [Fact]
     /// <summary>
     /// MacExpertEncoding must be a table of its own with real code→character entries — not an empty
     /// dictionary and not an alias of another encoding. "Not null and non-empty" would be satisfied
     /// by a one-entry stub, or by handing back WinAnsi.
     /// </summary>
+    [Fact]
     public void StandardEncodings_MacExpertEncoding_MapsCodesAndIsNotAnAliasOfAnotherTable()
     {
         var enc = StandardEncodings.MacExpertEncoding;
@@ -558,11 +558,11 @@ public class AllFixesTests
         Assert.Equal(page.CropBox, page.BleedBox);
     }
 
-    [Fact]
     /// <summary>
     /// §14.11.2: an absent /TrimBox defaults to the CropBox. The name says so; assert it, rather
     /// than that some array came back — a TrimBox defaulting to the wrong rectangle is non-null too.
     /// </summary>
+    [Fact]
     public void PdfPage_TrimBox_DefaultsToCropBox()
     {
         byte[] pdfBytes = MinimalPdfBuilder.CreateMinimalPdf("test");
@@ -574,8 +574,8 @@ public class AllFixesTests
         AssertRect(page.TrimBox, 0, 0, 612, 792);
     }
 
-    [Fact]
     /// <summary>Same rule for /ArtBox (§14.11.2).</summary>
+    [Fact]
     public void PdfPage_ArtBox_DefaultsToCropBox()
     {
         byte[] pdfBytes = MinimalPdfBuilder.CreateMinimalPdf("test");

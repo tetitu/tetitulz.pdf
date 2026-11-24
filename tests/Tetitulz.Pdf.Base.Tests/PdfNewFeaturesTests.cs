@@ -150,7 +150,6 @@ public sealed class PdfNewFeaturesTests
     public void ExtractStructuredText_NullPath_Throws()
         => Assert.Throws<ArgumentNullException>(() => PdfOperations.ExtractStructuredText((string)null!));
 
-    [Fact]
     /// <summary>
     /// Structured extraction ends a word at a space glyph the content stream drew, as plain
     /// extraction does, so the two APIs agree on "Hello World".
@@ -161,6 +160,7 @@ public sealed class PdfNewFeaturesTests
     ///
     /// <para>The assertion is the text, not <c>NotNull</c> — which an empty string satisfies.</para>
     /// </summary>
+    [Fact]
     public void ExtractStructuredText_SplitsWordsAtASpaceGlyph_LikePlainExtraction()
     {
         byte[] pdf = MinimalPdfBuilder.CreateMinimalPdf("Hello World");

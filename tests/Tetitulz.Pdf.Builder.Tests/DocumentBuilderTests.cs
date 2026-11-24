@@ -165,12 +165,12 @@ public class DocumentBuilderTests
         Assert.Equal((byte)'K', odt[1]);
     }
 
-    [Fact]
     /// <summary>
     /// An ODT package must carry the document's text in <c>content.xml</c>, not merely have an
     /// entry with that name. The predecessor stopped at "the entry exists", which an empty
     /// placeholder satisfies — and an ODT whose content.xml is empty opens as a blank document.
     /// </summary>
+    [Fact]
     public void ExportToOdt_ContentXmlCarriesTheDocumentText()
     {
         var doc = BuildSampleDoc();
@@ -190,12 +190,12 @@ public class DocumentBuilderTests
 
     // ---- Full round-trip: all 4 formats ----
 
-    [Fact]
     /// <summary>
     /// Every exporter must produce a document of its own format that carries the model's text —
     /// the point of one model with four back-ends. The predecessor checked four lengths, which
     /// four exporters emitting only their file headers would also satisfy.
     /// </summary>
+    [Fact]
     public void ExportAllFormats_EachCarriesTheDocumentTextInItsOwnContainer()
     {
         var doc = BuildSampleDoc();
