@@ -211,4 +211,41 @@ public class CcittFaxRowsAllocationTests
             if (bits[i] == '1') result[i / 8] |= (byte)(0x80 >> (i % 8));
         return result;
     }
+
+    /// <summary>
+    /// A letter page at 300 dpi of text-like runs, G4: the rows are packed as they are decoded, so the decode
+    /// allocates a few times its packed output — the output, the reservation's doublings and the exact copy. Kept a
+    /// byte a pixel until the end, every row unpacked, it allocated about nine times; the bitmap is the same.
+    /// </summary>
+    [Fact]
+    public void ALetterPage_IsPackedAsItIsDecoded()
+    {
+        const int width = 2550, height = 3300, stride = (width + 7) / 8;
+        var packed = new byte[stride * height];
+        var rnd = new Random(9);
+        for (int y = 0; y < height; y++)
+            if (y % 40 < 24)
+                for (int x = 100; x < width - 100; x += rnd.Next(3, 12))
+                    for (int k = 0; k < rnd.Next(1, 4) && x + k < width; k++)
+                        packed[y * stride + (x + k) / 8] |= (byte)(0x80 >> ((x + k) % 8));
+        byte[] g4 = CcittFaxEncoder.Encode(packed, width, height, blackIs1: true);
+        CcittFaxDecoder.DecodeGroup4(g4, 0, width, height, false, out _, out _);   // warm: the first call's own costs
+
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        byte[] decoded = CcittFaxDecoder.DecodeGroup4(g4, 0, width, height, false, out int rows, out _);
+        long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        Assert.Equal(height, rows);
+        Assert.Equal(packed, decoded);   // 1 black, as encoded
+        Assert.True(allocated < 6L * decoded.Length, $"a {decoded.Length:N0}-byte page allocated {allocated:N0} bytes");
+    }
+
+    /// <summary>The packed rows' first reservation is bounded whatever the declared row count; a small image's is its own size.</summary>
+    [Theory]
+    [InlineData(8, 500_000_000, 64 * 1024)]
+    [InlineData(80, 10, 100)]
+    public void ThePackedRowsReservation_IsBounded(int columns, int rows, int reserved)
+    {
+        Assert.Equal(reserved, new CcittFaxDecoder.PackedRows(columns, rows).Reserved);
+    }
 }

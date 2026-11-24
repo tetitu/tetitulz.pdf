@@ -379,24 +379,6 @@ namespace Tetitulz.Pdf.Core.IO.Filters
             return (int)Math.Min(requested, maxRows);
         }
 
-        /// <summary>
-        /// Upper bound on the <c>List&lt;byte[]&gt;</c> capacity reserved up front for decoded
-        /// scanlines. The list still grows to <see cref="ClampRowLimit"/> rows as they are decoded;
-        /// this only bounds the *speculative* reservation.
-        /// </summary>
-        /// <remarks>
-        /// Called before any decoder sizes its row list: opening with
-        /// <c>new List&lt;byte[]&gt;(rows &gt; 0 ? rows : 64)</c> — the raw, file-controlled
-        /// <c>/Rows</c> — and clamping afterwards would bound the decode loop after the allocation
-        /// had already happened.
-        /// <c>/DecodeParms &lt;&lt;/Columns 8 /Rows 500000000&gt;&gt;</c> with two bytes of payload
-        /// reserved a 4&#160;GB <c>byte[][]</c> backing array before a single bit was read;
-        /// <c>CcittFaxDecodeFilter</c> bounds <c>/Columns</c> but places no bound at all on
-        /// <c>/Rows</c>. Reserving <c>min(rowLimit, this)</c> keeps the common case (a real fax page
-        /// is ~2&#160;200 rows) allocation-free while making the declared row count unable to buy
-        /// more than ~32&#160;KB of speculative array.
-        /// </remarks>
-        private const int MaxInitialLineCapacity = 4096;
 
         /// <summary>
         /// Decodes a full T.6 (Group 4) MMR image.
@@ -438,11 +420,12 @@ namespace Tetitulz.Pdf.Core.IO.Filters
             bool sawEofb = false;
             var br = new MsbBitStream(encoded, startOffset);
             byte[] refLine = new byte[columns]; // all white (zero)
+            byte[] cur = new byte[columns];
 
             // Safety cap on rows when caller didn't give /Rows and stream has no EOFB.
-            // Computed BEFORE the list is sized — see MaxInitialLineCapacity.
+            // Computed BEFORE the output is reserved — see InitialPackedBytes.
             int rowLimit = ClampRowLimit(rows, columns);
-            var lines = new List<byte[]>(Math.Min(rowLimit, MaxInitialLineCapacity));
+            var lines = new PackedRows(columns, rowLimit);
 
             while (lines.Count < rowLimit)
             {
@@ -456,11 +439,11 @@ namespace Tetitulz.Pdf.Core.IO.Filters
                 if (br.Eof) break;
 
                 budget?.Tick(columns);
-                byte[] cur = new byte[columns];
+                Array.Clear(cur, 0, columns);
                 DecodeLine2D(br, columns, refLine, cur);
 
                 lines.Add(cur);
-                Buffer.BlockCopy(cur, 0, refLine, 0, columns);
+                (refLine, cur) = (cur, refLine);   // the row just decoded is the next one's reference
             }
 
             if (br.PeekBits(24) == 0x001001) { br.SkipBits(24); sawEofb = true; }
@@ -468,7 +451,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
             terminated = sawEofb || (rows > 0 && lines.Count >= rows);
 
             rowsDecoded = lines.Count;
-            return PackLines(lines, columns);
+            return lines.ToArray();
         }
 
         /// <summary>
@@ -604,9 +587,10 @@ namespace Tetitulz.Pdf.Core.IO.Filters
             var br = new MsbBitStream(encoded, startOffset);
             bool sawRtc = false;
 
-            // Clamp first, then size the list from the clamp — see MaxInitialLineCapacity.
+            // Clamp first, then reserve from the clamp — see InitialPackedBytes.
             int rowLimit = ClampRowLimit(rows, columns);
-            var lines = new List<byte[]>(Math.Min(rowLimit, MaxInitialLineCapacity));
+            var lines = new PackedRows(columns, rowLimit);
+            byte[] cur = new byte[columns];
 
             // T.4: six consecutive EOLs mark end (RTC).
             int consecutiveEols = 0;
@@ -634,7 +618,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
                 if (encodedByteAlign) br.AlignToByte();
 
                 budget?.Tick(columns);
-                byte[] cur = new byte[columns];
+                Array.Clear(cur, 0, columns);
                 DecodeLine1D(br, columns, cur);
                 lines.Add(cur);
                 if (lines.Count > 0) consecutiveEols = 0;
@@ -645,7 +629,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
             endOffset = (br.Position + 7) / 8;
             terminated = sawRtc || (rows > 0 && lines.Count >= rows);
             rowsDecoded = lines.Count;
-            return PackLines(lines, columns);
+            return lines.ToArray();
         }
 
         /// <summary>An RTC (six EOLs) at the cursor consumed; true when there was one.</summary>
@@ -691,10 +675,11 @@ namespace Tetitulz.Pdf.Core.IO.Filters
 
             var br = new MsbBitStream(encoded, startOffset);
             byte[] refLine = new byte[columns];
+            byte[] cur = new byte[columns];
 
-            // Clamp first, then size the list from the clamp — see MaxInitialLineCapacity.
+            // Clamp first, then reserve from the clamp — see InitialPackedBytes.
             int rowLimit = ClampRowLimit(rows, columns);
-            var lines = new List<byte[]>(Math.Min(rowLimit, MaxInitialLineCapacity));
+            var lines = new PackedRows(columns, rowLimit);
             int consecutiveEols = 0;
 
             while (lines.Count < rowLimit && !br.Eof)
@@ -724,12 +709,12 @@ namespace Tetitulz.Pdf.Core.IO.Filters
                 if (encodedByteAlign) br.AlignToByte();
 
                 budget?.Tick(columns);
-                byte[] cur = new byte[columns];
+                Array.Clear(cur, 0, columns);
                 if (tag == 1) DecodeLine1D(br, columns, cur);
                 else DecodeLine2D(br, columns, refLine, cur);
 
                 lines.Add(cur);
-                Buffer.BlockCopy(cur, 0, refLine, 0, columns);
+                (refLine, cur) = (cur, refLine);   // the row just decoded is the next one's reference
                 if (lines.Count > 0) consecutiveEols = 0;
             }
 
@@ -737,7 +722,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
             endOffset = (br.Position + 7) / 8;
             terminated = sawRtc || (rows > 0 && lines.Count >= rows);
             rowsDecoded = lines.Count;
-            return PackLines(lines, columns);
+            return lines.ToArray();
         }
 
         // Peek up to 16 bits looking for "000000000001" (twelve bits); if the
@@ -798,19 +783,74 @@ namespace Tetitulz.Pdf.Core.IO.Filters
         internal static byte[] PackLines(List<byte[]> lines, int columns)
         {
             if (columns <= 0 || lines == null || lines.Count == 0) return Array.Empty<byte>();
-            int stride = (columns + 7) / 8;
-            byte[] result = new byte[stride * lines.Count];
-            for (int y = 0; y < lines.Count; y++)
+            var packed = new PackedRows(columns, lines.Count);
+            foreach (byte[] row in lines) packed.Add(row);
+            return packed.ToArray();
+        }
+
+        /// <summary>
+        /// The most bytes a decoder reserves for its packed rows before it has decoded any; the buffer doubles as
+        /// rows arrive, up to <see cref="ClampRowLimit"/> of them.
+        /// </summary>
+        /// <remarks>
+        /// The reservation is taken from the clamped row count, never the raw <c>/Rows</c>, and is bounded besides:
+        /// <c>/DecodeParms &lt;&lt;/Columns 8 /Rows 500000000&gt;&gt;</c> with two bytes of payload would otherwise
+        /// reserve its whole declared image before a single bit was read — <c>CcittFaxDecodeFilter</c> bounds
+        /// <c>/Columns</c> and places no bound on <c>/Rows</c>. A real fax page at 1728 columns is about 480 KB
+        /// packed, so it grows from this a few times.
+        /// </remarks>
+        private const int InitialPackedBytes = 64 * 1024;
+
+        /// <summary>
+        /// Rows packed MSB first as they are decoded, stride ⌈columns/8⌉, 1 black — the decoders keep one row
+        /// unpacked (and, coding 2D, its reference) and pack each into this, rather than a byte a pixel for every
+        /// row until the end: a letter page at 300 dpi allocated 9 MB to return 1 MB.
+        /// </summary>
+        internal sealed class PackedRows
+        {
+            private readonly int _columns, _stride;
+            private byte[] _data;
+
+            internal PackedRows(int columns, int rowLimit)
             {
-                byte[] row = lines[y];
-                int rowOff = y * stride;
-                for (int x = 0; x < columns; x++)
-                {
-                    if (row[x] != 0)
-                        result[rowOff + (x >> 3)] |= (byte)(0x80 >> (x & 7));
-                }
+                _columns = columns;
+                _stride = (columns + 7) / 8;
+                long reserve = Math.Min((long)Math.Max(1, rowLimit) * _stride, InitialPackedBytes);
+                _data = new byte[Math.Max(_stride, (int)reserve)];
             }
-            return result;
+
+            /// <summary>Rows packed so far.</summary>
+            internal int Count { get; private set; }
+
+            /// <summary>The bytes held for packed rows now — the evidence that a declared row count buys no more than <see cref="InitialPackedBytes"/> up front.</summary>
+            internal int Reserved => _data.Length;
+
+            /// <summary>Packs <paramref name="row"/>, one byte a pixel and nonzero for black, as the next row.</summary>
+            internal void Add(byte[] row)
+            {
+                long end = (long)(Count + 1) * _stride;
+                if (end > _data.Length)
+                {
+                    long grown = Math.Max(end, 2L * _data.Length);
+                    Array.Resize(ref _data, (int)Math.Min(grown, int.MaxValue - 64));
+                }
+                int offset = Count * _stride;
+                for (int x = 0; x < _columns; x++)
+                    if (row[x] != 0)
+                        _data[offset + (x >> 3)] |= (byte)(0x80 >> (x & 7));
+                Count++;
+            }
+
+            /// <summary>The packed rows, exactly <see cref="Count"/> of them.</summary>
+            internal byte[] ToArray()
+            {
+                int length = Count * _stride;
+                if (length == 0) return Array.Empty<byte>();
+                if (length == _data.Length) return _data;
+                var exact = new byte[length];
+                Buffer.BlockCopy(_data, 0, exact, 0, length);
+                return exact;
+            }
         }
 
         /// <summary>
