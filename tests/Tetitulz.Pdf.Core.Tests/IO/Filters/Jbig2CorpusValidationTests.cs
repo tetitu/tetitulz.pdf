@@ -165,8 +165,8 @@ public class Jbig2CorpusValidationTests
     [Fact]
     public void Template3_Row_y1_StartsAtXminus3()
     {
-        // T.88 Figure 6: row y-1 is x-3 .. x+1. This test used to assert x-2, written from
-        // recollection; an independent decoder's jbig2_decode_generic_template3_unopt takes CONTEXT bits 5-9
+        // T.88 Figure 6: row y-1 is x-3 .. x+1, not x-2 from recollection; an independent
+        // decoder's jbig2_decode_generic_template3_unopt takes CONTEXT bits 5-9
         // from (pd >> 9) & 0x3E0, which are x+1, x, x-1, x-2 and x-3 of the row above.
         var t = Template3;
         Assert.Equal((-1, -3), t[0]);

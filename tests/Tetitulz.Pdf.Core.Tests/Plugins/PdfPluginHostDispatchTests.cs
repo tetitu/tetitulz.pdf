@@ -82,9 +82,9 @@ public sealed class PdfPluginHostDispatchTests : IDisposable
         var jbig2 = new Decoder("Test.Jbig2", "JBIG2Decode");
         PdfPluginHost.Instance.Register(jbig2);
 
-        // The regression: dispatch used to be hardcoded to "JPXDecode", so a decoder registered
-        // for any other filter — the case the interface docs explicitly advertise — was
-        // unreachable no matter what it declared.
+        // Dispatch hardcoded to "JPXDecode" would leave a decoder registered for any other
+        // filter — the case the interface docs explicitly advertise — unreachable no matter
+        // what it declared.
         Assert.Same(jbig2, PdfPluginHost.Instance.FindDecodePlugin("JBIG2Decode"));
         Assert.Null(PdfPluginHost.Instance.FindDecodePlugin("JPXDecode"));
     }

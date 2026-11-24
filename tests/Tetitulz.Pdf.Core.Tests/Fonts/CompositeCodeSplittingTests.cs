@@ -272,7 +272,7 @@ public class CompositeCodeSplittingTests
     }
 
     /// <summary>
-    /// The other half of §9.3.3, and the one that was wrong: the <b>two-byte</b> code 0x0020 takes
+    /// The other half of §9.3.3, and the one easy to get wrong: the <b>two-byte</b> code 0x0020 takes
     /// no word spacing, so it advances 5 pt with <c>Tw = 7</c> in force, not 12.
     /// </summary>
     [Fact]

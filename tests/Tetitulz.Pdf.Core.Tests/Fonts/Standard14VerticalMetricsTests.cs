@@ -13,8 +13,8 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts
     ///
     /// <para>
     /// Advance widths answer "how far does the pen move"; stacking a numerator over a denominator
-    /// needs "how tall and how deep", which nothing in the repository could previously answer for a
-    /// Standard-14 font. These tests pin the published Adobe figures, and — more usefully — pin that
+    /// needs "how tall and how deep" for a Standard-14 font. These tests pin the published Adobe
+    /// figures, and — more usefully — pin that
     /// the fonts actually differ from one another, which is what catches a table copy-pasted between
     /// two of them.
     /// </para>

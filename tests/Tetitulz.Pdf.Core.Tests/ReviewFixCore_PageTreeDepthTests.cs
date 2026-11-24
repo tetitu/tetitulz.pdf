@@ -12,23 +12,22 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests;
 
 /// <summary>
-/// Review-fix coverage for the page-tree recursion depth cap.
+/// The page-tree recursion depth cap.
 ///
-/// <see cref="PdfPageTree"/>.CollectPages previously had only a cycle guard
-/// (a visited <c>HashSet</c>), which does NOT catch a deep but *acyclic*
-/// /Pages → /Pages → … chain.  A document with thousands of nested /Pages
-/// nodes would recurse until the native stack overflowed — uncatchable in
-/// .NET.  The fix threads a depth counter and throws
-/// <see cref="PdfParseException"/> past 1024 levels.
+/// A cycle guard (a visited <c>HashSet</c>) alone does NOT catch a deep but
+/// *acyclic* /Pages → /Pages → … chain: a document with thousands of nested
+/// /Pages nodes would recurse until the native stack overflowed — uncatchable
+/// in .NET. <see cref="PdfPageTree"/>.CollectPages threads a depth counter and
+/// throws <see cref="PdfParseException"/> past 1024 levels.
 /// </summary>
 public class ReviewFixCore_PageTreeDepthTests
 {
     [Fact]
     public void DeepAcyclicPageChain_ThrowsPdfParseException_NoStackOverflow()
     {
-        // 4000 nested /Pages nodes is well past the 1024 cap and would have
-        // blown the stack before the fix.  Each node is a distinct dictionary
-        // object (distinct reference), so the cycle guard never fires.
+        // 4000 nested /Pages nodes is well past the 1024 cap and would blow the
+        // stack without it.  Each node is a distinct dictionary object (distinct
+        // reference), so the cycle guard never fires.
         byte[] pdf = BuildDeepPageChainPdf(4000);
         using var ms = new MemoryStream(pdf);
         using var doc = PdfDocument.Open(ms);

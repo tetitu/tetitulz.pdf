@@ -13,14 +13,13 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests;
 
 /// <summary>
-/// Review-fix coverage for the incremental-update xref generation number.
+/// The incremental-update xref generation number.
 ///
-/// <see cref="PdfWriter"/>.WriteXrefTable previously hardcoded generation 0
-/// in every <c>n</c> entry, while <see cref="IncrementalUpdateWriter"/> wrote
-/// the object's real generation in the object header.  For a gen&gt;0 object
-/// the two disagreed and strict readers dropped the incremental update.  The
-/// fix adds a generation-aware <c>WriteXrefTable</c> overload and threads
-/// <c>obj.GenerationNumber</c> from the writer into the xref entry.
+/// <see cref="IncrementalUpdateWriter"/> writes the object's real generation in
+/// the object header, and <see cref="PdfWriter"/>.WriteXrefTable's
+/// generation-aware overload writes the same <c>obj.GenerationNumber</c> into
+/// the <c>n</c> entry. A hardcoded generation 0 there would disagree with the
+/// header for a gen&gt;0 object, and strict readers would drop the update.
 /// </summary>
 public class ReviewFixCore_IncrementalGenerationTests
 {

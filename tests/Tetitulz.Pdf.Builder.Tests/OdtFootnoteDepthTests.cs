@@ -15,10 +15,10 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// <summary>
 /// The ODT exporter writes a footnote's body inline, recursing into its runs. A footnote that is
 /// numbered (referenced from the body) and whose own runs reference it — directly, or through a chain of
-/// body-referenced notes that closes into a cycle — recursed forever: the mark gate does not stop it,
-/// because the note is numbered, and the stack overflowed uncatchably, taking the host down. (The HTML
+/// body-referenced notes that closes into a cycle — would recurse forever: the mark gate does not stop it,
+/// because the note is numbered, and the stack would overflow uncatchably, taking the host down. (The HTML
 /// exporter has no such path — there a note's mark is only a link and each body renders once.) The
-/// recursion is now bounded at the exporter's shared nesting ceiling and the truncation reported (2026-10-22).
+/// recursion is bounded at the exporter's shared nesting ceiling and the truncation reported.
 /// </summary>
 public class OdtFootnoteDepthTests
 {

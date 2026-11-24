@@ -70,8 +70,8 @@ public class PtBypassRegressionTests
     [Fact]
     public void Type4_LoopWithIfRecursion_AbortsQuickly()
     {
-        // 1e6 repeat whose body re-tokenises a 40-deep if-recursion each iteration. Pre-fix the
-        // re-Tokenize cost (uncounted) hung the evaluator; proc-token caching + budget bound it.
+        // 1e6 repeat whose body re-tokenises a 40-deep if-recursion each iteration. Uncounted, the
+        // re-Tokenize cost would hang the evaluator; proc-token caching + budget bound it.
         string ifNest = "1";
         for (int i = 0; i < 40; i++) ifNest = "1 { " + ifNest + " } if";
         var fn = BuildType4("{ 1000000 { " + ifNest + " pop } repeat 0.5 }");

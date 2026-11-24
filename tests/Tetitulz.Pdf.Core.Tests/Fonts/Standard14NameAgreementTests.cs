@@ -75,7 +75,7 @@ public class Standard14NameAgreementTests
 
     /// <summary>
     /// <b>The floor.</b> A font that is genuinely not one of the fourteen must answer <c>null</c> —
-    /// without this the fix could be "return Helvetica", which is the defect it replaces.
+    /// without this the rule could be "return Helvetica", which is the defect itself.
     /// </summary>
     [Theory]
     [InlineData("Garamond")]

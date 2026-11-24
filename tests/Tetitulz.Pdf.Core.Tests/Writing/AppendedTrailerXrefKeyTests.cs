@@ -53,7 +53,7 @@ public class AppendedTrailerXrefKeyTests
 
     /// <summary>
     /// <b>The floor.</b> The keys that genuinely belong to the document must survive — otherwise
-    /// the fix would be "emit an empty trailer", which loses the catalog.
+    /// the rule could be "emit an empty trailer", which loses the catalog.
     /// </summary>
     [Theory]
     [InlineData("Root")]

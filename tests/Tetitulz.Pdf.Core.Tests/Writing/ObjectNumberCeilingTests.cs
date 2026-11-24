@@ -14,11 +14,11 @@ namespace Tetitulz.Pdf.Core.Tests.Writing;
 
 /// <summary>
 /// A document that already uses object number <c>int.MaxValue</c> leaves no number for a new
-/// object (GAPS §7c: two public-corpus files define object 2147483647). "Highest plus one"
-/// overflows and reaches <see cref="IncrementalUpdateWriter.WriteUpdate"/> as a negative <c>/Size</c>,
-/// or the caller passes the ceiling itself; the writer refused before writing, naming only the
-/// overflowed value. Since 2026-10-15 the refusal names the cause and the remedy. An ordinary
-/// <c>/Size</c> mismatch keeps the refusal it had, without the cause.
+/// object (two public-corpus files define object 2147483647). "Highest plus one" overflows and
+/// reaches <see cref="IncrementalUpdateWriter.WriteUpdate"/> as a negative <c>/Size</c>, or the
+/// caller passes the ceiling itself; the writer refuses before writing, naming the cause and the
+/// remedy, not only the overflowed value. An ordinary <c>/Size</c> mismatch keeps its own
+/// refusal, without the cause.
 /// </summary>
 public class ObjectNumberCeilingTests
 {

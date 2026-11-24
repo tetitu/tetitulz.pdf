@@ -13,18 +13,18 @@ namespace Tetitulz.Pdf.Core.Tests.Functions;
 /// first</b>, and a positive j moves each element of the top-n segment one place toward the
 /// <b>top</b>, with the top element wrapping round to the bottom.
 ///
-/// <para>Both halves of that were wrong. The operands were read as
+/// <para>Both halves are easy to get wrong. Reading the operands as
 /// <c>int rn = (int)Pop(stack), rj = (int)Pop(stack);</c> — C# evaluates declarators left to
-/// right, so the count received j and the shift received n — and the rotation ran the other
-/// way. The two together made <c>1 2 3  3 1 roll</c> a silent no-op and
-/// <c>1 2 3  3 -1 roll</c> (a negative count after the swap) a silent no-op as well, so every
-/// DeviceN / Separation <c>/TintTransform</c> of the standard CMYK shape
+/// right, so the count receives j and the shift receives n — and rotating the other way would
+/// together make <c>1 2 3  3 1 roll</c> a silent no-op and <c>1 2 3  3 -1 roll</c> (a negative
+/// count after the swap) a silent no-op as well, so every DeviceN / Separation
+/// <c>/TintTransform</c> of the standard CMYK shape
 /// <c>{ 4 1 roll 1 exch sub 3 { 3 index add neg 1 add 0 max 4 1 roll } repeat pop pop pop }</c>
-/// evaluated against an unrotated stack and painted the wrong ink.</para>
+/// would evaluate against an unrotated stack and paint the wrong ink.</para>
 ///
 /// <para><b>Every expected value below is computed from the operator definition, not from the
-/// implementation</b> — the point of the fix is that the previous output was self-consistent
-/// and wrong, so a baseline captured from it would have pinned the defect.
+/// implementation</b> — such output is self-consistent and wrong, so a baseline captured from an
+/// implementation could pin a defect.
 /// <c>Plugins.PostScript</c>'s <c>PsStackOps.Roll</c> is the second implementation of the same
 /// rule and agrees with these.</para>
 /// </summary>

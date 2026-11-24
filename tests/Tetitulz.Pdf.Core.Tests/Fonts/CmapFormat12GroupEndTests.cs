@@ -33,7 +33,7 @@ public sealed class CmapFormat12GroupEndTests
         Assert.True(program.TryGetGlyph(unchecked((int)(GroupStart + 5)), out ushort sixth));
         Assert.Equal(6, sixth);
 
-        // Nothing below the group is mapped — U+0041 was, before the fix, glyph 0x41 + 1 of the wrap.
+        // Nothing below the group is mapped — U+0041 is not glyph 0x41 + 1 of a wrap.
         Assert.False(program.TryGetGlyph(0x41, out _));
         Assert.False(program.TryGetGlyph(0, out _));
     }

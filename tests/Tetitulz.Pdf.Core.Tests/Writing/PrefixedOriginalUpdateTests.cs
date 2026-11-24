@@ -258,9 +258,8 @@ public class PrefixedOriginalUpdateTests
     /// An output already holding bytes — a <c>FileMode.Append</c> destination, one part of a multipart
     /// body — with an unprefixed original: the header sits where the original landed, and the
     /// revision counts from there, so the output reads as one file and reads with the lead
-    /// stripped. The options overload used to write output positions here, with a <c>/Prev</c>
-    /// shifted to match, and the result read neither way: the original's sections count from its
-    /// header, and the revision's did not.
+    /// stripped. Output positions here, with a <c>/Prev</c> shifted to match, would read neither
+    /// way: the original's sections count from its header, and the revision's would not.
     /// </summary>
     [Fact]
     public void A_pre_positioned_output_with_an_unprefixed_original_counts_from_where_the_original_landed()

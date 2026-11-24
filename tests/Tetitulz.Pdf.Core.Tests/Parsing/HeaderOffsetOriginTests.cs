@@ -171,22 +171,11 @@ public class HeaderOffsetOriginTests
     // ================================================================
 
     /// <summary>
-    /// A stream with no <c>%PDF-</c> header in the search window — a fragment, an extracted revision,
-    /// an embedded PDF a caller points the parser at — keeps counting from byte 0, exactly as it did
-    /// before §7.5.2 was honoured.
-    /// </summary>
-    /// <remarks>
-    /// Object 1 begins at byte 0 here, so an origin of "no header found" rather than 0 would place it
-    /// one byte outside the file and <see cref="PdfParser.GetObject"/> would refuse it. That is the
-    /// whole difference between the two, and it is why the search's miss is folded to 0 rather than
-    /// carried as -1.
-    /// </remarks>
-    /// <summary>
     /// The header is looked for inside the first 1024 bytes and nowhere else (PDF 32000-1:2008
     /// §7.5.2 puts it on the first line; the window is the tolerance). A header past the window is
     /// no header: <see cref="PdfParser.ParseHeader"/> reads none — the version assumed, and
-    /// <see cref="PdfParser.LastHeaderRecovery"/> saying so (since 2026-10-15; it refused the file
-    /// before) — and a bare <see cref="PdfParser.ParseCrossReferences"/> counts from byte 0.
+    /// <see cref="PdfParser.LastHeaderRecovery"/> saying so — and a bare
+    /// <see cref="PdfParser.ParseCrossReferences"/> counts from byte 0.
     /// </summary>
     [Fact]
     public void A_header_beyond_the_search_window_is_not_a_header()
@@ -202,6 +191,16 @@ public class HeaderOffsetOriginTests
         Assert.Equal(0L, parser.HeaderOffset);
     }
 
+    /// <summary>
+    /// A stream with no <c>%PDF-</c> header in the search window — a fragment, an extracted revision,
+    /// an embedded PDF a caller points the parser at — counts from byte 0.
+    /// </summary>
+    /// <remarks>
+    /// Object 1 begins at byte 0 here, so an origin of "no header found" rather than 0 would place it
+    /// one byte outside the file and <see cref="PdfParser.GetObject"/> would refuse it. That is the
+    /// whole difference between the two, and it is why the search's miss is folded to 0 rather than
+    /// carried as -1.
+    /// </remarks>
     [Fact]
     public void Headerless_stream_still_counts_its_offsets_from_byte_zero()
     {

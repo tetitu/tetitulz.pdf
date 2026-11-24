@@ -18,14 +18,13 @@ using Tetitulz.Pdf.Signing.Cms;
 namespace Tetitulz.Pdf.Core.Tests.Signing;
 
 /// <summary>
-/// <see cref="PdfSignatureVerifier"/> is now the single verification engine and
+/// <see cref="PdfSignatureVerifier"/> is the single verification engine and
 /// <see cref="PdfSignatureValidator"/> a thin adapter over it.
 /// <para>
-/// They used to be parallel implementations that had drifted: the validator applied neither the
-/// MD5/MD2 hard reject, the SHA-1 weak flag nor the ESS signer-binding check, walked only the top
-/// level of /Fields (missing any signature nested under a parent node), and never looked at
-/// /SubFilter — so a /DocTimeStamp listed first would be fed into the detached-CMS path. These
-/// tests pin the unified behaviour.
+/// Parallel implementations drift: a second engine could apply neither the MD5/MD2 hard reject,
+/// the SHA-1 weak flag nor the ESS signer-binding check, walk only the top level of /Fields
+/// (missing any signature nested under a parent node), and never look at /SubFilter — feeding a
+/// /DocTimeStamp listed first into the detached-CMS path. These tests pin the unified behaviour.
 /// </para>
 /// </summary>
 public class UnifiedVerificationPipelineTests

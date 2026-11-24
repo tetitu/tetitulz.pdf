@@ -188,23 +188,21 @@ public class Jbig2HuffmanAndMiscTests
     }
 
     // ==================================================================
-    //  Diagnose / Assess must not endorse the Huffman paths
+    //  Diagnose / Assess report the Huffman paths as they decode
     // ==================================================================
     //
-    //  All three of these previously asserted the opposite: that a Huffman
-    //  symbol dictionary and a Huffman text region were "experimental" but
-    //  decodable, and that a stream made of both was IsFullyDecodable. They
-    //  encoded the defect in GAPS.md §2a — the symbol dictionary emitted blank
-    //  placeholder bitmaps and reported success, so the one API a host calls to
-    //  ask "will this decode?" answered YES for the path that returns blanks.
+    //  The one API a host calls to ask "will this decode?" answers from what the
+    //  decoder does: a path that emitted blank placeholder bitmaps and reported
+    //  success would be endorsed by a YES, so each classification here is held
+    //  to a real decode of the same flags.
 
     [Fact]
     public void Diagnose_HuffmanTextRegion_NonRefined_IsReportedDecoded()
     {
         // SBFLAGS bit 0 set → SBHUFF=1, bit 1 clear → SBREFINE=0.
         // SBFLAGS is 16-bit big-endian and SBHUFF is bit 0, so the flag is in the SECOND byte.
-        // A non-refined Huffman text region now decodes for real (GAPS.md §2a) — the
-        // runcode-coded symbol-ID table is built and used, not approximated.
+        // A non-refined Huffman text region decodes — the runcode-coded symbol-ID
+        // table is built and used, not approximated.
         var body = new byte[17 + 2 + 32];
         body[18] = 0x01;   // SBFLAGS low byte, bit 0 = SBHUFF
         var stream = Concat(
@@ -236,9 +234,9 @@ public class Jbig2HuffmanAndMiscTests
     public void Diagnose_HuffmanSymbolDict_NonAggregated_IsSkippedBenign()
     {
         // SDFLAGS (2 bytes): high byte = 0, low byte bit 0 = SDHUFF, bit 1 = SDREFAGG (here 0).
-        // A non-aggregated Huffman symbol dictionary decodes for real now — the collective bitmap
-        // is parsed and split (GAPS.md §2a) — so, matching the arithmetic symbol dictionary's own
-        // classification, this is SkippedBenign (no page content by itself), not Unsupported.
+        // A non-aggregated Huffman symbol dictionary decodes — the collective bitmap is parsed
+        // and split — so, matching the arithmetic symbol dictionary's own classification, this
+        // is SkippedBenign (no page content by itself), not Unsupported.
         var body = new byte[2 + 10];
         body[0] = 0x00; body[1] = 0x01;
         var stream = Concat(
@@ -253,9 +251,8 @@ public class Jbig2HuffmanAndMiscTests
     public void Assess_HuffmanStream_NonAggregatedNonRefined_IsNowReportedFullyDecodable()
     {
         // Mix: page info + non-aggregated Huffman symbol dict + non-refined Huffman text region +
-        // end. Both halves of the Huffman path now decode for real (GAPS.md §2a), so — unlike
-        // before either was fixed, when both were Unsupported — this static classification (which
-        // reads flags, not an actual decode attempt) reports the stream as fully decodable.
+        // end. Both halves of the Huffman path decode, so this static classification (which reads
+        // flags, not an actual decode attempt) reports the stream as fully decodable.
         var symBody = new byte[2 + 10];
         symBody[1] = 0x01; // SDHUFF=1, SDREFAGG=0
         var txtBody = new byte[17 + 2 + 32];
@@ -321,12 +318,10 @@ public class Jbig2HuffmanAndMiscTests
     }
 
     /// <summary>
-    /// The positive half of the fix: a non-aggregated Huffman symbol dictionary now decodes to
-    /// real, non-blank pixels — not merely "does not throw". <see cref="Jbig2Decoder.DecodeSymbolDictionary"/>
-    /// is called directly (made <c>internal</c> for exactly this reason) because the only path
-    /// that would otherwise expose a symbol's pixels — a text region drawing it onto a page — is
-    /// itself a Huffman text region, which still refuses; there is no way to reach the decoded
-    /// bitmap through the public filter API today.
+    /// The positive half: a non-aggregated Huffman symbol dictionary decodes to real, non-blank
+    /// pixels — not merely "does not throw". <see cref="Jbig2Decoder.DecodeSymbolDictionary"/> is
+    /// called directly (it is <c>internal</c> for this reason), so the symbol's own pixels are
+    /// asserted apart from any text region that draws them.
     /// </summary>
     [Fact]
     public void DecodeSymbolDictionary_Huffman_NonAggregated_DecodesRealNonBlankPixels()

@@ -111,11 +111,10 @@ public class Jbig2DecodeFilterTests
     /// black, the default <c>/Decode</c> is <c>[0 1]</c> (§8.9.5.2) — white must come back as
     /// <c>0xFF</c>, not as the all-zero bitmap T.88 builds internally.
     ///
-    /// <para>This assertion read <c>Assert.Equal(0, b)</c> under a comment saying "all zero
-    /// (white)" until 2026-08-12, and the filter matched it: T.88's polarity (1 = black) reached
-    /// the image machinery unconverted, so <b>this very stream — a blank page — painted solid
-    /// black</b>, and a real scan rendered white-on-black. Nothing downstream can repair it,
-    /// because nothing downstream can tell a JBIG2-sourced 1-bpc image from any other.</para>
+    /// <para>T.88's polarity (1 = black) reaching the image machinery unconverted would make
+    /// <b>this very stream — a blank page — paint solid black</b>, and a real scan render
+    /// white-on-black. Nothing downstream can repair it, because nothing downstream can tell a
+    /// JBIG2-sourced 1-bpc image from any other.</para>
     /// </summary>
     [Fact]
     public void Decode_PageInfoOnly_ReturnsAWhitePageBitmap_InThePdfSampleConvention()

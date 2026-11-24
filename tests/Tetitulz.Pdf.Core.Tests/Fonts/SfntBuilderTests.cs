@@ -91,8 +91,7 @@ public class SfntBuilderTests
     public void Build_WithNoHeadTable_StillProducesAValidContainer()
     {
         // Legal: not every sfnt carries /head. The builder must not index into a table that is not
-        // there - it used to be possible to hand this shape to the hand-rolled assemblers and get
-        // an IndexOutOfRangeException.
+        // there, or this shape would raise an IndexOutOfRangeException.
         byte[] font = SfntBuilder.Build(SfntBuilder.VersionTrueType, new List<(string, byte[])>
         {
             ("cmap", new byte[] { 1, 2, 3, 4 }),

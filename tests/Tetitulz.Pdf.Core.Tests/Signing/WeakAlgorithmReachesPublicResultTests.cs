@@ -33,16 +33,9 @@ public class WeakAlgorithmReachesPublicResultTests
 {
     /// <summary>
     /// The weakness reaches the public result, and the CMS integrity check itself still succeeds —
-    /// the bytes do match the signature. What the default policy now does with that is the subject
+    /// the bytes do match the signature. What the default policy does with that is the subject
     /// of <see cref="Sha1SignedPdf_IsRejectedByDefault"/>.
     /// </summary>
-    /// <remarks>
-    /// RENAMED from <c>Sha1SignedPdf_SurfacesWeakAlgorithmOnPublicVerifyResult</c>, whose body
-    /// asserted "a SHA-1 signature still verifies by default" as the contract. That contract was
-    /// deliberately changed on 2026-08-12; editing the assertion under the old name would have left
-    /// a test whose name promises the old behaviour and whose body asserts the new one, which
-    /// CLAUDE.md identifies as the failure mode no guard can catch.
-    /// </remarks>
     [Fact]
     public void Sha1SignedPdf_SurfacesWeakAlgorithmAndKeepsIntegrityValid()
     {
@@ -82,19 +75,14 @@ public class WeakAlgorithmReachesPublicResultTests
     }
 
     /// <summary>
-    /// A SHA-1 signature is <b>invalid</b> under the default policy since 2026-08-12.
+    /// A SHA-1 signature is <b>invalid</b> under the default policy.
     /// </summary>
     /// <remarks>
-    /// <para>RENAMED from <c>WeakAlgorithmFlag_DoesNotByItselfInvalidateTheSignature</c>, which
-    /// asserted the opposite and whose message read "Flagging must stay advisory unless
-    /// RejectWeakAlgorithms is set." That WAS the contract, and it was changed deliberately:
-    /// <c>SignatureVerificationOptions.RejectWeakAlgorithms</c> and the legacy static now both
-    /// default to <c>true</c>. Renaming rather than editing is required by CLAUDE.md — a test whose
-    /// name and body disagree reads as coverage of the behaviour it names while pinning the
-    /// opposite one.</para>
-    /// <para>The advisory behaviour is still reachable and is pinned by
+    /// <para><c>SignatureVerificationOptions.RejectWeakAlgorithms</c> and the legacy static both
+    /// default to <c>true</c>.</para>
+    /// <para>The advisory behaviour is reachable and is pinned by
     /// <see cref="WeakAlgorithmFlag_IsAdvisoryWhenTheCallerOptsOut"/>, so this pair asserts the
-    /// policy in both directions rather than only the new default.</para>
+    /// policy in both directions rather than only the default.</para>
     /// </remarks>
     [Fact]
     public void Sha1SignedPdf_IsRejectedByDefault()

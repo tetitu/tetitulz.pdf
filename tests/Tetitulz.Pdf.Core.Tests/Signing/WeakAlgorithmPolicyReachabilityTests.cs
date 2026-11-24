@@ -62,10 +62,9 @@ public class WeakAlgorithmPolicyReachabilityTests
             Assert.True(result.WeakAlgorithm, "SHA-1 must still be detected as weak.");
             Assert.False(result.IsValid,
                 "The legacy static must reach the CMS layer when the caller passed no options.");
-            // Integrity stays TRUE: the bytes verified and only policy refused them. This assertion
-            // used to read Assert.False(IsIntegrityValid) — correct while a policy refusal was
-            // mapped onto the integrity flag, and wrong since they were separated, because
-            // conflating them makes a refused algorithm indistinguishable from a modified document.
+            // Integrity stays TRUE: the bytes verified and only policy refused them. A policy
+            // refusal mapped onto the integrity flag would make a refused algorithm
+            // indistinguishable from a modified document.
             Assert.True(result.IsIntegrityValid,
                 "A policy refusal must not be reported as an integrity failure.");
             Assert.Contains(result.ValidationErrors,

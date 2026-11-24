@@ -14,9 +14,9 @@ using J = Tetitulz.Pdf.Core.Tests.Imaging.Jpx.JpxCodestreams;
 namespace Tetitulz.Pdf.Core.Tests.Imaging.Jpx;
 
 /// <summary>
-/// The decoder's guards after the review of 2026-09-26 (15k Stage B): the packet sequencer charges
-/// every scan, the budget is a share per byte of the file plus the declared reconstruction, a
-/// decode's code-block problems are capped, and the syntax the parser used to pass silently —
+/// The decoder's guards: the packet sequencer charges every scan, the budget is a share per byte
+/// of the file plus the declared reconstruction, a decode's code-block problems are capped, and
+/// syntax a lenient parser would pass silently —
 /// duplicate packed-header indices, a non-last <c>Psot 0</c>, TNsot, a PLT in the main header —
 /// is refused or reported. Every hostile fixture here is asserted on the budget's evidence, never
 /// on a clock.

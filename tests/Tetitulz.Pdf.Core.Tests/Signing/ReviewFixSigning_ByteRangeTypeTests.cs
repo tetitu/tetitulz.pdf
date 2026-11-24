@@ -12,14 +12,13 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Signing;
 
 /// <summary>
-/// §88 H2: PdfSignatureVerifier must return a clean validation error (not throw
+/// PdfSignatureVerifier must return a clean validation error (not throw
 /// InvalidOperationException) when a signature dictionary's /ByteRange array
 /// contains a non-numeric element such as a PDF null literal.
 ///
-/// Pre-fix: byteRangeArray.GetLong(i) on a PdfNull element threw
-/// InvalidOperationException, which propagated as an unhandled exception.
-/// Post-fix: the type is validated first and a descriptive validation error is
-/// recorded instead.
+/// byteRangeArray.GetLong(i) on a PdfNull element would throw
+/// InvalidOperationException; the type is validated first and a descriptive
+/// validation error is recorded instead.
 /// </summary>
 public class ReviewFixSigning_ByteRangeTypeTests
 {
@@ -33,7 +32,7 @@ public class ReviewFixSigning_ByteRangeTypeTests
 
         var verifier = new PdfSignatureVerifier();
 
-        // Must not throw — pre-fix this raised InvalidOperationException.
+        // Must not throw InvalidOperationException.
         var results = verifier.VerifyAll(doc);
 
         Assert.Single(results);

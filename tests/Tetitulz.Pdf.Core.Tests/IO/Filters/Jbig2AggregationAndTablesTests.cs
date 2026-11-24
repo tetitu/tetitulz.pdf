@@ -147,10 +147,9 @@ public class Jbig2AggregationAndTablesTests
     /// <summary>
     /// flags=0, HTLOW=HTHIGH=0 → the regular-row loop (B.2 5) never runs, but the lower-range
     /// (B.2 6-7) and upper-range (B.2 8-9) lines are <b>mandatory</b>, not gated by any flag — a
-    /// real Tables segment always carries at least these two. This test used to assert an
-    /// <i>empty</i> table here, encoding the same wrong reading <c>ParseUserDefinedHuffmanTable</c>
-    /// itself carried (treating flag bit 0 as an optional "low tail" and a non-existent bit 1 as
-    /// an optional "high tail"), fixed alongside it.
+    /// real Tables segment always carries at least these two — not an <i>empty</i> table, which
+    /// would treat flag bit 0 as an optional "low tail" and a non-existent bit 1 as an optional
+    /// "high tail".
     /// </summary>
     [Fact]
     public void ParseUserDefinedHuffmanTable_EmptyRange_StillHasTheMandatoryLowerAndUpperRangeLines()

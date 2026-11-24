@@ -11,10 +11,10 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// <summary>
 /// A paragraph that holds many separate single-space runs — the shape an HTML source of
 /// <c>x&lt;i&gt;&lt;/i&gt; &lt;i&gt;&lt;/i&gt; … y</c> produces, a space text node between each empty
-/// element — accumulated its pending space text with <c>pendingSpaceText += sp.Text</c>, one character
-/// per run, committed once. That copied Σk ≈ n²/2 characters per layout pass (tens of GB for 200 000
-/// runs). A reused <c>StringBuilder</c> makes it linear; the allocation is the work signal here, so no
-/// wall clock is needed to see the quadratic cost (2026-10-23).
+/// element. Accumulating its pending space text with <c>pendingSpaceText += sp.Text</c>, one character
+/// per run, would copy Σk ≈ n²/2 characters per layout pass (tens of GB for 200 000 runs); a reused
+/// <c>StringBuilder</c> makes it linear. The allocation is the work signal here, so no wall clock is
+/// needed to see a quadratic cost.
 /// </summary>
 public class ParagraphSpaceRunCostTests
 {
@@ -40,7 +40,7 @@ public class ParagraphSpaceRunCostTests
         long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 
         Assert.NotEmpty(pdf);
-        // Pre-fix Σk ≈ n²/2 characters ≈ 2.5 GB at n = 50 000; post-fix the StringBuilder is linear.
+        // Quadratic: Σk ≈ n²/2 characters ≈ 2.5 GB at n = 50 000; the StringBuilder is linear.
         // A quadratic layout cannot come in under this bound, whatever the machine's speed.
         Assert.True(allocated < 400_000_000,
             $"laying out {n:N0} space runs allocated {allocated:N0} bytes — the pending-space accumulation is quadratic");

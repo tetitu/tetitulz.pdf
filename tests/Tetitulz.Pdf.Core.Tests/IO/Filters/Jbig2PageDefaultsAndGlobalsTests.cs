@@ -72,10 +72,10 @@ public class Jbig2PageDefaultsAndGlobalsTests
     [Fact]
     public void Decode_UnusableGlobalsButSelfContainedPage_ReturnsPixelsWithNoFallbackReason()
     {
-        // The globals failure used to be written straight into LastFallbackReason and then fall
-        // through to a decode that succeeds — leaving the slot non-null beside a real bitmap and
-        // inverting the documented contract ("a non-null value means the returned array is not a
-        // bitmap"). A caller following that contract discarded a valid image and drew nothing.
+        // A globals failure written straight into LastFallbackReason before a decode that succeeds
+        // would leave the slot non-null beside a real bitmap, inverting the documented contract ("a
+        // non-null value means the returned array is not a bitmap"): a caller following that
+        // contract would discard a valid image and draw nothing.
         var parms = new PdfDictionary();
         parms[PdfName.JBIG2Globals] = new PdfNumber(8);   // present, not a stream
 

@@ -41,8 +41,8 @@ public class PdfFontCreateContractTests
     }
 
     /// <summary>
-    /// The defect: a real dictionary with no document. It used to be a
-    /// <see cref="NullReferenceException"/> from inside the factory; it now names the parameter.
+    /// The defect: a real dictionary with no document. The refusal names the parameter, rather
+    /// than a <see cref="NullReferenceException"/> from inside the factory.
     /// </summary>
     [Fact]
     public void ADictionaryWithNoDocumentIsRefusedByNameRatherThanNullReferencing()

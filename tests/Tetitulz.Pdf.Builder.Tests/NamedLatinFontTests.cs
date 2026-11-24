@@ -17,11 +17,10 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// A run that names its own Latin family gets that font, rather than one of the three standard-14
 /// buckets.
 ///
-/// <para><b>What was wrong.</b> The exporter mapped every WinAnsi run onto Helvetica, Times or
-/// Courier by keyword — so a document asking for Garamond got Helvetica's shapes <i>and</i>
-/// Helvetica's metrics, with nothing anywhere saying so. The embedding machinery already existed
-/// and was reached only by text the standard-14 fonts cannot draw at all (anything above U+00FF);
-/// what kept Latin text out of it was the condition, not the capability.</para>
+/// <para><b>What it guards against.</b> Mapping every WinAnsi run onto Helvetica, Times or Courier
+/// by keyword would give a document asking for Garamond Helvetica's shapes <i>and</i> Helvetica's
+/// metrics, with nothing anywhere saying so. The embedding machinery serves Latin text as it serves
+/// text the standard-14 fonts cannot draw at all (anything above U+00FF).</para>
 ///
 /// <para><b>The assertion is on how the glyphs reached the page</b>, not on the presence of a font
 /// object. A standard-14 run is drawn as a literal string; an embedded composite font is drawn as

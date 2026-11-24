@@ -14,9 +14,9 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// <summary>
 /// A character XML 1.0 forbids — the vertical tab U+000B that Word uses for a manual line break in copied
 /// text, a stray control code, a lone surrogate — is replaced with U+FFFD before it reaches the DOCX or
-/// ODT output. Written raw, it made <c>content.xml</c> not well-formed (an office app refuses the file)
-/// and made OpenXML throw <c>ArgumentException</c> out of the DOCX exporter, leaving the caller a partial
-/// zip (2026-10-23).
+/// ODT output. Written raw, it would make <c>content.xml</c> not well-formed (an office app refuses the
+/// file) and make OpenXML throw <c>ArgumentException</c> out of the DOCX exporter, leaving the caller a
+/// partial zip.
 /// </summary>
 public class XmlTextSanitizeTests
 {

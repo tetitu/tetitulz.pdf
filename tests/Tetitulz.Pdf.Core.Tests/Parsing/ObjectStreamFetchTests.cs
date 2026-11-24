@@ -78,18 +78,15 @@ public class ObjectStreamFetchTests
     /// than throwing or returning a neighbouring object — <b>and says why</b>.
     /// </summary>
     /// <remarks>
-    /// <para>The reason is the half this test used to be missing, and the omission is the defect
-    /// rather than a gap in the assertion: a bare <c>PdfNull</c> is exactly what an object the file
-    /// never declared produces, so a caller had no way to tell a corrupt cross-reference entry from
-    /// an ordinary absent object.</para>
+    /// <para>The reason is half the answer: a bare <c>PdfNull</c> is exactly what an object the file
+    /// never declared produces, so without it a caller could not tell a corrupt cross-reference entry
+    /// from an ordinary absent object.</para>
     ///
-    /// <para><b>And that is not hypothetical — this test was asking for the wrong object.</b> It
-    /// fetched object 9 while the builder's extra entry lands on object 7, because the entries are
-    /// written in order from object 0 and the fixture holds eight of them. So the call took the
-    /// <i>absent</i> path and the assertion passed for the wrong reason, invisibly, because both
-    /// paths return <c>PdfNull</c>. Adding the reason is what surfaced it. The stream staying usable
-    /// afterwards is the control — a refusal that poisoned the reader would satisfy the first
-    /// assertion just as well.</para>
+    /// <para><b>It also keeps the fixture honest.</b> The builder's extra entry lands on object 7,
+    /// because the entries are written in order from object 0 and the fixture holds eight of them; a
+    /// fetch of any other number would take the <i>absent</i> path and pass on <c>PdfNull</c> alone,
+    /// for the wrong reason. The stream staying usable afterwards is the control — a refusal that
+    /// poisoned the reader would satisfy the first assertion just as well.</para>
     /// </remarks>
     [Fact]
     public void GetObject_IndexBeyondObjStmEntryCount_ReturnsPdfNullAndSaysWhy()

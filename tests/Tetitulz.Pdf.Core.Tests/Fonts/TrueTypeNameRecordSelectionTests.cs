@@ -87,7 +87,7 @@ public class TrueTypeNameRecordSelectionTests
     /// <summary>
     /// The preference is for <b>English</b>, not for the Windows platform as such: a Macintosh
     /// <i>English</i> record is a legitimate source when nothing better exists. This is the case
-    /// that stops the fix from being "always take platform 3", which would report no family name
+    /// that stops the rule from being "always take platform 3", which would report no family name
     /// at all for a Macintosh-only font.
     /// </summary>
     [Fact]

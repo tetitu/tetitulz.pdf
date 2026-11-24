@@ -167,15 +167,13 @@ public class ChartDataPointBudgetTests
 
     /// <summary>
     /// The point-colour array is sized from an <c>idx</c> on <c>c:dPt</c> — a separate code path
-    /// from the value cache, and separately unbounded before the fix.
+    /// from the value cache, and separately bounded.
     /// </summary>
     /// <remarks>
-    /// An earlier pass concluded this path was untestable because <c>ReadPointColors</c> returns
-    /// early without a <c>DrawingColorSource</c>. That was wrong: <c>ChartRenderer</c> implements
-    /// the interface and passes itself, so the source is never null in a real conversion. The test
-    /// had actually failed for the same reason as its numeric sibling — it asserted the literal
-    /// <c>2000000000</c> while the report says <c>2000000001</c>. Diagnosing a red test as
-    /// "unreachable code" is a comfortable answer and was the wrong one.
+    /// <c>ReadPointColors</c> returns early without a <c>DrawingColorSource</c>, but the path is
+    /// reachable: <c>ChartRenderer</c> implements the interface and passes itself, so the source is
+    /// never null in a real conversion. As for its numeric sibling, the report says
+    /// <c>2000000001</c>, not the <c>idx</c> literal <c>2000000000</c>.
     ///
     /// <para>The fixture needs an explicit <c>a:srgbClr</c>: a colour that resolves to null leaves
     /// <c>byIndex</c> empty, <c>max</c> at zero, and the method returns before reaching the cap —

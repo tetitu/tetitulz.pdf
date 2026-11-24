@@ -142,7 +142,7 @@ public class SymbolicFlagAgreementTests
 
     /// <summary>
     /// <b>The floor against "always symbolic".</b> A conforming nonsymbolic descriptor keeps
-    /// StandardEncoding on both sides — otherwise the fix would be "treat every font as symbolic",
+    /// StandardEncoding on both sides — otherwise the rule could be "treat every font as symbolic",
     /// which satisfies every agreement assertion above and is wrong for the common case.
     /// </summary>
     [Theory]

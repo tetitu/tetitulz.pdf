@@ -64,7 +64,7 @@ public class ReviewFixSigning_SigningTimeValidityTests
     public void CurrentlyValidCert_WithSigningTime_IsTrusted()
     {
         // Control: a presently-valid cert with a SigningTime attribute still validates Trusted,
-        // proving the fix does not break the normal case.
+        // proving the check does not break the normal case.
         var (cert, key) = SelfSigned("CN=Valid Signer",
             DateTime.UtcNow.AddYears(-1), DateTime.UtcNow.AddYears(1), KeyUsage.DigitalSignature);
 

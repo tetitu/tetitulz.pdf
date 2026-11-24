@@ -31,15 +31,15 @@ namespace Tetitulz.Pdf.Core.Tests.IO.Filters;
 public class CcittFaxRowsAllocationTests
 {
     /// <summary>
-    /// Large enough that the pre-fix reservation (8 bytes per element) is ~400 MB — three orders
-    /// of magnitude above the ceiling asserted below — while staying survivable if someone runs
-    /// these tests against the unfixed code.
+    /// Large enough that a reservation sized from it (8 bytes per element) is ~400 MB — three
+    /// orders of magnitude above the ceiling asserted below — while staying survivable if the
+    /// guard is removed.
     /// </summary>
     private const int AdversarialRows = 50_000_000;
 
     /// <summary>
-    /// Generous: the fixed decoder reserves at most 4 096 entries (~32 KB) plus whatever the two
-    /// input bytes decode into. Anything approaching the pre-fix 400 MB fails this by 100×.
+    /// Generous: the decoder reserves at most 4 096 entries (~32 KB) plus whatever the two input
+    /// bytes decode into. Anything approaching an unguarded 400 MB fails this by 100×.
     /// </summary>
     private const long AllocationCeilingBytes = 8L * 1024 * 1024;
 

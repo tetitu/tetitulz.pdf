@@ -142,7 +142,7 @@ public class HybridXrefAndOffsetTests
     /// An entry offset is file-supplied and <c>GetObject</c> seeks to it. A NEGATIVE one is caught
     /// a layer earlier — <c>ParseXrefSectionAt</c> refuses the whole section, which is covered by
     /// <c>HybridXrefAndSectionRecoveryTests</c> — but an offset that merely points PAST EOF is
-    /// syntactically valid, survives into the table, and nothing bounded it here.
+    /// syntactically valid, survives into the table, and is bounded here.
     /// </summary>
     /// <remarks>
     /// The reason string is asserted rather than just the <c>PdfNull</c>. Seeking past EOF does not
@@ -150,11 +150,9 @@ public class HybridXrefAndOffsetTests
     /// the caller gets <c>PdfNull</c> plus a message about an unexpected token — which is
     /// indistinguishable from a genuinely corrupt object body and points a reader at the wrong
     /// half of the file. Only the range check says the OFFSET was the problem.
-    /// <para>The file holds no <c>4 0 obj</c> header. Since GAPS §19h item 5b an object whose header
-    /// is in the file is read from there instead (<c>ParserRecoveryAndIdentityTests</c>), so this
-    /// fixture used to write object 4 — and the test's earlier name,
-    /// <c>MalformedOutOfRangeEntryOffset_ReportsThroughLastObjectParseError</c>, held only while
-    /// nothing looked for it.</para>
+    /// <para>The file holds no <c>4 0 obj</c> header: an object whose header is in the file is read
+    /// from there instead (<c>ParserRecoveryAndIdentityTests</c>), so a fixture that wrote object 4
+    /// would not reach the range check.</para>
     /// </remarks>
     [Fact]
     public void MalformedOutOfRangeEntryOffset_WithNoHeaderToReadFrom_ReportsThroughLastObjectParseError()

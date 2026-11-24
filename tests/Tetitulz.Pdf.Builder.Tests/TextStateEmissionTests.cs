@@ -166,10 +166,10 @@ public class TextStateEmissionTests
     /// A superscript's glyphs sit exactly <c>0.35 * FontSize</c> above the surrounding baseline.
     /// </summary>
     /// <remarks>
-    /// The rise used to be applied twice — once as the piece's <c>Tm</c> translation and again as
-    /// <c>Ts</c>, which §9.4.4 adds ON TOP of the matrix — so a 12 pt superscript was drawn 8.4 pt
-    /// up instead of 4.2, above the cap height of its own line, while the underline / strike /
-    /// highlight passes used the single offset and detached from the glyphs.
+    /// The rise is applied once. Applied as the piece's <c>Tm</c> translation and again as <c>Ts</c>,
+    /// which §9.4.4 adds ON TOP of the matrix, a 12 pt superscript would be drawn 8.4 pt up instead of
+    /// 4.2, above the cap height of its own line, while the underline / strike / highlight passes used
+    /// the single offset and detached from the glyphs.
     /// </remarks>
     [Fact]
     public void Superscript_IsRaisedByExactlyOneRise()
@@ -211,8 +211,8 @@ public class TextStateEmissionTests
 
     /// <summary>
     /// The decoration passes place the rule at <c>baseline + rise</c>, so once the glyphs are
-    /// raised once they and their underline share a baseline. Asserted as the pair, because the
-    /// two halves were consistent with each other before the fix only by both being wrong.
+    /// raised once they and their underline share a baseline. Asserted as the pair, because the two
+    /// halves can be consistent with each other by both being wrong.
     /// </summary>
     [Fact]
     public void SuperscriptUnderline_SitsUnderTheSuperscriptItBelongsTo()

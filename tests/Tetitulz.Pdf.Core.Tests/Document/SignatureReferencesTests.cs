@@ -77,7 +77,7 @@ public sealed class SignatureReferencesTests
     }
 
     /// <summary>
-    /// <b>The lone dictionary — the shape that used to be dropped.</b> Table 252 says array, and a
+    /// <b>The lone dictionary.</b> Table 252 says array, and a
     /// reader that refuses this silently discards the transform the entry exists to declare.
     /// </summary>
     [Fact]

@@ -10,7 +10,7 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.IO.Filters;
 
 /// <summary>
-/// The LZW decoder's output (2026-10-19): the codes read through a bit accumulator, and each string
+/// The LZW decoder's output: the codes read through a bit accumulator, and each string
 /// written where it stays — chunks that grow, joined at the end — or handed to a sink from a scratch.
 /// </summary>
 public sealed class LzwDecodeOutputTests

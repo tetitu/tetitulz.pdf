@@ -193,8 +193,8 @@ public sealed class PdfPluginHostDecodeFilterValidationTests : IDisposable
     [Fact]
     public void Register_AfterARefusedDecodePlugin_StillSucceedsForAnUnrelatedPlugin()
     {
-        // The poisoning symptom: before the fix the broken plugin sat in _plugins and every
-        // subsequent Register threw from RebuildDecodeCache.
+        // The poisoning symptom: a broken plugin left in _plugins would make every subsequent
+        // Register throw from RebuildDecodeCache.
         var host = PdfPluginHost.Instance;
         Assert.Throws<ArgumentException>(
             () => host.Register(new Decoder("Test.NullFilters", null!)));

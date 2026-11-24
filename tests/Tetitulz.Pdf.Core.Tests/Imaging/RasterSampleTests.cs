@@ -8,18 +8,14 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Imaging;
 
 /// <summary>
-/// <i>n</i>-bit raster sample → 8-bit channel, the rule four decoders had each written for
-/// themselves.
+/// <i>n</i>-bit raster sample → 8-bit channel, the one rule the image decoders share.
 ///
-/// <para><b>The copies had drifted into a visible defect.</b> <c>BuilderImageDecoder</c> read a
-/// 16-bit sample as its <b>high byte</b> (0–255) and then divided by 65535, so
-/// <c>s * 255 / 65535</c> was <b>0 for every sample up to 257</b>: every 16-bit greyscale PNG
-/// exported from <c>DocumentBuilder</c> came out pure black. <c>DocxToPdf.PngImage</c> read the
-/// whole sample and rounded; <c>PdfColor.Scale16To8</c> had the same rounded expression. The two
-/// feature copies were never swept when that one was fixed.</para>
+/// <para><b>Private copies drift into a visible defect.</b> Reading a 16-bit sample as its
+/// <b>high byte</b> (0–255) and then dividing by 65535 makes <c>s * 255 / 65535</c> <b>0 for
+/// every sample up to 257</b>: every 16-bit greyscale PNG would come out pure black.</para>
 ///
-/// <para>The read and the scale are asserted <b>together</b>, because that is where the defect
-/// lived: each half was defensible alone and they disagreed about what "sample" meant.</para>
+/// <para>The read and the scale are asserted <b>together</b>, because that is where such a defect
+/// lives: each half is defensible alone, and the two can disagree about what "sample" means.</para>
 /// </summary>
 public sealed class RasterSampleTests
 {

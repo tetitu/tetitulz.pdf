@@ -220,8 +220,8 @@ public class PdfTokenizerTests
     /// <summary>
     /// AFP-generated PDFs (e.g. ISIS AfpToPdf) omit whitespace between operators and
     /// their following numeric operands: "g1 0 0 1 0 0 Tm" means "g" + 1 0 0 1 0 0 Tm.
-    /// Without the fix, "g1" is read as one keyword, "Tm" gets only 5 args, and
-    /// silently ignores the matrix (text rendered at wrong position / not at all).
+    /// Read as one keyword, "g1" would leave "Tm" only 5 args, and the matrix would
+    /// be silently ignored (text rendered at wrong position / not at all).
     /// </summary>
     [Fact]
     public void NextToken_SplitsOperatorAndDigit_AfdPattern()

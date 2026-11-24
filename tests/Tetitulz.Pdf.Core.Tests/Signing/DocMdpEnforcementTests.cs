@@ -14,11 +14,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Signing;
 
 /// <summary>
-/// DocMDP (certification) enforcement is now wired into the signature-verification path:
+/// DocMDP (certification) enforcement in the signature-verification path:
 /// <see cref="PdfSignatureVerifier.VerifyAll"/> surfaces the certification permission on the
 /// certifying signature and, when a post-certification incremental update exceeds that level,
-/// records a validation error so <see cref="SignatureVerificationResult.IsValid"/> becomes false.
-/// Previously this was only available via the standalone <c>PdfOperations.VerifyMdp</c> API.
+/// records a validation error so <see cref="SignatureVerificationResult.IsValid"/> becomes false —
+/// not only through the standalone <c>PdfOperations.VerifyMdp</c> API.
 /// </summary>
 public class DocMdpEnforcementTests
 {

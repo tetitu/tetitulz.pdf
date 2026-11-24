@@ -118,12 +118,12 @@ public class LowScanFindingsTests
     [Fact]
     public void Lzw_ReadBitsPastIntMaxValue_ReturnsWhatItHasInsteadOfThrowing()
     {
-        // bitPos used to be an int while totalBits had already been widened for exactly this
-        // reason. Past ~268 MB of input it wrapped negative, the caller's `bitPos > totalBits`
-        // guard compared a negative int against a positive long and stayed false, and
-        // `data[byteIndex]` threw IndexOutOfRangeException — out through FilterPipeline.Decode and
-        // PdfStream.GetDecodedData, neither of which catches it, as an untyped runtime exception
-        // rather than the InvalidDataException every other bomb guard here raises.
+        // bitPos is a long, as totalBits is. As an int it would wrap negative past ~268 MB of input,
+        // the caller's `bitPos > totalBits` guard would compare a negative int against a positive
+        // long and stay false, and `data[byteIndex]` would throw IndexOutOfRangeException — out
+        // through FilterPipeline.Decode and PdfStream.GetDecodedData, neither of which catches it, as
+        // an untyped runtime exception rather than the InvalidDataException every other bomb guard
+        // here raises.
         //
         // Asserting the guard directly rather than building a 300 MB stream: the point is that a
         // bit position past int.MaxValue is representable and bounds-checked, which is what the

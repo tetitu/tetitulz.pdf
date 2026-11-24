@@ -129,10 +129,9 @@ public class CMapCidRangeIndexTests
         Assert.True(ordinary.UsesCidRangeIndex,
             "an ordinary non-overlapping CMap must resolve through the sorted index");
 
-        // Wave 17 R2.6: the index used to be stood down here, and every code of an overlapping
-        // CMap then scanned the whole range list. Each sorted range carries its declaration order
-        // now, so the overlapping CMap resolves through the index too — in declaration order (the
-        // test above).
+        // The index is not stood down for an overlapping CMap, whose every code would then scan
+        // the whole range list: each sorted range carries its declaration order, so the
+        // overlapping CMap resolves through the index too — in declaration order (the test above).
         var overlapping = Parse(
             "<0050> <0060> 900",
             "<0000> <00ff> 100");

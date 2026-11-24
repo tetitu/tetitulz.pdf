@@ -20,17 +20,16 @@ namespace Tetitulz.Pdf.Core.Tests.Forms;
 /// ancestor→descendant only — and it must therefore look at <b>widgets</b>, never at child fields.
 /// </summary>
 /// <remarks>
-/// <para><b>It had no gate, so a grouping node took its type from its own children.</b> A node
-/// whose kids are child <i>fields</i> typed <c>/Sig</c> was itself classified <c>Signature</c>, and
-/// <c>PdfFormField.Create</c> built it as a <c>PdfSignatureField</c> — one with no <c>/V</c> of its
-/// own, because the values live on the children. <c>PdfAcroForm.GetSignatureFields</c> collects by
-/// type, so the document reported <b>three</b> signature fields where it has two: a phantom beside
-/// the real ones.</para>
+/// <para><b>Without the gate, a grouping node would take its type from its own children.</b> A
+/// node whose kids are child <i>fields</i> typed <c>/Sig</c> would be classified <c>Signature</c>,
+/// and <c>PdfFormField.Create</c> build it as a <c>PdfSignatureField</c> — one with no <c>/V</c> of
+/// its own, because the values live on the children. <c>PdfAcroForm.GetSignatureFields</c> collects
+/// by type, so the document would report <b>three</b> signature fields where it has two: a phantom
+/// beside the real ones.</para>
 ///
-/// <para><b>Every existing fixture stays green under the fix</b>, which is why this was never
-/// noticed: the shapes in the tree all put <c>/FT</c> on a bare widget, where the repair is
-/// correct and the gate changes nothing. Only a group over typed child fields separates them, and
-/// nothing built one.</para>
+/// <para><b>Other fixtures cannot see the gate</b>: they put <c>/FT</c> on a bare widget, where the
+/// repair is correct and the gate changes nothing. Only a group over typed child fields separates
+/// them.</para>
 ///
 /// <para>The file here is <b>valid</b>. §12.7.3.1 permits a non-terminal field with typed
 /// children, and Table 220 marks <c>/FT</c> "Required for terminal fields" — which these children

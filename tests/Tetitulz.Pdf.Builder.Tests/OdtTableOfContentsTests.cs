@@ -13,21 +13,21 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// The ODT table of contents (Wave 22, 1:3).
+/// The ODT table of contents.
 ///
-/// <para><b>What was wrong.</b> <c>WriteToc</c> wrote a contents entry as
-/// <c>&lt;text:a xlink:type="simple" xlink:href="#toc0"&gt;</c>, but <c>content.xml</c>'s root
-/// declared no <c>xlink</c> namespace — so the whole part was not well-formed XML and
-/// <c>XDocument.Load</c> (and every namespace-aware ODF consumer) rejected it with "xlink is an
-/// undeclared prefix". A document with a TOC did not open at all. Even had the prefix been declared,
-/// <c>#toc0</c> named nothing: no element carried the bookmark, and the title went into
+/// <para><b>What it guards against.</b> A contents entry written as
+/// <c>&lt;text:a xlink:type="simple" xlink:href="#toc0"&gt;</c> needs <c>content.xml</c>'s root to
+/// declare the <c>xlink</c> namespace, or the whole part is not well-formed XML and
+/// <c>XDocument.Load</c> (and every namespace-aware ODF consumer) rejects it with "xlink is an
+/// undeclared prefix" — a document with a TOC would not open at all. And <c>#toc0</c> must name an
+/// element carrying the bookmark, with the title in the body, not only in
 /// <c>&lt;text:index-title-template&gt;</c> (how to regenerate), which a non-regenerating reader
 /// does not show.
 /// </para>
 ///
 /// <para><b>These parse the XML and follow each link to its target</b> — a bookmark written under a
 /// different name, or a title in the template instead of the body, both produce plausible markup and
-/// a broken contents list, which a substring check would pass (2026-10-23).</para>
+/// a broken contents list, which a substring check would pass.</para>
 /// </summary>
 public class OdtTableOfContentsTests
 {
@@ -54,8 +54,8 @@ public class OdtTableOfContentsTests
     }
 
     /// <summary>
-    /// Reads <c>content.xml</c> as parsed XML. The parse itself is the first half of the fix: before
-    /// it, the undeclared <c>xlink</c> prefix made this throw.
+    /// Reads <c>content.xml</c> as parsed XML. The parse itself is the first assertion: an undeclared
+    /// <c>xlink</c> prefix makes it throw.
     /// </summary>
     private static XDocument ContentOf(Document doc)
     {

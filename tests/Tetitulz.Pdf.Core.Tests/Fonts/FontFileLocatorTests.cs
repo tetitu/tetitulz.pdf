@@ -418,7 +418,7 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts
         }
 
         /// <summary>
-        /// <b>The direction of the fix, not only the agreement.</b> Asserting equality alone would
+        /// <b>The direction, not only the agreement.</b> Asserting equality alone would
         /// be satisfied by both matchers moving to search-path order, which is the host-dependent
         /// answer the ranked list's tie-break was written to avoid. The winner is the ordinally
         /// first path.

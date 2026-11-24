@@ -37,17 +37,16 @@ public class CmsHardeningTests
 
     // ---------------------------------------------------------------- weak algorithms
 
-    [Fact]
     /// <summary>
     /// A SHA-1 digest is refused by the default policy, and the refusal does NOT claim the bytes
     /// failed to verify.
     /// </summary>
     /// <remarks>
-    /// RENAMED from <c>Sha1Digest_IsFlaggedButStillValidByDefault</c> on 2026-08-12, when the
-    /// default flipped to reject. The <c>IsCryptographicallyValid</c> assertion is the substantive
-    /// half: policy and integrity are separate answers, and collapsing them would leave a caller
-    /// unable to tell a refused algorithm from a modified document.
+    /// The <c>IsCryptographicallyValid</c> assertion is the substantive half: policy and integrity
+    /// are separate answers, and collapsing them would leave a caller unable to tell a refused
+    /// algorithm from a modified document.
     /// </remarks>
+    [Fact]
     public void Sha1Digest_IsRefusedByDefault_ButTheBytesStillVerify()
     {
         var signer = SigningTestCrypto.SelfSignedLeaf("CN=SHA1 Signer");

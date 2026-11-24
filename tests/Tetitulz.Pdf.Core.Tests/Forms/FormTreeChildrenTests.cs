@@ -17,18 +17,15 @@ namespace Tetitulz.Pdf.Core.Tests.Forms;
 /// <c>/Fields</c> (Table 218) and a field's <c>/Kids</c> (Table 220).
 /// </summary>
 /// <remarks>
-/// <para><b>Why these exist, and they are not a formality.</b> Both arrivals used to read the array
-/// themselves, and both had shipped the same omission at different times: the typed getters do not
-/// follow an indirect reference, so <c>/Fields 11 0 R</c> read as a form with <b>no fields</b> —
-/// hiding every signature from <c>GetSignatureFields</c> — and <c>/Kids 11 0 R</c> made a group look
-/// <b>terminal</b>, so a radio fill found no <c>/AP</c> on-states and a signature group's
-/// <c>/FT</c> never resolved.</para>
+/// <para><b>Why these exist, and they are not a formality.</b> The typed getters do not follow an
+/// indirect reference, so read through them <c>/Fields 11 0 R</c> would be a form with <b>no
+/// fields</b> — hiding every signature from <c>GetSignatureFields</c> — and <c>/Kids 11 0 R</c>
+/// would make a group look <b>terminal</b>, so a radio fill found no <c>/AP</c> on-states and a
+/// signature group's <c>/FT</c> never resolved.</para>
 ///
-/// <para><b>Merging the two turned "which fixtures reach this line?" into one question, and the
-/// answer was none.</b> Mutating the array-level resolve out of the survivor left the whole Forms
-/// suite green: twenty-nine tests cover the <i>element</i>-level resolve (<c>/Fields [12 0 R]</c>,
-/// the ordinary spelling) and not one covered the array itself — the very defect both comments
-/// described. These are that missing fixture, one per arrival.</para>
+/// <para><b>The rest of the Forms suite covers the <i>element</i>-level resolve</b>
+/// (<c>/Fields [12 0 R]</c>, the ordinary spelling) and not the array itself, so a mutation of the
+/// array-level resolve leaves it green. These are the fixture for the array, one per arrival.</para>
 ///
 /// <para>The third pins the direct fallbacks, which only <see cref="PdfFormField"/> can reach:
 /// its constructor is public and takes the document as a plain parameter, while

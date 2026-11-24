@@ -146,12 +146,10 @@ public class Jbig2ExtendedSupportTests
     [Fact]
     public void Diagnose_SymbolDict_Huffman_NonAggregated_IsSkippedBenign()
     {
-        // SDHUFF=1, SDREFAGG=0. This used to be an unconditional refusal — the collective
-        // bitmap was never decoded, so every symbol would have been blank (GAPS.md §2a). It now
-        // decodes for real (the non-aggregated case): the collective bitmap is parsed (MMR or
-        // uncompressed) and split by accumulated symbol widths, using the now externally-verified
-        // Annex B tables. A symbol dictionary produces no page content by itself regardless of
-        // coding mode, so — matching the arithmetic symbol dictionary's own classification —
+        // SDHUFF=1, SDREFAGG=0. The non-aggregated case decodes: the collective bitmap is parsed
+        // (MMR or uncompressed) and split by accumulated symbol widths, using the externally
+        // verified Annex B tables. A symbol dictionary produces no page content by itself regardless
+        // of coding mode, so — matching the arithmetic symbol dictionary's own classification —
         // this is SkippedBenign, not Decoded, and (this row's whole point) not Unsupported either.
         var body = new byte[2 + 8];
         body[0] = 0x00; body[1] = 0x01; // SDHUFF=1, SDREFAGG=0

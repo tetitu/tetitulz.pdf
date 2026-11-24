@@ -63,10 +63,10 @@ public sealed partial class JpxEncoderLayerTests
     }
 
     /// <summary>
-    /// The review's row 1 (2026-09-26): with several code-blocks under one tag-tree parent and blocks
-    /// that join at a later layer, the allocator's trial writes coded inclusion trees built from
-    /// "not yet" values and never lowered, so the measured layers and the codestream's own write
-    /// differed by a bit or two, and the invariant threw. A 512x512 image whose left half is smooth,
+    /// With several code-blocks under one tag-tree parent and blocks that join at a later layer, the
+    /// allocator's trial codes the inclusion trees as the codestream's own write does: trees built
+    /// from "not yet" values and never lowered would make the measured layers and the write differ by
+    /// a bit or two, and the invariant would throw. A 512x512 image whose left half is smooth,
     /// two layers with a target of half the single-layer size — and four layers on a 1024x256 —
     /// encode, stay within the target, and decode in-house at the size they claim.
     /// </summary>

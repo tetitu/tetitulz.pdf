@@ -12,7 +12,7 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Fonts;
 
 /// <summary>
-/// <see cref="Standard14Kerning"/>: the Core14 AFMs' <c>KPX</c> pairs (2026-10-20), and the <c>TJ</c>
+/// <see cref="Standard14Kerning"/>: the Core14 AFMs' <c>KPX</c> pairs, and the <c>TJ</c>
 /// <see cref="PdfContentStreamBuilder"/> writes them as. The expected values are the AFM files' own
 /// lines (Helvetica <c>KPX A V -70</c>, <c>KPX T o -120</c>; Helvetica-Bold <c>KPX A V -80</c>;
 /// Times-Roman <c>KPX A V -135</c>, <c>KPX space A -55</c>).

@@ -98,9 +98,9 @@ public class FilterTests
     /// the caller's limit must still decode, unchanged.
     /// </summary>
     /// <remarks>
-    /// <see cref="Ascii85DecodeFilter"/> throws where it used to return, so this is a behaviour
-    /// change and needs a floor. Without it the "refuse an oversized stream" test passes just as
-    /// happily against a filter that refuses <i>every</i> stream.
+    /// <see cref="Ascii85DecodeFilter"/> throws past the ceiling, so the refusal needs a floor.
+    /// Without it the "refuse an oversized stream" test passes just as happily against a filter that
+    /// refuses <i>every</i> stream.
     /// </remarks>
     [Fact]
     public void Ascii85DecodeFilter_ZRunUnderTheCeiling_StillDecodes()

@@ -15,15 +15,14 @@ namespace Tetitulz.Pdf.Core.Tests.Document;
 /// the inline <c>/A</c> form and the <c>/C</c> + <c>/ClassMap</c> form.
 /// </summary>
 /// <remarks>
-/// <para><b>Why this file exists.</b> All four public members had <b>no direct test</b>: the type is
-/// exercised only through <c>Base.Operations.Structure.PdfStructureTreeReader</c> and
-/// Accessibility's UA-2 checkers, so every rule below was reached incidentally, by a checker
-/// reporting or not reporting something several layers up.</para>
+/// <para><b>Why this file exists.</b> Otherwise the type is exercised only through
+/// <c>Base.Operations.Structure.PdfStructureTreeReader</c> and Accessibility's UA-2 checkers, so
+/// every rule below would be reached incidentally, by a checker reporting or not reporting
+/// something several layers up.</para>
 ///
-/// <para><b>Both spellings matter, and one of them used to be unread.</b> While <c>/C</c> went
-/// unconsulted, a checker-clean table that declared its merges and header scopes through a
-/// ClassMap had every span read as 1 and every <c>/Scope</c> read as absent, and was reported as
-/// ragged with unaddressable headers.</para>
+/// <para><b>Both spellings matter.</b> With <c>/C</c> unconsulted, a checker-clean table that
+/// declares its merges and header scopes through a ClassMap would have every span read as 1 and
+/// every <c>/Scope</c> read as absent, and be reported as ragged with unaddressable headers.</para>
 ///
 /// <para><b>The owner rule is deliberately asymmetric</b>, which is the part most likely to be
 /// "simplified" by someone who has not read §14.7.5.1: an attribute object declaring a

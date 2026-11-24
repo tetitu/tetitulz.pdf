@@ -13,29 +13,29 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts;
 /// <remarks>
 /// <para>
 /// <c>CffParser.Parse</c> unwraps an sfnt container by extracting its <c>CFF </c> table and calling
-/// itself. Nothing required the extracted table to be <i>smaller</i> than its container, so a table
-/// directory entry with offset 0 and length equal to the file length produced a byte-for-byte copy
-/// of the input — which still began with <c>'OTTO'</c>.
+/// itself. Unless the extracted table must be <i>smaller</i> than its container, a table directory
+/// entry with offset 0 and length equal to the file length produces a byte-for-byte copy of the
+/// input — which still begins with <c>'OTTO'</c>.
 /// </para>
 /// <para>
-/// <b>This was a remote process kill, not a hang.</b> A <see cref="System.StackOverflowException"/>
-/// cannot be caught in .NET Core, so <c>FontCache.LoadEmbedded</c>'s surrounding
-/// <c>catch (Exception)</c> never ran and the whole host died. Rendering a single page of an
-/// untrusted PDF carrying a 100-byte <c>/FontFile3</c> was enough to trigger it.
+/// <b>That would be a remote process kill, not a hang.</b> A
+/// <see cref="System.StackOverflowException"/> cannot be caught in .NET Core, so
+/// <c>FontCache.LoadEmbedded</c>'s surrounding <c>catch (Exception)</c> would never run and the
+/// whole host would die. Rendering a single page of an untrusted PDF carrying a 100-byte
+/// <c>/FontFile3</c> would be enough.
 /// </para>
 /// <para>
 /// The assertion is on the guard's own evidence — a refusal plus the recorded reason — never on a
 /// wall clock, per the repository's rule for DoS guards.
 /// </para>
 /// <para>
-/// <b>What these tests do and do not pin.</b> The fix carries two guards — a depth cap of one
+/// <b>What these tests do and do not pin.</b> There are two guards — a depth cap of one
 /// unwrap, and a refusal of any extracted table not strictly smaller than its container. Mutation
 /// testing shows they are <i>redundant for this fixture</i>: removing the size check leaves both
 /// tests green, because the depth cap catches the second pass. The depth cap is therefore the
 /// load-bearing guard and the size check is defence in depth that nothing here pins. Removing
-/// <i>both</i> is what reproduces the original defect, and it cannot be asserted from inside the
-/// suite — it kills the test host rather than failing a test, which is precisely why the bug was a
-/// process kill and not a hang.
+/// <i>both</i> is what reproduces the defect, and it cannot be asserted from inside the suite — it
+/// kills the test host rather than failing a test.
 /// </para>
 /// </remarks>
 public class CffSelfReferentialContainerTests

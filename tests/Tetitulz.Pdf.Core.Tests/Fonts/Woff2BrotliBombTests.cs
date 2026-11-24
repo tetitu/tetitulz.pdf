@@ -14,11 +14,10 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts;
 /// </summary>
 /// <remarks>
 /// <para><b>Refusing is not the property under test, and asserting it alone would prove nothing.</b>
-/// The decoder refused this container before the fix too — it called
-/// <c>Brotli.DecompressBuffer</c>, materialised the whole expansion, and only then compared the
-/// length. Answer identical, work unbounded: a 200-byte file could make the process allocate
-/// gigabytes on its way to <see langword="null"/>. So the discriminating assertion here is on
-/// <b>allocation</b>, which is the only thing that changed.</para>
+/// A decoder materialising the whole expansion and only then comparing the length refuses this
+/// container too — answer identical, work unbounded: a 200-byte file could make the process
+/// allocate gigabytes on its way to <see langword="null"/>. So the discriminating assertion here
+/// is on <b>allocation</b>.</para>
 ///
 /// <para><b>Why the fixture declares 64 bytes rather than approaching the 64 MiB ceiling.</b> The
 /// bound the decoder applies is the directory's summed lengths (§4.1), not

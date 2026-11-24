@@ -324,11 +324,10 @@ public class CcittFaxDecodeFilterTests
     [Fact]
     public void G4_VR3Mode_DecodesCorrectly()
     {
-        // Before the fix, DecodeMode threw for VR(3) code "0000011" and VL(3) "0000010"
-        // because the b6 guard was inverted (checked b6 != 0 instead of b6 == 0).
-        // Real DocuSign T.6 tiles consistently contain V(±3) codes for text runs that
-        // straddle the reference line by more than 2 positions — causing every tile to
-        // fall back to raw compressed bytes.
+        // VR(3) "0000011" and VL(3) "0000010" decode; an inverted b6 guard (b6 != 0 for
+        // b6 == 0) would throw on them. Real e-signature T.6 tiles consistently contain
+        // V(±3) codes for text runs that straddle the reference line by more than 2
+        // positions, so every tile would fall back to raw compressed bytes.
         //
         // Image: 4-wide × 2-row.
         //   Row 0 = [black, white, white, white]  (HORZ white(0)+black(1), then V0)

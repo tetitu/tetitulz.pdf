@@ -19,11 +19,10 @@ namespace Tetitulz.Pdf.Core.Tests.Signing;
 /// that certificate proves only internal consistency — never who issued it. Anyone can mint a
 /// self-signed certificate bearing the id-kp-timeStamping EKU and assert any GenTime.
 /// <para>
-/// This previously went unchecked, and the asserted time flowed straight into the
-/// certificate-validity assessment. The consequence was concrete: a signer whose certificate had
-/// <b>expired</b> could embed a self-made timestamp claiming a GenTime inside the old validity
-/// window and the chain would be assessed as valid — defeating the "expired certificate fails
-/// closed" property the validator documents.
+/// Unchecked, the asserted time would flow straight into the certificate-validity assessment: a
+/// signer whose certificate had <b>expired</b> could embed a self-made timestamp claiming a
+/// GenTime inside the old validity window and the chain would be assessed as valid — defeating
+/// the "expired certificate fails closed" property the validator documents.
 /// </para>
 /// </summary>
 public class TsaTrustAnchoringTests

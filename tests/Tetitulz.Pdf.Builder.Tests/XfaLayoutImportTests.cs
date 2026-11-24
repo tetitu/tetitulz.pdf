@@ -328,8 +328,8 @@ public sealed class XfaLayoutImportTests
 
     /// <summary>
     /// Content areas of different widths are the section's regions at their own widths, and nothing is
-    /// reported: a block continuing from one into the other takes the width it enters (since 2026-10-19;
-    /// it kept the width it began at, reported). <c>ContentAreaFlowTests</c> has the widths.
+    /// reported: a block continuing from one into the other takes the width it enters.
+    /// <c>ContentAreaFlowTests</c> has the widths.
     /// </summary>
     [Fact]
     public void ContentAreasOfDifferentWidths_AreRegionsOfTheirOwnWidths()
@@ -750,7 +750,7 @@ public sealed class XfaLayoutImportTests
         Assert.DoesNotContain(oddResult.Document.Sections.SelectMany(s => s.Children).OfType<Paragraph>(), p => p.Transform != null);
 
         // A turned draw in a flow is laid out along its turned axes (TurnedInFlow_TakesItsTurnedExtent), and
-        // a turned flowing subform too since 2026-10-19 (TurnedFlowingSubform_IsLaidOutTurned).
+        // a turned flowing subform too (TurnedFlowingSubform_IsLaidOutTurned).
         string flowed = "<subform layout=\"tb\" w=\"576pt\"><draw name=\"r\" w=\"1in\" h=\"1in\" rotate=\"90\"><value><text>R</text></value></draw></subform>";
         Assert.DoesNotContain(XfaLayout.Layout(Parse(Template(Page(), flowed)), null).Approximations, a => a.Contains("rotated", StringComparison.Ordinal));
         // A flowing subform of no height has no extent to turn: unturned, said.
@@ -824,7 +824,7 @@ public sealed class XfaLayoutImportTests
         byte[] plain = Export(Template(Page(), Body("0")), null, out _);
         Assert.True(At(plain, "FIRSTX").Y - At(plain, "SECONDX").Y > 15, "unturned, the second is not under the first");
 
-        // A positioned container in it is turned with the rest since 2026-10-19 (it sent the subform back unturned): its
+        // A positioned container in it is turned with the rest, not sent back unturned: its
         // draw, placed in the container's own box, comes third along the turned flow, at the first two's height.
         string positioned = "<subform layout=\"position\" w=\"1in\" h=\"0.3in\">" + Draw("p", "0", "0", "1in", "0.3in", "PLACEDX") + "</subform>";
         byte[] held = Export(Template(Page(), Body("90", positioned)), null, out XfaLayoutResult heldResult);
@@ -1154,8 +1154,8 @@ public sealed class XfaLayoutImportTests
     /// between the lines before and after it; a nested left-to-right flow so laid out is lined in turn
     /// (another reader's <c>xfa_filled_imm1344e.pdf</c>: Sex, Date of birth and Place of birth on one line). A
     /// top-to-bottom flow of no width is its widest child and its margins wide (XFA 3.3 chapter 8,
-    /// "Growable Containers"). Sharing its line, or narrower than a right-to-left line, since 2026-10-19
-    /// its line is floated boxes, one a child (<see cref="LeftToRightFlow_ALineOfAChildOfUnknownHeight_IsFloatedBoxes"/>);
+    /// "Growable Containers"). Sharing its line, or narrower than a right-to-left line, its line is
+    /// floated boxes, one a child (<see cref="LeftToRightFlow_ALineOfAChildOfUnknownHeight_IsFloatedBoxes"/>);
     /// still top to bottom, reported: one breaking to a page area.
     /// </summary>
     [Fact]

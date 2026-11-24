@@ -150,9 +150,8 @@ public class PdfParserTests
 
     /// <summary>
     /// GetObject must return PdfNull.Instance (not throw) when a Normal XRef entry
-    /// points to garbage bytes that cannot be parsed as a valid indirect object.
-    /// Before the fix, ParseIndirectObject() threw PdfParseException and the
-    /// exception propagated uncaught to the caller.
+    /// points to garbage bytes that cannot be parsed as a valid indirect object,
+    /// rather than let ParseIndirectObject()'s PdfParseException reach the caller.
     /// </summary>
     [Fact]
     public void GetObject_NormalEntryWithCorruptBody_ReturnsPdfNull()
@@ -206,10 +205,9 @@ public class PdfParserTests
     }
 
     /// <summary>
-    /// Regression test: GetObject must return PdfNull.Instance (not throw) when the
-    /// requested object is stored inside an ObjStm whose /Filter is unknown.
-    /// Before the fix, FilterPipeline passed raw bytes through and PdfParser threw
-    /// on the garbage token stream.
+    /// GetObject must return PdfNull.Instance (not throw) when the requested object
+    /// is stored inside an ObjStm whose /Filter is unknown: FilterPipeline passes
+    /// the raw bytes through, and the parser must not throw on the garbage tokens.
     /// </summary>
     [Fact]
     public void GetObject_CompressedInObjStmWithUnknownFilter_ReturnsPdfNull()
@@ -220,7 +218,7 @@ public class PdfParserTests
         parser.ParseCrossReferences();
 
         // Object 4 is registered as compressed in ObjStm 3 (which has /Filter /XXXDecode).
-        // The fix wraps ParseObjectFromStream in a try/catch and returns PdfNull.Instance.
+        // ParseObjectFromStream's failure is caught and the answer is PdfNull.Instance.
         var ex = Record.Exception(() => parser.GetObject(4));
         Assert.Null(ex);
         var obj = parser.GetObject(4);

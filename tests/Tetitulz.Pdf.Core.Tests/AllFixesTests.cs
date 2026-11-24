@@ -618,9 +618,9 @@ public class AllFixesTests
     {
         // [null << /Predictor 15 >>] must parse to a 2-element array:
         // element 0 = PdfNull, element 1 = PdfDictionary.
-        // Before the fix, PdfTokenType.Null hit default:break so null was dropped,
-        // collapsing the array to [<< /Predictor 15 >>] and misaligning parms for
-        // multi-filter inline images (AHx + Fl: parms[1] for Fl would be null).
+        // Dropping the null (PdfTokenType.Null hitting default:break) would collapse
+        // the array to [<< /Predictor 15 >>] and misalign parms for multi-filter
+        // inline images (AHx + Fl: parms[1] for Fl would be null).
         byte[] cs = Encoding.ASCII.GetBytes(
             "BI\n/W 1\n/H 1\n/BPC 8\n/CS /G\n/F /AHx\n" +
             "/DP [null << /Predictor 15 >>]\nID\n00>\nEI\n");
@@ -703,8 +703,8 @@ public class AllFixesTests
     public void TryGetGlyphUnicode_Afii57664_IsAlef()
     {
         // afii57664 is the AGL name for Hebrew alef (U+05D0).
-        // Used in /Differences arrays of Hebrew PDFs; previously not resolved,
-        // causing WinAnsiEncoding fallback and wrong/missing glyph rendering.
+        // Used in /Differences arrays of Hebrew PDFs; unresolved, it would cause a
+        // WinAnsiEncoding fallback and wrong/missing glyph rendering.
         Assert.True(StandardEncodings.TryGetGlyphUnicode("afii57664", out char c));
         Assert.Equal('א', c);
     }
@@ -850,8 +850,8 @@ public class AllFixesTests
         using var input = new MemoryStream(original);
         using var output = new MemoryStream();
 
-        // The document's REAL previous section, not the 0 this fixture used to pass as a
-        // don't-care. Object 0 is omitted because the appended section chains to a previous one
+        // The document's REAL previous section, not 0 as a don't-care. Object 0 is omitted
+        // because the appended section chains to a previous one
         // that already carries the free-list head; a section with no /Prev is standalone and must
         // carry its own, so passing 0 here asserts the opposite of what this test is named for.
         long previousXref;

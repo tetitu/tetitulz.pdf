@@ -184,7 +184,7 @@ public class FlateBufferSizingTests
     // ---------------------------------------------------------------- the ceiling still refuses
 
     /// <summary>
-    /// The refusal, with the message it has always carried. A sizing hint that quietly became the
+    /// The refusal, with its message. A sizing hint that quietly became the
     /// cap would change this text, or stop it being thrown at all.
     /// </summary>
     [Fact]

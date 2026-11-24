@@ -12,14 +12,12 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Fonts;
 
 /// <summary>
-/// <see cref="FontEmbeddingLicense"/> — the <c>OS/2</c> <c>fsType</c> field, which nothing in this
-/// library read until 2026-09-02.
+/// <see cref="FontEmbeddingLicense"/> — the <c>OS/2</c> <c>fsType</c> field.
 /// </summary>
 /// <remarks>
 /// <para>Embedding a font redistributes it, and <c>fsType</c> is where a foundry records what it
-/// permits. <c>PdfFontEmbedder</c> parsed the field and discarded it on the next line, under a
-/// comment naming it "the embedding-permissions field" — so a font whose licence forbids embedding
-/// was embedded like any other.</para>
+/// permits. Parsed and discarded, it would let a font whose licence forbids embedding be embedded
+/// like any other.</para>
 ///
 /// <para><b>Bits 0–3 are one mutually-exclusive value, not four flags</b>, and that is the part a
 /// naive implementation gets wrong. It is asserted here directly rather than through a resolver,

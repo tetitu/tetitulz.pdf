@@ -57,9 +57,8 @@ public class Standard14QuoteAndGraveTests
 
     /// <summary>
     /// The typographic quotes keep their own — different — widths. This is the half that pins the
-    /// fix as "these are two distinct glyphs" rather than "U+0027 should be 191": before the fix
-    /// the ASCII and typographic entries were equal in the Helvetica family, and a change that
-    /// merely moved the equality would satisfy the theories above.
+    /// rule as "these are two distinct glyphs" rather than "U+0027 should be 191": a table with the
+    /// ASCII and typographic entries equal, merely moved, would satisfy the theories above.
     /// </summary>
     [Theory]
     [InlineData(StandardFonts.Helvetica, 222)]
@@ -74,8 +73,8 @@ public class Standard14QuoteAndGraveTests
     }
 
     /// <summary>
-    /// A spot-check that the rest of the ASCII range was not disturbed — the fix touched two
-    /// entries per Helvetica table and nothing else.
+    /// A spot-check that the rest of the ASCII range is the AFM's — the two entries per Helvetica
+    /// table above are the only quote and grave widths.
     /// </summary>
     [Fact]
     public void TheRestOfTheAsciiRangeIsUnchanged()

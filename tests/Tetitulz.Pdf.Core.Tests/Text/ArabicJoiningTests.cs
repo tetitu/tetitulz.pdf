@@ -7,19 +7,18 @@ using Tetitulz.Pdf.Core.Text;
 namespace Tetitulz.Pdf.Core.Tests.Text;
 
 /// <summary>
-/// Arabic positional forms — the medial and final ones, which the shaper could not produce at all.
+/// Arabic positional forms — the medial and final ones included.
 ///
-/// <para>Two independent defects made every Arabic word render as a row of disconnected letters.
-/// The substitution is in place, so by the time letter <i>i</i> was examined letter <i>i−1</i> had
-/// already been replaced by a presentation form that <c>IsArabicLetter</c> does not recognise —
-/// making <c>canJoinRight</c> false for every letter in every word. And the neighbour test looked
-/// at the immediate neighbour, so a harakat between two letters (the ordinary vocalised spelling)
-/// broke the join even once the first defect was fixed. Unicode joining treats a non-spacing mark
-/// as transparent.</para>
+/// <para>Two independent defects would each render every Arabic word as a row of disconnected
+/// letters. The substitution is in place, so a join test that reads letter <i>i−1</i> after it has
+/// become a presentation form <c>IsArabicLetter</c> does not recognise makes <c>canJoinRight</c>
+/// false for every letter in every word. And a test of the immediate neighbour lets a harakat
+/// between two letters (the ordinary vocalised spelling) break the join: Unicode joining treats a
+/// non-spacing mark as transparent.</para>
 ///
 /// <para>Every expectation below is derived from the joining rules and the Presentation Forms-B
-/// block, not captured from the implementation — the previous output was self-consistent and
-/// wrong.</para>
+/// block, not captured from the implementation — an implementation's output can be
+/// self-consistent and wrong.</para>
 /// </summary>
 public class ArabicJoiningTests
 {

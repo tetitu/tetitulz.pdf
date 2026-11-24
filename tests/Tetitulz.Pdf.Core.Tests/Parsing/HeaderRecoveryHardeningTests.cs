@@ -116,9 +116,8 @@ public class HeaderRecoveryHardeningTests
 
     /// <summary>
     /// A table numbered one too low with no free head: objects 1 and 2 are misplaced and read from
-    /// their headers, and object 3 has no entry at all. It used to be absent with every slot null —
-    /// before the recovery, the misplaced root reached the full re-index. The first recovery fills the
-    /// table's gaps from the headers.
+    /// their headers, and object 3 has no entry at all. The first recovery fills the table's gaps from
+    /// the headers, so object 3 reads rather than being absent with every slot null.
     /// </summary>
     [Fact]
     public void AShiftedTable_ReadsTheObjectItHasNoEntryFor_OnceARecoveryShowedItDamaged()

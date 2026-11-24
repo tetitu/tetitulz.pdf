@@ -205,7 +205,7 @@ public class XfaRichTextTests
     /// <summary>
     /// The tab-stop grammar (chapter 2, "Tab Stops" and "Tab Leader Pattern"): an alignment and a leader
     /// before each location, each applying to that stop alone; before/after as right/left; a content
-    /// leader's text (since 2026-10-19; it was named); the default stops beyond the last, every interval.
+    /// leader's text; the default stops beyond the last, every interval.
     /// </summary>
     [Fact]
     public void TabStops_ReadTheirAlignmentsAndLeaders()
@@ -382,7 +382,7 @@ public class XfaRichTextTests
 
     /// <summary>
     /// A container's <c>font</c>: <c>kerningMode</c>, <c>lineThrough</c>, <c>letterSpacing</c>, <c>baselineShift</c>,
-    /// <c>fontHorizontalScale</c> on its runs — and since 2026-10-19 <c>fontVerticalScale</c>: glyphs 90% wide and 75%
+    /// <c>fontHorizontalScale</c> on its runs — and <c>fontVerticalScale</c>: glyphs 90% wide and 75%
     /// tall are the size at 75%, 7.5pt, drawn at 120% of it across, nothing reported.
     /// </summary>
     [Fact]
@@ -411,7 +411,7 @@ public class XfaRichTextTests
     }
 
     /// <summary>
-    /// Rich text's <c>xfa-font-vertical-scale</c> (2026-10-19): a run's own — over the container font's — scales
+    /// Rich text's <c>xfa-font-vertical-scale</c>: a run's own — over the container font's — scales
     /// its size, after its own <c>font-size</c> and horizontal scale; a run without one takes the font's; the
     /// container's vertical scale alone, with no horizontal one, draws its glyphs as wide as they were.
     /// </summary>
@@ -448,7 +448,7 @@ public class XfaRichTextTests
     }
 
     /// <summary>
-    /// A rich text's first paragraph's <c>page-break-before: avoid</c> (2026-10-19): the block before the text in the
+    /// A rich text's first paragraph's <c>page-break-before: avoid</c>: the block before the text in the
     /// flow is kept with it — the box of the draw before kept whole with the next block, and a field's caption it
     /// opens with likewise; the control, the same text without it, keeps nothing; a text first in the flow has no
     /// block before it to keep.
@@ -486,9 +486,9 @@ public class XfaRichTextTests
     }
 
     /// <summary>
-    /// A line's height (2026-10-19): with no <c>lineHeight</c> the font's, 1.2 times its size, as an independent renderer and another reader
-    /// lay a standard font out — 12pt for XFA's default 10pt, which stood at the exporter's least 14pt, and 24pt for
-    /// 20pt; a stated <c>lineHeight</c>, which was not read, as it says; and a stated one grown by the font's vertical
+    /// A line's height: with no <c>lineHeight</c> the font's, 1.2 times its size, as an independent renderer and another reader
+    /// lay a standard font out — 12pt for XFA's default 10pt, not the exporter's least 14pt, and 24pt for
+    /// 20pt; a stated <c>lineHeight</c>, as it says; and a stated one grown by the font's vertical
     /// scale, as an independent renderer grows it.
     /// </summary>
     [Theory]

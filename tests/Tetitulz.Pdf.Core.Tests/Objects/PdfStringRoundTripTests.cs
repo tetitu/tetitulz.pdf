@@ -45,10 +45,10 @@ namespace Tetitulz.Pdf.Core.Tests.Objects
         }
 
         /// <summary>
-        /// The characters the old predicate got wrong, named individually so a regression says
-        /// which range came back rather than only that something did. 0x9F is deliberately absent:
-        /// it is undefined in PDFDocEncoding and the decoder correctly passes it through, which is
-        /// why the fix reads the decode table rather than testing the range 0x80..0xA0.
+        /// The characters a range test of 0x80..0xA0 gets wrong, named individually so a regression
+        /// says which range came back rather than only that something did. 0x9F is deliberately
+        /// absent: it is undefined in PDFDocEncoding and the decoder correctly passes it through,
+        /// which is why the predicate reads the decode table rather than testing the range.
         /// </summary>
         [Theory]
         [InlineData((char)0x18)]   // breve - low end of the first divergent range
@@ -67,7 +67,7 @@ namespace Tetitulz.Pdf.Core.Tests.Objects
         }
 
         /// <summary>
-        /// The fix must not have widened the UTF-16 route to everything: plain ASCII and the
+        /// The UTF-16 route is not taken for everything: plain ASCII and the
         /// undisturbed part of Latin-1 must still cost one byte per character, because that is
         /// what keeps existing output byte-identical.
         /// </summary>
@@ -97,7 +97,7 @@ namespace Tetitulz.Pdf.Core.Tests.Objects
         }
 
         /// <summary>
-        /// Guards the fix against the vacuous form of itself. If <c>RequiresUtf16</c> were changed
+        /// Guards the predicate against the vacuous form of itself. If <c>RequiresUtf16</c> were changed
         /// to return <c>true</c> unconditionally, every round-trip test above would still pass -
         /// UTF-16 round-trips everything. This pins that the cheap route is still taken wherever it
         /// can be, so "always UTF-16" is not a way to go green.

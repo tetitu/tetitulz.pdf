@@ -20,10 +20,10 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts;
 /// concurrently (<c>PdfPageRenderer</c> uses <c>Parallel.For</c>).
 ///
 /// <para>
-/// Both caches used to be plain <see cref="Dictionary{TKey,TValue}"/> statics. Concurrent writes
-/// to one of those can lose entries, tear a bucket chain, or spin forever inside a resize — which
-/// showed up as an intermittently failing CMap plugin test whenever registration raced a lookup.
-/// These tests hammer both entry points from many threads at once.
+/// Neither cache is a plain <see cref="Dictionary{TKey,TValue}"/> static: concurrent writes to one
+/// of those can lose entries, tear a bucket chain, or spin forever inside a resize — an
+/// intermittent failure whenever registration races a lookup. These tests hammer both entry points
+/// from many threads at once.
 /// </para>
 /// </summary>
 public sealed class PredefinedCMapRegistryConcurrencyTests

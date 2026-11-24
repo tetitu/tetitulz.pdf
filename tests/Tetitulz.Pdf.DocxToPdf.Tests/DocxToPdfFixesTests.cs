@@ -40,8 +40,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
             string pdf = ConvertToText(docx);
 
-            // Previously ImageRenderer was never invoked AND PNG was dropped; now the
-            // PNG is decoded to RGB and embedded as a FlateDecode image XObject.
+            // The PNG is decoded to RGB and embedded as a FlateDecode image XObject.
             Assert.Contains("/Subtype /Image", pdf);
             Assert.Contains("/Width 4", pdf);
             Assert.Contains("/Height 3", pdf);

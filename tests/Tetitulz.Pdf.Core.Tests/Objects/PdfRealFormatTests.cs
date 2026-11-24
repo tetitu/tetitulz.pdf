@@ -13,19 +13,17 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Objects;
 
 /// <summary>
-/// §7.3.3's real-number syntax, and the three writers that had to agree about it.
+/// §7.3.3's real-number syntax, and the three writers that must agree about it:
+/// <c>PdfNumber.ToString</c>, <c>PdfContentStreamBuilder.FormatNumber</c> and <c>PdfWriter</c>'s
+/// number branch, all through <c>PdfRealFormat</c>.
 ///
-/// <para><c>PdfNumber.ToString</c>, <c>PdfContentStreamBuilder.FormatNumber</c> and
-/// <c>PdfWriter</c>'s number branch each carried the same "F6, trim, invariant" body, and only
-/// <c>PdfWriter</c> refused a non-finite value. The other two wrote the bare keywords <c>NaN</c> /
-/// <c>Infinity</c> — which §7.3.3 has no syntax for and no reader accepts — without throwing.</para>
-///
-/// <para>The assertions are on the emitted <b>token</b>, because that is the whole defect: every
-/// copy produced a perfectly valid-looking string, and one of the strings was not a number.</para>
+/// <para>The assertions are on the emitted <b>token</b>: a bare <c>NaN</c> / <c>Infinity</c>
+/// keyword — which §7.3.3 has no syntax for and no reader accepts — is a perfectly
+/// valid-looking string that is not a number.</para>
 /// </summary>
 public sealed class PdfRealFormatTests
 {
-    // ── the part that was wrong ───────────────────────────────────────────
+    // ── non-finite values ─────────────────────────────────────────────────
 
     [Theory]
     [InlineData(double.NaN)]

@@ -16,9 +16,9 @@ namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
 /// The recovery scan reads the whole file in windows of <see cref="PdfLimits.MaxXrefRecoveryScanBytes"/>.
-/// It used to read the first window alone, so a newer copy of an object appended past it lost to an
-/// older one inside it, the trailer at the end of such a file was never read, and an object only a
-/// skipped section named was not found past the window either (the review of batch 131).
+/// Reading the first window alone, a newer copy of an object appended past it would lose to an
+/// older one inside it, the trailer at the end of such a file would never be read, and an object
+/// only a skipped section named would not be found past the window either.
 /// </summary>
 [Collection(PdfLimitsCollection.Name)]
 public class RecoveryScanWindowTests

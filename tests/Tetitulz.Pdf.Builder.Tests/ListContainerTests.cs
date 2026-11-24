@@ -270,9 +270,9 @@ public class ListContainerTests
 
     /// <summary>A sublist item is written at its own <c>w:ilvl</c>.</summary>
     /// <remarks>
-    /// The level is how Word indents and numbers a nested item, and it replaces the explicit
-    /// <c>w:ind</c> this exporter used to write: an indent set here would fight the definition's
-    /// own, which is the more common way to get a list that looks wrong in Word.
+    /// The level is how Word indents and numbers a nested item, not an explicit <c>w:ind</c>: an
+    /// indent set here would fight the definition's own, which is the more common way to get a list
+    /// that looks wrong in Word.
     /// </remarks>
     [Fact]
     public void Docx_List_ASublistItemIsWrittenAtItsOwnLevel()
@@ -477,7 +477,7 @@ public class ListContainerTests
     }
 
     /// <summary>
-    /// Two or more consecutive loose items are a list (2026-10-19): one <c>/L</c>, an <c>/LI</c> per item
+    /// Two or more consecutive loose items are a list: one <c>/L</c>, an <c>/LI</c> per item
     /// whose paragraph is its <c>/LBody</c>, a deeper item in an <c>/L</c> inside the item before it. A
     /// paragraph ends the run, and a lone item after it is still a <c>/P</c> (the guard above).
     /// </summary>
@@ -503,7 +503,7 @@ public class ListContainerTests
     }
 
     /// <summary>
-    /// A list part of <see cref="ListBlock.NestingDepth"/> past 0 (2026-10-20) is tagged in the item last
+    /// A list part of <see cref="ListBlock.NestingDepth"/> past 0 is tagged in the item last
     /// drawn one level up: "inner" and "inner2" — the second going on from the first — in "one"'s
     /// <c>/LI</c>, "deep" in "inner"'s; "two", going on at 0, back in the outer <c>/L</c>, and "twoinner"
     /// after it in "two"'s; "other", a list of its own, a new one. A depth past every open list is the

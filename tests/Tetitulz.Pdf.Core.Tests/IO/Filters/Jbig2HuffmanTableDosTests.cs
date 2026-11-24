@@ -10,12 +10,12 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.IO.Filters;
 
 /// <summary>
-/// Adversarial regression from remediation round 37: the JBIG2 user-defined Huffman-table
-/// parser (<see cref="Jbig2Decoder.ParseUserDefinedHuffmanTable"/>) iterated
-/// "until the accumulated range exceeds htHigh" with htLow/htHigh and every per-row rangeLen
-/// read straight from the (attacker-controlled) segment body. A crafted table with a large
-/// htHigh and rangeLen==0 looped ~2.1e9 times growing an unbounded list, and rangeLen≡31
-/// (mod 32) made <c>1 &lt;&lt; rangeLen</c> negative — a true infinite loop. The fix caps the
+/// Adversarial input for the JBIG2 user-defined Huffman-table parser
+/// (<see cref="Jbig2Decoder.ParseUserDefinedHuffmanTable"/>), which iterates "until the
+/// accumulated range exceeds htHigh" with htLow/htHigh and every per-row rangeLen read straight
+/// from the (attacker-controlled) segment body. Unguarded, a crafted table with a large htHigh
+/// and rangeLen==0 would loop ~2.1e9 times growing an unbounded list, and rangeLen≡31 (mod 32)
+/// would make <c>1 &lt;&lt; rangeLen</c> negative — a true infinite loop. The parser caps the
 /// row count and rejects an overflowing shift (returns null → standard-table fallback).
 /// </summary>
 public class Jbig2HuffmanTableDosTests
@@ -42,7 +42,7 @@ public class Jbig2HuffmanTableDosTests
     {
         // flags 0x00 → htps=1, htrs=1, no tails. With no row bytes the bit reader returns 0
         // past EOF, so every rangeLen is 0 → currentRangeLow advances by 1 toward a 2^31-1
-        // htHigh: pre-fix ~2.1e9 iterations; post-fix bails at the row cap.
+        // htHigh: unguarded, ~2.1e9 iterations; the parser bails at the row cap.
         byte[] body = TableBody(0x00, htLow: 0, htHigh: 0x7FFFFFFF);
 
         Assert.Null(RunBounded(body,
@@ -54,7 +54,7 @@ public class Jbig2HuffmanTableDosTests
     {
         // flags 0x50 → htrs=6 (rangeLen can encode 31), htps=1. Row bits chosen so the first
         // decoded rangeLen is 31: 1<<31 is negative, so currentRangeLow never reaches htHigh —
-        // an infinite loop pre-fix. 0xBF = 1 0111111 → prefLen=1, rangeLen=011111(b)=31.
+        // an infinite loop without the shift check. 0xBF = 1 0111111 → prefLen=1, rangeLen=011111(b)=31.
         byte[] body = TableBody(0x50, htLow: 0, htHigh: 0x7FFFFFFF, 0xBF, 0xFF);
 
         Assert.Null(RunBounded(body,
@@ -71,12 +71,11 @@ public class Jbig2HuffmanTableDosTests
     /// host, not the behavioural claim, and it is deliberately far larger than the ~8&#160;ms the
     /// guarded parser actually takes.</para>
     ///
-    /// <para><b>It used to be <c>Task.Run(…)</c> plus <c>task.Wait(10 s)</c>, and that flaked.</b>
-    /// Both tests passed alone in 8&#160;ms and one failed at exactly 10&#160;s in a full-solution
-    /// run — because a queued work item is not scheduled promptly when 26 test assemblies are
-    /// saturating the thread pool, so the clock measured the pool's backlog rather than the parser.
-    /// A dedicated thread removes the dependency instead of padding the number, which would have
-    /// left the same race with a longer fuse.</para>
+    /// <para><b>A dedicated thread, not <c>Task.Run(…)</c> plus <c>task.Wait</c>.</b> A queued work
+    /// item is not scheduled promptly while a full-solution run's test assemblies saturate the
+    /// thread pool, so such a clock would measure the pool's backlog rather than the parser. A
+    /// dedicated thread removes the dependency instead of padding the number, which would leave the
+    /// same race with a longer fuse.</para>
     ///
     /// <para>Potency is not established by this timeout and cannot be: it is established by
     /// mutating the guard out and timing <i>that</i>, which is where the ~2.1e9 iterations and the

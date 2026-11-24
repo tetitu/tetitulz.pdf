@@ -53,10 +53,10 @@ public class TrueTypeFontProgramHmtxTests
     }
 
     /// <summary>
-    /// The regression guard: with the pre-fix offset, every advance (including .notdef's own
-    /// distinct one) came back identical, because the array was never populated. Pinning three
-    /// distinct values, all non-500 (the flat fallback the bug produced), is what a "read the
-    /// right offset" claim needs — three equal numbers would pass whether or not the fix holds.
+    /// The guard: at the wrong offset, every advance (including .notdef's own distinct one) comes
+    /// back identical, because the array is never populated. Pinning three distinct values, all
+    /// non-500 (the flat fallback), is what a "read the right offset" claim needs — three equal
+    /// numbers would pass either way.
     /// </summary>
     [Fact]
     public void GetAdvance_ThreeGlyphsHaveThreeDistinctAdvances()

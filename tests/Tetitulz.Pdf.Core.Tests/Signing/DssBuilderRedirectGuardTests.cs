@@ -14,20 +14,18 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Signing;
 
 /// <summary>
-/// Regression tests for the redirect-bypassable SSRF guard in <see cref="DssBuilder"/>.
+/// The SSRF guard in <see cref="DssBuilder"/> holds across redirects.
 ///
 /// <para>
-/// <b>The bug.</b> OCSP/CRL URLs come from the untrusted certificate's AIA / CRL-DP
-/// extensions. <see cref="PrivateAddressGuard.IsSafeHost"/> was applied once, to the URL
-/// about to be requested — but the shared <see cref="HttpClient"/> was constructed with no
-/// handler, so <c>AllowAutoRedirect</c> defaulted to <c>true</c>. A hostile responder could
-/// answer <c>302 Location: http://169.254.169.254/latest/meta-data/</c> and the handler would
-/// follow it, with the guard never seeing the new host. <c>PrivateAddressGuard</c>'s own
-/// remarks tell callers to "re-check on every request and redirect"; nothing did.
+/// <b>The attack.</b> OCSP/CRL URLs come from the untrusted certificate's AIA / CRL-DP
+/// extensions. A guard applied once, to the URL about to be requested, by a client whose
+/// <c>AllowAutoRedirect</c> is <c>true</c>, lets a hostile responder answer
+/// <c>302 Location: http://169.254.169.254/latest/meta-data/</c> and have the handler follow
+/// it, the guard never seeing the new host.
 /// </para>
 /// <para>
-/// The fix disables auto-redirect and follows redirects manually, re-running the guard on
-/// every hop with a bounded hop count.
+/// Auto-redirect is off and redirects are followed manually, the guard re-run on every hop
+/// with a bounded hop count.
 /// </para>
 /// </summary>
 public class DssBuilderRedirectGuardTests

@@ -15,24 +15,22 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts
     /// and the reason the order of operations inside <see cref="SfntBuilder"/> is load-bearing.
     /// </summary>
     /// <remarks>
-    /// <b>It was written from the bytes as they arrived.</b> The directory entry was computed in
-    /// the same loop that copied the table data, and <c>checkSumAdjustment</c> was only zeroed
-    /// afterwards — so for any font whose <c>head</c> carries a non-zero adjustment, which is every
-    /// real font, the recorded checksum was wrong by exactly that adjustment. Measured on
-    /// <c>arial.ttf</c> and <c>times.ttf</c> before the fix: the delta equalled the source font's
+    /// <b>Not from the bytes as they arrive.</b> A directory entry computed in the same loop that
+    /// copies the table data, with <c>checkSumAdjustment</c> zeroed only afterwards, would be wrong by
+    /// exactly that adjustment for any font whose <c>head</c> carries a non-zero one, which is every
+    /// real font. Measured on <c>arial.ttf</c> and <c>times.ttf</c>: the delta equals the source font's
     /// own adjustment to the bit, 0xC288F0AA and 0x979AEBD3.
     ///
-    /// <para><b>Every caller that hands <c>SfntBuilder</c> a verbatim <c>head</c> was affected</b> —
+    /// <para><b>Every caller that hands <c>SfntBuilder</c> a verbatim <c>head</c> depends on it</b> —
     /// <c>SfntTablePruner</c>, <c>Cff.CffSubsetter</c> and <c>TrueTypeGlyphPruner</c> — and the
-    /// output goes into <c>/FontFile2</c> / <c>/FontFile3</c>. <c>PdfFontSubsetter</c> escaped only
-    /// because it pre-zeroes the field, under a comment that asserted the order did not matter.</para>
+    /// output goes into <c>/FontFile2</c> / <c>/FontFile3</c>.</para>
     ///
-    /// <para><b>Nothing in the tree verifies a checksum</b>, which is why this shipped: the test
-    /// helpers write zero for every table checksum and for <c>checkSumAdjustment</c>, so a
-    /// synthetic font cannot witness it. These cases build the table bytes directly with a non-zero
-    /// adjustment, which is the only shape that can.</para>
+    /// <para><b>Nothing else in the tree verifies a checksum</b>: the test helpers write zero for
+    /// every table checksum and for <c>checkSumAdjustment</c>, so a synthetic font cannot witness it.
+    /// These cases build the table bytes directly with a non-zero adjustment, which is the only shape
+    /// that can.</para>
     ///
-    /// <para>The fix is to zero the field BEFORE the directory is computed, not to recompute the
+    /// <para>The field is zeroed BEFORE the directory is computed, not the
     /// entry afterwards: recomputing from the final bytes is a different wrong answer, and would
     /// also invalidate the whole-file sum that the adjustment is itself derived from.</para>
     /// </remarks>
@@ -72,7 +70,7 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts
         /// The adjustment itself is still recomputed, so the whole file sums to the magic value.
         /// </summary>
         /// <remarks>
-        /// The floor for the fix: zeroing the field earlier must not stop it being written. Without
+        /// The floor: zeroing the field earlier must not stop it being written. Without
         /// this, "zero it and never write it back" satisfies both cases above.
         /// </remarks>
         [Fact]

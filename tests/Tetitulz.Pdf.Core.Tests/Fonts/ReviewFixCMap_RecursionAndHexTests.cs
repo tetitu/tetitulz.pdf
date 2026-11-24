@@ -30,7 +30,7 @@ public class ReviewFixCMap_RecursionAndHexTests
     public void Usecmap_SelfReference_DoesNotStackOverflow()
     {
         // A CMap registered under "SelfA" that references itself via usecmap.
-        // Pre-fix, parsing it recurses forever → StackOverflowException (uncatchable).
+        // Unguarded, parsing it recurses forever → StackOverflowException (uncatchable).
         byte[] self = Cmap("/SelfA usecmap\nbeginbfchar\n<0041> <0061>\nendbfchar\n");
         PredefinedCMapRegistry.Register("SelfA", self);
 
@@ -87,7 +87,7 @@ public class ReviewFixCMap_RecursionAndHexTests
     public void BfChar_OddTrailingUnit_NotDropped()
     {
         // Destination "00410041" plus a dangling 2-nibble "41" → "0041" "0041" "0041"
-        // after left-padding the remainder.  Pre-fix the trailing "41" was dropped.
+        // after left-padding the remainder, not the trailing "41" dropped.
         byte[] data = Cmap("beginbfchar\n<0001> <0041004141>\nendbfchar\n");
         var map = CMapParser.Parse(data);
         Assert.True(map.TryGetValue(0x0001, out string s));
