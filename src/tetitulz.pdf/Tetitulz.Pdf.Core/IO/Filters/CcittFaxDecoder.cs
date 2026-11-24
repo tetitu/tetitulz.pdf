@@ -804,7 +804,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
         /// <summary>
         /// Rows packed MSB first as they are decoded, stride ⌈columns/8⌉, 1 black — the decoders keep one row
         /// unpacked (and, coding 2D, its reference) and pack each into this, rather than a byte a pixel for every
-        /// row until the end: a letter page at 300 dpi allocated 9 MB to return 1 MB.
+        /// row until the end, which for a letter page at 300 dpi would be 9 MB to return 1 MB.
         /// </summary>
         internal sealed class PackedRows
         {

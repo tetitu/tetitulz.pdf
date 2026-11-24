@@ -78,7 +78,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
         /// The decode, or — <paramref name="measureOnly"/> — the end alone, returning null. The runs are walked
         /// once to measure the output, which is refused past <paramref name="maxOutputBytes"/> before a byte is
         /// written, and once more into an array of exactly that length: written a byte at a time into a growing
-        /// stream, a decode allocated about three and a half times its output.
+        /// stream, a decode would allocate about three and a half times its output.
         /// </summary>
         private static byte[] Run(byte[] data, int start, int count, long maxOutputBytes, out int end,
                                   bool measureOnly)

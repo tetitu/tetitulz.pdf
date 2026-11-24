@@ -433,7 +433,7 @@ namespace Tetitulz.Pdf.Base.Images
 
             int stripCount = Math.Min(stripOffsets.Length, stripCounts.Length);
             // The raster is made from the header, so the strips must be able to fill it first: a page of one
-            // one-byte strip declaring forty megapixels was a 160 MB raster and a whole conversion, zero-filled.
+            // one-byte strip declaring forty megapixels would be a 160 MB raster and a whole conversion, zero-filled.
             if ((long)stripCount * rowsPerStrip < height)
             {
                 _lastError = "the page's " + stripCount.ToString(System.Globalization.CultureInfo.InvariantCulture)

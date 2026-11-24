@@ -316,7 +316,7 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
                         if (size == 0)
                         {
                             // Measured once a stream, under a ceiling: a stream refused at the ceiling is not
-                            // cached by the stream, and items naming one were each a decode to it.
+                            // cached by the stream, and items naming one would each be a decode to it.
                             size = lengths.Of(embStream, "it does not decode", out string why);
                             if (why != null) unmeasured.Add("'" + name + "' (" + why + ")");
                         }

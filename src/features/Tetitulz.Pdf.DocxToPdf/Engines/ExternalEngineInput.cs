@@ -71,7 +71,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Engines
                 using (var source = new ZipArchive(package, ZipArchiveMode.Read, leaveOpen: true))
                 {
                     RequireOfficePackage(source);
-                    // Each relationships part's owner is found by name; searched for, it was entries × entries.
+                    // Each relationships part's owner is found by name; searched for, it would be entries × entries.
                     var parts = PartIndex(source);
 
                     using (var target = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: true))

@@ -3273,7 +3273,7 @@ namespace Tetitulz.Pdf.Base.Operations
         /// Each drawing processes its subtree again, and a subtree may itself draw others: references double at every
         /// level of a chain, and a marker whose content marks with the next marker multiplies by the vertex count at
         /// every level. The count bounds the drawings and the elements bound what each costs — a group of 2 000
-        /// rectangles referenced 2 000 times was 8 GB.
+        /// rectangles referenced 2 000 times would be 8 GB.
         /// </remarks>
         private static bool ChargeRedraw(XmlNode target, string what, string eachCopies, ConvertContext ctx)
         {

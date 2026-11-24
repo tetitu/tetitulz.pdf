@@ -485,7 +485,7 @@ namespace Tetitulz.Pdf.Signing.Cms
         /// </summary>
         /// <remarks>
         /// The bag is unsigned and its order the sender's, and the search's verification allowance is shared, so a
-        /// bag that put same-named decoys first spent it before the genuine issuer was tried. An anchor is not the
+        /// bag that put same-named decoys first would spend it before the genuine issuer was tried. An anchor is not the
         /// sender's to forge, and a decoy that does not claim the issuer's key identifier is tried last.
         /// </remarks>
         internal static List<X509Certificate> MostLikelyFirst(

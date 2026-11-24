@@ -129,7 +129,7 @@ namespace Tetitulz.Pdf.Signing
 
                     // A signer and chain already fetched for are not fetched for again: the evidence would be the
                     // same, and a file chooses how many signatures repeat one CMS — each a round of network fetches.
-                    // A caller's provider is asked for each signature, as it always was: it decides for itself.
+                    // A caller's provider is asked for each signature: it decides for itself.
                     if (options.EvidenceProvider == null && !fetchedFor.Add(EvidenceKey(signerCert!, chain)))
                         continue;
 
