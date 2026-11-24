@@ -41,6 +41,11 @@ PostScript, Renderers, SignatureVerify, Svg, Templating, Text). **Both claims ar
   **A `float` or `double` becomes an integer only through `Core.Util.SaturatingCast`**, never a cast:
   out of range a cast is the type's minimum on .NET Framework, and a `byte`/`ushort` cast wraps on
   .NET 10 too (guarded by `SaturatingCastGuardTests`, by the compiler's types).
+  **A key a file chooses hashes through `Core.Util.KeyedHash`** (SipHash-2-4, keyed once a process):
+  `double.GetHashCode` XORs a value's halves on every runtime and .NET Framework's string hash is fixed,
+  so either lets a file put every key in one bucket. `Dictionary`/`HashSet` of `string` guard themselves
+  there; a string tuple and LINQ's `Distinct`/`GroupBy`/`ToLookup` only under the host's
+  `UseRandomizedStringHashAlgorithm`.
 - Legacy-leg differences: `Plugins.Maintenance` Lossless uses deflate Optimal; **`HtmlToPdf` needs a
   `System.Memory` binding redirect on .NET Framework**, which an SDK-style exe generates itself; only a
   host that generates none (a `web.config`, `AutoGenerateBindingRedirects` off) writes it.
@@ -559,6 +564,7 @@ same question. Before writing any of these, use the one implementation:
 | A file-supplied number read as an `int` — saturated outside the range (never the low 32 bits of `LongValue`), the fallback for NaN, the same on .NET Framework | `Rendering.PdfResolve.Int` / `Saturate` |
 | Any `float` or `double` as an integer type — truncated toward zero, the nearer bound outside the range, 0 for NaN — on every runtime (.NET Framework's cast is the minimum) and for `byte`/`ushort` (a cast wraps even on .NET 10); every conversion in `src/` | `Core.Util.SaturatingCast` (`PdfNumber.IntValue`, `PdfResolve.Saturate` over it) |
 | A PDF **flag word** — `/P` and annotation `/F`: the low 32 bits of an integer, `null` for anything else (never `IntValue`, which saturates) | `PdfNumber.FlagWord`; faces `PdfPermissionValue`, `PdfAnnotationFlags.FromNumber` |
+| The hash of a key a file chose — a number, a name, a bitmap — under a key drawn once a process, never `double.GetHashCode` or an unkeyed content hash (keys in one bucket make every insert walk them all); a string's on .NET Framework | `Core.Util.KeyedHash` (`PdfName`, PostScript's `PsObject`, `Jbig2SymbolEncoder.SymbolKey`) |
 | Maintenance page-tree walk; loose-map deref | `PageTreeWalk`; `ContentScanGraph.Deref` |
 | A document outline's items, depth first in reading order, one visited set, the depth cap reported — the action dispatcher, PDF/UA-1's language rule and PDF/UA-2 alike | `Operations.Structure.OutlineItems.Walk` |
 | Which device colour families a page **paints** for PDF/A, every part (drawn streams only — `Do`, `scn`, `sh`, `Tf`, `gs` from the page and its appearances — each colour remapped through the painting stream's `Default*` space, bases included; **the initial DeviceGray** until a stream that begins in the initial state sets a space; from PDF/A-2 a drawn group's blending space) | `PdfAValidator.CollectPaintedDeviceFamilies` over `ScanPage`'s `ContentStreamSources` |

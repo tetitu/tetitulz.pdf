@@ -132,16 +132,6 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Interpreter
                 if (Bytes[Offset + i] != name[i]) return false;
             return true;
         }
-
-        public int ContentHashCode()
-        {
-            unchecked
-            {
-                int h = 17;
-                for (int i = 0; i < Length; i++) h = h * 31 + Bytes[Offset + i];
-                return h;
-            }
-        }
     }
 
     /// <summary>

@@ -70,6 +70,26 @@ exists for.
 unchecked rule of this kind gathers copies, so `SingleReferenceIdentityComparerTests` fails on any class
 implementing `IEqualityComparer` over the identity hash outside `PdfReferenceEquality.cs`.
 
+**A key a file chooses hashes through `Core.Util.KeyedHash`** — SipHash-2-4 under a key drawn once a
+process. A hash table compares a key with every key in its bucket, so a file that can put n keys in one
+bucket makes filling the table cost n² comparisons, and a budget that charges an insert for its key
+never sees the walk. `double.GetHashCode` XORs a value's two 32-bit halves on every runtime, so any reals
+whose halves XOR to one value share a bucket: 131 072 of them, a 3.5 MB PostScript program, take 112 s
+to define in one dictionary under it and 0.24 s under the keyed hash. .NET Framework's
+`string.GetHashCode` is one fixed function (two DJB-style chains over the even and the odd characters),
+so names collide offline the same way; there `KeyedHash.Of(string)` is SipHash over the UTF-16 code
+units, and on .NET Core and later it is `string.GetHashCode`, which the runtime already keys. `PdfName`,
+the PostScript plugin's `PsObject` (a string key hashing as the name it equals) and the JBIG2 encoder's
+`SymbolKey` (a symbol's bitmap, which an image chooses) hash through it. `Dictionary<string, …>` and
+`HashSet<string>` guard themselves on .NET Framework by switching to a randomized comparer when a bucket
+grows long — 16 384 colliding names cost them 2–27 ms, against 2.1 s for a key type hashing the string
+itself and 5.5 s for a tuple holding it. A tuple holding a string and LINQ's `Distinct`, `GroupBy` and
+`ToLookup` (1–2 s) are keyed there only by the host, with `<UseRandomizedStringHashAlgorithm
+enabled="1" />` in its configuration file's `<runtime>` section (the README's hosting checklist).
+`KeyedHashTests` checks SipHash against the reference implementation's vectors and makes the collisions —
+reals, names under a model of .NET Framework's hash pinned to that runtime's own answers, bitmaps under
+FNV-1 — and asserts their spread; the PostScript plugin's `DictionaryKeyHashTests` does so for real keys.
+
 Two behaviours differ on the legacy leg: `Plugins.Maintenance`'s Lossless uses deflate Optimal (no
 `SmallestSize`), and **`HtmlToPdf` needs a `System.Memory` binding redirect on .NET Framework**
 (AngleSharp binds `System.Memory` 4.0.5.0 against a graph compiled for 4.0.1.2). An SDK-style exe
@@ -1161,6 +1181,7 @@ Extract the helper instead. Before writing any of these, use the one implementat
 | The half-em fallback for a **non-finite glyph advance** — a corrupt charstring, or an overflowing `Tf` reaching the same place by multiplication. Composing NaN or Infinity into `Tm` poisons the run, so every later glyph draws at non-finite coordinates and is silently invisible. Copies could drift on the predicate **and** on the fallback | `MatrixGuard.SanitizeAdvance`, beside `IsFinite` / `AllFinite` in the same leaf |
 | What the encryption dictionary's `/P` denotes — the **low 32 bits**, because §7.6.3 Table 22 defines it signed while producers write the unsigned spelling of the same pattern, and a `double`→`int` cast **saturates** rather than truncating. Key derivation, `EncryptionInfo.PValue`, `/Perms` authentication, the PDF MAC seal and **both halves of the PDF/UA audit** read it here; a saturating read would pass a document that *denies* accessibility extraction | [`Core/Document/PdfPermissionValue.cs`](src/tetitulz.pdf/Tetitulz.Pdf.Core/Document/PdfPermissionValue.cs) — `Read` for a dictionary, `FromNumber` for a value the caller already resolved |
 | **A PDF flag word, of which `/P` is one** — annotation `/F` (§12.5.3) is the other: a 32-bit field producers write in either spelling. The low 32 bits of an **integer**, and `null` for anything else. Readers that read it differently **disagree on visibility, not only on the number**: `IntValue` saturates, so `/F 2147483648` — bit 32 alone — would become every named flag and hide the annotation, while a reader over `LongValue` draws it; without the integer test `/P 1e30` would saturate to all ones — every permission granted — and pass a document whose permissions nobody can read. A non-integer is `null` in both, which each caller turns into its own default | `PdfNumber.FlagWord`, with `PdfPermissionValue.FromNumber` and `PdfAnnotationFlags.FromNumber` as its two faces |
+| **The hash of a key a file chose** — a number, a name, a bitmap — under a key drawn once a process. A hash table compares a key with every key in its bucket, so keys a file can put in one bucket make filling the table quadratic, and no budget that charges an insert for its key sees the walk. `double.GetHashCode` (the value's halves XORed) and an unkeyed content hash (FNV-1) are such hashes on every runtime, a string's on .NET Framework; see Target frameworks | `Core.Util.KeyedHash` (SipHash-2-4): `PdfName`, the PostScript plugin's `PsObject`, `Jbig2SymbolEncoder.SymbolKey` |
 | Which nodes of a `Plugins.Maintenance` object map are leaf pages, with §7.7.3.4's inheritable `/Resources` and the object number that named each one (`-1` when written directly). **The walk visits objects, not object numbers** — a walk pushing numbers would end at a directly-written `/Pages` or kid, and page-scoped options would report success over a document they had not touched | [`Plugins.Maintenance/PageTreeWalk.cs`](src/plugins/Tetitulz.Pdf.Plugins.Maintenance/PageTreeWalk.cs), over `PageTreeShape` → `Core.Document.PdfPageTreeShape` for the leaf predicate |
 | Following an indirect reference through a loose `Dictionary<int, PdfObject>` object map, bounded at `MaxReferenceHops` — the form `PdfDocument.ResolveObject` cannot serve, because these scanners hold no `PdfDocument` | `Plugins.Maintenance.ContentScanGraph.Deref`; `PdfOptimizer.Deref` is a forwarder, which keeps the "every dictionary read in this file goes through here" reasoning at its call sites |
 | §9.6.6's encoding ladder for a **simple** font — Symbol and ZapfDingbats overriding whatever `/Encoding` says, a name selecting a standard table, a dictionary taking `/BaseEncoding` (resolving) then its `/Differences` (resolving), and §9.6.6.4's implicit base for everything else, **including an `/Encoding` that is neither a name nor a dictionary**. Two copies would drift at all three implicit-base sites, and byte `0x27` would extract as U+0027 through one subtype and U+2019 through the other | `Core.Fonts.PdfSimpleFont.ReadEncoding`, over `ImplicitBaseEncoding` and `ReadFontDescriptor`. It also answers whether the dictionary named an `/Encoding` at all, which is the one thing `PdfTrueTypeFont.UsesBuiltInEncoding` needs |

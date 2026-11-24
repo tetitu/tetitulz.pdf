@@ -800,7 +800,12 @@ namespace Tetitulz.Pdf.Core.Objects
         }
 
         public override bool Equals(object obj) => Equals(obj as PdfName);
-        public override int GetHashCode() => Value.GetHashCode();
+        /// <summary>
+        /// The name's hash under this process's key (<see cref="Util.KeyedHash"/>): a name is a key a
+        /// file chooses, and on .NET Framework the runtime's own string hash lets it choose names that
+        /// share one bucket.
+        /// </summary>
+        public override int GetHashCode() => Util.KeyedHash.Of(Value);
         public override string ToString() => "/" + Value;
 
         public static bool operator ==(PdfName left, PdfName right)
