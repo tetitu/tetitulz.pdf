@@ -78,8 +78,8 @@ public sealed class RenderingSpecFixTests
     }
 
     /// <summary>
-    /// The top-level /OCGs array is spec-required but producers omit it. It used to be an
-    /// early-return guard, so a document with a valid /OFF list but no /OCGs showed everything.
+    /// The top-level /OCGs array is spec-required but producers omit it. As an early-return guard,
+    /// a document with a valid /OFF list but no /OCGs would show everything.
     /// </summary>
     [Fact]
     public void HiddenLayer_WithoutTopLevelOcgsArray_IsStillHidden()
@@ -137,7 +137,7 @@ public sealed class RenderingSpecFixTests
 
         Assert.NotNull(a);
         Assert.NotNull(b);
-        // Before the fix /Matrix was dropped entirely and the two renders were pixel-identical.
+        // With /Matrix dropped the two renders would be pixel-identical.
         Assert.True(a!.Value.left != b!.Value.left || a.Value.top != b.Value.top,
             $"/Matrix was ignored: ink origin unchanged at ({a.Value.left},{a.Value.top}).");
     }
@@ -226,8 +226,8 @@ public sealed class RenderingSpecFixTests
     }
 
     /// <summary>
-    /// <c>sh</c> paints with the current alpha constant (PDF §11.6.4.2). Both <c>ca</c> and the
-    /// active soft mask used to be dropped, so a shading under <c>ca 0.5</c> painted opaque.
+    /// <c>sh</c> paints with the current alpha constant (PDF §11.6.4.2) and the active soft mask;
+    /// dropping <c>ca</c> would paint a shading under <c>ca 0.5</c> opaque.
     /// </summary>
     [Fact]
     public void ShOperator_HonoursFillAlpha()

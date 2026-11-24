@@ -70,7 +70,7 @@ public sealed class FacadeFindingsTests : IDisposable
     public void RecognizeTextWithOcr_PluginFindsNothing_IsDistinguishableFromNoPlugin()
     {
         // "The engine ran and found nothing" and "no engine ran" are opposite conclusions about
-        // a scan, and used to be the same value.
+        // a scan, and must not be the same value.
         PdfPluginHost.Instance.Register(new FakeOcrPlugin(result: null));
         using var input = new MemoryStream(MinimalPdfBuilder.CreateMinimalPdf());
 
@@ -156,8 +156,8 @@ public sealed class FacadeFindingsTests : IDisposable
     [Fact]
     public void ValidateConformance_MidPositionStream_ReachesThePluginRewound()
     {
-        // It used to skip the PdfHelpers.EnsureSeekable that Validate applies, so a stream the
-        // caller had already read from arrived at the plugin unrewound.
+        // It applies the PdfHelpers.EnsureSeekable that Validate applies, or a stream the caller
+        // had already read from would arrive at the plugin unrewound.
         var plugin = new FakeValidationPlugin("PDF/X-1a");
         PdfPluginHost.Instance.Register(plugin);
 

@@ -924,9 +924,8 @@ namespace Tetitulz.Pdf.Base.Operations.Metadata
         /// <para><b>Not interchangeable with
         /// <c>Rendering.OverprintCompositor.RgbToCmykExactInverse</c></b>, which is the exact
         /// inverse of <c>PdfColor.CmykToRgb</c> so an unblended colour round-trips. Both are
-        /// correct for their own job — print quality here, round-trip fidelity there — and the two
-        /// were once both called <c>RgbToCmyk</c>, which is the only reason they read as a
-        /// duplicate. See GAPS.md §2b.</para>
+        /// correct for their own job — print quality here, round-trip fidelity there — so the two
+        /// are not a duplicate, though both turn RGB into CMYK. See GAPS.md §2b.</para>
         /// </summary>
         private static byte[] RgbToCmykWithGcr(byte[] rgb, int numPixels, double gcrFactor)
         {

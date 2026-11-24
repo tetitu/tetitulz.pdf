@@ -64,8 +64,8 @@ public class RepairedFileBinaryMarkerTests
     }
 
     /// <summary>
-    /// The control: the rest of the file is still plain ASCII PDF syntax, so the fix did not change
-    /// how anything else is written.
+    /// The control: the rest of the file is plain ASCII PDF syntax, so the marker changes how
+    /// nothing else is written.
     /// </summary>
     /// <remarks>
     /// <c>WriteRaw</c> keeps its ASCII encoder deliberately — everything else it writes is PDF

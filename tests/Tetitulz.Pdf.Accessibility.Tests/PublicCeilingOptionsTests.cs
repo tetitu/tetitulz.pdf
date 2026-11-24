@@ -513,10 +513,10 @@ public class PublicCeilingOptionsTests
     /// 64 MiB once inflated must be refused without ever being inflated.
     ///
     /// <para>
-    /// Before the fix, <c>ConcatenatePageContent</c> called <c>GetDecodedData()</c> first and only
-    /// then compared the length against the ceiling, so this fixture allocated its full 64 MiB (and
-    /// a real one could allocate 512 MiB, Core's per-stream decode limit) before anything declined
-    /// it. Allocated bytes is the primary assertion because it is deterministic and
+    /// Calling <c>GetDecodedData()</c> first and only then comparing the length against the
+    /// ceiling would make this fixture allocate its full 64 MiB (and a real one 512 MiB, Core's
+    /// per-stream decode limit) before anything declined it. Allocated bytes is the primary
+    /// assertion because it is deterministic and
     /// machine-independent — the budget sits four times under the fixture's decoded size and many
     /// times over what a refusal costs — with elapsed time as a coarse second signal, since a
     /// 64 MiB inflate is not free either.
@@ -660,18 +660,13 @@ public class PublicCeilingOptionsTests
     /// and it is refused anyway.
     /// </summary>
     /// <remarks>
-    /// <para><b>Renamed from <c>…_IsStillCaughtAfterDecoding</c> when the bounded decode landed
-    /// (GAPS.md §5c), because the gate that catches it moved.</b> It used to be decoded in full —
-    /// all 32 KiB of it, against a 4 KiB ceiling — and refused afterwards by
-    /// <c>TryAccumulate</c>. <c>PdfStream.TryGetDecodedData</c> now stops the filter at the
-    /// budget, so the refusal happens <i>during</i> the decode and the 32 KiB is never allocated.
-    /// That is the improvement the change exists for.</para>
+    /// <para><b>Refused during the decode.</b> <c>PdfStream.TryGetDecodedData</c> stops the filter
+    /// at the budget (GAPS.md §5c), so the 32 KiB is never allocated against the 4 KiB ceiling;
+    /// <c>TryAccumulate</c> stays as the backstop after decoding.</para>
     ///
-    /// <para>The invariant under test is unchanged and is the one that matters: <b>under-declaring
-    /// <c>/DL</c> gains an attacker nothing</b>. Only the message moved, so the assertion no longer
-    /// pins which gate fired — pinning that would be pinning the implementation. Editing the old
-    /// assertion while keeping the old name would have left a test claiming a behaviour the code no
-    /// longer has, which CLAUDE.md bans outright.</para>
+    /// <para>The invariant under test is the one that matters: <b>under-declaring <c>/DL</c> gains
+    /// an attacker nothing</b>. The assertion does not pin which gate fired — pinning that would be
+    /// pinning the implementation.</para>
     /// </remarks>
     [Fact]
     public void ConcatenatePageContent_UnderDeclaredDecodedSize_IsStillRefused()

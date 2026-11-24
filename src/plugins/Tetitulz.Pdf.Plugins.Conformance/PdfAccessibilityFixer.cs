@@ -626,7 +626,7 @@ namespace Tetitulz.Pdf.Plugins.Conformance
         // ------------------------------------------------------------------
 
         // One implementation, in Core.IO.StreamBytes. It rewinds a seekable stream before
-        // reading; this copy read from wherever the position happened to be.
+        // reading, where a copy reading from the current position would see only the rest.
         private static byte[] ReadAll(Stream s) => StreamBytes.ReadAll(s);
 
         // One implementation, in Core.Objects.PdfDictionary.CloneShallow.

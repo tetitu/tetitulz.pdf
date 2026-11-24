@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using Tetitulz.Pdf.Core.Document;
 using Tetitulz.Pdf.Core.Objects;
+using Tetitulz.Pdf.Core.Parsing;
 
 namespace Tetitulz.Pdf.Core.Forms
 {
@@ -40,10 +41,12 @@ namespace Tetitulz.Pdf.Core.Forms
         /// <summary>
         /// The dictionaries named by <paramref name="parent"/>'s <paramref name="key"/> array, in
         /// order. Empty when the key is absent, is not an array, or names nothing resolvable —
-        /// never null.
+        /// never null. An entry whose object does not parse is not an absent one: it goes to
+        /// <paramref name="unreadable"/> (with the parser's reason, read the moment it resolves) when
+        /// one is given, so a walk over the tree can say it did not see the whole form.
         /// </summary>
         internal static List<PdfDictionary> Resolve(
-            PdfDictionary parent, PdfName key, PdfDocument document)
+            PdfDictionary parent, PdfName key, PdfDocument document, Util.DistinctStrings unreadable = null)
         {
             var children = new List<PdfDictionary>();
             if (parent == null) return children;
@@ -54,9 +57,14 @@ namespace Tetitulz.Pdf.Core.Forms
 
             for (int i = 0; i < array.Count; i++)
             {
-                var child = document?.ResolveObject(array[i]) as PdfDictionary
-                            ?? array[i] as PdfDictionary;
+                PdfObject element = array[i];
+                PdfObject resolved = document?.ResolveObject(element);
+                string why = element is PdfReference && (resolved == null || resolved is PdfNull) ? PdfParser.LastObjectParseError : null;
+                var child = resolved as PdfDictionary ?? element as PdfDictionary;
                 if (child != null) children.Add(child);
+                else if (why != null && unreadable != null)
+                    unreadable.Add("/" + key.Value + " entry " + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + " (object "
+                                   + ((PdfReference)element).ReferenceObjectNumber.ToString(System.Globalization.CultureInfo.InvariantCulture) + "): " + why);
             }
             return children;
         }

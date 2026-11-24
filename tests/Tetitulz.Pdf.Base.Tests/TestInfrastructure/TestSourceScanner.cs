@@ -35,13 +35,11 @@ internal readonly record struct TestMethodSource(string RelativePath, string Nam
 /// <para>These guards read the test sources <b>on disk</b>, so they only have teeth when the repo
 /// is present. <see cref="TestsRoot"/> returning <c>null</c> is the signal that it is not — e.g.
 /// when the assemblies are executed from somewhere else — and the guards must then report
-/// <b>Skipped</b>, via <c>[RepoSourceFact]</c>. They previously wrote
-/// <c>if (TestsRoot == null) return;</c>, which reports <b>Passed</b>: this comment used to claim
-/// that was a visible skip, and it was not. A guard reporting green when it could not run is
-/// banned test pattern 2, committed by the code that enforces it.</para>
+/// <b>Skipped</b>, via <c>[RepoSourceFact]</c>; <c>if (TestsRoot == null) return;</c> would report
+/// <b>Passed</b>, and a guard reporting green when it could not run is banned test pattern 2.</para>
 ///
-/// <para>Extracted so the two guards cannot drift on what counts as a test source, how comments
-/// are stripped, or where a method body ends. Both previously would have needed their own copy.</para>
+/// <para>Shared so the two guards cannot drift on what counts as a test source, how comments
+/// are stripped, or where a method body ends.</para>
 /// </summary>
 internal static class TestSourceScanner
 {

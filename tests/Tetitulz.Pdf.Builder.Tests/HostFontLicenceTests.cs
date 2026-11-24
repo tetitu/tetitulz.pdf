@@ -17,12 +17,10 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// host.
 ///
 /// <para><b>What these exist for.</b> Embedding a font redistributes it, and <c>fsType</c> is where
-/// the foundry records what it permits. This resolver never read the field until 2026-09-03, and
-/// <see cref="PdfExportOptions.AllowSystemFontSubstitution"/> defaults to <b>true</b> — so a Builder
-/// export, and everything layered on it (<c>HtmlToPdf</c>, the Templating plugin), would embed a
-/// Restricted-License host font by default. <c>CLAUDE.md</c> recorded the deleted
-/// <c>FormFontSource</c> as "the one path in the tree that could" do that; it was not the only
-/// one.</para>
+/// the foundry records what it permits. <see cref="PdfExportOptions.AllowSystemFontSubstitution"/>
+/// defaults to <b>true</b>, so a resolver that did not read the field would make a Builder export,
+/// and everything layered on it (<c>HtmlToPdf</c>, the Templating plugin), embed a
+/// Restricted-License host font by default.</para>
 ///
 /// <para><b>Why a refusal file needs its acceptance control.</b> A resolution can return
 /// <c>null</c> for want of coverage, for an unparseable file, or for the licence. Every refusal

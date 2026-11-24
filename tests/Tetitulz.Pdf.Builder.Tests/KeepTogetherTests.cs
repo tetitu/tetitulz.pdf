@@ -214,8 +214,8 @@ public class KeepTogetherTests
     }
 
     /// <summary>
-    /// A box kept together with no least height (2026-10-19) moves whole by its content: it was judged by its least
-    /// height alone, so a box of blocks with none was never moved. The control splits.
+    /// A box kept together with no least height moves whole by its content: judged by its least height
+    /// alone, a box of blocks with none would never move. The control splits.
     /// </summary>
     [Fact]
     public void ABoxKeptTogether_MovesWholeByItsContent()
@@ -263,7 +263,7 @@ public class KeepTogetherTests
 
     /// <summary>
     /// Only the header rows a table STARTS with repeat. A row marked a header further down is
-    /// drawn once, where it stands — it used to be re-drawn above every later page break.
+    /// drawn once, where it stands — not re-drawn above every later page break.
     /// </summary>
     [Fact]
     public void OnlyTheLeadingHeaderRowsRepeat()

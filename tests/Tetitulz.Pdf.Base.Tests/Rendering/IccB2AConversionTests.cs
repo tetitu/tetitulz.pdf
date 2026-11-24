@@ -242,8 +242,8 @@ public class IccB2AConversionTests
     /// <summary>
     /// A <c>lut16Type</c> whose input is PCSXYZ runs its 3×3 matrix before the input curves (ICC.1:
     /// "the matrix is used only when the input colour space is PCSXYZ"). Doubling X here moves cyan
-    /// from 0.482 (the identity, <see cref="AnXyzPcsProfileIsEncodedAsXyz"/>) to 0.964. The reader
-    /// used to skip the matrix entirely.
+    /// from 0.482 (the identity, <see cref="AnXyzPcsProfileIsEncodedAsXyz"/>) to 0.964, which a
+    /// reader skipping the matrix cannot.
     /// </summary>
     [Fact]
     public void AnXyzInputRunsTheLutsMatrixBeforeItsCurves()
@@ -297,8 +297,8 @@ public class IccB2AConversionTests
 
     /// <summary>
     /// White is kept at the destination's own white — the reference colour engine's <c>_cmsEndPointsBySpace</c>: no ink for
-    /// CMYK, full scale for RGB and grey. Writing zeros for every space turned sRGB white black in an
-    /// RGB or grey destination. The tables here answer 0.5 everywhere, so only the fix-up reaches the
+    /// CMYK, full scale for RGB and grey. Writing zeros for every space would turn sRGB white black in
+    /// an RGB or grey destination. The tables here answer 0.5 everywhere, so only the fix-up reaches the
     /// ends.
     /// </summary>
     [Fact]

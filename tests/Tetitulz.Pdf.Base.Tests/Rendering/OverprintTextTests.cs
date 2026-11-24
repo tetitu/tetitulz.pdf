@@ -91,9 +91,8 @@ public class OverprintTextTests
     /// Mode 1 strokes the glyphs, and the pen overprints like a path stroke does.
     /// </summary>
     /// <remarks>
-    /// This mode used to be declined wholesale as "a text render mode other than 0" — the mode was
-    /// reported and the pen was painted opaque. §11.7.4.2 does not distinguish a pen from a fill,
-    /// and neither does the compositor now: the captured outline is stroked through the same
+    /// §11.7.4.2 does not distinguish a pen from a fill, and neither does the compositor: the
+    /// captured outline is stroked through the same
     /// coverage rasteriser a path stroke uses, so magenta pen over cyan page is blue.
     /// </remarks>
     [Fact]
@@ -169,8 +168,8 @@ public class OverprintTextTests
     /// </summary>
     /// <remarks>
     /// The clip is the assertion that separates "routed through capture" from "painted normally":
-    /// the glyph-run path used to return from capture before accumulating the clip, so an
-    /// overprinting mode-6 run would have composited correctly and then let the rectangle after
+    /// a glyph-run path returning from capture before accumulating the clip would composite an
+    /// overprinting mode-6 run correctly and then let the rectangle after
     /// <c>ET</c> cover the whole page. Red is chosen for that rectangle because nothing else on the
     /// page can produce it, and the page is far larger than the glyphs, so the assertion is on how
     /// <b>little</b> red survives.

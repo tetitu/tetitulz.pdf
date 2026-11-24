@@ -117,12 +117,11 @@ public class PathCullingTests
     /// path and its unscaled pen do not.
     /// </summary>
     /// <remarks>
-    /// <b>This is a regression test for a defect found reviewing this round's own diff.</b> §8.4.3.2
-    /// puts the line width in user space, so <c>BuildStrokePaint</c> paints with
-    /// <c>LineWidth × ctmScale</c> — but the first cull margin used the raw <c>LineWidth</c>. Under
-    /// <c>10 0 0 10 0 0 cm</c> a 2-unit line paints 20 pt wide while the margin assumed 2 pt, so a
-    /// stroke whose pen still covered the tile was discarded. Nothing throws; the artwork simply
-    /// disappears, and only under a scaled CTM — which no other test here uses.
+    /// §8.4.3.2 puts the line width in user space, so <c>BuildStrokePaint</c> paints with
+    /// <c>LineWidth × ctmScale</c>, and the cull margin must too. Under <c>10 0 0 10 0 0 cm</c> a
+    /// 2-unit line paints 20 pt wide, so a margin of the raw 2 pt would discard a stroke whose pen
+    /// still covers the tile. Nothing throws; the artwork simply disappears, and only under a scaled
+    /// CTM — which no other test here uses.
     /// </remarks>
     [Fact]
     public void StrokeUnderAMagnifyingCtm_IsNotCulledByItsUnscaledWidth()

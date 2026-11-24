@@ -65,11 +65,9 @@ public class IccRenderingIntentTests
     /// The default intent is media-relative colorimetric, not perceptual.
     /// </summary>
     /// <remarks>
-    /// §8.6.5.8 makes <c>/RelativeColorimetric</c> the default value of <c>/RI</c>, and this
-    /// renderer used to read <c>A2B0</c> unconditionally — so honouring the parameter changed what
-    /// an <i>unset</i> document renders as, wherever its profile carries a distinct <c>A2B1</c>.
-    /// That is a deliberate behaviour change and it deserves an assertion of its own rather than
-    /// living only in a commit message.
+    /// §8.6.5.8 makes <c>/RelativeColorimetric</c> the default value of <c>/RI</c>, so an
+    /// <i>unset</i> document renders through <c>A2B1</c> wherever its profile carries a distinct one,
+    /// not through <c>A2B0</c> unconditionally. That deserves an assertion of its own.
     /// </remarks>
     [RealIccProfileFact(Press)]
     public void TheDefaultIntentIsMediaRelativeColorimetricRatherThanPerceptual()
@@ -139,14 +137,14 @@ public class IccRenderingIntentTests
     /// A profile carrying only <c>A2B0</c> gives the same colour under every intent.
     /// </summary>
     /// <remarks>
-    /// The fallback, and the reason this change is safe for every synthetic fixture in the suite:
+    /// The fallback, and the reason intent selection changes nothing for every synthetic fixture in the suite:
     /// they all build a one-entry tag table. A profile with nothing to select is not a profile with
     /// a gap — one table is the answer for all four intents — which is also why an intent naming a
     /// missing table raises no diagnostic.
     /// </remarks>
     /// <remarks>
-    /// Asserted on the table each intent reads, not the compensated colour: since 2026-10-03 each
-    /// intent has its own black point for compensation (absolute none at all), so one table can give
+    /// Asserted on the table each intent reads, not the compensated colour: each intent has its own
+    /// black point for compensation (absolute none at all), so one table can give
     /// different colours at solid black under different intents — as the reference colour engine gives them.
     /// </remarks>
     [Fact]

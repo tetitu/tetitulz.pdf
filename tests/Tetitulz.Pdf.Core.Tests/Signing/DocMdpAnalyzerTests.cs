@@ -307,8 +307,8 @@ public class DocMdpAnalyzerTests
 
     /// <summary>
     /// …and P=3's licence is for annotations only: deleting the page is still a violation there.
-    /// Without this, "P=3 permits deletion" would be indistinguishable from the fix being a
-    /// blanket exemption at that level.
+    /// Without this, "P=3 permits annotations" would be indistinguishable from a blanket
+    /// exemption at that level.
     /// </summary>
     [Fact]
     public void P3_DeletingAPageObject_StillExceedsPermissions()

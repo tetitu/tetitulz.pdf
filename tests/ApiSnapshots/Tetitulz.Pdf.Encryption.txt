@@ -31,6 +31,7 @@ Tetitulz.Pdf.Encryption.PdfDecryptor::Decrypt(System.String, System.String, Syst
 Tetitulz.Pdf.Encryption.PdfDecryptor::GetEncryptionInfo(System.IO.Stream) : Tetitulz.Pdf.Encryption.EncryptionInfo
 Tetitulz.Pdf.Encryption.PdfDecryptor::GetEncryptionInfo(System.String) : Tetitulz.Pdf.Encryption.EncryptionInfo
 Tetitulz.Pdf.Encryption.PdfDecryptor::IdentifyPassword(Tetitulz.Pdf.Encryption.EncryptionInfo, System.String) : Tetitulz.Pdf.Encryption.PdfPasswordRole
+Tetitulz.Pdf.Encryption.PdfDecryptor::LastAesCbcMalformedLength : System.String { get }
 Tetitulz.Pdf.Encryption.PdfDecryptor::LastAesCbcPaddingFallback : System.String { get }
 Tetitulz.Pdf.Encryption.PdfDecryptor::LastCryptFilterFallback : System.String { get }
 Tetitulz.Pdf.Encryption.PdfDecryptor::LastObjectStreamRejection : System.String { get }
@@ -74,6 +75,7 @@ Tetitulz.Pdf.Encryption.PdfEncryptionOperations::VerifyPdfMac(System.IO.Stream, 
 Tetitulz.Pdf.Encryption.PdfEncryptionOperations::VerifySignatures(System.IO.Stream, System.String, Tetitulz.Pdf.Signing.Models.SignatureVerificationOptions = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Signing.Models.SignatureVerificationResult>
 Tetitulz.Pdf.Encryption.PdfEncryptor::Encrypt(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Base.Encryption.EncryptionParameters) : System.Void
 Tetitulz.Pdf.Encryption.PdfEncryptor::Encrypt(System.String, System.String, Tetitulz.Pdf.Base.Encryption.EncryptionParameters) : System.Void
+Tetitulz.Pdf.Encryption.PdfEncryptor::LastDroppedObjects : System.String { get }
 Tetitulz.Pdf.Encryption.PdfIncrementalEncryption::TryCreate(System.IO.Stream, System.String, out Tetitulz.Pdf.Core.Writing.IPdfObjectEncryptor&, out System.String&) : System.Boolean
 Tetitulz.Pdf.Encryption.PdfIncrementalEncryption::TryCreate(Tetitulz.Pdf.Core.Document.PdfDocument, System.String, out Tetitulz.Pdf.Core.Writing.IPdfObjectEncryptor&, out System.String&) : System.Boolean
 Tetitulz.Pdf.Encryption.PdfIncrementalEncryption::TryCreate(Tetitulz.Pdf.Core.Document.PdfDocument, Tetitulz.Pdf.Encryption.PdfDecryptionCredential, out Tetitulz.Pdf.Core.Writing.IPdfObjectEncryptor&, out System.String&) : System.Boolean

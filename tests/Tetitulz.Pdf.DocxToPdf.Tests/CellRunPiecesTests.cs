@@ -35,7 +35,7 @@ public sealed class CellRunPiecesTests
 
     /// <summary>
     /// Four times the lines cost about four times as much, not sixteen: 1 000 and 4 000 pairs of w:t and w:br in
-    /// one cell's run. Measured after the fix, 11 MB for 2 000 and 23 MB for 4 000; before it, 1.0 GB and 4.1 GB.
+    /// one cell's run. Measured, 11 MB for 2 000 and 23 MB for 4 000; a quadratic build takes 1.0 GB and 4.1 GB.
     /// </summary>
     [Fact]
     public void ACellRunOfManyLineBreaks_CostsInProportionToItsLines()

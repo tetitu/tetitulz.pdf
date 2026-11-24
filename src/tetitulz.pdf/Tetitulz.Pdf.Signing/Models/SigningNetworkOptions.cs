@@ -16,8 +16,8 @@ namespace Tetitulz.Pdf.Signing.Models
     /// <see cref="Timestamping.TsaClient"/> is on <c>HttpWebRequest</c> at all — so a caller-supplied
     /// <c>HttpMessageHandler</c> is not expressible here. <see cref="ICredentials"/> and
     /// <see cref="IWebProxy"/> are: they exist on both targets, and both <c>HttpWebRequest</c> and
-    /// <c>HttpClientHandler</c> accept them. The register recorded the constraint and read it as
-    /// "no seam"; it rules out one seam.</para>
+    /// <c>HttpClientHandler</c> accept them. The constraint rules out one seam, not every
+    /// seam.</para>
     ///
     /// <para><b>Why this is needed at all.</b> Most commercial timestamp authorities are
     /// authenticated and most enterprises reach the internet through a proxy, so without this the

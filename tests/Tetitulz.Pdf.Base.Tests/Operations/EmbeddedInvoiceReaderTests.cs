@@ -293,8 +293,8 @@ public class EmbeddedInvoiceReaderTests
 
     /// <summary>
     /// An invoice after eight other XML attachments is past the reader's limit and is never tried;
-    /// the reader says so, beside why the one it tried under an invoice's name failed, where it
-    /// used to answer as if the PDF carried none. Among the first eight it is read.
+    /// the reader says so, beside why the one it tried under an invoice's name failed, rather than
+    /// answer as if the PDF carried none. Among the first eight it is read.
     /// </summary>
     [Fact]
     public void AnAttachmentPastTheCandidateLimitIsReportedAsNotTried()
@@ -488,7 +488,7 @@ public class EmbeddedInvoiceReaderLimitTests
 {
     /// <summary>
     /// The attachment name tree cut short by its entry limit: the invoice past the cut is never
-    /// listed, and the reader says the listing was partial, where it used to answer as if the PDF
+    /// listed, and the reader says the listing was partial, rather than answer as if the PDF
     /// carried none. Under the default limit the same PDF's invoice is read.
     /// </summary>
     [Fact]

@@ -14,23 +14,21 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <c>/QuadPoints</c> quad (§12.5.6.10), not over the two the spec nominates as an edge.
 /// </summary>
 /// <remarks>
-/// <para><b>This is the bug the class was created to fix, and nothing tested it.</b> Its own remarks
-/// record the divergence: "Raster took min/max over all four corners; the SVG side used only the two
-/// corners it assumed were the bottom edge. §12.5.6.10's corner order has been written
-/// inconsistently by real producers for years — a common viewer's own output has swapped the last two — so a
-/// quad in another winding gave a rule of the wrong length, in the wrong place, or both."</para>
+/// <para><b>This is what the class exists for.</b> §12.5.6.10's corner order has been written
+/// inconsistently by real producers for years — a common viewer's own output has swapped the last
+/// two — so extents from only the two corners assumed to be the bottom edge give a quad in another
+/// winding a rule of the wrong length, in the wrong place, or both.</para>
 ///
-/// <para>A 2026-08-29 mutation-liveness sweep over the shared decision points reverted
-/// <c>Left</c> to <c>Math.Min(x0, x1)</c> — the pre-fix, SVG-side behaviour — and <b>all 3 040 Base
-/// tests stayed green</b>. The fix was documented in detail and defended by nothing; a reader
-/// "simplifying" the four-corner min/max back would have reintroduced it silently.</para>
+/// <para>Without this test, reverting <c>Left</c> to <c>Math.Min(x0, x1)</c> — the two-corner form —
+/// leaves every other Base test green: a reader "simplifying" the four-corner min/max would
+/// reintroduce it silently.</para>
 ///
 /// <para><b>Why there are five windings and not one.</b> A given corner order only discriminates for
 /// the extent its first two corners get wrong — the canonical order spans the full width, so
 /// <c>min(x0,x1)</c> and the four-corner minimum agree and it detects nothing about <c>Left</c> or
 /// <c>Right</c>. Each row puts a different edge first, so between them every one of the four extents
-/// has a row that fails if it reverts to the two-corner form. The first draft used one winding and
-/// missed exactly that.</para>
+/// has a row that fails if it reverts to the two-corner form; one winding would miss exactly
+/// that.</para>
 /// </remarks>
 public class AnnotationQuadExtentsTests
 {

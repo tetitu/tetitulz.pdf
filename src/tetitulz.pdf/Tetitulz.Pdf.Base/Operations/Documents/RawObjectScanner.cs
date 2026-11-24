@@ -114,15 +114,15 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         /// <remarks>
         /// <para><b>An object's end is not the first <c>endobj</c> after its header</b> by byte
         /// search: stream data is arbitrary bytes and a string is any text, so an object holding the
-        /// word would be cut there — a content stream kept only what came before it, with a
+        /// word would be cut there — a content stream keeping only what came before it, with a
         /// <c>/Length</c> that then ran on into the next object — and a <c>3 0 obj</c> in either
-        /// became an object 3 that could replace the real one. The end is now found by reading the
+        /// would become an object 3 that could replace the real one. The end is found by reading the
         /// object's tokens, and a stream's data is stepped over by its <c>/Length</c>; headers
         /// inside an accepted object are not objects.</para>
-        /// <para><b>The byte search was also quadratic.</b> Headers that shared one distant
-        /// <c>endobj</c> each copied everything up to it, so two thousand of them before 100 KB of
-        /// padding copied the padding two thousand times. An object now ends by the next header at
-        /// the latest.</para>
+        /// <para><b>A byte search would also be quadratic.</b> Headers that shared one distant
+        /// <c>endobj</c> would each copy everything up to it, so two thousand of them before 100 KB
+        /// of padding would copy the padding two thousand times. An object ends by the next header
+        /// at the latest.</para>
         /// </remarks>
         private static List<RawObject> LocateObjects(
             byte[] raw, List<ObjectHeaderMatch> headers, PdfParser parser, List<string> errors)

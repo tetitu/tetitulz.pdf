@@ -115,8 +115,7 @@ public class TextExtractionOverloadParityTests
     /// <b>The reset is what makes the diagnostic comparison mean anything.</b> Without it, a call
     /// that fails to reset the slot simply inherits the previous call's value — so an overload with
     /// exactly the defect under test reports the same diagnostic as the correct one and the
-    /// comparison passes. A mutation run caught this: reverting the fix left these tests green and
-    /// killed only the plugin-hook test.
+    /// comparison passes; without the reset, a mutation leaving the slot unreset survives here.
     /// </remarks>
     private static Outcome Capture(Func<string> call)
     {

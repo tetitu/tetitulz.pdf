@@ -64,8 +64,8 @@ public class IndirectMissingWidthTests
     }
 
     /// <summary>
-    /// <b>The control.</b> A direct <c>/MissingWidth</c> was already honoured by both, and still
-    /// is — so the fix is "follow the reference", not "change what the entry means".
+    /// <b>The control.</b> A direct <c>/MissingWidth</c> is honoured by both — so the rule is
+    /// "follow the reference", not "change what the entry means".
     /// </summary>
     [Fact]
     public void ADirectMissingWidthIsStillHonouredByBothSimpleSubtypes()

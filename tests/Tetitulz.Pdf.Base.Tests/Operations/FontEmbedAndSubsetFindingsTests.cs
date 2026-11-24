@@ -248,23 +248,14 @@ public class FontEmbedAndSubsetFindingsTests
     /// a font containing only <c>.notdef</c>.
     /// </summary>
     /// <remarks>
-    /// <para><b>Renamed and retargeted 2026-08-15, because the behaviour changed under it.</b> This
-    /// was <c>Subset_CmapThatIsNotFormat4_…</c> and used format <b>12</b> as its example. Format 12
-    /// is now read — it is the common case for any font with astral coverage, and refusing it made
-    /// Noto CJK, emoji and symbol fonts unsubsettable — so "not format 4" no longer implies "cannot
-    /// be read". Editing the assertion and keeping the name would have left a test whose name
-    /// asserts a rule the code no longer follows.</para>
-    /// <para>Format <b>2</b> stands in for the formats still unread. It used to be format 6, and
-    /// before that the claim was simply "not format 4" — the stand-in has now moved twice as
-    /// formats 12, then 0 and 6, became readable. The stand-in is an example, not the claim, so
-    /// moving it is not the same as editing an assertion to match the code; the rule under test is
-    /// unchanged and is the one that matters: the subsetter used to pick a subtable, see a format
-    /// it did not read, and return <i>without a word</i> — a structurally valid font containing only
-    /// <c>.notdef</c>, which <c>EmbedFont</c> then embedded happily so every glyph rendered as a
-    /// blank box. The caller's only signal was that the output was small, which is also what a real
-    /// tiny subset looks like.</para>
-    /// <para><c>CmapFormat12SubsetTests</c> covers the other side — that format 12 is now read —
-    /// including a real format-0 subtable rather than a relabelled one, and that format 0 is read.</para>
+    /// <para>Format <b>2</b> stands in for the formats the subsetter does not read; the stand-in is
+    /// an example, not the claim. The rule under test is the one that matters: a subsetter that
+    /// picks a subtable, sees a format it does not read, and returns <i>without a word</i> yields a
+    /// structurally valid font containing only <c>.notdef</c>, which <c>EmbedFont</c> embeds happily
+    /// so every glyph renders as a blank box — and the caller's only signal is that the output is
+    /// small, which is also what a real tiny subset looks like.</para>
+    /// <para><c>CmapFormat12SubsetTests</c> covers the other side — that formats 12 and 0 are read,
+    /// including a real format-0 subtable rather than a relabelled one.</para>
     /// </remarks>
     [Fact]
     public void Subset_CmapInAFormatTheSubsetterCannotRead_SaysSoInsteadOfReturningNotdefOnly()
@@ -372,9 +363,9 @@ public class FontEmbedAndSubsetFindingsTests
         int subtableOffset = offset + (int)ReadUInt32(font, offset + 8);
         int declared = ReadUInt16(font, subtableOffset + 2);
         int segCount = ReadUInt16(font, subtableOffset + 6) / 2;
-        // Seven header words, four arrays of segCount words, and the reservedPad: 16 + 8n. This
-        // said 14 + 8n, the writer's own miscount, so the two agreed and the assertion could not
-        // see that every subset declared its cmap two bytes short (fixed 2026-10-08).
+        // Seven header words, four arrays of segCount words, and the reservedPad: 16 + 8n — counted
+        // here independently of the writer, so a writer and a test sharing a miscount (14 + 8n)
+        // cannot agree on a cmap declared two bytes short.
         int actual = 16 + 8 * segCount;
 
         Assert.Equal(actual, declared);

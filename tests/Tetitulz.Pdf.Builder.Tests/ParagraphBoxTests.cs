@@ -58,8 +58,8 @@ public sealed class ParagraphBoxTests
     }
 
     /// <summary>
-    /// The body path was already correct and must stay so — this is what pins the fix as "the
-    /// fill moved out of the pagination branch", not "the fill moved".
+    /// The body path must stay correct — this is what pins the fill's place as "out of the
+    /// pagination branch", not merely "somewhere else".
     /// </summary>
     [Fact]
     public void ShadedParagraph_InTheBody_StillPaintsItsBackground()

@@ -31,7 +31,6 @@ public sealed class PluginAutoDiscoveryTests : IDisposable
     /// <summary>
     /// This test assembly references <c>Tetitulz.Pdf.Plugins.PostScript</c> (a marked plugin
     /// assembly) but never registers it, which is exactly the host situation the method is for.
-    /// It was <c>Plugins.Jpeg2000</c>'s decode plugin until the old external codec retired on 2026-09-26.
     /// </summary>
     [Fact]
     public void RegisterFromLoadedAssemblies_MakesAReferencedPluginAssemblyReachable()
@@ -76,16 +75,13 @@ public sealed class PluginAutoDiscoveryTests : IDisposable
     }
 
     /// <summary>
-    /// A JPX image nothing could decode used to fail completely silently. With no plugin
-    /// registered the in-house decoder is the only codec, and when it declines the renderer must
-    /// say so — the decoder's reason, and that no plugin was there to ask next.
+    /// A JPX image nothing can decode does not fail silently. With no plugin registered the
+    /// in-house decoder is the only codec, and when it declines the renderer must say so — the
+    /// decoder's reason, and that no plugin was there to ask next.
     /// </summary>
     /// <remarks>
-    /// This was "no JPEG 2000 codec is available", a configuration report, until the in-house
-    /// decoder arrived (Wave 15g): there is always a codec now, so the report names the
-    /// codestream's refusal instead. Before that it was "either decodes or reports why not", with
-    /// an early return when a decode succeeded, because a host with the native <c>libopenjp2</c>
-    /// installed could decode it; that probe is gone too.
+    /// There is always a codec, so the report names the codestream's refusal rather than "no
+    /// JPEG 2000 codec is available".
     /// </remarks>
     [Fact]
     public void JpxDecode_UndecodableWithNoPlugin_ReportsTheDecoderRefusalAndThatNoPluginIsRegistered()

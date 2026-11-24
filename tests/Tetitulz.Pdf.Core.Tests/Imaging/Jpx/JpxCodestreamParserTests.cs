@@ -309,7 +309,7 @@ public sealed class JpxCodestreamParserTests
         yield return Case("CAP Pcap15 without Ccap15", Body(J.Segment(0xFF50, 0x00, 0x02, 0x00, 0x00), J.Cod(), J.QcdNone()), "without its Ccap15 field");
         yield return Case("CAP Ccap15 reserved", Body(J.Segment(0xFF50, 0x00, 0x02, 0x00, 0x00, 0x40, 0x00), J.Cod(), J.QcdNone()), "bits 14 and 15 of 01 are reserved");
         yield return Case("CAP Pcap1", Body(J.Segment(0xFF50, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00), J.Cod(), J.QcdNone()), "capabilities this library does not decode: Pcap1");
-        // Review of 15a–15f (2026-09-24), syntax rows 1, 3, 4 and 13.
+        // TLM and PLM are main-header markers.
         yield return Case("TLM in a tile-part header", J.Concat(J.Soc, J.Siz64(), J.Cod(), J.QcdNone(), J.TilePart(0, 0, J.Segment(0xFF55, 0, 0x40, 0, 0, 0, 0, 0, 0), Data5), J.Eoc), "TLM appears in a tile-part header");
         yield return Case("PLM in a tile-part header", J.Concat(J.Soc, J.Siz64(), J.Cod(), J.QcdNone(), J.TilePart(0, 0, J.Segment(0xFF57, 0, 1, 5), Data5), J.Eoc), "PLM appears in a tile-part header");
         // ITU-T T.814 §A.3.2: CAP decides what code-block style bits 6 and 7 mean. HTONLY reads them as HT,

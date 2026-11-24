@@ -83,9 +83,9 @@ public class NoSubsettingLicenceTests
     }
 
     /// <summary>
-    /// The decline says which of its reasons applied. <c>(null, null)</c> has always meant "embed
-    /// the whole program", but it conflated "no <c>glyf</c> table" with "the licence forbids it",
-    /// and only the second is something a caller may have to explain to someone.
+    /// The decline says which of its reasons applied. <c>(null, null)</c> means "embed the whole
+    /// program" for both "no <c>glyf</c> table" and "the licence forbids it", and only the second is
+    /// something a caller may have to explain to someone.
     /// </summary>
     [Fact]
     public void TrueType_TheDeclineNamesTheLicence()

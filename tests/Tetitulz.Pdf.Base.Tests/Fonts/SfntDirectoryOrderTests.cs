@@ -42,8 +42,8 @@ public sealed class SfntDirectoryOrderTests
     private const string Sample = "AaBbCc123";
 
     /// <summary>
-    /// A subset emits an ordinal-sorted directory. This is the case that was wrong: the fixture has
-    /// an <c>OS/2</c> table, which is exactly the tag the two orderings disagree about.
+    /// A subset emits an ordinal-sorted directory. The fixture has an <c>OS/2</c> table, which is
+    /// exactly the tag the two orderings disagree about.
     /// </summary>
     [Fact]
     public void ASubsettedFontsTableDirectoryIsSortedByByteValue()
@@ -57,10 +57,9 @@ public sealed class SfntDirectoryOrderTests
     }
 
     /// <summary>
-    /// The floor: compaction, which removes tables rather than glyphs and always sorted correctly,
-    /// still does. Without it a change that broke both emitters the same way would leave the test
-    /// above as the only witness, and a shared bug in a shared helper is exactly what this round
-    /// created the opportunity for.
+    /// The floor: compaction, which removes tables rather than glyphs, sorts correctly too. Without
+    /// it a change that broke both emitters the same way would leave the test above as the only
+    /// witness, and a shared helper is exactly where a shared bug would live.
     /// </summary>
     [Fact]
     public void ACompactedFontsTableDirectoryIsSortedByByteValue()

@@ -235,8 +235,8 @@ public class FieldExtractorMatchingTests
 
     /// <summary>
     /// A VAT rate beside its label and the amount on the line below: the amount query reads the
-    /// line below and keeps the rate in front of it. It used to take the rate alone, as found,
-    /// and never look below. As text the rate is the value, which is the control.
+    /// line below and keeps the rate in front of it, rather than take the rate alone, as found.
+    /// As text the rate is the value, which is the control.
     /// </summary>
     [Fact]
     public void AnAmountRunWithoutAnAmountGivesWayToTheAmountBelow()

@@ -123,8 +123,8 @@ public class WordSpacingTests
     /// <summary>
     /// Adding the space must not move the ink. Spaces are excluded from the placement list that
     /// drives highlight rectangles, underline/strike rules and link annotations, so a word's x
-    /// position is unchanged — pinned here because the fix threads a second list through the same
-    /// method and swapping the two would silently shift every rule and link.
+    /// position is unchanged — pinned here because a second list threads through the same method,
+    /// and swapping the two would silently shift every rule and link.
     /// </summary>
     [Fact]
     public void AddingTheSpace_InsertsExactlyOneCharacter()

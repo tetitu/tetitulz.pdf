@@ -79,7 +79,7 @@ public class ReviewFixSigning_OcspResponderTests
     public void DelegatedResponder_IssuerSigned_WithOcspEku_TrustedGood()
     {
         // Legitimate delegated responder: issued by the real CA AND carrying id-kp-OCSPSigning.
-        // This must still be accepted (Good) so the fix does not break conforming delegation.
+        // This must still be accepted (Good) so the check does not break conforming delegation.
         var (ca, caKey)      = SelfSignedCa("CN=CA Good");
         var (signer, _)      = IssuedCert("CN=Signer Good", caKey, ca, ocspEku: false);
         var (responder, respKey) = IssuedCert("CN=Good Responder", caKey, ca, ocspEku: true);

@@ -18,9 +18,9 @@ namespace Tetitulz.Pdf.Core.Tests.IO;
 /// <summary>
 /// <c>/BrotliDecode</c>: a raw Brotli stream (RFC 7932), the filter the PDF Association proposed for
 /// PDF 2.0 and another reader reads — with Flate's predictor parameters, a custom dictionary refused by name,
-/// and its output bounded by the stage's ceiling. Until 2026-10-17 the pipeline passed such a stream
-/// through undecoded and named the filter unknown, so a document compressed with it opened with no
-/// pages (another reader's <c>Brotli-Prototype-FileA</c>).
+/// and its output bounded by the stage's ceiling. Passed through undecoded as an unknown filter, a
+/// document compressed with it would open with no pages (another reader's
+/// <c>Brotli-Prototype-FileA</c>).
 /// </summary>
 public class BrotliDecodeFilterTests
 {

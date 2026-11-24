@@ -61,9 +61,9 @@ public class WorkBudgetParentTests
     }
 
     /// <summary>
-    /// A negative cost (a product of file fields gone negative) is charged as nothing. It used to be
-    /// a credit to the budget and its parent, which a JBIG2 symbol width of −2 147 483 600 turned
-    /// into 38 G units of room for the next stream.
+    /// A negative cost (a product of file fields gone negative) is charged as nothing. As a credit to
+    /// the budget and its parent, a JBIG2 symbol width of −2 147 483 600 would make 38 G units of room
+    /// for the next stream.
     /// </summary>
     [Fact]
     public void ANegativeCost_IsChargedAsNothing_NeverACredit()

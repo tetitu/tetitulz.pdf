@@ -431,14 +431,37 @@ namespace Tetitulz.Pdf.Base.Images
             width = (int)w;
             height = (int)h;
 
+            int stripCount = Math.Min(stripOffsets.Length, stripCounts.Length);
+            // The raster is made from the header, so the strips must be able to fill it first: a page of one
+            // one-byte strip declaring forty megapixels would be a 160 MB raster and a whole conversion, zero-filled.
+            if ((long)stripCount * rowsPerStrip < height)
+            {
+                _lastError = "the page's " + stripCount.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                             + " strips of " + rowsPerStrip.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                             + " rows cover fewer than its " + height.ToString(System.Globalization.CultureInfo.InvariantCulture) + " rows";
+                return false;
+            }
             int rowBytes = (int)(((w * samples * bitsPerSample) + 7) / 8);
+            if (compression == 1)
+            {
+                // Uncompressed, the strips' byte counts say what they hold before anything is read.
+                long present = 0, needed = (long)rowBytes * height;
+                for (int i = 0; i < stripCount && present < needed; i++)
+                    if (stripCounts[i] > 0) present += Math.Min(stripCounts[i], (long)rowBytes * rowsPerStrip);
+                if (present < needed)
+                {
+                    _lastError = "the page's strips hold " + present.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                 + " of the " + needed.ToString(System.Globalization.CultureInfo.InvariantCulture) + " bytes its rows need";
+                    return false;
+                }
+            }
+
             var raster = new byte[(long)rowBytes * height];
             int rasterRow = 0;
 
             long predictor = Scalar(bytes, tags, TagPredictor, bigEndian, 1);
             long fillOrder = Scalar(bytes, tags, TagFillOrder, bigEndian, 1);
 
-            int stripCount = Math.Min(stripOffsets.Length, stripCounts.Length);
             if (earlierPages != null)
             {
                 var ranges = new List<(long Start, long End)>(stripCount);
@@ -484,14 +507,24 @@ namespace Tetitulz.Pdf.Base.Images
                 if (fillOrder == 2) ReverseBitsInPlace(raw);
 
                 // A strip inflates no further than its rows: twice a full strip's bytes and a margin,
-                // since a writer may pad the last strip to RowsPerStrip. It went through each filter at
-                // the decompression ceiling, and the bytes past its rows were thrown away below — a
-                // 20 KB strip inflated to 20 MB for a 100 × 100 page.
+                // since a writer may pad the last strip to RowsPerStrip. At the decompression ceiling,
+                // with the bytes past its rows thrown away below, a 20 KB strip would inflate to 20 MB
+                // for a 100 × 100 page.
                 long ceiling = 2L * rowBytes * Math.Min(rowsPerStrip, height) + 65_536;
                 byte[] decoded = Decompress(raw, compression, rowsThisStrip, (int)w, samples,
                                             bitsPerSample, predictor, tags, bytes, bigEndian, ceiling);
                 if (decoded == null) return false;
 
+                // A strip that supplies fewer bytes than its rows need ends the page short: refused, as PNG refuses
+                // a short stream, rather than a page whose cost its header chose, zero-filled past its data.
+                if (decoded.LongLength < (long)rowBytes * rowsThisStrip)
+                {
+                    _lastError = "strip " + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + " holds "
+                                 + decoded.LongLength.ToString(System.Globalization.CultureInfo.InvariantCulture) + " of the "
+                                 + ((long)rowBytes * rowsThisStrip).ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                 + " bytes its rows need";
+                    return false;
+                }
                 int copy = Math.Min(decoded.Length, rowBytes * rowsThisStrip);
                 Buffer.BlockCopy(decoded, 0, raster, rasterRow * rowBytes, copy);
                 rasterRow += rowsThisStrip;
@@ -673,8 +706,6 @@ namespace Tetitulz.Pdf.Base.Images
 
         /// <summary>
         /// A sample to a byte, through <see cref="RasterSample.ScaleToByteFromMax"/>, the one rule.
-        /// This was a truncating copy of its own; at the 1, 4 and 8 bits it is called with the two
-        /// agree exactly, so the copy was the only difference.
         /// </summary>
         private static byte Scale(int value, int max)
             => (byte)RasterSample.ScaleToByteFromMax(value, max);

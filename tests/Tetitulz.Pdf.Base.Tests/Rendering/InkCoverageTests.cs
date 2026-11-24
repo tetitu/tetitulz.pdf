@@ -161,11 +161,10 @@ public class InkCoverageTests
     /// spot ink.
     /// </summary>
     /// <remarks>
-    /// The tints used to be interpreter fields rather than graphics-state fields, and nothing
-    /// cleared them: once a page had selected any Separation colour, <b>every later fill on that
-    /// page</b> deposited that ink. The map named inks the artwork never used, which is the failure
-    /// mode a prepress caller is least able to detect — a plate that should not exist looks exactly
-    /// like one that should.
+    /// The tints are graphics-state fields. Held as interpreter fields that nothing cleared, once a
+    /// page had selected any Separation colour <b>every later fill on that page</b> would deposit that
+    /// ink, and the map would name inks the artwork never used — the failure mode a prepress caller is
+    /// least able to detect: a plate that should not exist looks exactly like one that should.
     /// </remarks>
     [Fact]
     public void ADeviceColourAfterASpotColourDepositsNoSpotInk()

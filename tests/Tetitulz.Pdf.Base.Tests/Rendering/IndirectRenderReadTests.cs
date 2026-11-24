@@ -112,7 +112,7 @@ public class IndirectRenderReadTests
     }
 
     // ================================================================
-    //  One renderer was wrong — raster/SVG parity is the evidence
+    //  One renderer alone would be wrong — raster/SVG parity is the evidence
     // ================================================================
 
     /// <summary>

@@ -84,9 +84,8 @@ public sealed class ShadingCieParameterParityTests
     /// <summary>
     /// The control. With <c>/Gamma 1</c> the midpoint's luminance is 0.5 itself — sRGB ≈188, lighter
     /// than DeviceGray's 128 (the reference renderer: 187/188) — which is what makes the case above a statement
-    /// about <c>/Gamma</c> rather than about shadings in general. It used to be named
-    /// <c>AGammaOfOneStillPaintsThePlainMidGrey</c> and assert 128, on the mistaken ground that the
-    /// CIE space and the device space "agree by definition"; §8.6.5.2 defines luminance.
+    /// about <c>/Gamma</c> rather than about shadings in general. The CIE space and the device space
+    /// do not "agree by definition" at 128: §8.6.5.2 defines luminance.
     /// </summary>
     [Fact]
     public void AGammaOfOnePaintsTheLinearLuminance()

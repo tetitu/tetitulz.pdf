@@ -22,11 +22,9 @@ namespace Tetitulz.Pdf.Core.Fonts
     /// <c>Type1CharstringEvaluator.BuildStandardEncoding</c> (feeding <c>seac</c>) both read this
     /// table rather than a hand-written copy.</para>
     ///
-    /// <para><b>This is drift-risk hygiene, not a bug fix.</b> The two copies were compared code by
-    /// code before they were deleted and were identical at all 149 — no input separated them, and
-    /// nothing was rendering wrong. What was missing was any reason for that to stay true: a table
-    /// this long is corrected one entry at a time, and the two copies sat in different files with
-    /// different comments and different consumers.</para>
+    /// <para><b>This is drift-risk hygiene.</b> A table this long is corrected one entry at a
+    /// time, and two copies in different files, with different comments and different consumers,
+    /// have nothing keeping them identical.</para>
     ///
     /// <para><b>A separate type rather than another <c>StandardEncodings</c> partial.</b>
     /// <see cref="StandardEncodings"/>' type initializer builds eight code → character dictionaries

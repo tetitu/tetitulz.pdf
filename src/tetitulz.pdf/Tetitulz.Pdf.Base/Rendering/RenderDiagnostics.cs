@@ -37,10 +37,9 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// </summary>
         /// <remarks>
         /// <para>The clamp itself is correct and must stay — it is what stops an absurd
-        /// <c>/MediaBox</c> from being an out-of-memory allocation. What was wrong was doing it
-        /// <b>silently</b>: A4 at 1200 DPI is 9 917 × 14 033 = 139 MP, so the caller asked for 1200
-        /// and received ≈1017 with no way to find out. A reduced-resolution PNG is still a
-        /// perfectly valid non-empty PNG.</para>
+        /// <c>/MediaBox</c> from being an out-of-memory allocation. It must not be <b>silent</b>:
+        /// A4 at 1200 DPI is 9 917 × 14 033 = 139 MP, so a caller asking for 1200 receives ≈1017,
+        /// and a reduced-resolution PNG is still a perfectly valid non-empty PNG.</para>
         /// <para>Sibling of <see cref="ImageDownsampled"/>, and reported for the same reason: it
         /// <b>changes output pixels</b>, and "the renderer reduced this" must be distinguishable
         /// from "this is what the page contains". The detail carries the requested and effective
@@ -389,6 +388,13 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// </summary>
         /// <remarks>Appended last because the API snapshot records numeric enum values.</remarks>
         PaintWorkExceeded,
+
+        /// <summary>
+        /// A separation render named more spot inks than <c>PdfLimits.MaxSpotPlatesPerPage</c>, so the inks past it
+        /// have no plate of their own; reported once a render.
+        /// </summary>
+        /// <remarks>Appended last because the API snapshot records numeric enum values.</remarks>
+        SpotPlatesCapped,
     }
 
     /// <summary>

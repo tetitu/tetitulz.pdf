@@ -22,13 +22,12 @@ namespace Tetitulz.Pdf.Core.Writing
     /// asks the staged copy for its generation would compile, read correctly, and still emit
     /// <c>0</c> at every site.</para>
     ///
-    /// <para><b>Moved from Signing's <c>SigningHelpers</c></b>, where it served the three writers
-    /// there that build their own cross-reference sections and so never reach
-    /// <see cref="IncrementalUpdateWriter"/>. All seven existing objects they supersede were once
-    /// written at generation 0: the timestamper's catalog and <c>/AcroForm</c>, <c>PdfSigner</c>'s
-    /// adopted field and catalog, <c>VisualSignatureBuilder</c>'s page and catalog, and
-    /// <c>PdfLtvRefresher</c>'s catalog. The incremental writer (<c>KeptGeneration</c>) and Base's
-    /// reference sites now ask the same question.</para>
+    /// <para><b>Every writer asks it</b>: the three in Signing that build their own
+    /// cross-reference sections and so never reach <see cref="IncrementalUpdateWriter"/> — for the
+    /// timestamper's catalog and <c>/AcroForm</c>, <c>PdfSigner</c>'s adopted field and catalog,
+    /// <c>VisualSignatureBuilder</c>'s page and catalog, and <c>PdfLtvRefresher</c>'s catalog,
+    /// each of which would otherwise be written at generation 0 — the incremental writer
+    /// (<c>KeptGeneration</c>), and Base's reference sites.</para>
     /// </remarks>
     internal static class ExistingObjectGeneration
     {

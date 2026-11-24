@@ -181,8 +181,8 @@ public class ImageFormatAndPixelFormatTests
     }
 
     /// <summary>
-    /// A rotated page takes a second surface, and that one used to be cleared to white
-    /// unconditionally — so a transparent render came back opaque for exactly the pages carrying
+    /// A rotated page takes a second surface, which must not be cleared to white unconditionally —
+    /// or a transparent render would come back opaque for exactly the pages carrying
     /// <c>/Rotate</c>.
     /// </summary>
     [Fact]
@@ -195,8 +195,8 @@ public class ImageFormatAndPixelFormatTests
         using SKBitmap upright = DecodeUnpremul(PdfPageRenderer.RenderPage(
             new MemoryStream(ColourPage()), 0, Dpi, options));
 
-        // Landscape, so the rotation path really ran — this is the surface that used to be
-        // cleared to opaque white regardless of the requested background.
+        // Landscape, so the rotation path really ran — the surface that must take the requested
+        // background, not opaque white.
         Assert.True(rotated.Width > rotated.Height,
             "expected a 90-degree rotated page to be landscape");
 

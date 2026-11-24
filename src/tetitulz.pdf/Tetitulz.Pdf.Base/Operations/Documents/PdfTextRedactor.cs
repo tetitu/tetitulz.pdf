@@ -162,6 +162,18 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         [ThreadStatic]
         private static string _lastDocumentTextRemoved;
 
+        [ThreadStatic]
+        private static string _lastFindMatchesWarning;
+
+        /// <summary>
+        /// Where the last <see cref="FindMatches(Stream, IEnumerable{string}, TextRedactionOptions)"/> on this thread
+        /// could not finish a pattern — a line on which it ran past <see cref="TextRedactionOptions.RegexTimeout"/> —
+        /// or <see langword="null"/> when every pattern ran over every line. Such a line may hold matches the list
+        /// leaves out, so a caller that redacts by the listed areas reads this first. It names pages and lines,
+        /// never the text. Reset at the start of every call.
+        /// </summary>
+        public static string LastFindMatchesWarning => _lastFindMatchesWarning;
+
         /// <summary>
         /// The search reads what a reader sees: the pages' content and the text their annotation
         /// appearances draw — a filled field's value, a free-text note, a stamp's caption — each
@@ -200,6 +212,7 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         public static IReadOnlyList<TextRedactionMatch> FindMatches(
             Stream input, IEnumerable<string> patterns, TextRedactionOptions options = null)
         {
+            _lastFindMatchesWarning = null;
             if (input == null) throw new ArgumentNullException(nameof(input));
             if (patterns == null) throw new ArgumentNullException(nameof(patterns));
             options ??= new TextRedactionOptions();
@@ -209,9 +222,15 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
             if (regexes.Count == 0) return matches;
 
             var layouts = PdfStructuredTextExtractor.Extract(input, WithAnnotations);
+            var timedOut = new Core.Util.DistinctStrings();
             foreach (var page in layouts)
-                foreach (var line in page.Lines)
-                    CollectLine(page.PageNumber, line, regexes, options, matches);
+                for (int l = 0; l < page.Lines.Count; l++)
+                    if (!CollectLine(page.PageNumber, page.Lines[l], regexes, options, matches))
+                        timedOut.Add("page " + (page.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                     + ", line " + (l + 1).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            if (timedOut.Count > 0)
+                _lastFindMatchesWarning = "A pattern ran past TextRedactionOptions.RegexTimeout on " + timedOut.Joined("; ")
+                    + "; those lines may hold matches this list leaves out.";
 
             return matches;
         }
@@ -344,7 +363,7 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         /// <see cref="RedactIsraeliIdentifiers"/> is separate.</para>
         ///
         /// <para><b>What is deliberately not searched for.</b> Bank account and vehicle numbers are
-        /// named in the same register row and are absent because they have no national check digit
+        /// absent because they have no national check digit
         /// and no single format - a locator for them would be a regular expression over digit runs,
         /// which reports every number on the page. Naming the limit is more useful than shipping a
         /// filter that does not filter.</para>
@@ -659,14 +678,15 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         }
 
         /// <summary>
-        /// Runs the patterns over one line's text and turns each match into a covering area.
+        /// Runs the patterns over one line's text and turns each match into a covering area. False when a pattern
+        /// ran past its timeout on the line, so the line may hold matches not collected.
         /// </summary>
-        private static void CollectLine(
+        private static bool CollectLine(
             int pageIndex, PdfTextLine line, List<Regex> regexes,
             TextRedactionOptions options, List<TextRedactionMatch> into)
         {
             (string text, PdfTextChar[] map) = LineTextWithMap(line);
-            if (text.Length == 0) return;
+            if (text.Length == 0) return true;
 
             // The regexes run over the FOLDED line, and every position they report is translated
             // back through sourceIndex before it reaches a glyph box. Folding the line without the
@@ -677,9 +697,10 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
             if (options.HebrewFolding != HebrewFolding.None)
             {
                 haystack = HebrewSearchNormalizer.Fold(text, options.HebrewFolding, out sourceIndex);
-                if (haystack.Length == 0) return;
+                if (haystack.Length == 0) return true;
             }
 
+            bool finished = true;
             foreach (Regex regex in regexes)
             {
                 Match match;
@@ -689,9 +710,10 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
                 }
                 catch (RegexMatchTimeoutException)
                 {
-                    // Reported by omission rather than by throwing: one pathological line must not
-                    // lose the matches found everywhere else, and FindMatches is the review step a
-                    // caller checks before destroying anything.
+                    // Reported, not thrown: one pathological line must not lose the matches found
+                    // everywhere else, and FindMatches is the review step a caller checks before
+                    // destroying anything — LastFindMatchesWarning names the line.
+                    finished = false;
                     continue;
                 }
 
@@ -709,9 +731,10 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
 
                     if (match.Length == 0) break;      // a zero-width match would not advance
                     try { match = regex.Match(haystack, match.Index + match.Length); }
-                    catch (RegexMatchTimeoutException) { break; }
+                    catch (RegexMatchTimeoutException) { finished = false; break; }
                 }
             }
+            return finished;
         }
 
         /// <summary>

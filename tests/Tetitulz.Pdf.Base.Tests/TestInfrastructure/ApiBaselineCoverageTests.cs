@@ -94,37 +94,17 @@ public class ApiBaselineCoverageTests
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>Added 2026-08-22, reporting five packages as unguarded</b> — <c>Core</c>, <c>Base</c>,
-    /// <c>Signing</c>, <c>Encryption</c> and <c>Plugins.HtmlBrowser</c>, described at the time as
-    /// "a checked-in baseline that nothing read".
+    /// <b>The rule is "in its own test project".</b> A comparison owned by a different project
+    /// vanishes silently if that project is trimmed, and a baseline nothing compares against is
+    /// byte-identical to one that passes, so the gap leaves no artefact and no stale marker. That is
+    /// why the comparison is asserted per package here rather than trusted to a grouped test
+    /// somebody may move — and a grouped test would only make a single-member API change fail
+    /// twice.
     /// </para>
     /// <para>
-    /// <b>That description was wrong for four of the five, and the correction is the more useful
-    /// lesson (checked 2026-08-28).</b> A grouped <c>PublicApiSurfaceTests</c> had sat in
-    /// <c>Base.Tests/TestInfrastructure/</c> since 2026-08-10 comparing all four core-ring
-    /// assemblies against these very files. So <c>Base</c> was never unguarded at all — this
-    /// scan searches a package's own test directory recursively, and that copy lived inside it, so
-    /// the probe returned true for Base before the "fix" was written. <c>Core</c>, <c>Signing</c>
-    /// and <c>Encryption</c> were genuinely flagged by <i>this</i> guard's rule, which is narrower
-    /// than the prose was: not "nothing compares them" but "nothing in their own test project
-    /// does". That rule is still worth enforcing — a comparison owned by a different project
-    /// vanishes silently if that project is trimmed — but only <c>Plugins.HtmlBrowser</c> matched
-    /// the claim as written.
-    /// </para>
-    /// <para>
-    /// <b>The evidence was read backwards, which is the part worth remembering.</b> The original
-    /// note offered "three of the five matched their assemblies exactly on the first run" as proof
-    /// that a baseline can be accurate <i>and</i> unguarded. They matched because they had been
-    /// guarded for twelve days. A guard doing its job looks identical to luck if you do not check
-    /// whether something upstream was already holding the line — and the check was one
-    /// <c>git log</c> on a file the new test sat beside.
-    /// </para>
-    /// <para>
-    /// The real finding survives all of that: a baseline nothing compares against is byte-identical
-    /// to one that passes, so the gap leaves no artefact and no stale marker. That is why the
-    /// comparison is asserted per package here rather than trusted to a grouped test somebody may
-    /// move. The grouped copy was deleted on 2026-08-28, once every one of its four assemblies had
-    /// its own pin, since by then it only made a single-member API change fail twice.
+    /// <b>A baseline matching its assembly proves nothing about the guard.</b> A guard doing its job
+    /// looks identical to luck unless you check whether something upstream is already holding the
+    /// line.
     /// </para>
     /// <para>
     /// It is a <b>source scan</b>, for the reason the class remarks give: comparing content needs
@@ -132,10 +112,8 @@ public class ApiBaselineCoverageTests
     /// ring model. Looking for the call in the package's own test sources needs neither.
     /// </para>
     /// <para>
-    /// <b>There is no burn-down list</b>, deliberately. The gap was closed in the commit that added
-    /// this test, so there is nothing to exempt and nowhere to add an exemption — the shape
-    /// <c>NoUnfalsifiableAssertionsTests</c> reached when its <c>KnownOffenders</c> was deleted
-    /// rather than emptied.
+    /// <b>There is no burn-down list</b>, deliberately: there is nothing to exempt and nowhere to add
+    /// an exemption — the shape <c>NoUnfalsifiableAssertionsTests</c> has too.
     /// </para>
     /// </remarks>
     [RepoSourcesFact]

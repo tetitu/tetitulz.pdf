@@ -110,8 +110,8 @@ namespace Tetitulz.Pdf.Core.Text
     ///
     /// <para><b>Not included: prefix letters</b> (ו/ה/ב/ל/כ/ש/מ). Those are morphology, not a
     /// canonical mapping — you cannot strip a leading ב from both sides, because בית is a word whose
-    /// first letter is not a prefix. It needs a lexicon or an explicit false-positive budget, and
-    /// bundling it here is what makes the register row read "small" when it is not.</para>
+    /// first letter is not a prefix. It needs a lexicon or an explicit false-positive budget, which
+    /// is a different and much larger piece of work than this.</para>
     /// </remarks>
     public static class HebrewSearchNormalizer
     {

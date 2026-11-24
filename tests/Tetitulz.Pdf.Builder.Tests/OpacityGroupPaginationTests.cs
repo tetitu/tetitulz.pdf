@@ -61,8 +61,8 @@ public class OpacityGroupPaginationTests
         byte[] pdf = Render(opacity: 0.5);
         // The group form stays whole on one page.
         Assert.Equal(1, PdfContentProbe.CountPages(pdf));
-        // And every one of the 45 lines is drawn — the pre-fix break inside the group dropped 27 of
-        // them (only 18 survived), so this would fail on a document that paginated inside the group.
+        // And every one of the 45 lines is drawn — a break inside the group drops 27 of them (only
+        // 18 survive), so this fails on a document that paginates inside the group.
         Assert.Equal(45, BoxLineDraws(pdf));
     }
 

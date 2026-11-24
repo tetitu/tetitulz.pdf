@@ -390,10 +390,10 @@ public sealed class FootnoteTests
 
     /// <summary>An explicit mark is written as Word's custom mark, not reported as dropped.</summary>
     /// <remarks>
-    /// The mark used to be dropped on the grounds that a custom mark needs a style this exporter
-    /// does not write. It needs <c>w:customMarkFollows</c> (§17.11.14), after which the run's own
-    /// text is the mark — so all four exports now carry it, and the report that said otherwise
-    /// would be false. <c>DocxFootnoteMarkTests</c> pins the shape in both parts.
+    /// A custom mark needs <c>w:customMarkFollows</c> (§17.11.14), after which the run's own text is
+    /// the mark — not a style this exporter does not write — so all four exports carry it, and a
+    /// report saying otherwise would be false. <c>DocxFootnoteMarkTests</c> pins the shape in both
+    /// parts.
     /// </remarks>
     [Fact]
     public void DocxWritesAnExplicitMarkRatherThanReportingItDropped()

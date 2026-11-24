@@ -16,9 +16,9 @@ namespace Tetitulz.Pdf.Base.Tests;
 /// </summary>
 /// <remarks>
 /// <b>Every visibility case here asserts on decoded pixels, and every one is paired with its
-/// opposite.</b> They used to assert only that rendering did not throw, and passed unchanged while
-/// <c>BDC /OC</c> suppression and indirect-<c>/D</c> resolution were both completely broken — a
-/// blank page encodes to a perfectly valid non-empty PNG. Pairing matters as much as the pixel
+/// opposite.</b> "Rendering did not throw" passes with <c>BDC /OC</c> suppression and
+/// indirect-<c>/D</c> resolution both completely broken — a blank page encodes to a perfectly
+/// valid non-empty PNG. Pairing matters as much as the pixel
 /// assertion: "hidden content is absent" is satisfied by a renderer that draws nothing at all, and
 /// "visible content is present" by one that ignores <c>/OC</c> entirely, so each test renders both
 /// fixtures and asserts they differ in the way the spec requires.

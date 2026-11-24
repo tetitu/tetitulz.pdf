@@ -7,15 +7,11 @@ using M = Tetitulz.Pdf.Builder.Model;
 
 namespace Tetitulz.Pdf.HtmlToPdf
 {
-    /// <summary>
-    /// The atoms shared by every construct that becomes a <b>side-by-side band</b> — a flex row, a
-    /// float band, a grid and a multi-column block all map onto a borderless table, the only thing
-    /// in the Builder model that places blocks next to each other.
-    /// </summary>
-    /// <remarks>
-    /// The mapping itself is documented and deliberate, and implemented once: separate copies of
-    /// the direction test drift, and a real <c>&lt;table&gt;</c> reads the same one.
-    /// </remarks>
+    // The atoms shared by every construct that becomes a side-by-side band — a flex row, a
+    // float band, a grid and a multi-column block all map onto a borderless table, the only thing
+    // in the Builder model that places blocks next to each other.
+    // The mapping itself is documented and deliberate, and implemented once: separate copies of
+    // the direction test drift, and a real <table> reads the same one.
     internal sealed partial class HtmlToBuilderMapper
     {
         /// <summary>
@@ -37,8 +33,7 @@ namespace Tetitulz.Pdf.HtmlToPdf
         /// like a document that mirrors its tables and not its flex rows. IT IS NOT. The root style is seeded from
         /// <c>HtmlToPdfOptions.DefaultTextDirection</c> and every derived style copies it, so
         /// <c>Direction</c> is never null by the time a band is mapped and the <c>??</c> never
-        /// fires. Mutating it away reddens nothing — so it is no fix for a defect, since the defect
-        /// does not exist.
+        /// fires. Mutating it away reddens nothing, and it guards against nothing that exists.
         ///
         /// <para>It stays because it is the spelling the table site carries, because it
         /// is the safe reading if the seeding ever changes, and because one rule in one place is

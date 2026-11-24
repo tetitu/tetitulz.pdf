@@ -17,7 +17,7 @@ namespace Tetitulz.Pdf.Base.Operations
     /// Writes a document edit as a single appended PDF revision (an incremental update).
     ///
     /// <para>
-    /// <b>What this type is now.</b> A thin adapter over
+    /// <b>What this type is.</b> A thin adapter over
     /// <see cref="IncrementalUpdateWriter.WriteUpdate(byte[], Stream, IReadOnlyList{IndirectObject}, IncrementalUpdateOptions)"/>.
     /// It owns only the three things Core's writer deliberately does not:
     /// </para>
@@ -40,14 +40,11 @@ namespace Tetitulz.Pdf.Base.Operations
     /// <para>
     /// <b>Why the capability is split this way.</b> Everything below the object maps — the choice
     /// between a classic <c>xref</c> table and a cross-reference stream, the whitelisted trailer,
-    /// the preserved/deterministically-synthesised <c>/ID</c>, the verified <c>/Prev</c> — once
-    /// lived in <c>Tetitulz.Pdf.Accessibility</c> alongside this adapter, so it was reachable only
-    /// from that feature assembly. <c>Tetitulz.Pdf.Plugins.Conformance</c> needs exactly the same
-    /// behaviour and must never reference a feature (plugin → feature is a dependency cycle),
-    /// which left it emitting a classic table onto xref-stream documents and warning about it. So
-    /// the format logic moved into Core, and this adapter followed it down into Base (plan 04 D2)
-    /// once the Conformance plugin needed the font remediator built on it. Both callers can now
-    /// reach both halves.
+    /// the preserved/deterministically-synthesised <c>/ID</c>, the verified <c>/Prev</c> — is
+    /// Core's, and this adapter is Base's, because both <c>Tetitulz.Pdf.Accessibility</c> and
+    /// <c>Tetitulz.Pdf.Plugins.Conformance</c> need exactly the same behaviour and the plugin must
+    /// never reference a feature (plugin → feature would close a dependency cycle). In a feature
+    /// assembly, it would leave the plugin emitting a classic table onto xref-stream documents.
     /// </para>
     ///
     /// <para>
@@ -150,8 +147,7 @@ namespace Tetitulz.Pdf.Base.Operations
                 // Only consulted when a cross-reference stream is actually emitted. Reserve
                 // first so the allocator can never hand out a number this revision has already
                 // written — a caller may number a new object itself rather than through the index
-                // — then take the next free one. (A Math.Max against highestObjectNumber + 1 stood
-                // here too; after the reserve it could never decide anything, and was removed.)
+                // — then take the next free one.
                 options.XrefStreamObjectNumberAllocator = highestObjectNumber =>
                 {
                     index.ReserveObjectNumber(highestObjectNumber);

@@ -106,10 +106,9 @@ public sealed class InlineImageDecodedLengthTests
     /// chain.
     /// </summary>
     /// <remarks>
-    /// <para>This used to be the documented limit: any <c>/Filter</c> array of more than one entry
-    /// fell to the heuristic and made the page unspliceable. The observation behind the refusal was
-    /// right — the sample count is not what the outermost decode produces — and the conclusion was
-    /// one step short, because it <i>is</i> what the last stage produces.</para>
+    /// <para>The sample count is not what the outermost decode produces, but it <i>is</i> what the
+    /// last stage produces — so a <c>/Filter</c> array of more than one entry need not fall to the
+    /// heuristic and leave the page unspliceable.</para>
     ///
     /// <para><b>The chain is <c>[/Fl /RL]</c> for a reason the fixture depends on.</b> Run-length
     /// encoding copies a literal run byte for byte, and the payload is stored rather than
@@ -230,10 +229,10 @@ public sealed class InlineImageDecodedLengthTests
     /// </summary>
     /// <remarks>
     /// <para><b>Every candidate is a decode, and the candidates come from a heuristic.</b> An inline
-    /// image with no <c>/L</c> can offer many <c>EI</c>-shaped positions, and each one used to be
-    /// inflated under the 512 MB per-filter default — so one crafted payload bought an unbounded
-    /// multiple of half a gigabyte from a scan that is only looking for a boundary. The ceiling is
-    /// now derived from the answer being sought: a candidate that decodes past a small multiple of
+    /// image with no <c>/L</c> can offer many <c>EI</c>-shaped positions, and each one inflated under
+    /// the 512 MB per-filter default would let one crafted payload buy an unbounded multiple of half a
+    /// gigabyte from a scan that is only looking for a boundary. The ceiling is derived from the
+    /// answer being sought: a candidate that decodes past a small multiple of
     /// the raster is already wrong.</para>
     ///
     /// <para><b>The assertion is on work done, not on a clock.</b> Elapsed time under a

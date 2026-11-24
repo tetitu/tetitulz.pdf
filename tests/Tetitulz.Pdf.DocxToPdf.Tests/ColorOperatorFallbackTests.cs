@@ -12,19 +12,19 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests;
 /// The colour operator a chart or equation emits for an OOXML hex value.
 /// </summary>
 /// <remarks>
-/// <b>An unparseable value used to emit nothing at all</b>, which is worse than emitting the wrong
-/// colour: with no <c>rg</c> of its own the shape inherits whatever the content stream painted
-/// last, so a chart series drew in the PREVIOUS series' colour and looked like a legitimate chart
-/// with two bars the same. The four copies of these two methods guarded only null
-/// (<c>hex ?? "000000"</c>) and skipped the append when the parse failed.
+/// <b>An unparseable value emits black, never nothing</b>: nothing is worse than the wrong
+/// colour, since with no <c>rg</c> of its own the shape inherits whatever the content stream
+/// painted last, so a chart series would draw in the PREVIOUS series' colour and look like a
+/// legitimate chart with two bars the same. A guard against null alone
+/// (<c>hex ?? "000000"</c>) that skips the append when the parse fails does exactly that.
 ///
 /// <para><b>It is reachable through the theme palette.</b> <c>StyleResolver.LoadThemeColors</c>
 /// stores the accent value out of <c>theme1.xml</c> without validating it and
 /// <c>ChartLayout.PaletteAt</c> hands it straight to the fill, so a theme part whose accent is not
-/// six hex digits is all it takes. Black is what the null guard already intended and what OOXML
+/// six hex digits is all it takes. Black is what the null guard intends and what OOXML
 /// "automatic" means.</para>
 ///
-/// <para>Asserted on the emitted operator text, which is what the defect was about — the absence of
+/// <para>Asserted on the emitted operator text, which is what the defect is about — the absence of
 /// an operator, not a wrong number in one.</para>
 /// </remarks>
 public class ColorOperatorFallbackTests

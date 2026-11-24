@@ -22,12 +22,11 @@ namespace Tetitulz.Pdf.Core.Fonts
     /// <see cref="File.ReadAllBytes(string)"/>. Measured on a host with 441 font files: 395 ms and
     /// 461 MB allocated for the scan, against <b>34 ms and 3.6 MB</b> for the directory and
     /// <c>cmap</c> alone — 11.6× the speed and 129× less allocated.
-    /// <c>FontScanBenchmarks</c> keeps both numbers honest; GAPS §16 item 4 has the history,
-    /// including the two things the register row got wrong about it.</para>
+    /// <c>FontScanBenchmarks</c> keeps both numbers honest.</para>
     ///
-    /// <para><b>Why it is not a second implementation of the coverage rule.</b> That was the
-    /// objection that kept this open, and it is a real one — two implementations of one rule
-    /// silently disagreeing is this repository's most-repeated defect class. So this does not parse a
+    /// <para><b>Why it is not a second implementation of the coverage rule.</b> Two
+    /// implementations of one rule silently disagreeing is this repository's most-repeated
+    /// defect class. So this does not parse a
     /// <c>cmap</c> itself. It extracts the table's bytes, reassembles them through
     /// <see cref="SfntBuilder"/> into a synthetic single-table sfnt, and hands that to
     /// <see cref="TrueTypeFontProgram.Parse(byte[])"/> — <b>the same parser, reaching the same
@@ -100,12 +99,12 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// The font's <c>name</c>-table family, or <c>null</c> when it could not be read cheaply — in
         /// which case the caller should do the full read rather than treat the font as unnamed.
         ///
-        /// <para>This is the half that matters most in practice, and it is not the case the register
-        /// described. <c>FontResolver.CandidateFiles</c> falls back to matching every installed font's
-        /// family name whenever the requested family is missing from its 17-entry filename map, so an
-        /// ordinary document naming a font like Aptos or Calibri Light read and parsed <b>every font on
-        /// the machine</b> — 210 MiB for a one-paragraph file. That is the common case, not the
-        /// "nothing covers the text" edge case.</para>
+        /// <para>This is the half that matters most in practice. <c>FontResolver.CandidateFiles</c>
+        /// falls back to matching every installed font's family name whenever the requested family is
+        /// missing from its 17-entry filename map, so an ordinary document naming a font like Aptos or
+        /// Calibri Light would, read whole, read and parse <b>every font on the machine</b> — 210 MiB
+        /// for a one-paragraph file. That is the common case, not the "nothing covers the text" edge
+        /// case.</para>
         /// </summary>
         internal static string FamilyName(string path)
             => ParseTableOnly(path, "name", missingTableIsAnswer: false)?.FamilyName;

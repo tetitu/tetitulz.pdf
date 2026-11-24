@@ -408,11 +408,10 @@ public sealed class PostScriptPluginDispatchTests : IDisposable
     // ==================================================================
 
     /// <summary>
-    /// Both states used to emit the same message - "No IPostScriptPlugin handled a
-    /// /Subtype /PS XObject" - so an operator whose registered plugin had correctly declined at
-    /// <c>DeviceScale 0</c> (a fact about the target, not about the plugin being missing) spent
-    /// the debugging session re-checking registration. This is the distinction CLAUDE.md records
-    /// as a shipped defect for JPEG 2000.
+    /// The two states emit different messages: one message for both — "No IPostScriptPlugin handled
+    /// a /Subtype /PS XObject" — would send an operator whose registered plugin had correctly declined
+    /// at <c>DeviceScale 0</c> (a fact about the target, not about the plugin being missing) re-checking
+    /// registration.
     /// </summary>
     [Fact]
     public void NoPluginRegistered_ReportsTheMissingPackageRatherThanAGenericMessage()
@@ -428,8 +427,8 @@ public sealed class PostScriptPluginDispatchTests : IDisposable
     }
 
     /// <summary>
-    /// The other state, and the one that used to be indistinguishable: a plugin IS registered and
-    /// declined. The report names it and the DeviceScale it declined at.
+    /// The other state: a plugin IS registered and declined. The report names it and the
+    /// DeviceScale it declined at.
     /// </summary>
     [Fact]
     public void EveryPluginDeclined_ReportsThePluginNamesAndTheDeviceScale()

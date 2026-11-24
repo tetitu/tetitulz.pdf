@@ -599,7 +599,7 @@ namespace Tetitulz.Pdf.Base.Rendering
                 return Unsupported(tableProblem, dataSpace);
             double[] mediaWhite = MediaWhiteScale(data, table, header);
 
-            // Only two PCS encodings exist, and both are now decodable — 'Lab ' arrives through
+            // Only two PCS encodings exist, and both are decodable — 'Lab ' arrives through
             // the lut path (IccLut.DecodeLab) and 'XYZ ' through either. Anything else is not a
             // PCS at all.
             //

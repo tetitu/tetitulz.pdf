@@ -16,17 +16,15 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// reference</b> — the axis scaling every a* and b* sample of the image passes through.
 /// </summary>
 /// <remarks>
-/// <para><b>The defect was visible only as a colour, and only in the raster renderer.</b>
-/// <c>ContentStreamInterpreter.TryDecodeSpecialColorSpaceImage</c> re-read <c>/Range</c> with
-/// <c>PdfDictionary.GetArray</c>, which does not follow a reference, <b>one line below</b> a
-/// <c>CieParams.ForLab</c> call that does. So for an indirect <c>/Range</c> the samples were scaled
-/// by Table 65's ±100 default and then clamped to the file's real range — two different answers to
-/// one question, inside one function. The SVG twin resolved and was correct.</para>
+/// <para><b>Such a defect is visible only as a colour.</b> Re-reading <c>/Range</c> with
+/// <c>PdfDictionary.GetArray</c>, which does not follow a reference, beside a
+/// <c>CieParams.ForLab</c> call that does would scale an indirect <c>/Range</c>'s samples by
+/// Table 65's ±100 default and then clamp them to the file's real range — two different answers to
+/// one question, inside one function.</para>
 ///
-/// <para><b>The fix removes the read rather than repairing it.</b> <c>CieParams</c> already carries
-/// <c>AMin/AMax/BMin/BMax</c>, resolved and parsed once, and both renderers already built one — so
-/// both were re-deriving a value they were holding. Taking the range from that struct is what makes
-/// the scale and the clamp structurally incapable of disagreeing.</para>
+/// <para><b>One read.</b> <c>CieParams</c> carries <c>AMin/AMax/BMin/BMax</c>, resolved and parsed
+/// once, and both renderers take the range from it, which makes the scale and the clamp
+/// structurally incapable of disagreeing.</para>
 ///
 /// <para><b>Why the assertion is a comparison.</b> Asserting a specific RGB would pin the CIE
 /// conversion rather than the range read, and would move whenever the white point did. Asserting

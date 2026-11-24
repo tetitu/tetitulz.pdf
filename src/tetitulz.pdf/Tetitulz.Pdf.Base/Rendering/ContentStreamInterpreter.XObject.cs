@@ -19,21 +19,6 @@ using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Interprets a PDF content stream, executing drawing operators against a
-    /// <see cref="PdfRenderContext"/> backed by SkiaSharp.
-    ///
-    /// <para>Supported operator families:</para>
-    /// <list type="bullet">
-    ///   <item>Path construction: m l c v y h re</item>
-    ///   <item>Path painting: S s F f f* B B* b b* n</item>
-    ///   <item>Color: g G rg RG k K cs CS sc SC scn SCN</item>
-    ///   <item>Graphics state: q Q cm w J j M d ri i gs</item>
-    ///   <item>Text: BT ET Tf Td TD Tm T* Tj TJ ' " Tc Tw Tz TL Tr Ts</item>
-    ///   <item>XObject: Do (Form XObjects recursed; Image XObjects rasterized)</item>
-    ///   <item>Clipping: W W*</item>
-    /// </list>
-    /// </summary>
     internal sealed partial class ContentStreamInterpreter
     {
         private void OpDo(ContentStreamOperation op)
@@ -123,7 +108,7 @@ namespace Tetitulz.Pdf.Base.Rendering
 
         /// <summary>
         /// The legacy inline <c>(...) PS</c> operator. A registered <c>IPostScriptPlugin</c> can
-        /// execute it; otherwise it stays the no-op it has always been.
+        /// execute it; otherwise it is a no-op.
         /// </summary>
         private void OpPs(ContentStreamOperation op)
         {
@@ -247,10 +232,10 @@ namespace Tetitulz.Pdf.Base.Rendering
             // backdrop once, using the alpha constant, blend mode and soft mask in effect at the
             // Do. Everything inside then starts from ca = CA = 1, Normal, no mask.
             //
-            // Two things were wrong before. Plain (non-group) forms also went through the layer,
-            // which inverts the spec — for those, ca/CA apply to each object inside individually.
-            // And the layer alpha was Math.Min(FillAlpha, StrokeAlpha), so `ca 1 CA 0.3` faded the
-            // fills to 30% as well; Do is a non-stroking paint operation, so ca alone applies.
+            // Plain (non-group) forms do not go through the layer: for those, ca/CA apply to each
+            // object inside individually. And the layer alpha is the fill alpha alone — Do is a
+            // non-stroking paint operation, so ca alone applies; Math.Min(FillAlpha, StrokeAlpha)
+            // would fade the fills of `ca 1 CA 0.3` to 30% as well.
             var groupDict = PdfResolve.Dict(_doc, formDict, PdfName.Group);
             bool isTransparencyGroup = groupDict != null
                 && (PdfResolve.Name(_doc, groupDict, PdfName.S)?.Value ?? "Transparency") == "Transparency";

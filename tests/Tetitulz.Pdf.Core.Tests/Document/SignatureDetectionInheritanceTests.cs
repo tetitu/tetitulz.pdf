@@ -18,20 +18,18 @@ namespace Tetitulz.Pdf.Core.Tests.Document;
 /// rewriting a file whose signature covers its bytes.
 /// </summary>
 /// <remarks>
-/// <b>It required <c>/FT</c> and <c>/V</c> on the same dictionary, and both are inheritable.</b>
+/// <b><c>/FT</c> and <c>/V</c> are inheritable, so they need not be on the same dictionary.</b>
 /// Table 220 makes them field attributes an ancestor may supply, and the common shape puts
-/// <c>/T</c> and <c>/V</c> on the field with <c>/FT</c> on its widget kid. A genuinely signed
-/// document of that shape reported <b>unsigned</b>.
+/// <c>/T</c> and <c>/V</c> on the field with <c>/FT</c> on its widget kid. Requiring both on one
+/// dictionary would report a genuinely signed document of that shape <b>unsigned</b>.
 ///
-/// <para><b>The consequence is not a mis-report.</b> The callers above then proceed to rewrite the
-/// file, leaving a signature that covers bytes which no longer exist — which is the exact outcome
-/// the guard's own doc comment says it exists to prevent.</para>
+/// <para><b>The consequence would not be a mis-report.</b> The callers above would then rewrite the
+/// file, leaving a signature that covers bytes which no longer exist — the exact outcome the guard
+/// exists to prevent.</para>
 ///
-/// <para><b>The same defect was already found and fixed one assembly over.</b>
-/// <c>Core.Forms</c>'s <c>InheritedFieldTypeTests</c> pins this very fixture as signed, and its
-/// remarks describe the identical failure in <c>PdfAcroForm</c>. The fix never reached Base — the
-/// repo's documented "landed one level short" pattern, and the reason these cases assert the
-/// GUARD's answer rather than the form reader's.</para>
+/// <para><b>Two readers, one answer.</b> <c>Core.Forms</c>'s <c>InheritedFieldTypeTests</c> pins
+/// this very fixture as signed for <c>PdfAcroForm</c>; these cases assert the GUARD's answer, since a
+/// rule held by one reader can be missing from the other.</para>
 /// </remarks>
 public class SignatureDetectionInheritanceTests
 {

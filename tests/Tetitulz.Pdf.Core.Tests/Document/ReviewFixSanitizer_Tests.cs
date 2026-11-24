@@ -90,7 +90,7 @@ public class ReviewFixSanitizer_Tests
 
         // And on the parsed object, not only the bytes: the leaf's action dictionary must carry
         // neither the script nor the /S that names it. A byte search alone cannot tell "removed"
-        // from "written differently", which is precisely how this test used to pass.
+        // from "written differently".
         output.Position = 0;
         using var doc = PdfDocument.Open(output);
         var names = doc.ResolveObject(doc.Catalog.Dictionary[PdfName.Names]) as PdfDictionary;

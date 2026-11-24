@@ -20,17 +20,15 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests;
 /// <summary>
 /// What the Builder path (<c>UseLegacyRenderer = false</c>) does with content it has no case for.
 ///
-/// <para><b>The defect these were written for.</b> <c>DocxToBuilderMapper.MapInline</c> was a
-/// <c>switch</c> with six cases and <b>no <c>default</c></b>, so any inline element outside those
-/// six vanished without a word. Office Math was the live instance: measured on a one-equation DOCX,
-/// the legacy renderer produced the equation, the Builder path produced nothing, and
-/// <see cref="DocxToPdfConverter.LastDiagnostic"/> stayed <c>null</c> — making "the document had an
-/// equation" and "the document had none" the same output, which is exactly what
-/// <c>DocxDiagnostics</c> exists to prevent.</para>
+/// <para><b>The defect these guard.</b> A <c>switch</c> over inline elements with <b>no
+/// <c>default</c></b> lets any element outside its cases vanish without a word. Office Math is the
+/// instance: dropped while <see cref="DocxToPdfConverter.LastDiagnostic"/> stays <c>null</c>, "the
+/// document had an equation" and "the document had none" would be the same output, which is
+/// exactly what <c>DocxDiagnostics</c> exists to prevent.</para>
 ///
-/// <para>The fix routes math through <c>MathLinearizer</c>, which the legacy path already owned and
-/// whose own summary says it exists "so equations are preserved as text instead of being dropped",
-/// and reports anything else that would have contributed text.</para>
+/// <para>Math goes through <c>MathLinearizer</c>, which the legacy path shares and whose own
+/// summary says it exists "so equations are preserved as text instead of being dropped", and
+/// anything else that would have contributed text is reported.</para>
 /// </summary>
 public class BuilderPathContentLossTests
 {
@@ -98,7 +96,7 @@ public class BuilderPathContentLossTests
     // ────────────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// The equation's text reaches the PDF. Before the fix this produced nothing at all.
+    /// The equation's text reaches the PDF.
     /// </summary>
     /// <remarks>
     /// The control paragraph is the half that makes a failure legible: without it, "the equation is
@@ -200,11 +198,9 @@ public class BuilderPathContentLossTests
     /// <see cref="DocxToPdfOptions.UseLegacyRenderer"/>.
     /// </summary>
     /// <remarks>
-    /// <b>That list was wrong when this was written.</b> It said the Builder path emits none of
-    /// "inline images, live page-number fields, clickable links, headers/footers and multi-section
-    /// page sizing"; measured, it emits images and headers/footers perfectly well. A caller reading
-    /// it would have chosen the legacy renderer for a document that did not need it. The list is
-    /// prose and nothing enforced it — so this test is the enforcement, and the doc now matches.
+    /// The list is prose, and a wrong one misleads: a list saying the Builder path emits no inline
+    /// images or headers/footers would send a caller to the legacy renderer for a document that does
+    /// not need it. This test is the enforcement.
     /// </remarks>
     [Fact]
     public void The_builder_path_emits_images_headers_and_link_annotations()
@@ -237,8 +233,8 @@ public class BuilderPathContentLossTests
         Assert.Contains("HEADERTEXT", text);
         Assert.Contains("FOOTERTEXT", text);
 
-        // The link: its text, and since 2026-10-20 its /Link annotation to the relationship's target — the
-        // mapper read a hyperlink's anchor alone, and an external one was text that could not be clicked.
+        // The link: its text, and its /Link annotation to the relationship's target — read for its anchor
+        // alone, an external hyperlink would be text that cannot be clicked.
         Assert.Contains("LINKTEXT", text);
         Assert.Equal(1, AnnotationCount(pdf));
         Assert.Contains("(https://example.com/probe)", System.Text.Encoding.Latin1.GetString(pdf), StringComparison.Ordinal);

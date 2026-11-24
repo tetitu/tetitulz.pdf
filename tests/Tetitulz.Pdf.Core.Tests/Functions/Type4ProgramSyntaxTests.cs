@@ -117,9 +117,9 @@ public class Type4ProgramSyntaxTests
     }
 
     /// <summary>
-    /// A word that is no operator is the number 0 (2026-10-19), as another reader's lexer reads it and an independent renderer's parser pushes
+    /// A word that is no operator is the number 0, as another reader's lexer reads it and an independent renderer's parser pushes
     /// it, and is reported: <c>2 frobnicate mul</c> multiplies the 2 by that 0, and the 0 is added to the input, so the
-    /// answer is the input itself. Skipped, as it was, the <c>mul</c> doubled the input instead.
+    /// answer is the input itself. Skipped, the <c>mul</c> would double the input instead.
     /// </summary>
     [Fact]
     public void An_unknown_operator_is_the_number_zero()

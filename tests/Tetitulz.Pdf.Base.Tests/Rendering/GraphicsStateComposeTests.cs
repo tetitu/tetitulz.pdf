@@ -9,8 +9,8 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
 /// Tests for <see cref="GraphicsState.Compose"/> / <see cref="GraphicsState.Transform"/>,
-/// now the single matrix-composition implementation shared by the interpreter, the SVG
-/// renderer, and the graphics extractor (previously three identical copies).
+/// the single matrix-composition implementation shared by the interpreter, the SVG
+/// renderer, and the graphics extractor.
 /// </summary>
 public sealed class GraphicsStateComposeTests
 {

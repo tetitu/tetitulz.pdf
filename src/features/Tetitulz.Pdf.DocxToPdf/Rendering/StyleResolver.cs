@@ -437,11 +437,11 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         // ------------------------------------------------------------------
         //  Run properties that resolve through the style chain
         //
-        //  These five took the `paragraph` argument and never used it: they read only the run's
-        //  own w:rPr, so a character style — the textbook way to mark a footnote reference
-        //  (<w:style><w:rPr><w:vertAlign w:val="superscript"/>) — or a w:docDefaults setting was
-        //  silently ignored while every neighbouring resolver in this file walked all three tiers.
-        //  Both output paths (RunRenderer and DocxToBuilderMapper) consume them, so both were wrong.
+        //  These five walk all three tiers, as every neighbouring resolver in this file does:
+        //  reading only the run's own w:rPr would silently ignore a character style — the
+        //  textbook way to mark a footnote reference
+        //  (<w:style><w:rPr><w:vertAlign w:val="superscript"/>) — or a w:docDefaults setting,
+        //  in both output paths (RunRenderer and DocxToBuilderMapper), which both consume them.
         // ------------------------------------------------------------------
 
         // w:highlight — text highlight; returns an RRGGBB hex colour or null.

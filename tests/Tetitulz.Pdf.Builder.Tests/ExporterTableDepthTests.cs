@@ -14,12 +14,12 @@ namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
 /// A table cell may hold its own table — a self-reference, or a long chain of distinct tables a caller
-/// built. Each of the DOCX, HTML and ODT exporters walked the nesting by C# recursion with no bound, so
-/// an export of such a model recursed until the thread stack overflowed — which no handler can catch and
-/// which takes the host process down. (<c>ModelMeasurements.Validate</c> runs first but is itself depth
-/// capped, so it tolerates the cycle rather than catching it.) The PDF exporter was already bounded;
-/// these three now share its ceiling, <see cref="Tetitulz.Pdf.Core.Constants.PdfLimits.MaxTableNestingDepth"/>,
-/// and report the truncation instead of overflowing (2026-10-22).
+/// built. Walking the nesting by C# recursion with no bound would recurse until the thread stack
+/// overflowed — which no handler can catch and which takes the host process down.
+/// (<c>ModelMeasurements.Validate</c> runs first but is itself depth capped, so it tolerates the cycle
+/// rather than catching it.) The DOCX, HTML and ODT exporters share the PDF exporter's ceiling,
+/// <see cref="Tetitulz.Pdf.Core.Constants.PdfLimits.MaxTableNestingDepth"/>, and report the truncation
+/// instead of overflowing.
 /// </summary>
 public class ExporterTableDepthTests
 {

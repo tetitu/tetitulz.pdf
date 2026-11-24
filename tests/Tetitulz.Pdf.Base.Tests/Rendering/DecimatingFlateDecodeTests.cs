@@ -22,10 +22,9 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <remarks>
 /// <para><b>The control is the full path itself.</b> The same compressed bytes behind
 /// <c>[/RunLengthDecode /FlateDecode]</c> are a chain of filters, which the decimating decode never
-/// takes: the filter pipeline decodes them whole and the renderer decimates the buffer, as every
-/// FlateDecode image was drawn before. Each case renders both and compares the pages byte for
-/// byte. (The control was <c>[/ASCIIHexDecode /FlateDecode]</c> until 2026-10-19, when the
-/// decimating decode came to take a chain of ASCII stages before its filter.)</para>
+/// takes: the filter pipeline decodes them whole and the renderer decimates the buffer. Each case
+/// renders both and compares the pages byte for byte. (A chain of ASCII stages before the filter
+/// is not a control: the decimating decode takes it.)</para>
 /// <para><b>Liveness is the allocation</b>, which is the claim: an optimisation whose fast and slow
 /// paths agree is otherwise invisible to a test about their output.</para>
 /// </remarks>
@@ -217,7 +216,7 @@ public sealed class DecimatingFlateDecodeTests
     }
 
     /// <summary>
-    /// A TIFF-predicted image (2026-10-19): each row undone by the predictor's own row undo
+    /// A TIFF-predicted image: each row undone by the predictor's own row undo
     /// (<c>PredictorHelper.UndoTiffRow</c>), 8-bit RGB and 16-bit grey — the page the full decode's,
     /// and the decimated decode taken, not declined.
     /// </summary>
@@ -247,7 +246,7 @@ public sealed class DecimatingFlateDecodeTests
     }
 
     /// <summary>
-    /// An LZWDecode image (2026-10-19): the codes decoded as they are read, the rows assembled and
+    /// An LZWDecode image: the codes decoded as they are read, the rows assembled and
     /// decimated — unpredicted, PNG- and TIFF-predicted, and under <c>/EarlyChange 0</c> — the page the full
     /// path draws behind <c>[/RunLengthDecode /LZWDecode]</c>, and the decimated decode taken.
     /// </summary>
@@ -368,7 +367,7 @@ public sealed class DecimatingFlateDecodeTests
     }
 
     /// <summary>
-    /// ASCII stages before the filter (2026-10-19): <c>[/ASCIIHexDecode /FlateDecode]</c> PNG-predicted,
+    /// ASCII stages before the filter: <c>[/ASCIIHexDecode /FlateDecode]</c> PNG-predicted,
     /// <c>[/A85 /LZWDecode]</c> TIFF-predicted, and two ASCII layers before <c>/Fl</c> — the ASCII stages
     /// run whole by the pipeline, the last decimated, the page the full path draws behind the run-length chain.
     /// </summary>
@@ -554,7 +553,7 @@ public sealed class DecimatingFlateDecodeTests
     /// <summary>
     /// Where the decimated decode declines and the full path draws: a stream short of its rows, PNG
     /// parameters that are not the image's rows — each page the chain's; and a TIFF predictor over
-    /// unpredicted samples, which it takes since 2026-10-19 and undoes as the full path does.
+    /// unpredicted samples, which it takes and undoes as the full path does.
     /// </summary>
     [Fact]
     public void WhereItDeclines_ThePageIsTheFullPaths()

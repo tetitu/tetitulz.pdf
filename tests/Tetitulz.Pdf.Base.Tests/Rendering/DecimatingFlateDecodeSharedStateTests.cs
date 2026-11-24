@@ -49,8 +49,8 @@ public sealed class DecimatingFlateDecodeLimitTests
     }
 
     /// <summary>
-    /// The pipeline counts every stage's output against <see cref="PdfLimits.MaxCumulativeOutputBytes"/>
-    /// (2026-10-19): behind a hex stage, the rows with the stage's output past it are refused by the full
+    /// The pipeline counts every stage's output against <see cref="PdfLimits.MaxCumulativeOutputBytes"/>:
+    /// behind a hex stage, the rows with the stage's output past it are refused by the full
     /// path, and the decimating decode declines them too — the page the run-length chain's, whose first
     /// stage makes as many bytes. The control is the image alone under the same ceiling, which is drawn.
     /// </summary>

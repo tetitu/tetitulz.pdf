@@ -96,15 +96,28 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// </remarks>
         internal static byte[] Decode(byte[] woff2, long maxSfntBytes)
         {
+            _lastError = null;
             try
             {
-                return DecodeCore(woff2, maxSfntBytes);
+                byte[] sfnt = DecodeCore(woff2, maxSfntBytes);
+                if (sfnt == null)
+                    _lastError ??= "the WOFF 2.0 container is malformed (header, directory, a table's lengths or transform), a " +
+                                   "collection, or past " + maxSfntBytes.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+                                   " bytes once expanded";
+                return sfnt;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                // What the reader threw past its checks is named, not read as "not a font".
+                _lastError = "the WOFF 2.0 container did not unwrap: " + ex.GetType().Name + ": " + ex.Message;
                 return null;
             }
         }
+
+        [ThreadStatic] private static string _lastError;
+
+        /// <summary>Why the last <see cref="Decode(byte[], long)"/> on this thread returned null, or null when it returned a font. Reset at the start of every call.</summary>
+        internal static string LastError => _lastError;
 
         private static byte[] DecodeCore(byte[] woff2, long maxSfntBytes)
         {
@@ -236,7 +249,11 @@ namespace Tetitulz.Pdf.Core.Fonts
                 {
                     if (e.TransformVersion != 0) return null;   // the only defined glyf transform
                     var (glyf, loca) = Woff2GlyfTransform.Rebuild(slice, maxSfntBytes);
-                    if (glyf == null) return null;
+                    if (glyf == null)
+                    {
+                        _lastError = Woff2GlyfTransform.LastError;
+                        return null;
+                    }
 
                     rebuiltLoca = loca;
                     rebuiltGlyf = glyf;

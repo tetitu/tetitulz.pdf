@@ -225,8 +225,8 @@ public class PngImageDecoderTests
     /// <summary>
     /// A file whose IHDR was never reached is blamed on the chunk that ended the walk; a file whose
     /// IHDR <b>was</b> read and genuinely declares a zero dimension is blamed on the IHDR. The
-    /// root-cause fallback used to be consulted unconditionally, so the second case was told the
-    /// problem was a later chunk.
+    /// root-cause fallback is consulted only for the first: consulted unconditionally, it would tell
+    /// the second case the problem was a later chunk.
     /// </summary>
     [Fact]
     public void AZeroWidthIhdr_IsBlamedOnTheIhdrRatherThanOnALaterTruncatedChunk()
@@ -464,8 +464,7 @@ public class PngImageDecoderTests
     /// <summary>
     /// Every row filter of PNG §9.2 is undone: rows filtered by Sub, Up, Average and Paeth in turn
     /// (filtered here by the specification's formulas) decode to the same pixels as the unfiltered
-    /// image. Until 2026-10-21 every fixture in this file wrote filter 0, so the dedup sweep's row
-    /// D09 (rows never unfiltered) survived Core's suite and was caught only by two Base render tests.
+    /// image. Fixtures that write filter 0 alone would pass a decoder that never unfilters a row.
     /// </summary>
     [Fact]
     public void RowsFilteredByEachFilterType_DecodeToTheSamePixels()
@@ -486,8 +485,7 @@ public class PngImageDecoderTests
     /// <summary>
     /// A row filter type above 4 is refused: PNG §9.2 defines five, and a PDF <c>/Predictor</c> row
     /// that passes such a type through unchanged is the predictor's rule, not the format's. The
-    /// control is the same image with every row a defined type. The dedup sweep's row D08
-    /// (2026-10-21) let type 5 through and no test failed.
+    /// control is the same image with every row a defined type.
     /// </summary>
     [Fact]
     public void ARowFilterTypeAboveFour_IsRefused()

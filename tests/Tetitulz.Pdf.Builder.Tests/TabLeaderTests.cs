@@ -14,16 +14,16 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// <summary>
 /// Tab leaders — the dotted run that fills the gap a tab opens, as a table of contents draws it.
 ///
-/// <para><b>What was wrong.</b> <see cref="TabStop.Leader"/> has existed on the model, and been
-/// settable through <c>DocumentBuilder.AddTabStop</c>, for as long as tab stops have. The PDF
-/// exporter never read it: <c>NextTab</c> returned a bare <c>double</c>, so by the time the tab had
-/// been turned into a piece the <see cref="TabStop"/> it matched — and with it the leader and the
-/// alignment — was gone. A caller could set the property, get no error, and get no dots.</para>
+/// <para><b>What it guards against.</b> <see cref="TabStop.Leader"/> is on the model and settable
+/// through <c>DocumentBuilder.AddTabStop</c>. Were <c>NextTab</c> to return a bare <c>double</c>,
+/// the <see cref="TabStop"/> it matched — and with it the leader and the alignment — would be gone
+/// by the time the tab became a piece: a caller could set the property, get no error, and get no
+/// dots.</para>
 ///
 /// <para><b>What these assert.</b> The drawn content stream, not the model. A leader is real
 /// characters on the page: they have to appear in the output, in the right quantity, and only
 /// where a leader was asked for. Asserting on the model would pass with the exporter change
-/// reverted, which is precisely the failure this file exists to rule out.</para>
+/// ignored, which is precisely the failure this file exists to rule out.</para>
 /// </summary>
 public class TabLeaderTests
 {
@@ -122,9 +122,9 @@ public class TabLeaderTests
 
     // ---------------------------- alignment ----------------------------
     //
-    // Surfaced by the leader work rather than previously recorded: NextTab returned a bare double,
-    // so the matched TabStop -- and with it BOTH its leader and its alignment -- was gone by the
-    // time the tab became a piece. Every stop behaved as Left.
+    // The same matched TabStop carries the alignment: a bare double from NextTab would lose BOTH
+    // its leader and its alignment by the time the tab became a piece, and every stop would
+    // behave as Left.
 
     /// <summary>
     /// A right-aligned stop puts the <b>end</b> of the following text on the stop. Asserted as
@@ -306,7 +306,7 @@ public class TabLeaderTests
 
     /// <summary>
     /// A leader is capped at 4 096 characters, however small its font: at 0.2pt a dot leader is the cap's length,
-    /// and a two-character <see cref="TabStop.LeaderText"/> (2026-10-19) 2 048 repetitions, where the gap holds some
+    /// and a two-character <see cref="TabStop.LeaderText"/> 2 048 repetitions, where the gap holds some
     /// 2 068 — the cap counts
     /// characters, not repetitions. Its control, a leader the gap holds well under the cap, is the gap's.
     /// </summary>

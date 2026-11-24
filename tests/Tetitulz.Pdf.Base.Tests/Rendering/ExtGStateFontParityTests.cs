@@ -127,14 +127,13 @@ public sealed class ExtGStateFontParityTests
     }
 
     // ====================================================================
-    //  The non-conformant shape the raster path used to be alone in accepting
+    //  The non-conformant shape both renderers tolerate
     // ====================================================================
 
     /// <summary>
     /// <c>/Font [/F2 24]</c> — a <c>/Resources /Font</c> key where Table 58 calls for a font
-    /// dictionary reference. It is not what the spec defines, but it is what the raster path has
-    /// always accepted and it can only ever have meant a resource name, so it stays tolerated —
-    /// and the SVG exporter, which used to drop it on the floor, now accepts it too.
+    /// dictionary reference. It is not what the spec defines, but it can only mean a resource name,
+    /// so both the raster path and the SVG exporter tolerate it.
     /// </summary>
     [Fact]
     public void ResourceNameShapedFontArray_IsStillHonoured_InBothRenderers()

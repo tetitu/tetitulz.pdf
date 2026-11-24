@@ -393,16 +393,21 @@ namespace Tetitulz.Pdf.Signing
         /// whitespace a writer put around them, so treating <c>HoleStart</c> as the first hex digit
         /// writes the CMS one byte early and corrupts every signature it touches.</para>
         ///
-        /// <para><b>One implementation, because this is the third caller.</b> It was private to
-        /// <c>PdfCounterSigner</c>, whose own comment records the defect that taught it; the
-        /// deferred-signing completion needs exactly the same arithmetic. <c>SignatureByteRange</c>
-        /// and <c>Core.Document.SignedByteRanges</c> both exist because earlier copies of the
-        /// surrounding offset maths drifted — one of them by a single byte, which still verified.
-        /// A third copy of this would be the same bet.</para>
+        /// <para><b>One implementation</b>, for <c>PdfCounterSigner</c> and the deferred-signing
+        /// completion, which need exactly the same arithmetic. <c>SignatureByteRange</c> and
+        /// <c>Core.Document.SignedByteRanges</c> hold the surrounding offset maths once for the same
+        /// reason: copies of it drift, and a copy off by a single byte still verifies.</para>
         /// </remarks>
         internal static void FindContentsDelimiters(
             Stream file, long holeStart, long holeEnd, out long contentsStart, out long contentsEnd)
         {
+            // The hole is the file's to name, so it is held to the file before anything is sized from it:
+            // a /ByteRange naming a hole past the end allocated up to 2 GB before the read failed, and a
+            // negative start reached Stream.Position, which throws no PdfException.
+            if (holeStart < 0 || holeEnd > file.Length)
+                throw new PdfSigningException(
+                    "The region excluded by /ByteRange is not inside the file, so the /Contents placeholder " +
+                    "cannot be located.");
             long span = holeEnd - holeStart;
             if (span <= 0 || span > int.MaxValue)
                 throw new PdfSigningException(
@@ -623,23 +628,19 @@ namespace Tetitulz.Pdf.Signing
         /// <c>CmsSignatureGenerator.GetDigestOid</c>, so they agree on what an unrecognised name
         /// means.</para>
         ///
-        /// <para><b>The defect this closes.</b> <c>CmsSignatureGenerator</c>'s <c>default:</c> arm
-        /// returned <see cref="PdfDigestOids.Sha256"/> instead of throwing, and
-        /// <c>PdfSigner.Sign</c> passes <c>SignatureParameters.DigestAlgorithm</c> into it with no
-        /// prior acceptance check (the <c>TsaClient.GetHashOid</c> call on the signing path gates
-        /// only the separate <c>TimestampDigestAlgorithm</c>). So
-        /// <c>DigestAlgorithm = "SHA-224"</c> — or "MD5", or any typo — produced a
-        /// <b>SHA-256</b> signature with no warning of any kind, while
-        /// <c>PdfCounterSigner.AddCounterSignature</c> refused the identical string. A caller who
-        /// asked for a stronger digest, or a weaker one they were entitled to be told about, got
-        /// neither the algorithm nor the error.</para>
+        /// <para><b>Why it throws.</b> <c>PdfSigner.Sign</c> passes
+        /// <c>SignatureParameters.DigestAlgorithm</c> into <c>CmsSignatureGenerator</c> with no prior
+        /// acceptance check (the <c>TsaClient.GetHashOid</c> call on the signing path gates only the
+        /// separate <c>TimestampDigestAlgorithm</c>). A SHA-256 default for an unrecognised name
+        /// would turn <c>DigestAlgorithm = "SHA-224"</c> — or "MD5", or any typo — into a
+        /// <b>SHA-256</b> signature with no warning of any kind: a caller who asked for a stronger
+        /// digest, or a weaker one they were entitled to be told about, would get neither the
+        /// algorithm nor the error.</para>
         ///
-        /// <para><b>Why it survived.</b> The downgrade is invisible in the artefact: the CMS is
-        /// well-formed, it verifies, and its <c>digestAlgorithm</c> field says SHA-256 — which is
-        /// exactly what a correct SHA-256 signature says. Nothing in the output distinguishes
-        /// "the caller asked for SHA-256" from "the caller asked for something else and we
-        /// substituted". Only a test that names an unsupported algorithm and reads the OID back
-        /// out of the generated CMS can tell them apart.</para>
+        /// <para><b>Such a downgrade is invisible in the artefact</b>: the CMS is well-formed, it
+        /// verifies, and its <c>digestAlgorithm</c> field says SHA-256 — which is exactly what a
+        /// correct SHA-256 signature says. Only a test that names an unsupported algorithm and reads
+        /// the OID back out of the generated CMS can tell the two apart.</para>
         ///
         /// <para>The two genuine policy differences are parameters rather than drift:
         /// <paramref name="allowStreebog"/> (GOST&#160;R&#160;34.11-2012 is a live signing path —
@@ -673,8 +674,8 @@ namespace Tetitulz.Pdf.Signing
                 return PdfDigestOids.Sha256;
 
             // PdfDigestOids.FromName is the single name -> OID table; the underscore spellings
-            // ("SHA3_256") every one of these call sites has always accepted are folded onto the
-            // hyphenated form it understands.
+            // ("SHA3_256") every one of these call sites accepts are folded onto the hyphenated
+            // form it understands.
             string? spelling = name?.Replace('_', '-');
 
             if (allowStreebog)

@@ -13,20 +13,19 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
 /// A stroked text run's pen is the graphics state's line width <b>scaled by the CTM</b>
-/// (§8.4.3.2, §9.3.6) — the same rule a path stroke follows, and the rule the SVG exporter had
-/// already been corrected to.
+/// (§8.4.3.2, §9.3.6) — the same rule a path stroke follows, and the SVG exporter's.
 /// </summary>
 /// <remarks>
-/// <para><b>Found by measurement, not by reading.</b> Before this was fixed, doubling the CTM and
-/// halving the font size — which leaves the glyph geometry identical — left a stroked run's ink
-/// area at 1.00x while a path stroke on the same page went to 2.00x. Every raster text site used
-/// the raw line width under a transform normalised to unit scale, so the pen never saw the CTM.
-/// The SVG writer's own tests (<c>TextStrokeWidth_AccountsForTheCtmAsWellAsTheFontSize</c>)
-/// assert the opposite, so the two renderers disagreed on every stroked run under a scaled CTM.</para>
+/// <para><b>A measurement.</b> Doubling the CTM and halving the font size leaves the glyph
+/// geometry identical, so a stroked run's ink area must double as a path stroke's does on the same
+/// page. The raw line width under a transform normalised to unit scale would leave it at 1.00x —
+/// the pen never seeing the CTM — and disagree with the SVG writer's own tests
+/// (<c>TextStrokeWidth_AccountsForTheCtmAsWellAsTheFontSize</c>) on every stroked run under a
+/// scaled CTM.</para>
 ///
-/// <para><b>The fixture is shaped so the pen cannot saturate.</b> The first version stroked 40 pt
-/// glyphs with a 4 pt pen and measured 1.52x after the fix: doubling that pen merges the inner
-/// stroke bands across a Helvetica stem, so the area stops growing with the width. A 1 pt pen on
+/// <para><b>The fixture is shaped so the pen cannot saturate.</b> Stroking 40 pt glyphs with a 4 pt
+/// pen measures about 1.52x: doubling that pen merges the inner stroke bands across a Helvetica
+/// stem, so the area stops growing with the width. A 1 pt pen on
 /// 80 pt glyphs at 144 dpi keeps the pen a small fraction of every feature, and a 50% luminance
 /// threshold counts anti-aliased fringe without bias — the path control below, which has no fringe
 /// and cannot merge, is what says "doubles" means 2.00x on this rasteriser.</para>
@@ -52,8 +51,8 @@ public class TextStrokeWidthTests
     }
 
     /// <summary>
-    /// The control: a path stroke on the same page under the same CTMs, whose pen has always
-    /// scaled. If this ratio ever stops being ~2, the text assertion above is measuring the
+    /// The control: a path stroke on the same page under the same CTMs, whose pen scales. If this
+    /// ratio ever stops being ~2, the text assertion above is measuring the
     /// rasteriser rather than the rule.
     /// </summary>
     [Fact]
@@ -72,7 +71,7 @@ public class TextStrokeWidthTests
     /// space, not text space, so a larger font gets the same pen.
     /// </summary>
     /// <remarks>
-    /// The discriminating control for the fix: a change that scaled the pen by the whole text
+    /// The discriminating control: a change that scaled the pen by the whole text
     /// matrix instead of the CTM alone would pass the test above and fail this one. Doubling the
     /// font size doubles the outline's perimeter, so the stroked area doubles from length alone; a
     /// pen that also doubled would quadruple it. The window is wide enough for the perimeter's

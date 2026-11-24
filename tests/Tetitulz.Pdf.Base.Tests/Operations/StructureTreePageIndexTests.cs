@@ -16,11 +16,9 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// </summary>
 /// <remarks>
 /// <para>
-/// It was an <b>unimplemented stub</b> until 2026-08-12: <c>FindPageIndex</c> had an empty loop body
-/// and returned -1 unconditionally, and <c>BuildPageRefIndex</c> filled a map with
-/// <c>map[i] = i</c> — page index to page index, not a mapping from anything a <c>/Pg</c> reference
-/// carries — which was then threaded through the entire recursion and never read. Every element this
-/// reader produced reported <c>PageIndex == -1</c>.
+/// A stub answering -1 unconditionally, or a map from page index to page index rather than from
+/// anything a <c>/Pg</c> reference carries, would report <c>PageIndex == -1</c> (or the wrong page)
+/// for every element this reader produces.
 /// </para>
 /// <para>
 /// The fixture puts the two structure elements on <b>different</b> pages, in reverse document order.

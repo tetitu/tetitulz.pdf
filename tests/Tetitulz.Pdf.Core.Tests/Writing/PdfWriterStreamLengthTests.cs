@@ -12,9 +12,8 @@ namespace Tetitulz.Pdf.Core.Tests.Writing;
 
 /// <summary>
 /// <see cref="PdfWriter.WriteIndirectObject"/> must emit a correct /Length for a stream even when
-/// the caller did not pre-set one — it previously set /Length only after the dictionary had
-/// already been serialised, producing a stream object with no /Length (rejected by strict readers,
-/// and unreadable on round-trip).
+/// the caller did not pre-set one — set only after the dictionary is serialised, it would leave a
+/// stream object with no /Length (rejected by strict readers, and unreadable on round-trip).
 /// </summary>
 public class PdfWriterStreamLengthTests
 {

@@ -48,10 +48,10 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Interpreter
             if (hash > 0) return TryParseRadix(span, hash, out isInteger, out value);
 
             // A bound is still needed — the buffer below is on the stack — but it must not be the
-            // thing that decides a token's TYPE. At 64 a longer numeric-looking token silently
-            // became a NAME, so a legal literal surfaced as an inexplicable `undefined` from
-            // somewhere else entirely. The cap is now named, generous enough that no real literal
-            // reaches it (a double round-trips in 24 characters), and refusal is reported.
+            // thing that decides a token's TYPE. A tight bound (64) would silently make a longer
+            // numeric-looking token a NAME, so a legal literal would surface as an inexplicable
+            // `undefined` from somewhere else entirely. The cap is named, generous enough that no
+            // real literal reaches it (a double round-trips in 24 characters), and refusal is reported.
             if (span.Length > PsLimits.MaxNumericTokenChars)
             {
                 PostScriptDiagnostics.ReportOversizedNumericToken(span.Length);

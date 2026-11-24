@@ -13,26 +13,22 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
 /// The raster decoder for Separation / DeviceN / Lab / CalGray / CalRGB images has TWO ways to
-/// colour a 1-component image: a full-range lookup table, or one conversion per pixel. Which one
-/// runs used to depend on nothing at all -- the LUT was always built, sized
-/// <c>maxRaw + 1</c> by the bit depth.
+/// colour a 1-component image: a full-range lookup table, sized <c>maxRaw + 1</c> by the bit
+/// depth, or one conversion per pixel.
 ///
-/// <para><b>At 16 bpc that is 65 536 entries no matter how small the image is</b>, so a 2x1
-/// Separation plate cost 65 536 tint-transform evaluations to colour two pixels, each one a full
-/// PDF function evaluation. The comment above it reasoned only downward -- "a 4-bpc plate costs 16
-/// evaluations rather than 256" -- and never asked what happens above 8. The table is now built
-/// only when it has fewer entries than the image has pixels.</para>
+/// <para><b>At 16 bpc a table is 65 536 entries no matter how small the image is</b>, so always
+/// building it would cost a 2x1 Separation plate 65 536 tint-transform evaluations to colour two
+/// pixels, each one a full PDF function evaluation. The table is built only when it has fewer
+/// entries than the image has pixels.</para>
 ///
-/// <para><b>No parity test could have found it, and that is the interesting part.</b> The SVG
-/// renderer normalises every depth to one byte per component in <c>ExpandSamplesToBytes</c> before
-/// its own LUT is built, so its table is always 256 entries. The two renderers were producing
-/// identical pixels by different amounts of work -- a divergence in COST, which a suite that
-/// compares output is structurally unable to see. Same blind spot as the geometry divergence in
-/// <c>RenderGeometryParityTests</c>, one axis over.</para>
+/// <para><b>No parity test can see that cost.</b> The SVG renderer normalises every depth to one
+/// byte per component in <c>ExpandSamplesToBytes</c> before its own LUT is built, so its table is
+/// always 256 entries. Two renderers producing identical pixels by different amounts of work is a
+/// divergence in COST, which a suite that compares output is structurally unable to see. Same
+/// blind spot as the geometry divergence in <c>RenderGeometryParityTests</c>, one axis over.</para>
 ///
-/// <para><b>What these tests guard is the thing the fix put at risk.</b> Making the choice
-/// conditional means both branches now run in production -- the LUT for a large image, the
-/// per-pixel loop for a small one, at EVERY depth, where before 8-bpc images always took the LUT.
+/// <para><b>What these tests guard.</b> With the choice conditional, both branches run in
+/// production -- the LUT for a large image, the per-pixel loop for a small one, at EVERY depth.
 /// Two code paths that must agree exactly is the shape this repo has been bitten by repeatedly, so
 /// each case renders the same image content at a size either side of the threshold and asserts the
 /// same colour comes out.</para>

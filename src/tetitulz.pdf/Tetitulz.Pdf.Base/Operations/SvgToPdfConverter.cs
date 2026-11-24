@@ -250,10 +250,10 @@ namespace Tetitulz.Pdf.Base.Operations
             /// </summary>
             public Dictionary<string, XmlElement> ElementsById;
 
-            /// <summary><c>&lt;use&gt;</c> references expanded so far, against <see cref="PdfLimits.MaxSvgUseExpansions"/>.</summary>
+            /// <summary>Subtrees drawn again so far — <c>&lt;use&gt;</c> references, markers at their vertices, SVG images — against <see cref="PdfLimits.MaxSvgUseExpansions"/>.</summary>
             public int UseExpansions;
 
-            /// <summary>Elements those references copied, all together, against <see cref="PdfLimits.MaxSvgUseExpandedElements"/>.</summary>
+            /// <summary>Elements those drawings processed, all together, against <see cref="PdfLimits.MaxSvgUseExpandedElements"/>.</summary>
             public long UseExpandedElements;
 
             /// <summary>
@@ -1155,6 +1155,8 @@ namespace Tetitulz.Pdf.Base.Operations
             if (width != null) root.SetAttribute("width", width); else root.RemoveAttribute("width");
             if (height != null) root.SetAttribute("height", height); else root.RemoveAttribute("height");
             if (image.HasAttribute("preserveAspectRatio")) root.SetAttribute("preserveAspectRatio", image.GetAttribute("preserveAspectRatio"));
+            // Each such image is its own document drawn whole, charged as a reference's copy is.
+            if (!ChargeRedraw(root, "SVG images", "each draws its document whole", ctx)) return;
             foreach (var pair in IndexIds(root))
                 if (!ctx.ElementsById.ContainsKey(pair.Key)) ctx.ElementsById.Add(pair.Key, pair.Value);
             image.AppendChild(root);
@@ -1349,6 +1351,12 @@ namespace Tetitulz.Pdf.Base.Operations
             {
                 ctx.MarkersBeingDrawn.Remove(marker);
                 ReportOnce($"markers nested more than {PdfLimits.MaxTreeDepth} deep are not drawn");
+                return;
+            }
+            // Drawn again at every vertex it marks, its content charged as a reference's copy is.
+            if (!ChargeRedraw(marker, "markers drawn", "each draws its content whole", ctx))
+            {
+                ctx.MarkersBeingDrawn.Remove(marker);
                 return;
             }
             ctx.MarkerDepth++;
@@ -3244,25 +3252,7 @@ namespace Tetitulz.Pdf.Base.Operations
                     ReportOnce($"<use> of '{href}' was skipped: it refers to an element that contains it");
                     return;
                 }
-            if (++ctx.UseExpansions > PdfLimits.MaxSvgUseExpansions)
-            {
-                ReportOnce($"<use> references past {PdfLimits.MaxSvgUseExpansions} were skipped: each draws " +
-                           "its target again, and a chain of them multiplies");
-                return;
-            }
-            // Charged the elements it copies, before the copy: the count above bounds the references
-            // and not their size, and a group of 2 000 rectangles referenced 2 000 times was 8 GB.
-            long room = PdfLimits.MaxSvgUseExpandedElements - ctx.UseExpandedElements;
-            long size = ElementCount(target, room);
-            if (size > room)
-            {
-                // Spent: a later reference to the same target would count it again, up to the room.
-                ctx.UseExpandedElements = PdfLimits.MaxSvgUseExpandedElements;
-                ReportOnce($"<use> references past {PdfLimits.MaxSvgUseExpandedElements} copied elements were skipped: " +
-                           "each copies its target whole");
-                return;
-            }
-            ctx.UseExpandedElements += size;
+            if (!ChargeRedraw(target, "<use> references", "each copies its target whole", ctx)) return;
 
             float x = TryParseAttrF(node, "x", 0f, ctx), y = TryParseAttrF(node, "y", 0f, ctx);
             var placed = Transform.Multiply(xform, new Transform(1, 0, 0, 1, x, y));
@@ -3270,6 +3260,40 @@ namespace Tetitulz.Pdf.Base.Operations
             use.AppendChild(copy);
             try { ProcessNode(copy, sb, ctx, placed, depth + 1); }
             finally { use.RemoveChild(copy); }
+        }
+
+        /// <summary>
+        /// Charges one more drawing of <paramref name="target"/>'s subtree — a <c>&lt;use&gt;</c> reference's copy, a
+        /// marker's content at each vertex it marks, an SVG image's document — against
+        /// <see cref="PdfLimits.MaxSvgUseExpansions"/> drawings and <see cref="PdfLimits.MaxSvgUseExpandedElements"/>
+        /// elements, all of them together. False, reported once in <paramref name="what"/>'s words, once either is spent;
+        /// the caller draws nothing.
+        /// </summary>
+        /// <remarks>
+        /// Each drawing processes its subtree again, and a subtree may itself draw others: references double at every
+        /// level of a chain, and a marker whose content marks with the next marker multiplies by the vertex count at
+        /// every level. The count bounds the drawings and the elements bound what each costs — a group of 2 000
+        /// rectangles referenced 2 000 times would be 8 GB.
+        /// </remarks>
+        private static bool ChargeRedraw(XmlNode target, string what, string eachCopies, ConvertContext ctx)
+        {
+            if (++ctx.UseExpansions > PdfLimits.MaxSvgUseExpansions)
+            {
+                ReportOnce($"{what} past {PdfLimits.MaxSvgUseExpansions} were skipped: each draws " +
+                           "its target again, and a chain of them multiplies");
+                return false;
+            }
+            long room = PdfLimits.MaxSvgUseExpandedElements - ctx.UseExpandedElements;
+            long size = ElementCount(target, room);
+            if (size > room)
+            {
+                // Spent: a later drawing of the same target would count it again, up to the room.
+                ctx.UseExpandedElements = PdfLimits.MaxSvgUseExpandedElements;
+                ReportOnce($"{what} past {PdfLimits.MaxSvgUseExpandedElements} copied elements were skipped: " + eachCopies);
+                return false;
+            }
+            ctx.UseExpandedElements += size;
+            return true;
         }
 
         /// <summary>The elements of <paramref name="root"/>'s subtree, itself included, counted no further than one past <paramref name="limit"/>.</summary>
@@ -3609,14 +3633,12 @@ namespace Tetitulz.Pdf.Base.Operations
         /// A <c>&lt;path&gt;</c>: every command of SVG 1.1 §8.3's grammar, absolute and relative.
         /// </summary>
         /// <remarks>
-        /// <para><b>It drew five of them.</b> <c>M</c>, <c>L</c>, <c>H</c>, <c>V</c> and <c>Z</c> were
-        /// handled, and every curve — cubic <c>C</c>/<c>S</c>, quadratic <c>Q</c>/<c>T</c>, elliptical
-        /// arc <c>A</c> — became a PDF comment reported nowhere, so an icon or a logo came out as the
-        /// straight segments between its curves. A quadratic is drawn as its exact cubic; an arc as
-        /// cubics of at most a quarter turn each, from the endpoint parameterisation of Appendix
-        /// F.6.</para>
-        /// <para><b>Two grammar rules were wrong too.</b> Pairs after a moveto are implicit linetos
-        /// (§8.3.2) and were drawn as further movetos, so <c>M 0 0 10 10</c> drew nothing; and
+        /// <para><b>Every curve too</b> — cubic <c>C</c>/<c>S</c>, quadratic <c>Q</c>/<c>T</c>,
+        /// elliptical arc <c>A</c> — or an icon or a logo would come out as the straight segments
+        /// between its curves. A quadratic is drawn as its exact cubic; an arc as cubics of at most a
+        /// quarter turn each, from the endpoint parameterisation of Appendix F.6.</para>
+        /// <para><b>Two grammar rules matter.</b> Pairs after a moveto are implicit linetos
+        /// (§8.3.2) — drawn as further movetos, <c>M 0 0 10 10</c> would draw nothing — and
         /// closepath returns the current point to the subpath's start (§8.3.3), which a relative
         /// command after it counts from.</para>
         /// </remarks>
@@ -5203,13 +5225,14 @@ namespace Tetitulz.Pdf.Base.Operations
         /// <c>hsl()</c>/<c>hsla()</c>, and the CSS named colours, which SVG 1.1 §4.4 takes from CSS.
         /// </summary>
         /// <remarks>
-        /// <para><b>This knew sixteen names</b>, no percentages and no <c>hsl()</c>, and drew anything
-        /// else black. For a name it did not know it said nothing, so <c>fill="steelblue"</c> came
-        /// out black with a clean <see cref="LastError"/>. HtmlToPdf's parser had all of them, and
-        /// is now the one both read.</para>
+        /// <para><b>One parser for SVG and HTML</b>, <c>Core.Text.CssColor</c>, with every name, the
+        /// percentages and <c>hsl()</c>. A reader knowing fewer would draw anything else black, and
+        /// saying nothing about a name it did not know would turn <c>fill="steelblue"</c> black with a
+        /// clean <see cref="LastError"/>.</para>
         /// <para>The alpha is not this method's: <see cref="Alphas"/> reads it into the shape's
         /// <c>/ExtGState</c>. A value that is not a colour is reported and drawn black. It is never
-        /// an exception: <c>fill='#gggggg'</c> once escaped one from <c>System.Convert.ToByte</c>.</para>
+        /// an exception: <c>fill='#gggggg'</c> is not parsed through <c>System.Convert.ToByte</c>,
+        /// which would throw.</para>
         /// </remarks>
         private static (float r, float g, float b) ParseColor(string color)
         {
@@ -5676,12 +5699,13 @@ namespace Tetitulz.Pdf.Base.Operations
         /// optional exponent whose <c>e</c> is followed by digits. So <c>1.5.5</c> is two numbers,
         /// <c>1.5</c> and <c>.5</c>; <c>10-5</c> is <c>10</c> and <c>-5</c>; and <c>1e-3</c> is one
         /// number.</para>
-        /// <para><b>The tokenizer took every digit and point it met</b>, so <c>1.5.5</c>, which
-        /// illustration tools write, was one token that did not parse and read as 0. An exponent
-        /// split at its <c>e</c>, which then went through as a path command. Point lists and
-        /// transform arguments split on separators only, so <c>10-5</c> was one unparseable part and
-        /// was dropped. Digits are ASCII: <c>char.IsDigit</c> took any Unicode decimal digit into a
-        /// token the number parse then rejected.</para>
+        /// <para><b>A token is one number.</b> Taking every digit and point met would read
+        /// <c>1.5.5</c>, which illustration tools write, as one token that does not parse and reads
+        /// as 0, and would split an exponent at its <c>e</c>, which would then go through as a path
+        /// command. Point lists and transform arguments are scanned the same way; split on
+        /// separators only, <c>10-5</c> would be one unparseable part and dropped. Digits are ASCII:
+        /// <c>char.IsDigit</c> would take any Unicode decimal digit into a token the number parse
+        /// then rejects.</para>
         /// </remarks>
         private static bool TryScanNumber(string s, ref int i, out string token)
         {
@@ -5969,8 +5993,8 @@ namespace Tetitulz.Pdf.Base.Operations
         // ── String helpers ────────────────────────────────────────────────────
 
         // One implementation, in Core.Objects.PdfStringEscape (ISO 32000-1 7.3.4.2).
-        // This copy escaped only ( ) and backslash, so a carriage return reached the file raw
-        // and came back as a line feed, and a NUL truncated some viewers' parsers.
+        // Escaping only ( ) and backslash would let a carriage return reach the file raw and
+        // come back as a line feed, and a NUL truncate some viewers' parsers.
         private static string EscapePdfString(string s) => PdfStringEscape.EscapeLiteral(s);
 
         private static string F(float v) => PdfRealFormat.Format(v, "F4");

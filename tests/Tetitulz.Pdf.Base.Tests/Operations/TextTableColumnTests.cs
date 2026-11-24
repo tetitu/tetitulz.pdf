@@ -100,8 +100,8 @@ public class TextTableColumnTests
     /// spanning row fills one cell, and the confidence is 5 of 6.
     /// </summary>
     /// <remarks>
-    /// A spanning cell used to be added on top of the row's per-column cells, and a row could hold
-    /// three cells in a two-column table — a raw fraction of 7/6, which only the clamps kept in range.
+    /// A spanning cell added on top of the row's per-column cells would let a row hold three cells
+    /// in a two-column table — a raw fraction of 7/6, which only the clamps would keep in range.
     /// </remarks>
     [Fact]
     public void NoRowCoversAColumnTwice()
@@ -323,12 +323,11 @@ public class TextTableColumnTests
     /// <b>A page with no column separator reports one column, and its cells are in it.</b>
     /// </summary>
     /// <remarks>
-    /// <para>This used to answer <c>ColumnCount = 2</c> with column 0 permanently empty and every
-    /// cell in column 1, because a missing separator list was backfilled with a boundary at x = 0.
-    /// A table that reports a column it never fills is a lie a caller acts on: <c>ToGrid()</c>
-    /// returned a leading column of nulls, and <c>PdfToDocxConverter</c> had to judge a table
-    /// structurally rather than by its column count, having once turned a page of prose into a
-    /// table and lost the paragraphs.</para>
+    /// <para>Backfilling a missing separator list with a boundary at x = 0 would answer
+    /// <c>ColumnCount = 2</c> with column 0 permanently empty and every cell in column 1. A table that
+    /// reports a column it never fills is a lie a caller acts on: <c>ToGrid()</c> would return a
+    /// leading column of nulls, and a converter judging by column count would turn a page of prose
+    /// into a table and lose the paragraphs.</para>
     ///
     /// <para>Two words stacked at the same x is the exact shape that page took — ordinary prose,
     /// not a grid.</para>

@@ -14,6 +14,7 @@ using Tetitulz.Pdf.Core;
 using Tetitulz.Pdf.Core.Document;
 using Tetitulz.Pdf.Core.IO;
 using Tetitulz.Pdf.Core.Objects;
+using Tetitulz.Pdf.Core.Parsing;
 using Tetitulz.Pdf.Base.Encryption;
 
 namespace Tetitulz.Pdf.Encryption
@@ -402,9 +403,16 @@ namespace Tetitulz.Pdf.Encryption
                     $"The /Encrypt dictionary lists {array.Count} recipients, more than the " +
                     $"{MaxRecipients} examined, so the document key cannot be derived.");
 
+            // Refused for the same reason: every entry is in the key, so one left out derives a wrong key.
             for (int i = 0; i < array.Count; i++)
-                if (doc.ResolveObject(array[i]) is PdfString s && s.RawBytes != null)
-                    result.Add(s.RawBytes);
+            {
+                if (!(doc.ResolveObject(array[i]) is PdfString s) || s.RawBytes == null)
+                    throw new PdfException(
+                        $"/Recipients entry {i} is not a string" +
+                        (PdfParser.LastObjectParseError is string why ? " (" + why + ")" : "") +
+                        "; every entry is hashed into the document key, so the key cannot be derived.");
+                result.Add(s.RawBytes);
+            }
 
             return result;
         }

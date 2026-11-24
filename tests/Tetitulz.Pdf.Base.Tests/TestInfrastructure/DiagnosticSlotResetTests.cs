@@ -19,37 +19,34 @@ namespace Tetitulz.Pdf.Base.Tests.TestInfrastructure;
 /// <remarks>
 /// <para>
 /// CLAUDE.md states the rule: <i>"A slot that a caller reads after an operation must be reset at the
-/// start of that operation, on every path, not only where it is written."</i> It was written after
-/// <c>PdfDecryptor.LastPermsValidation</c> was found to be <c>[ThreadStatic]</c> and still wrong —
-/// per-thread storage is not per-document scope. The decryptor was fixed; nothing checked the other
-/// thirty slots, and on 2026-08-12 four of them had <b>no clear at all</b>:
+/// start of that operation, on every path, not only where it is written."</i>
+/// <c>[ThreadStatic]</c> alone is per-thread storage, not per-document scope. What a slot with
+/// <b>no clear at all</b> does:
 /// </para>
 /// <list type="bullet">
-///   <item><c>PdfParser.LastObjectParseError</c> — documents itself as "null when the last GetObject
-///   call on this thread succeeded", which cannot be true without a reset. One bad object was
-///   reported against every later success, so a caller handed <c>PdfNull</c> blamed the wrong
+///   <item><c>PdfParser.LastObjectParseError</c> documents itself as "null when the last GetObject
+///   call on this thread succeeded", which cannot be true without a reset: one bad object would be
+///   reported against every later success, and a caller handed <c>PdfNull</c> blame the wrong
 ///   object.</item>
-///   <item><c>DssBuilder.LastAiaParseError</c> — runs per-certificate over a chain, so one
-///   unparseable AIA extension was attributed to every certificate after it.</item>
-///   <item><c>PdfMdpVerifier.LastDocMdpUsedDefaultP</c> — a <c>bool</c> feeding security reports,
-///   left holding the previous document's verdict when opening a malformed file threw.</item>
-///   <item><c>CMapParser.LastUsecmapName</c> — leaked across an empty-input early return.</item>
+///   <item><c>DssBuilder.LastAiaParseError</c> runs per-certificate over a chain, so one
+///   unparseable AIA extension would be attributed to every certificate after it.</item>
+///   <item><c>PdfMdpVerifier.LastDocMdpUsedDefaultP</c>, a <c>bool</c> feeding security reports,
+///   would hold the previous document's verdict when opening a malformed file threw.</item>
+///   <item><c>CMapParser.LastUsecmapName</c> would leak across an empty-input early return.</item>
 /// </list>
 /// <para>
 /// <b>What this can and cannot check.</b> Proving the reset happens <i>at the start, on every path</i>
 /// needs flow analysis. This asserts the weaker, mechanical property — the slot is cleared
-/// <i>somewhere</i> in its own file — which is precisely what all four offenders failed. A slot that
+/// <i>somewhere</i> in its own file — which is precisely what each of those would fail. A slot that
 /// clears itself in the wrong place still passes here, so read a green run as "no slot is
 /// write-only", not as proof of correct scoping.
 /// </para>
 /// <para>
-/// <b>And the mirror, added on 2026-09-22 after this guard ran green over a dead slot for months.</b>
-/// "Is it cleared?" is satisfied by a slot that is <i>nothing but</i> a clear.
-/// <c>PdfLayoutAnalyzer.LastAnalysisWarning</c>'s only assignment was its reset — the ceiling it
-/// reported had been removed in a rewrite — so the property could never be non-null, the diagnostic
-/// it documented was unreachable, and three tests asserting it was null passed vacuously. Nothing
-/// could see it: a mutation deleting the reset is killed by <i>this</i> test, which made a dead slot
-/// look like a covered one. <see cref="HasNonNeutralWrite"/> now asks the other half.
+/// <b>And the mirror.</b> "Is it cleared?" is satisfied by a slot that is <i>nothing but</i> a
+/// clear: a property whose only assignment is its reset can never be non-null, the diagnostic it
+/// documents is unreachable, and tests asserting it is null pass vacuously — while a mutation
+/// deleting the reset is killed by <i>this</i> test, which makes a dead slot look like a covered
+/// one. <see cref="HasNonNeutralWrite"/> asks the other half.
 /// </para>
 /// </remarks>
 public class DiagnosticSlotResetTests

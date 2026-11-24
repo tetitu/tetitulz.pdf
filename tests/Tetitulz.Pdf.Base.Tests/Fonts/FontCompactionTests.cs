@@ -32,7 +32,7 @@ public class FontCompactionTests
     {
         byte[] font = OpenTypeCffFont();
 
-        // The contrast is the point: this is the case that previously had no size reduction at all.
+        // The contrast is the point: subsetting refuses this font, so compaction is its only size reduction.
         Assert.Throws<NotSupportedException>(() => PdfFontSubsetter.Subset(font, "A"));
 
         Assert.True(PdfFontSubsetter.TryCompact(font, out byte[] compacted, out string reason));

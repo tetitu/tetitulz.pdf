@@ -344,11 +344,9 @@ namespace Tetitulz.Pdf.Core.Constants
         /// a 10 000-page report's tree lands in the low hundreds of thousands of nodes.</para>
         ///
         /// <para><b>It is the ceiling of the one walk every reader of the tree uses</b>
-        /// (`Base.Operations.Structure.StructureTreeWalk`), and it was found by comparing walks:
-        /// while `Accessibility.Internal.StructTreeWalker`, `PdfTaggedTextExtractor` and
-        /// `PdfStructureTreeReader` each read the same tree from untrusted input themselves, the
-        /// extractor, and then the reader, turned out to have the depth cap and the visited set but
-        /// not this one.</para>
+        /// (`Base.Operations.Structure.StructureTreeWalk`): readers walking the same untrusted tree
+        /// themselves would each need the depth cap, the visited set and this, and one carrying the
+        /// first two without this would be bounded in depth and not in work.</para>
         /// </remarks>
         public static int MaxStructTreeEdges { get; set; } = DefaultMaxStructTreeEdges;
 
@@ -476,8 +474,8 @@ namespace Tetitulz.Pdf.Core.Constants
         /// <remarks>
         /// A query reads the earlier drawings of its text in the cells its X window covers, and a
         /// column of one text at one X — a rotated line, or the same glyph shown down the page — puts
-        /// them all in one cell: each glyph read every one before it, so a few hundred kilobytes of
-        /// content were 10<sup>11</sup> comparisons. Sixty-four million is some tens of milliseconds, and
+        /// them all in one cell: each glyph reads every one before it, so a few hundred kilobytes of
+        /// content would be 10<sup>11</sup> comparisons. Sixty-four million is some tens of milliseconds, and
         /// thousands of times what a dense real page spends.
         /// </remarks>
         public static long MaxOverlappingTextComparisons { get; set; } = DefaultMaxOverlappingTextComparisons;
@@ -724,13 +722,11 @@ namespace Tetitulz.Pdf.Core.Constants
         /// <summary>Built-in value of <see cref="MaxInvisibleGlyphCoverCandidates"/>; for a compile-time constant context.</summary>
         public const int DefaultMaxInvisibleGlyphCoverCandidates = 256;
 
-        // MaxColumnDetectionCellMarks lived here until the column detector stopped needing it.
-        // It capped the O(chars x cells) coverage-grid FILL in PdfLayoutAnalyzer.DetectColumns —
-        // 50 000 full-page glyphs cost ~148 s for one page, measured — and it bounded that by
-        // truncating the analysis and reporting the truncation. The fill is now a 2-D difference
-        // array plus one prefix-sum pass, which is O(chars + cells) for the identical coverage, so
-        // there is nothing left to charge and no truncated answer to report. Removed rather than
-        // left in place: an unreachable cap reads as a live bound to the next person tuning one.
+        // No cap on PdfLayoutAnalyzer.DetectColumns' coverage-grid fill: it is a 2-D difference
+        // array plus one prefix-sum pass, O(chars + cells), so there is nothing to charge and no
+        // truncated answer to report. (An O(chars x cells) fill would cost ~148 s for one page of
+        // 50 000 full-page glyphs, measured.) An unreachable cap would read as a live bound to the
+        // next person tuning one.
 
         /// <summary>Maximum depth of a <c>/Resources</c> inheritance chain.</summary>
         public static int MaxResourceDepth { get; set; } = DefaultMaxResourceDepth;
@@ -1224,6 +1220,66 @@ namespace Tetitulz.Pdf.Core.Constants
 
         /// <summary>Built-in value of <see cref="MaxShadingDimension"/>; for a compile-time constant context.</summary>
         public const int DefaultMaxShadingDimension = 4096;
+
+        /// <summary>
+        /// The most spot-ink plates one page's separations render beside the four process plates: each is a
+        /// whole render of the page and a page-sized plate kept in the result, and a page names as many inks
+        /// as it holds colour spaces, a few dozen bytes each. The inks past it are reported, not rendered.
+        /// </summary>
+        public static int MaxSpotPlatesPerPage { get; set; } = DefaultMaxSpotPlatesPerPage;
+
+        /// <summary>Built-in value of <see cref="MaxSpotPlatesPerPage"/>; for a compile-time constant context.</summary>
+        public const int DefaultMaxSpotPlatesPerPage = 64;
+
+        /// <summary>
+        /// Most image pixels one Builder export decodes, every picture together — the Builder's own documents and
+        /// the HTML and DOCX converters that export through it. Each picture is decoded once an export and held to
+        /// the authored-image size, and neither bounds how many there are: a page of distinct pictures of a few
+        /// kilobytes each, every one declaring forty megapixels, decodes and compresses each one whole. Past this the
+        /// pictures not yet decoded are not drawn, their alt text standing in, and the cut is reported once.
+        /// </summary>
+        /// <remarks>
+        /// Measured on the shipped build at about 5 ns a pixel, decoded and compressed (a 16-megapixel GIF in
+        /// 80 ms): the default is some ten seconds of decoding, five hundred twelve-megapixel photographs.
+        /// </remarks>
+        public static long MaxImagePixelsPerExport { get; set; } = DefaultMaxImagePixelsPerExport;
+
+        /// <summary>Built-in value of <see cref="MaxImagePixelsPerExport"/>; for a compile-time constant context.</summary>
+        public const long DefaultMaxImagePixelsPerExport = 2_000_000_000;
+
+        /// <summary>
+        /// Most resource entries (<c>/XObject</c>, <c>/Pattern</c>, <c>/Font</c>) the document image index examines, every
+        /// page together — the walk behind image listing, extraction, replacement, the JPEG 2000 transcoder and the
+        /// transparency scan. Each page reads the resource dictionaries it reaches, and pages may share one, so ten
+        /// thousand pages sharing a dictionary of a hundred thousand images are a billion entry reads. Past it the
+        /// walk stops, the images it had not reached are not indexed, and the cut is reported once.
+        /// </summary>
+        public static long MaxImageIndexEntriesPerDocument { get; set; } = DefaultMaxImageIndexEntriesPerDocument;
+
+        /// <summary>Built-in value of <see cref="MaxImageIndexEntriesPerDocument"/>; for a compile-time constant context.</summary>
+        public const long DefaultMaxImageIndexEntriesPerDocument = 10_000_000;
+
+        /// <summary>
+        /// Most bytes one <c>PdfImageExtractor.ExtractImages</c> call writes, every image file together. Each image is
+        /// decoded no further than 256 MB, and Deflate's ratio of about a thousand to one makes a one-megabyte PDF
+        /// of such images a gigabyte of files. Past it the images not yet written are not written, and
+        /// <c>LastExtractionWarning</c> names them.
+        /// </summary>
+        public static long MaxExtractedImageBytesPerCall { get; set; } = DefaultMaxExtractedImageBytesPerCall;
+
+        /// <summary>Built-in value of <see cref="MaxExtractedImageBytesPerCall"/>; for a compile-time constant context.</summary>
+        public const long DefaultMaxExtractedImageBytesPerCall = 1L << 30;
+
+        /// <summary>
+        /// Most raster bytes one HTML conversion keeps from <c>HtmlToPdfOptions.SvgRasterizer</c>, every SVG together.
+        /// Each distinct markup is rasterised once and its raster shared by every occurrence; the rasters are held
+        /// in the document until it is written, so a page of many distinct tiny SVGs that rasterise large is held to
+        /// this. Past it the SVGs not yet rasterised are not drawn, and the cut is reported once.
+        /// </summary>
+        public static long MaxHtmlRasterizedSvgBytes { get; set; } = DefaultMaxHtmlRasterizedSvgBytes;
+
+        /// <summary>Built-in value of <see cref="MaxHtmlRasterizedSvgBytes"/>; for a compile-time constant context.</summary>
+        public const long DefaultMaxHtmlRasterizedSvgBytes = 256L * 1024 * 1024;
 
         /// <summary>Maximum vertex count in a mesh shading.</summary>
         public static int MaxMeshVertices { get; set; } = DefaultMaxMeshVertices;
@@ -1776,7 +1832,9 @@ namespace Tetitulz.Pdf.Core.Constants
         /// its target again, and a target may itself hold references, so a few kilobytes of SVG —
         /// each level referencing the next twice — ask for 2^n copies: the "billion laughs" of
         /// SVG. Past this, a reference is skipped and reported. Depth alone cannot bound it; the
-        /// count does.
+        /// count does. A marker drawn at a vertex and an SVG document drawn as an <c>&lt;image&gt;</c>
+        /// count as references do: a chain of markers, each marking with the next, multiplies by the
+        /// vertex count at every level.
         /// </summary>
         public static int MaxSvgUseExpansions { get; set; } = DefaultMaxSvgUseExpansions;
 
@@ -1786,7 +1844,8 @@ namespace Tetitulz.Pdf.Core.Constants
         /// <summary>
         /// Most elements one SVG-to-PDF conversion copies through <c>&lt;use&gt;</c>, all references
         /// together: each reference clones its target whole, so <see cref="MaxSvgUseExpansions"/> bounds
-        /// the references and not what each one costs. Past it a reference is skipped and reported.
+        /// the references and not what each one costs. Past it a reference is skipped and reported. A
+        /// marker's content at each vertex it marks and an SVG image's document count too.
         /// </summary>
         /// <remarks>
         /// Measured on the shipped build: a group of 2 000 rectangles referenced 2 000 times — 86 KB
@@ -1931,6 +1990,11 @@ namespace Tetitulz.Pdf.Core.Constants
             MaxCcittRows = DefaultMaxCcittRows;
             MaxCcittPixels = DefaultMaxCcittPixels;
             MaxShadingDimension = DefaultMaxShadingDimension;
+            MaxSpotPlatesPerPage = DefaultMaxSpotPlatesPerPage;
+            MaxImagePixelsPerExport = DefaultMaxImagePixelsPerExport;
+            MaxImageIndexEntriesPerDocument = DefaultMaxImageIndexEntriesPerDocument;
+            MaxExtractedImageBytesPerCall = DefaultMaxExtractedImageBytesPerCall;
+            MaxHtmlRasterizedSvgBytes = DefaultMaxHtmlRasterizedSvgBytes;
             MaxMeshVertices = DefaultMaxMeshVertices;
             MaxMeshTrianglesPerBatch = DefaultMaxMeshTrianglesPerBatch;
             MaxJbig2CompositionPixels = DefaultMaxJbig2CompositionPixels;

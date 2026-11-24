@@ -11,8 +11,8 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
 /// Tests that a CFF font's Top-DICT /FontMatrix scale is honoured when computing glyph
-/// advances (and, via DrawGlyphPath, glyph outline size).  Previously the renderer
-/// hardcoded a 1/1000 glyph-space scale, mis-sizing any font whose em ≠ 1000 units.
+/// advances (and, via DrawGlyphPath, glyph outline size); a hardcoded 1/1000 glyph-space
+/// scale would mis-size any font whose em ≠ 1000 units.
 /// </summary>
 public class FontMatrixScaleTests
 {

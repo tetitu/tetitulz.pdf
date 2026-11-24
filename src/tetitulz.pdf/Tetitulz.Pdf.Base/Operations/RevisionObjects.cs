@@ -14,19 +14,17 @@ namespace Tetitulz.Pdf.Base.Operations
     /// <b>object-number-ordered</b> list an incremental-update writer consumes.
     /// </summary>
     /// <remarks>
-    /// <para><b>Why this exists.</b> Six copies of the same three lines had accumulated across the
-    /// accessibility writers — five in <c>PdfStructureTreeEditor</c> and one in
-    /// <c>PdfReadingOrderAnalyzer</c> — and they had already drifted: the analyzer's copy filtered
-    /// <c>kvp.Key &gt; 0 &amp;&amp; kvp.Value != null</c> and the other five did not. That is the
-    /// repository's signature defect shape, and at three lines apiece it is below what a
-    /// line-window duplicate detector will report, which is why it survived a duplication round.</para>
+    /// <para><b>Why this exists.</b> Every accessibility writer — <c>PdfStructureTreeEditor</c>'s
+    /// and <c>PdfReadingOrderAnalyzer</c>'s — builds its list here. At three lines apiece a copy is
+    /// below what a line-window duplicate detector reports, and copies drift: one filtering
+    /// <c>kvp.Key &gt; 0 &amp;&amp; kvp.Value != null</c> and the others not is the repository's
+    /// signature defect shape.</para>
     ///
-    /// <para><b>The filter is kept, and it is the correct side of that drift.</b> Object 0 is the
-    /// free-list head and a null value is not an object; writing either produces a malformed
-    /// revision. <see cref="DocumentRevisionWriter"/>, which writes the clear-text path, has always
-    /// skipped and reported both — so the plan-building paths that omitted the check were the ones
-    /// disagreeing with the writer they feed. Filtering here can only drop an entry that would have
-    /// produced a broken file.</para>
+    /// <para><b>The filter is part of it.</b> Object 0 is the free-list head and a null value is
+    /// not an object; writing either produces a malformed revision.
+    /// <see cref="DocumentRevisionWriter"/>, which writes the clear-text path, skips and reports
+    /// both too, so the plan-building paths agree with the writer they feed. Filtering here can
+    /// only drop an entry that would produce a broken file.</para>
     ///
     /// <para><b>Why the input stays an ordinary <c>Dictionary</c>, and why this sorts
     /// unconditionally.</b> A <c>SortedDictionary</c> at each producer would make the ordering

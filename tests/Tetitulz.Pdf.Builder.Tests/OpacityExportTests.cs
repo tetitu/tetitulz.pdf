@@ -420,13 +420,11 @@ public class OpacityExportTests
     }
 
     /// <summary>
-    /// A NaN opacity is refused at export, naming the paragraph (Wave 17 R15.2's one walk over the
-    /// model's measurements). It used to be coerced to 1 at the point of use — NaN fails every
-    /// comparison, so a naive clamp returned NaN and <c>(float)NaN</c> reached <c>/ca</c>, erasing the
-    /// paragraph; the coercion kept it visible. The walk now refuses every non-finite measurement
-    /// before layout, so the coercion is unreachable from a caller; the clamp of a <i>finite</i>
-    /// out-of-range opacity (the theory above) stays, because 7 and −1 are finite and the model
-    /// documents them as clamped where they are used.
+    /// A NaN opacity is refused at export, naming the paragraph (the one walk over the model's
+    /// measurements, before layout). NaN fails every comparison, so a naive clamp at the point of use
+    /// would return NaN and <c>(float)NaN</c> reach <c>/ca</c>, erasing the paragraph. The clamp of a
+    /// <i>finite</i> out-of-range opacity (the theory above) is separate, because 7 and −1 are finite
+    /// and the model documents them as clamped where they are used.
     /// </summary>
     [Fact]
     public void NotANumberOpacity_IsRefusedAtExport_NamingTheParagraph()

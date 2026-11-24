@@ -15,14 +15,11 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// first true thing the parser noticed.
 /// </summary>
 /// <remarks>
-/// <para><b>Two rounds of the same lesson.</b> The PCS check once ran before the data-space
-/// switch, so a CMYK profile — which almost always declares a <c>Lab</c> PCS — reported <i>"PCS is
-/// 'Lab '; only an XYZ PCS is evaluated"</i>: true, and the less useful of the two true things,
-/// since it implies an XYZ-PCS CMYK profile would work and none would. That was fixed by naming
-/// the <c>A2B0</c> lut as the real blocker. <b>The lut is now read</b> (<see cref="IccLut"/>), so
-/// the message that replaced it — "evaluating it needs a full CMM" — became the stale one in its
-/// turn, and these cases were rewritten again rather than being left to assert a decline that no
-/// longer happens.</para>
+/// <para><b>The reason names the real blocker.</b> A CMYK profile almost always declares a
+/// <c>Lab</c> PCS, and <i>"PCS is 'Lab '; only an XYZ PCS is evaluated"</i> would be true and the
+/// less useful of two true things, implying an XYZ-PCS CMYK profile would work. The <c>A2B0</c>
+/// lut is read (<see cref="IccLut"/>), so these cases assert what is still declined, and
+/// why.</para>
 /// <para>This matters more than a wording nit because the fallback is <b>silent in the pixels</b>:
 /// a profile that is present but unevaluated renders identically to no profile at all, so the reason
 /// string is the only thing distinguishing them. That is why <c>IccTransformFailed</c> and

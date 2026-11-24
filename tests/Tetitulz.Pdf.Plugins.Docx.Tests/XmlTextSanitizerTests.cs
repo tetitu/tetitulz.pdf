@@ -112,4 +112,17 @@ public class XmlTextSanitizerTests
             XmlTextSanitizer.Sanitize(input), "_(?=x[0-9A-Fa-f]{4}_)", "_x005F_");
         Assert.Equal(expected, XmlTextSanitizer.ForSpreadsheet(input));
     }
+
+    /// <summary>
+    /// Text read out of a PDF is made legal by one rule, Core's, which the SVG export applies too: the converters'
+    /// answer is that rule's answer for every kind of forbidden character.
+    /// </summary>
+    [Theory]
+    [InlineData("a\u0001b\tc")]
+    [InlineData("x\uD800y\uDC00z")]
+    [InlineData("\uD83D\uDE00\u0001")]
+    public void Sanitize_IsCoresRemoveRule(string input)
+    {
+        Assert.Equal(Tetitulz.Pdf.Core.Text.XmlLegalText.Remove(input), XmlTextSanitizer.Sanitize(input));
+    }
 }

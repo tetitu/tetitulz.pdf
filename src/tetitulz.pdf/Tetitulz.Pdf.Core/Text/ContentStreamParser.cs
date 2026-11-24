@@ -40,22 +40,12 @@ namespace Tetitulz.Pdf.Core.Text
         /// </summary>
         internal static int MaxInlineImageBytes { get; set; } = DefaultMaxInlineImageBytes;
 
-        // ISO-8859-1 (Latin-1) round-trips raw PDF string bytes 1:1.  Cache one instance —
-        // Encoding.GetEncoding does a provider lookup, and a content stream can hold many
-        // literal-string operands, so re-resolving it per token is wasteful.
-        // Superseded by Latin1Text.Encode, which is a loop: nothing to look up, nothing to cache,
-        // and no type initializer on a type a content stream touches per literal-string operand.
-
         // The operator set lives in ContentStreamOperators, shared with the accessibility feature's
-        // scanner, which ran the same greedy split against its own hand-maintained copy.
-        //
-        // This copy was missing ' and " until they were found: an undecomposable run is emitted
-        // verbatim, so a producer that glues an inline image onto one ("'BI") yielded the single
-        // unknown operator "'BI", the BI was never recognised, and the image's samples were
-        // tokenised as operators.  It was still missing ID, and BOTH copies were still missing PS —
-        // which both renderers dispatch a handler for.  Neither gap was visible from inside either
-        // file, because neither copy had ever been compared against PdfOperators.  It is now, by a
-        // test, which is the only thing that keeps a hand-maintained list honest.
+        // scanner, and a test compares it against PdfOperators — the only thing that keeps a
+        // hand-maintained list honest. An undecomposable run is emitted verbatim, so a set missing
+        // ' and " would read a producer's inline image glued onto one ("'BI") as the single unknown
+        // operator "'BI", never recognise the BI, and tokenise the image's samples as operators; a
+        // set missing ID or PS (which both renderers dispatch a handler for) fails the same way.
 
         /// <summary>
         /// If <paramref name="token"/> is not a known operator, tries to split it
@@ -233,12 +223,11 @@ namespace Tetitulz.Pdf.Core.Text
         /// <c>CcittFaxDecodeFilter</c> hands back its compressed input for the 1-bpc path to paint
         /// as samples.</para>
         ///
-        /// <para>The dictionary copy is the one that was complete, and its history is why: the
-        /// string and composite cases were added to it after `/Span &lt;&lt;/ActualText(fi)&gt;&gt;
-        /// BDC` was found losing its text and `/OC &lt;&lt;/Type/OCMD/OCGs[5 0 R]&gt;&gt; BDC` was
-        /// found drawing hidden content — a value token consumed with its body left in the stream
-        /// desynchronises everything after it, so the operator arrives with no properties at all.
-        /// Both fixes landed in one copy of three.</para>
+        /// <para>The string and composite cases matter for a marked-content property list too: a
+        /// value token consumed with its body left in the stream desynchronises everything after it,
+        /// so the operator arrives with no properties at all — `/Span &lt;&lt;/ActualText(fi)&gt;&gt;
+        /// BDC` would lose its text and `/OC &lt;&lt;/Type/OCMD/OCGs[5 0 R]&gt;&gt; BDC` would draw
+        /// hidden content.</para>
         ///
         /// <para>The operand loop of <c>Parse</c> calls this too. The loop keeps its own list of <i>which</i> token types are
         /// operands, because that is a different question from what object a token becomes: the
@@ -353,8 +342,8 @@ namespace Tetitulz.Pdf.Core.Text
                 if (keyToken.Type == PdfTokenType.Keyword && keyToken.Text == PdfOperators.InlineImageData) break;
                 if (keyToken.Type != PdfTokenType.Name) continue;
 
-                // Through the one value parser — /DP is a dictionary and this copy had no case for
-                // one, so decode parameters were dropped and their keys leaked into the image.
+                // Through the one value parser, so /DP is read as the dictionary it is; a reader with no
+                // case for one would drop the decode parameters and leak their keys into the image.
                 imgDict.Set(new PdfName(keyToken.Text, keyToken.NameIsNotUtf8),
                             ParseInlineValue(tokenizer, tokenizer.Lex()));
             }

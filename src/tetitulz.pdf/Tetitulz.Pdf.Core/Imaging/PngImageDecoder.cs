@@ -60,10 +60,10 @@ namespace Tetitulz.Pdf.Core.Imaging
     /// visible signature. Core is below all three, so this is the sanctioned share-downward rather
     /// than a sideways edge.</para>
     ///
-    /// <para><b>Alpha is preserved, never composited.</b> The DocxToPdf copy flattened it over
-    /// white - correct for its own pages and wrong as a decoder's contract, because it throws away
-    /// information the caller cannot recover. Compositing is now the caller's step, and only
-    /// DocxToPdf takes it.</para>
+    /// <para><b>Alpha is preserved, never composited.</b> Flattening over white is right for
+    /// DocxToPdf's pages and wrong as a decoder's contract, because it throws away information
+    /// the caller cannot recover. Compositing is the caller's step, and only DocxToPdf takes
+    /// it.</para>
     /// </remarks>
     public static class PngImageDecoder
     {
@@ -77,11 +77,10 @@ namespace Tetitulz.Pdf.Core.Imaging
         /// </summary>
         /// <remarks>
         /// <para><b>Every refusal here is "returns false", so without this the guards are
-        /// indistinguishable from one another — and a test cannot tell which one fired.</b> That is
-        /// not hypothetical: three of this decoder's guards survived mutation because the fixture
-        /// was refused by a *different* guard than the one under test, which is the failure CLAUDE.md
-        /// records for the CRL scheme whitelist. A refusal test must refuse for the reason in its
-        /// name, and only a reason string makes that checkable.</para>
+        /// indistinguishable from one another — and a test cannot tell which one fired.</b> A fixture
+        /// refused by a *different* guard than the one under test passes for the wrong reason. A
+        /// refusal test must refuse for the reason in its name, and only a reason string makes that
+        /// checkable.</para>
         ///
         /// <para><c>[ThreadStatic]</c> and cleared at the start of every call on every path, so
         /// reading it straight after one describes that call.</para>
@@ -304,13 +303,13 @@ namespace Tetitulz.Pdf.Core.Imaging
             {
                 // Core's Flate decoder rather than ZLibStream, for two reasons. ZLibStream is .NET 6+
                 // and this assembly ships a netstandard2.0 leg; and CLAUDE.md puts stream filter
-                // decoding exclusively in Core.IO.Filters, which this was quietly a second copy of —
-                // Core's Decompress does the same zlib-header detection ((b[0] & 0x0F) == 0x08).
+                // decoding exclusively in Core.IO.Filters — Core's Decompress does the zlib-header
+                // detection ((b[0] & 0x0F) == 0x08).
                 //
-                // The ceiling is carried over exactly. It is now ENFORCED rather than truncating:
-                // Core throws past it where ReadCapped returned a prefix, and a prefix accepted as
-                // the whole stream is the failure this codebase refuses everywhere else. A valid PNG
-                // inflates to exactly expectedRaw, so only a malformed one can tell the difference.
+                // The ceiling is ENFORCED rather than truncating: Core throws past it, where a reader
+                // returning a prefix would have the prefix accepted as the whole stream — the failure
+                // this codebase refuses everywhere else. A valid PNG inflates to exactly expectedRaw,
+                // so only a malformed one can tell the difference.
                 raw = new FlateDecodeFilter { MaxOutputBytes = expectedRaw + 16 }
                     .Decode(idat.ToArray(), null);
             }

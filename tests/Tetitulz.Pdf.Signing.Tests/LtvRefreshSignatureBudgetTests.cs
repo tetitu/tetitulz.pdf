@@ -58,6 +58,23 @@ public sealed class LtvRefreshSignatureBudgetTests
         Assert.DoesNotContain(result.Warnings, w => w.Contains("MaxSignaturesPerDocument", StringComparison.Ordinal));
     }
 
+    /// <summary>
+    /// Signatures repeating one CMS are fetched for once on the network path: the evidence would be the same, and
+    /// each fetch round is a walk of network requests the file can repeat as many times as it holds signatures. The
+    /// walk's own "nothing to fetch" warning — the signer names no CRL distribution point — is the evidence: one,
+    /// not three. A caller's provider is still asked once a signature (the tests above).
+    /// </summary>
+    [Fact]
+    public void SignaturesRepeatingOneCms_AreFetchedForOnce()
+    {
+        byte[] pdf = Signatures(3, SignatureContentsOf(SignedDocument()));
+        using var output = new MemoryStream();
+        LtvRefreshResult result = PdfLtvRefresher.RefreshVerificationInfo(new MemoryStream(pdf, writable: false), output,
+            new LtvRefreshOptions { IncludeSignerChains = false });
+
+        Assert.Single(result.Warnings, w => w.Contains("No CRL distribution-point URL found", StringComparison.Ordinal));
+    }
+
     private static byte[] SignedDocument()
     {
         var root = SigningTestCrypto.Ca();

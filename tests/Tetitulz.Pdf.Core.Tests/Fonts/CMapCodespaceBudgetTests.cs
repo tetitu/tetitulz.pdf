@@ -10,17 +10,16 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Fonts
 {
     /// <summary>
-    /// <c>CMapParser</c> has five section parsers and threaded its <c>WorkBudget</c> through four.
-    /// <c>ParseCodespaceRanges</c> was the fifth and took none.
+    /// <c>CMapParser</c> has five section parsers and threads its <c>WorkBudget</c> through all five,
+    /// <c>ParseCodespaceRanges</c> included.
     ///
-    /// <para><b>Why that one mattered more than its size suggests.</b> Its outer loop over
+    /// <para><b>Why that one matters more than its size suggests.</b> Its outer loop over
     /// <c>begincodespacerange</c> sections is unbounded, its inner loop over the lines of a section
     /// is unbounded, and every accepted line allocates two <c>byte[]</c> and appends to a list the
     /// method <b>returns</b> — so unlike a runaway mapping loop the cost is <i>retained</i> rather
     /// than transient, and the list is then consulted for every code the font decodes.</para>
     ///
-    /// <para><b>These assert the guard's own evidence, never a wall clock.</b> CLAUDE.md records
-    /// three wall-clock guard tests flaking on 2026-08-23, because elapsed time under a
+    /// <para><b>These assert the guard's own evidence, never a wall clock</b>: elapsed time under a
     /// full-solution run measures the machine's backlog rather than the code's work.</para>
     ///
     /// <para><b>What is deliberately NOT covered, stated rather than implied.</b> The refusal
@@ -28,8 +27,8 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts
     /// — is not directly reachable from a test: the shared ceiling is
     /// <see cref="PdfLimits.MaxCMapMappingWrites"/> = 8 Mi ticks and a codespace line is ~14 bytes,
     /// so exhausting it through codespace lines alone would need a ~118 MB fixture. What IS proved
-    /// below is the thing that was actually missing — that codespace lines are charged to the
-    /// shared budget at all — by showing they bring a *later* section's refusal forward.</para>
+    /// below is the thing that matters — that codespace lines are charged to the shared budget at
+    /// all — by showing they bring a *later* section's refusal forward.</para>
     /// </summary>
     public class CMapCodespaceBudgetTests
     {
@@ -133,10 +132,9 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts
         }
 
         /// <summary>
-        /// Stops the fix from being "charge so aggressively that ordinary fonts are refused". A
+        /// Stops the budget from being "charge so aggressively that ordinary fonts are refused". A
         /// real CMap has a handful of codespace ranges; a too-tight budget would turn this guard
-        /// into a correctness bug, which is the failure mode the CRL-freshness row hit elsewhere in
-        /// this round.
+        /// into a correctness bug.
         /// </summary>
         [Fact]
         public void AnOrdinaryNumberOfCodespaceRangesIsNowhereNearTheCeiling()

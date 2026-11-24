@@ -18,20 +18,18 @@ namespace Tetitulz.Pdf.Core.Fonts
     /// <c>Base.Operations.Fonts.PdfFontSubsetter</c> all assemble through it, for a TrueType or a
     /// CFF/OTF container alike. <b>Do not add another.</b></para>
     ///
-    /// <para><b>Lining them up is what found the defect.</b> Three sorted the table directory with
-    /// <c>StringComparer.Ordinal</c> and <c>PdfFontSubsetter</c> used the culture-sensitive
-    /// default, which places <c>OS/2</c> between <c>name</c> and <c>post</c> rather than first — so
-    /// essentially every font it subsetted carried a directory that violated §5.2's ascending-byte
-    /// order. Two others derived <c>searchRange</c>/<c>entrySelector</c> from <c>Math.Log</c>, where
-    /// a power of two can land on the wrong side of a <c>Math.Floor</c>; this uses integer
-    /// arithmetic. <b>Neither is visible in a font that renders</b> — a linear-scanning reader is
-    /// unaffected by either — which is why four copies could disagree for their whole lives.</para>
+    /// <para><b>Two rules a copy can get wrong.</b> The table directory is sorted with
+    /// <c>StringComparer.Ordinal</c>: the culture-sensitive default places <c>OS/2</c> between
+    /// <c>name</c> and <c>post</c> rather than first, violating §5.2's ascending-byte order in
+    /// essentially every font. And <c>searchRange</c>/<c>entrySelector</c> come from integer
+    /// arithmetic, not <c>Math.Log</c>, where a power of two can land on the wrong side of a
+    /// <c>Math.Floor</c>. <b>Neither is visible in a font that renders</b> — a linear-scanning
+    /// reader is unaffected by either — which is why copies could disagree unnoticed.</para>
     ///
     /// <para><b>One deliberate non-caller.</b> <c>Core.Fonts.WoffDecoder.Reassemble</c> writes the
     /// same layout and is <i>not</i> a copy of this: it carries each table's checksum through from
     /// the WOFF directory instead of recomputing, and leaves <c>head.checkSumAdjustment</c> alone.
-    /// Routing it here would change both. Whether it should is raised in the consolidation backlog
-    /// rather than assumed.</para>
+    /// Routing it here would change both, so it is not assumed.</para>
     ///
     /// <para><b>Public rather than internal</b> because <c>Plugins.Maintenance</c> needs it and a
     /// plugin cannot see Core's internals — the same reason <c>IncrementalUpdateWriter</c> and
@@ -114,11 +112,11 @@ namespace Tetitulz.Pdf.Core.Fonts
             W16(font, 10, (ushort)(n * 16 - sp * 16));  // rangeShift
 
             // The table data is copied FIRST and head.checkSumAdjustment zeroed BEFORE any
-            // directory entry is computed. Order is load-bearing, and it was wrong: the entry for
-            // head was written from the bytes as they arrived, then FixHeadChecksum changed those
-            // bytes -- so for any font whose head carries a non-zero checkSumAdjustment (i.e. every
-            // real font) the recorded checksum was wrong by exactly that adjustment. Measured on
-            // arial.ttf and times.ttf: the delta equalled the source font's adjustment to the bit.
+            // directory entry is computed. Order is load-bearing: an entry for head written from the
+            // bytes as they arrived, before FixHeadChecksum changed them, would be wrong by exactly
+            // the adjustment for any font whose head carries a non-zero checkSumAdjustment (i.e.
+            // every real font). Measured on arial.ttf and times.ttf: the delta equals the source
+            // font's adjustment to the bit.
             //
             // The spec (OpenType, "Calculating checksums") requires head's entry to be computed
             // with checkSumAdjustment SET TO ZERO, which is why it is zeroed earlier rather

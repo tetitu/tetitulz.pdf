@@ -440,8 +440,8 @@ public sealed class PdfRevisionSignatureAttributionTests
     }
 
     /// <summary>
-    /// The trailer points <c>/Root</c> at an object that is not there. Since 2026-10-15 the parser
-    /// recovers the catalog from the file's own <c>/Type /Catalog</c> object (GAPS §7c), so the
+    /// The trailer points <c>/Root</c> at an object that is not there. The parser recovers the
+    /// catalog from the file's own <c>/Type /Catalog</c> object (GAPS §7c), so the
     /// document opens and the attribution runs: the signature is read, and the revision is its.
     /// </summary>
     [Fact]

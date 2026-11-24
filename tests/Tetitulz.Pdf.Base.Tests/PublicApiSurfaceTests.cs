@@ -25,14 +25,9 @@ namespace Tetitulz.Pdf.Base.Tests;
 /// formatting. Two formatters would drift, and a baseline diff is only trustworthy if the thing
 /// producing it is identical on both sides.</para>
 ///
-/// <para><b>There used to be a second copy of this class</b>, in this project's
-/// <c>TestInfrastructure/</c> folder, pinning Core, Base, Signing and Encryption together from one
-/// place. All four now have a pin in their <i>own</i> test project — the shape
-/// <c>ApiBaselineCoverageTests</c> enforces and the other 24 packages follow — so the grouped copy
-/// had become a fifth wheel four times over, and its only remaining effect was that a one-member
-/// change to Base failed twice and had to be read twice. Deleted 2026-08-28; its floor test was the
-/// weaker of the two (500 lines against 1 500, one type name against four), so the floor below is
-/// strictly stronger than what went away.</para>
+/// <para><b>One pin per package, in its own test project</b> — the shape
+/// <c>ApiBaselineCoverageTests</c> enforces. A grouped pin of several packages from one place
+/// would make a one-member change fail twice and be read twice.</para>
 /// </summary>
 public class PublicApiSurfaceTests
 {

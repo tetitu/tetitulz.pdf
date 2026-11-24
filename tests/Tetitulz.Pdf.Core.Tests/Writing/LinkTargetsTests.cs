@@ -9,7 +9,7 @@ namespace Tetitulz.Pdf.Core.Tests.Writing;
 
 /// <summary>
 /// <see cref="LinkTargets"/>, the one answer to "may this target from a converted file be a link" for the
-/// Builder's HTML and PDF exporters, the XFA importer and the DOCX converter (2026-10-20). The scheme is read as a
+/// Builder's HTML and PDF exporters, the XFA importer and the DOCX converter. The scheme is read as a
 /// browser's URL parser reads it, so a leading space, a control character or a tab inside <c>javascript:</c> does
 /// not make it a relative target.
 /// </summary>

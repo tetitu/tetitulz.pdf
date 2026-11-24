@@ -88,9 +88,8 @@ public class TemplateHorizontalScaleTests
 
     /// <summary>
     /// Templating a line under <c>50 Tz</c> must leave the text after the token where it was.
-    /// Pre-fix the TJ adjustment was computed as if Th were 1, so "Smith" moved by half a
-    /// token-width and VerifySurvivingGlyphs threw — making any such document impossible to
-    /// template at all.
+    /// A TJ adjustment computed as if Th were 1 would move "Smith" by half a token-width and make
+    /// VerifySurvivingGlyphs throw — making any such document impossible to template at all.
     /// </summary>
     [Fact]
     public void Replace_UnderNonDefaultTz_KeepsTheFollowingTextInPlace()

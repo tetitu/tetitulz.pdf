@@ -22,10 +22,10 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// <para><b>The leak.</b> A <c>cm</c> operand large enough to overflow a <c>float</c> makes the
 /// composed text render matrix contain <c>0 * Infinity</c> = NaN. <c>CornersAabb</c> seeds its
 /// extents from <c>float.MaxValue</c>/<c>float.MinValue</c> and every comparison against NaN is
-/// false, so it returned those sentinels untouched — an inverted box that the intersection test then
-/// evaluated as <b>no hit</b>. The glyph was copied to the output verbatim and the operation
-/// reported success: the redacted PDF still contained the text.</para>
-/// <para><b>The fixture had to be built twice, and the first one is the lesson.</b> The obvious
+/// false, so without its NaN box it would return those sentinels untouched — an inverted box the
+/// intersection test evaluates as <b>no hit</b>. The glyph would be copied to the output verbatim
+/// and the operation report success: the redacted PDF would still contain the text.</para>
+/// <para><b>The fixture's spelling matters.</b> The obvious
 /// input — <c>1.0e400</c>, an operand that <c>double.TryParse</c> turns into an infinity — never
 /// reaches the engine at all: PDF numbers have no exponent syntax (§7.3.3), so
 /// <c>PdfTokenizer.ReadNumber</c> stops at the <c>e</c> and the content parser sees the number
@@ -35,7 +35,7 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// <see cref="TheFixtureReallyPutsANonFiniteValueIntoTheCtm"/> pins.</para>
 /// <para><b>Why the pair.</b> "The text is gone" passes on its own with an engine that deletes
 /// everything, so the control redacts the same rectangle over the same document with a finite
-/// <c>cm</c> and requires the text to stay. The two together say what the fix claims: content that
+/// <c>cm</c> and requires the text to stay. The two together say what the rule claims: content that
 /// can be placed outside the region is kept, content nobody can place is removed.</para>
 /// <para>Asserted on the output page's decoded content stream rather than on extracted text,
 /// because a text extractor may itself refuse a non-finite matrix — which would make the assertion

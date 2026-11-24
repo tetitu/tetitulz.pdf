@@ -14,13 +14,12 @@ namespace Tetitulz.Pdf.Core.Tests.IO.Filters
     /// "rather than allocating once the output passes <c>maxBytes</c>". Three paths hand bytes
     /// back with <b>no filter applied</b> — a <c>/Filter</c> that is not a name or an array, an
     /// unrecognised filter <i>name</i> (which passes through by design), and no <c>/Filter</c> at
-    /// all — and on the first two the ceiling used to be accepted and ignored.
+    /// all — and the ceiling holds on all three.
     ///
-    /// <para>The discriminating observation is that the library already refused the
-    /// <b>byte-identical</b> third case: <c>PdfStream</c> checks the ceiling itself when
-    /// <c>/Filter</c> is absent, because the decoded length is knowable for free. That is equally
-    /// true of a filter nobody can apply, so one spelling of "hand back the raw bytes" was bounded
-    /// and the other was not. These tests pin all three to the same answer.</para>
+    /// <para><c>PdfStream</c> checks the ceiling itself when <c>/Filter</c> is absent, because the
+    /// decoded length is knowable for free. That is equally true of a filter nobody can apply, so
+    /// every spelling of "hand back the raw bytes" is bounded. These tests pin all three to the same
+    /// answer.</para>
     /// </summary>
     public class FilterCeilingOnPassthroughTests
     {

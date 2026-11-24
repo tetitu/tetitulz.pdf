@@ -37,6 +37,16 @@ namespace Tetitulz.Pdf.Core.Forms
             _document = document ?? throw new ArgumentNullException(nameof(document));
         }
 
+        private readonly Util.DistinctStrings _unreadable = new Util.DistinctStrings();
+
+        /// <summary>
+        /// The <c>/Fields</c> and <c>/Kids</c> entries the walks over this form have met and could not read — each
+        /// with its object number and the parser's reason — or an empty list. Such a field is not in
+        /// <see cref="Fields"/>, its kids or <see cref="GetSignatureFields"/>: a signature among them is not listed,
+        /// and a caller that reports on the form reads this after its walk.
+        /// </summary>
+        public IReadOnlyList<string> UnreadableNodes => _unreadable.Items;
+
         /// <summary>The <c>/SigFlags</c> bits, following an indirect reference; 0 when absent.</summary>
         /// <remarks>
         /// This and <see cref="NeedAppearances"/> were raw reads in a class whose field loader
@@ -68,8 +78,8 @@ namespace Tetitulz.Pdf.Core.Forms
             // element alike, and the typed getters do not follow one — see FormTreeChildren, which
             // is the one answer this and PdfFormField.LoadKids share.
             var fields = new List<PdfFormField>();
-            foreach (var fieldObj in FormTreeChildren.Resolve(_dict, PdfName.Fields, _document))
-                fields.Add(PdfFormField.Create(fieldObj, _document, null));
+            foreach (var fieldObj in FormTreeChildren.Resolve(_dict, PdfName.Fields, _document, _unreadable))
+                fields.Add(PdfFormField.Create(fieldObj, _document, null, _unreadable));
 
             return fields;
         }

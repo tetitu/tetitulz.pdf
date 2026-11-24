@@ -54,11 +54,9 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// <see cref="SvgDefaultMiterLimit"/> — <b>4</b>. Omitting the attribute at 10 would export
         /// the *default graphics state* — the commonest state there is, reached by any
         /// file that never writes an <c>M</c> operator — with an effective limit of 4, while the
-        /// raster path stroked it at 10. Any join sharper than about 29° came out as a spike in
-        /// the render and a bevel in the export.</para>
-        /// <para>It is the shape this repository keeps finding: a false premise written down as
-        /// fact, sitting on the defect it justifies. The attribute is now emitted whenever it
-        /// differs from <i>SVG's</i> default.</para>
+        /// raster path strokes it at 10: any join sharper than about 29° would come out as a spike
+        /// in the render and a bevel in the export.</para>
+        /// <para>So the attribute is emitted whenever it differs from <i>SVG's</i> default.</para>
         /// </remarks>
         internal const float DefaultMiterLimit = 10f;
 

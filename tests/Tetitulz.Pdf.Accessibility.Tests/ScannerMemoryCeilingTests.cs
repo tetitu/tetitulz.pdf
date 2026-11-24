@@ -99,7 +99,7 @@ public class ScannerMemoryCeilingTests
         Assert.True(result.LimitExceeded,
             "An over-size refusal must be distinguishable from a malformed stream. Error: " + result.Error);
 
-        // The point of the fix: the refusal happens before anything proportional to the input is
+        // The point of the ceiling: the refusal happens before anything proportional to the input is
         // allocated. Reference equality with the shared empty list is what proves no List was built.
         Assert.Same(ContentStreamScanner.EmptyTokens, result.Tokens);
         Assert.Empty(result.Tokens);

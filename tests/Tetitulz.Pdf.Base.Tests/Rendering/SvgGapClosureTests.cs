@@ -227,7 +227,7 @@ public sealed class SvgGapClosureTests
     /// The default, <c>[false false]</c>, paints nothing beyond the axis (§8.7.4.5.3). SVG pads the
     /// first and last stop past the ends, so each end that does not extend gets a transparent stop
     /// pinned at its offset — the hard edge the raster path builds the same way — and the export is
-    /// exact. It used to be reported as inexpressible instead.
+    /// exact, not reported as inexpressible.
     /// </summary>
     [Fact]
     public void AxialShading_DefaultExtend_EndsInTransparentStops()
@@ -397,11 +397,6 @@ public sealed class SvgGapClosureTests
             .ToList();
 
     /// <summary>
-    /// Collects everything the render reports. Filtered by detail at every call site: the sink is a
-    /// process-wide event and xUnit runs test classes in parallel, so another class's diagnostics
-    /// can land in the same list.
-    /// </summary>
-    /// <summary>
     /// Collects the diagnostics <paramref name="render"/> raises <b>on this thread</b>.
     ///
     /// <para><b>The thread filter is load-bearing.</b> <c>RenderDiagnostics.OnEvent</c> is a
@@ -410,11 +405,9 @@ public sealed class SvgGapClosureTests
     /// which several callers here use to prove a "report once per stream" rule — then passes
     /// alone and fails beside a neighbour that legitimately reported the same kind. That is
     /// exactly the shape CLAUDE.md describes under "a negative assertion that reads shared state
-    /// is asserting something about the whole process", and it was observed here: this file's
-    /// <c>AxialShading_ManyNonExtendingGradients_ReportOnce</c> failed in a full-solution run and
-    /// passed in isolation.</para>
+    /// is asserting something about the whole process".</para>
     ///
-    /// <para>Filtering the handler is the fix; serialising the whole collection would hide the
+    /// <para>Filtering the handler is the remedy; serialising the whole collection would hide the
     /// coupling rather than remove it, and would slow every renderer test to do it.</para>
     /// </summary>
     private static List<(RenderDiagnosticKind Kind, string Detail)> CaptureDiagnostics(Action render)

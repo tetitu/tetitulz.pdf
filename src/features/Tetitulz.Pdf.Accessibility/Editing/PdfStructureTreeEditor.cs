@@ -16,6 +16,7 @@ using Tetitulz.Pdf.Core.Document;
 using Tetitulz.Pdf.Core.Objects;
 using Tetitulz.Pdf.Core.Writing;
 using Tetitulz.Pdf.Base.Operations;
+using Tetitulz.Pdf.Base.Operations.Extraction;
 
 namespace Tetitulz.Pdf.Accessibility.Editing
 {
@@ -29,6 +30,7 @@ namespace Tetitulz.Pdf.Accessibility.Editing
     ///   <item>Set the document language (/Lang) on the catalog.</item>
     ///   <item>Set the document title (/Info /Title) and /ViewerPreferences /DisplayDocTitle.</item>
     ///   <item>Set /TU (tooltip) on a form field.</item>
+    ///   <item>Set /Contents (alternate description) on link annotations.</item>
     ///   <item>Set /Tabs /S (structure tab order) on the pages that carry annotations.</item>
     /// </list>
     /// All operations produce a new output PDF via incremental update; the input is never modified.
@@ -394,6 +396,191 @@ namespace Tetitulz.Pdf.Accessibility.Editing
         {
             return SetFigureAltText(input, output, ctx =>
                 string.IsNullOrEmpty(ctx.ExistingAltText) ? altText : null);
+        }
+
+        // ----------------------------------------------------------------
+
+        /// <summary>
+        /// Sets the alternate description of link annotations — their <c>/Contents</c>, where
+        /// ISO 14289-1 §7.18.5 puts it, which is what closes <b>UA22</b>.
+        /// <para>
+        /// The <paramref name="descriptionProvider"/> receives a <see cref="LinkContext"/> for each
+        /// link a reader is presented, in page order; it returns the description, or <c>null</c> to
+        /// leave the link as it is. A blank description is refused and counted as skipped: an empty
+        /// <c>/Contents</c> is what UA22 reports as missing.
+        /// </para>
+        /// <para>
+        /// <b>Invariant: <see cref="SetAltTextResult.Updated"/> &gt; 0 implies the output differs
+        /// from the input.</b> If the appended revision never reaches <paramref name="output"/>, the
+        /// links it would have described are counted as <see cref="SetAltTextResult.Failed"/>,
+        /// <c>Updated</c> is <c>0</c>, and <see cref="LastWriteError"/> says why. An encrypted
+        /// document is copied through; <see cref="PlanLinkDescriptions"/> is its route.
+        /// </para>
+        /// </summary>
+        public static SetAltTextResult SetLinkDescriptions(
+            Stream input, Stream output, Func<LinkContext, string> descriptionProvider)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (output == null) throw new ArgumentNullException(nameof(output));
+            if (descriptionProvider == null) throw new ArgumentNullException(nameof(descriptionProvider));
+
+            const string Op = "PdfStructureTreeEditor.SetLinkDescriptions";
+            BeginOperation();
+
+            byte[] bytes = ReadAll(input);
+            using var ms  = new MemoryStream(bytes);
+            using PdfDocument doc = OpenOrCopy(ms, bytes, output, Op);
+            if (doc == null) return new SetAltTextResult(0, 0, 0);
+
+            if (ReportIfEncrypted(doc, Op, "no link received a description"))
+            {
+                output.Write(bytes, 0, bytes.Length);
+                return new SetAltTextResult(0, 0, 0);
+            }
+
+            var index = GetOrBuildIndex(doc);
+
+            var (modified, updated, skipped, failed) =
+                CollectLinkDescriptionRevisions(doc, descriptionProvider, Op);
+
+            if (!WriteAndVerify(output, bytes, doc, index, modified, _noObjects, Op,
+                    "the link descriptions"))
+            {
+                return new SetAltTextResult(0, skipped, failed + updated);
+            }
+
+            return new SetAltTextResult(updated, skipped, failed);
+        }
+
+        /// <summary>
+        /// Stages the <c>/Contents</c> revisions
+        /// <see cref="SetLinkDescriptions(Stream,Stream,Func{LinkContext,string})"/> would write,
+        /// without writing anything — the encrypted-document path, appended by
+        /// <c>Encryption.PdfEncryptedIncrementalUpdate.Run</c>.
+        /// </summary>
+        /// <remarks>
+        /// One walk serves both routes, so an encrypted document and the same document in clear
+        /// text offer the provider the same links under the same indexes. Nothing is minted; the
+        /// target's ceiling is reserved first all the same, for the reason recorded on
+        /// <see cref="PlanFigureAltText"/>.
+        /// </remarks>
+        /// <param name="doc">A decrypted document. Not modified.</param>
+        /// <param name="firstFreeObjectNumber">The first object number free in the <b>target</b> document.</param>
+        /// <param name="descriptionProvider">Returns a link's description, or <c>null</c> to leave it.</param>
+        public static FigureAltTextPlan PlanLinkDescriptions(
+            PdfDocument doc, int firstFreeObjectNumber, Func<LinkContext, string> descriptionProvider)
+        {
+            if (doc == null) throw new ArgumentNullException(nameof(doc));
+            if (descriptionProvider == null) throw new ArgumentNullException(nameof(descriptionProvider));
+            RequireCeiling(firstFreeObjectNumber);
+
+            const string Op = "PdfStructureTreeEditor.PlanLinkDescriptions";
+            BeginOperation();
+
+            PdfObjectIndex index = GetOrBuildIndex(doc);
+            if (index == null) return FigureAltTextPlan.Nothing;
+            index.ReserveObjectNumber(firstFreeObjectNumber - 1);
+
+            var (modified, updated, skipped, failed) =
+                CollectLinkDescriptionRevisions(doc, descriptionProvider, Op);
+
+            if (modified.Count == 0)
+                return new FigureAltTextPlan(Array.Empty<IndirectObject>(), 0, skipped, failed);
+
+            var objects = RevisionObjects.From(modified, index, Op);
+            return new FigureAltTextPlan(objects, updated, skipped, failed);
+        }
+
+        /// <summary>
+        /// The per-link decision both link-description writers make: the document's links through
+        /// <c>PdfLinkExtractor</c> (its ceilings, its target reading), each annotation once, those
+        /// a reader is presented — <c>PdfUaAnnotationScope</c>, the scope UA22 checks — offered to
+        /// the provider in page order, and the revised annotation dictionaries gathered with the
+        /// counts that say what happened to the rest.
+        /// </summary>
+        /// <remarks>
+        /// A link held as a direct dictionary in <c>/Annots</c> has no object number, so an
+        /// incremental update cannot revise it alone; it is counted as failed and said, never
+        /// offered — a description the provider wrote for it would not reach the file.
+        /// </remarks>
+        private static (Dictionary<int, PdfObject> Modified, int Updated, int Skipped, int Failed)
+            CollectLinkDescriptionRevisions(
+                PdfDocument doc, Func<LinkContext, string> provider, string op)
+        {
+            var modified = new Dictionary<int, PdfObject>();
+            int linkIdx = 0, updated = 0, skipped = 0, failed = 0, direct = 0;
+
+            IReadOnlyList<PdfLink> links =
+                PdfLinkExtractor.ExtractLinks(doc);
+            string cut = PdfLinkExtractor.LastError;
+            if (cut != null)
+                AccessibilityDiagnostics.Report(op, cut + " The links past that point were not offered a description.");
+
+            var seen = new HashSet<int>();
+            foreach (PdfLink link in links)
+            {
+                if (link.ObjectNumber <= 0) { direct++; continue; }
+                if (!seen.Add(link.ObjectNumber)) continue;
+
+                if (!(doc.GetObject(link.ObjectNumber) is PdfDictionary annot))
+                {
+                    failed++;
+                    AccessibilityDiagnostics.Report(op,
+                        "link annotation " + link.ObjectNumber.ToString(CultureInfo.InvariantCulture) +
+                        " 0 R could not be read again; it was not given a description");
+                    continue;
+                }
+
+                int? flags = PdfAnnotationFlags.FromNumber(doc.ResolveObject(annot[PdfName.F]));
+                PdfArray rect = doc.ResolveObject(annot[PdfName.Rect]) as PdfArray;
+                PdfArray cropBox = link.PageIndex < doc.Pages.Count ? doc.Pages[link.PageIndex].CropBox : null;
+                if (!Plugins.Conformance.PdfUaAnnotationScope.IsPresentedToReader(
+                        PdfAnnotationSubtypes.Link, flags, rect, cropBox, doc.ResolveObject)) continue;
+
+                var ctx = new LinkContext(linkIdx, link.PageIndex, link, GetTextValue(doc, annot, PdfName.Contents));
+                int thisLink = linkIdx;
+                linkIdx++;
+
+                string description;
+                try
+                {
+                    description = provider(ctx);
+                }
+                catch (Exception ex)
+                {
+                    failed++;
+                    AccessibilityDiagnostics.Report(op,
+                        "the caller's link-description provider threw for link " +
+                        thisLink.ToString(CultureInfo.InvariantCulture) + "; that link was left unchanged", ex);
+                    continue;
+                }
+
+                if (description == null) { skipped++; continue; }
+                if (string.IsNullOrWhiteSpace(description))
+                {
+                    skipped++;
+                    AccessibilityDiagnostics.Report(op,
+                        "the description supplied for link " + thisLink.ToString(CultureInfo.InvariantCulture) +
+                        " is empty or white space, which UA22 reports as missing; that link was left unchanged");
+                    continue;
+                }
+
+                PdfDictionary clone = CloneDict(annot);
+                clone[PdfName.Contents] = MakeTextString(description);
+                modified[link.ObjectNumber] = clone;
+                updated++;
+            }
+
+            if (direct > 0)
+            {
+                failed += direct;
+                AccessibilityDiagnostics.Report(op,
+                    direct.ToString(CultureInfo.InvariantCulture) + " link annotation(s) are direct " +
+                    "dictionaries inside /Annots, with no object number an incremental update can " +
+                    "revise; they were not offered a description");
+            }
+
+            return (modified, updated, skipped, failed);
         }
 
         // ----------------------------------------------------------------

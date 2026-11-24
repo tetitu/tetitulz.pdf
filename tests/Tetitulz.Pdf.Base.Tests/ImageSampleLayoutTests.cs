@@ -15,9 +15,9 @@ namespace Tetitulz.Pdf.Base.Tests;
 /// Unit tests for <see cref="ImageSampleLayout"/> — the single place that decides what the
 /// channels of a decoded sample buffer mean.
 ///
-/// <para>The behaviour under test is the fix for a real divergence: a four-channel image was
-/// read as CMYK by the plugin decode path and as RGB + alpha by the magic-byte path, so the same
-/// bytes rendered two different ways depending on which decoder happened to run.</para>
+/// <para>One decision, so a four-channel image is not read as CMYK by the plugin decode path and
+/// as RGB + alpha by the magic-byte path — the same bytes rendering two different ways depending
+/// on which decoder happened to run.</para>
 /// </summary>
 public sealed class ImageSampleLayoutTests
 {

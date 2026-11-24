@@ -84,8 +84,7 @@ public sealed class EncryptedFacadeReadOverloadTests
         Obj(7, "<< /Type /Annot /Subtype /Link /Rect [72 700 300 720] /Border [0 0 0]"
               + " /A << /S /URI /URI (https://example.test/locked) >> >>");
         // The field and the link both carry the URI action, and PdfActionDispatcher lists both: the
-        // field's as the field's, the link's as an annotation's. (Until 2026-09-24 it listed only
-        // the field's, because it walked no annotation.)
+        // field's as the field's, the link's as an annotation's (it walks the annotations too).
         Obj(8, "<< /Type /Annot /Subtype /Widget /FT /Tx /T (surname) /V (Cohen)"
               + " /A << /S /URI /URI (https://example.test/locked) >>"
               + " /Rect [72 600 300 620] /P 3 0 R >>");

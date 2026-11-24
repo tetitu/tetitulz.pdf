@@ -65,8 +65,8 @@ public class IccLutAToBProfileTests
     /// The v4 Lab encoding is used, not the legacy one the <c>lut16Type</c> form needs.
     /// </summary>
     /// <remarks>
-    /// <para><b>The white point cannot tell the two apart, and assuming it could is how this test
-    /// was wrong the first time.</b> The legacy scale multiplies by 65535/65280, so at
+    /// <para><b>The white point cannot tell the two apart.</b> The legacy scale multiplies by
+    /// 65535/65280, so at
     /// <c>0xFFFF</c> it produces L* = 100.39 — which sRGB <i>clamps</i> to the same white as
     /// L* = 100. The v2 form's own white-point test works for the opposite reason: it drops the
     /// scale, landing on L* = 99.61, and a count below white is visible. Above it, nothing

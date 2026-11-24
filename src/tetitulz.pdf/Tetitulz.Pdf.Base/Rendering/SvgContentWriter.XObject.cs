@@ -25,18 +25,6 @@ using SKPathVerb = SkiaSharp.SKPathVerb;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Interprets a PDF content stream into SVG elements — the vector counterpart of
-    /// <see cref="ContentStreamInterpreter"/>, which does the same job onto a Skia canvas.
-    ///
-    /// <para><b>A type of its own, split as the raster interpreter is</b> — .Path, .Text,
-    /// .Shading, .Images and the rest — so a change to one renderer and not the other is a
-    /// two-file diff. A silently wrong output is, as a rule, one renderer lagging the other.</para>
-    ///
-    /// <para>It stays <c>internal</c>. Base's three <c>InternalsVisibleTo</c> friends are all
-    /// in-repo — the test project, FontDiag and the benchmarks — so no CONSUMER could see it
-    /// before and none can now; promoting it changed its nesting, not its visibility.</para>
-    /// </summary>
 internal sealed partial class SvgContentWriter
     {
         private void OpDo(ContentStreamOperation op)
@@ -124,7 +112,7 @@ internal sealed partial class SvgContentWriter
 
         /// <summary>
         /// The legacy inline <c>(...) PS</c> operator. A registered <c>IPostScriptPlugin</c>
-        /// can execute it; otherwise it stays the no-op it has always been.
+        /// can execute it; otherwise it is a no-op.
         /// </summary>
         private void OpPs(ContentStreamOperation op)
         {
@@ -393,7 +381,7 @@ internal sealed partial class SvgContentWriter
 
             // /BBox clip, emitted in page space so the <path d> needs no transform attribute.
             // One emitter, in EmitBBoxClip. The box is in FORM space, so it goes through
-            // /Matrix ∘ CTM rather than the CTM alone — the one thing this copy varied.
+            // /Matrix ∘ CTM rather than the CTM alone.
             bool clipped = EmitBBoxClip(bboxArr, formCtm, "psclip", openGroup: true) != null;
 
             var child = new SvgContentWriter(_sb, _doc, resources, _pageW, _pageH);

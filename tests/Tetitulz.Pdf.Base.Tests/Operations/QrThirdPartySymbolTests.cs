@@ -67,7 +67,7 @@ public class QrThirdPartySymbolTests
 
     /// <summary>
     /// Kanji mode (Shift JIS, ISO/IEC 18004 §7.4.6) and Hanzi mode (GB 2312, GB/T 18284) are read —
-    /// an independent encoder's symbols, whose text an independent reader reads the same. Until 2026-10-18 kanji was refused.
+    /// an independent encoder's symbols, whose text an independent reader reads the same.
     /// </summary>
     [Fact]
     public void KanjiAndHanziModes_AreRead()

@@ -116,12 +116,7 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
 
             var ms = PdfMetadataWriter.EnsureSeekable(input);
             using var doc = PdfDocument.Open(ms);
-            if (doc.IsEncrypted)
-                throw new PdfEncryptedDocumentException(
-                    "Cannot filter the content of an encrypted document: the rewritten streams would be " +
-                    "written in clear text where the reader expects per-object ciphertext, and this " +
-                    "assembly cannot encrypt. Decrypt first (Tetitulz.Pdf.Encryption.PdfDecryptor), " +
-                    "filter, then re-encrypt — or use Tetitulz.Pdf.Encryption.PdfEncryptedRoundTrip.Run.");
+            EncryptedRevision.Refuse(doc, "filter the content of", "the rewritten streams");
 
             var objects = new List<IndirectObject>();
             var warnings = new Core.Util.DistinctStrings();

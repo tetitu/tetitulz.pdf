@@ -11,42 +11,41 @@ namespace Tetitulz.Pdf.Core.Tests.Text;
 /// Bidi_Class of brackets and punctuation in <see cref="UnicodeBidi"/>: they are <b>ON</b> (Other
 /// Neutral), not strong <c>L</c>.
 ///
-/// <para><b>The bug these pin.</b> <c>GetBidiClass</c> ended in <c>return BidiClass.L</c> for any
-/// character it did not recognise, so every bracket, quote, <c>?</c> and <c>!</c> was classified
-/// strong left-to-right. A strong type is not neutral, so N1/N2 — the rules whose whole job is to
-/// resolve a neutral from its surroundings — never looked at one. In an RTL paragraph that anchors
-/// punctuation to LTR regardless of context.</para>
+/// <para><b>The defect these pin.</b> A <c>GetBidiClass</c> ending in <c>return BidiClass.L</c>
+/// for any character it does not recognise classifies every bracket, quote, <c>?</c> and
+/// <c>!</c> strong left-to-right. A strong type is not neutral, so N1/N2 — the rules whose whole
+/// job is to resolve a neutral from its surroundings — never look at one. In an RTL paragraph that
+/// anchors punctuation to LTR regardless of context.</para>
 ///
 /// <para><b>These assert on mirroring and on position relative to RTL text</b>, which is where a
-/// neutral and a strong-L bracket differ. An earlier attempt asserted that the brackets were still
-/// present and that content sat between them; all of it passed with the fix reverted, because
-/// character presence is not what the classification changes.</para>
+/// neutral and a strong-L bracket differ. Asserting that the brackets are present and that content
+/// sits between them would pass under the strong-L classification too, because character presence
+/// is not what the classification changes.</para>
 /// </summary>
 public class UnicodeBidiNeutralPunctuationTests
 {
     private const string Shalom = "שלום";   // shalom, all-RTL
 
     /// <summary>
-    /// The case that fails with the pre-fix classification: a bracket pair whose preceding context
-    /// is an RTL run resolves RTL, and L4 then mirrors it. With the brackets typed strong-L they
-    /// resolve to an even level instead and are never mirrored.
+    /// A bracket pair whose preceding context is an RTL run resolves RTL, and L4 then mirrors it.
+    /// With the brackets typed strong-L they would resolve to an even level instead and never be
+    /// mirrored.
     ///
-    /// <para><b>The expected string changed on 2026-08-10, because it had encoded a defect.</b>
-    /// It read <c>")abc("</c>, which contradicted
-    /// <see cref="BracketsAroundRtlText_AreMirroredAsAMatchedPair"/> immediately below — that one
-    /// asserts <c>"(םולש)"</c>, with the opening glyph leading. Both are RTL paragraphs whose
-    /// bracket pair resolves RTL, so they cannot legitimately disagree about which glyph leads.
+    /// <para><b>The expected string is <c>"(abc)"</c>, not <c>")abc("</c></b>:
+    /// <see cref="BracketsAroundRtlText_AreMirroredAsAMatchedPair"/> immediately below asserts
+    /// <c>"(םולש)"</c>, with the opening glyph leading, and both are RTL paragraphs whose bracket
+    /// pair resolves RTL, so they cannot legitimately disagree about which glyph leads.
     ///
-    /// The difference was that <c>(שלום)</c> is uniformly level 1 while this fixture mixes levels
-    /// 1 and 2, and the old <c>ReorderString</c> applied L4 by walking the <i>already reordered</i>
-    /// output while indexing <c>levels[i]</c> — which describes the character that was logically
-    /// at <c>i</c>, not the one now displayed there. With one level the two coincide; with two they
-    /// do not, and the brackets were mirrored according to the levels of <c>'c'</c> and
-    /// <c>'2'</c> (both even) — so neither was mirrored at all, and the pair came out inside out.
+    /// <c>(שלום)</c> is uniformly level 1 while this fixture mixes levels 1 and 2. Applying L4 by
+    /// walking the <i>already reordered</i> output while indexing <c>levels[i]</c> — which describes
+    /// the character that was logically at <c>i</c>, not the one displayed there — agrees with one
+    /// level and not with two: the brackets would be mirrored according to the levels of <c>'c'</c>
+    /// and <c>'2'</c> (both even), so neither would be mirrored, and the pair would come out inside
+    /// out.
     ///
     /// UAX #9 §3.4 Example 2 settles it: memory <c>'&gt;he said …&lt;'</c> displays as
     /// <c>&lt;he said …&gt;</c> — mirrored glyphs <i>and</i> reversed positions, which is what
-    /// <c>(abc)</c> is here. L4 is now applied by logical index in
+    /// <c>(abc)</c> is here. L4 is applied by logical index in
     /// <see cref="BidiParagraph.MirroredCharAt"/>, where the misalignment is unavailable.</para>
     /// </summary>
     [Fact]

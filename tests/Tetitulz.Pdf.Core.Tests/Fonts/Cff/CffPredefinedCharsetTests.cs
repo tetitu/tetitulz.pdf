@@ -16,8 +16,8 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts.Cff;
 /// §13, Table 22): GID n is SID n for GIDs 1–228, and the charset says nothing past 228.
 /// </summary>
 /// <remarks>
-/// The dedup sweep's row D06 (2026-10-21) cut that arm to GID 1 and no test failed: every other CFF
-/// fixture writes a charset of its own. These patch <see cref="MinimalOpenTypeCff.BuildBareCff"/>'s
+/// Every other CFF fixture writes a charset of its own, so cutting that arm to GID 1 would fail
+/// nothing else. These patch <see cref="MinimalOpenTypeCff.BuildBareCff"/>'s
 /// charset offset to 0 in place — the builder writes every Top DICT offset as a five-byte integer,
 /// so the font's layout does not move.
 /// </remarks>

@@ -505,7 +505,7 @@ public class PdfCompressedFileWriterTests
         objects.Add((FirstFreeNumber, shared));
 
         using var buffer = new MemoryStream();
-        var thrown = Assert.Throws<InvalidOperationException>(() =>
+        var thrown = Assert.Throws<PdfException>(() =>
             PdfCompressedFileWriter.Write(buffer, new PdfVersion(1, 7), objects, Trailer()));
 
         Assert.Contains(FirstFreeNumber.ToString(CultureInfo.InvariantCulture), thrown.Message);

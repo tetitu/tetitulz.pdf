@@ -310,7 +310,7 @@ public sealed class RepairObjectBoundaryTests
     public void ManyObjectsMissingTheirEndobj_AreClosedWithoutCopyingThePaddingOncePerObject()
     {
         // Two thousand complete objects with no endobj, then 100 KB of padding before a single
-        // endobj. Each object used to be copied up to that endobj — the padding two thousand times.
+        // endobj. Copying each object up to that endobj would copy the padding two thousand times.
         var sb = new StringBuilder("%PDF-1.4\n").Append(Catalog);
         for (int n = 10; n < 2010; n++) sb.Append(n).Append(" 0 obj\n<< /K 1 >>\n");
         sb.Append(' ', 100_000).Append("endobj\n");

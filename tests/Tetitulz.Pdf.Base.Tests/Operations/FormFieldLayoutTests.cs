@@ -20,10 +20,10 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// <summary>
 /// Multiline wrapping and comb layout in a generated field appearance.
 ///
-/// <para>Both were previously listed as limits: a multiline field broke on explicit newlines only,
-/// and a comb field was drawn as ordinary text. The assertions here are on the emitted operators —
-/// how many positioned runs there are and where they sit — because that is what distinguishes the
-/// two layouts. "An appearance was produced" is true of the unlaid-out version too.</para>
+/// <para>A multiline field wraps, not only at explicit newlines, and a comb field is laid out in
+/// its cells, not drawn as ordinary text. The assertions here are on the emitted operators — how
+/// many positioned runs there are and where they sit — because that is what distinguishes the
+/// layouts. "An appearance was produced" is true of an unlaid-out version too.</para>
 /// </summary>
 public class FormFieldLayoutTests
 {

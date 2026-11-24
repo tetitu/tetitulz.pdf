@@ -11,12 +11,8 @@ using Tetitulz.Pdf.Core.Objects;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// A separation plate's image path: the plate's ink read from the image's own samples.
-    /// </summary>
-    /// <remarks>
-    /// Raster only, and no SVG twin: the vector writer has no plates (<see cref="SeparationPlate"/>).
-    /// </remarks>
+    // A separation plate's image path: the plate's ink read from the image's own samples.
+    // Raster only, and no SVG twin: the vector writer has no plates (SeparationPlate).
     internal sealed partial class ContentStreamInterpreter
     {
         /// <summary>

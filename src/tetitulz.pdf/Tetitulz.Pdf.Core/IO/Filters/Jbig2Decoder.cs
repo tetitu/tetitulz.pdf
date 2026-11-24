@@ -49,7 +49,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
     ///         or dictionary; GAPS.md §2a has the record of how that design was checked, against the
     ///         arithmetic twins of the same pictures.</item>
     ///   <item>— <b>the standard Annex B tables (B.1-B.15) are fixed and externally verified</b>,
-    ///         not "the author's best recall" any more. Every (PREFLEN, RANGELEN, RANGELOW) triple
+    ///         never typed from recollection. Every (PREFLEN, RANGELEN, RANGELOW) triple
     ///         was cross-checked between two independent implementations
     ///         (read for their DATA only, not their source),
     ///         codes are computed by <c>AssignCanonicalPrefixes</c> rather than hand-assigned, and
@@ -60,22 +60,20 @@ namespace Tetitulz.Pdf.Core.IO.Filters
     ///         row, so a dedicated single-entry-table test pins the formula directly.</item>
     ///   <item>— the symbol dictionary's collective bitmap (§6.5.9) is located, decoded (MMR or
     ///         uncompressed) and split into real symbol bitmaps, verified pixel-by-pixel against
-    ///         hand-built fixtures — see <c>DecodeSymbolDictionary</c> (widened to <c>internal</c>
-    ///         for exactly that testing reason) and GAPS.md §2a for the loop-termination bug a
-    ///         fixture caught along the way.</item>
+    ///         hand-built fixtures — see <c>DecodeSymbolDictionary</c> (<c>internal</c> for exactly
+    ///         that testing reason) and GAPS.md §2a.</item>
     ///   <item>— the text region's runcode-coded symbol-ID table (T.88 §7.4.3.1.7) is built and
     ///         used to select each instance's symbol, and the strip/first-S/subsequent-DS
     ///         placement loop mirrors the arithmetic path's already-verified structure — see
     ///         <c>DecodeTextRegionHuffman</c>/<c>BuildSymbolIdHuffmanTable</c>.</item>
-    ///   <item>— parsed type-53 user-defined tables are now consulted for every "custom" selector
+    ///   <item>— parsed type-53 user-defined tables are consulted for every "custom" selector
     ///         a symbol dictionary or text region can name (SDHUFFDH/DW/BMSIZE, SBHUFFFS/DS/DT),
     ///         drawn positionally from the segment's referred-to Tables segments — see
-    ///         <c>SelectCustomTables</c>. <c>ParseUserDefinedHuffmanTable</c> itself needed a real
-    ///         fix first: it had read the flags byte as two independent optional-tail bits (a
-    ///         "low-range flag" at bit 0, a "high-range flag" at bit 1), when T.88 §B.2.1 actually
-    ///         defines bit 0 as HTOOB (an unrelated, genuinely optional out-of-band line) and bits
-    ///         1-3 as the prefix-size field — so reading flags there would consume one bit of that
-    ///         field as a fake flag and skip the lower- and upper-range lines B.2 6-9 make
+    ///         <c>SelectCustomTables</c>. <c>ParseUserDefinedHuffmanTable</c> reads the flags byte
+    ///         as T.88 §B.2.1 defines it: bit 0 HTOOB (an unrelated, genuinely optional out-of-band
+    ///         line) and bits 1-3 the prefix-size field. Read as two independent optional-tail bits
+    ///         (a "low-range flag" at bit 0, a "high-range flag" at bit 1), it would consume one bit
+    ///         of that field as a fake flag and skip the lower- and upper-range lines B.2 6-9 make
     ///         <i>mandatory</i>. Cross-checked against two independent implementations' tables, which
     ///         agree with each other and with this file.</item>
     ///   <item><b>Per-instance refinement in a text region (SBREFINE=1)</b> is decoded in both
@@ -374,8 +372,8 @@ namespace Tetitulz.Pdf.Core.IO.Filters
 
             // Referred-to segment numbers (each uses 1, 2, or 4 bytes depending on
             // this segment's own segment number — §7.2.5: "less than or equal to 256" one byte,
-            // "less than or equal to 65536" two). The bounds were 255 and 65535, as some readers do not
-            // have them: segment 256 read two-byte references, and every header after it misparsed.
+            // "less than or equal to 65536" two). Bounds of 255 and 65535, as some readers have them,
+            // would read segment 256's references as two-byte and misparse every header after it.
             int refSize = ReferredToSegmentNumberSize(hdr.SegmentNumber);
 
             // The long form's count is 29 bits, and it was allocated as read: up to 2 GB of
@@ -756,10 +754,9 @@ namespace Tetitulz.Pdf.Core.IO.Filters
 
         private static bool IsRegionSegmentWeCantDecode(int type) => type switch
         {
-            // All region types are now attempted experimentally — the top-level
-            // filter catches exceptions and falls back to raw bytes.  Returning
-            // true here is reserved for future additions we explicitly DON'T
-            // handle even via the try-path.
+            // Every region type is attempted — the top-level filter catches
+            // exceptions and falls back to raw bytes. Returning true here is for a
+            // type explicitly NOT handled even via the try-path.
             _ => false,
         };
 
@@ -972,12 +969,11 @@ namespace Tetitulz.Pdf.Core.IO.Filters
             // The region's own width and height are hostile input, and the T.6 decoder is sized by
             // them before it reads a bit: a reference line and a current line of one byte per column,
             // and a scan of the reference line per code. The arithmetic path above charges the
-            // region's pixels to the budget inside DecodeGenericRegion; this path handed the raw
-            // header values straight to the decoder, so a 701-byte file declaring a region 2^30 wide
-            // (found by the coverage-guided fuzzer, GAPS.md §7c) allocated two gigabyte lines and
-            // scanned them for seconds — and a width past int wrapped negative in the cast. The
-            // dimensions are validated and the pixels charged here, as every other region's are,
-            // before the decoder is sized.
+            // region's pixels to the budget inside DecodeGenericRegion. Handed the raw header values
+            // straight, the decoder would let a 701-byte file declaring a region 2^30 wide allocate
+            // two gigabyte lines and scan them for seconds — and a width past int would wrap negative
+            // in the cast. The dimensions are validated and the pixels charged here, as every other
+            // region's are, before the decoder is sized.
             Jbig2Bitmap.ValidateDimensions((int)info.Width, (int)info.Height);
             budget?.Tick((long)info.Width * info.Height);
             int remaining = bodyEnd - br.BytePosition;
@@ -1896,7 +1892,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
         /// collected into a collective bitmap: a single instance is a refinement of one referred
         /// symbol, and more are a text region (Table 17's tables) drawn into the symbol's box. The
         /// refined bitmaps are arithmetic-coded over the BMSIZE or RSIZE bytes that precede them.</para>
-        /// <para><b>User-defined (customTables) selectors are now wired</b>, in the order
+        /// <para><b>User-defined (customTables) selectors are wired</b>, in the order
         /// an independent decoder consumes them: SDHUFFDH (if 3), then SDHUFFDW
         /// (if 3), then SDHUFFBMSIZE (if its flag bit is set), then SDHUFFAGGINST (if its flag bit
         /// is set, whether or not SDREFAGG is).</para>

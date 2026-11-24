@@ -13,8 +13,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
-/// Five ways the parser used to answer a question it could not actually answer, each of them
-/// indistinguishable from a healthy read:
+/// Five ways a parser can answer a question it cannot actually answer, each of them
+/// indistinguishable from a healthy read, and each refused or reported here:
 ///
 /// <list type="number">
 ///   <item>a stream whose <c>/Length</c> is unresolvable and whose <c>endstream</c> is not found
@@ -53,9 +53,9 @@ public class ParserRecoveryAndIdentityTests
     /// <summary>
     /// <c>/Length</c> names a missing object and the file contains no <c>endstream</c> keyword, so
     /// the scan window closes empty and the stream is read as zero bytes. The zero-byte answer is
-    /// the one outcome guaranteed to be wrong, and it used to be reported as a success — a 9 MB
-    /// image whose <c>/Length</c> pointed at a damaged xref rendered as nothing while
-    /// <c>GetDecodedData()</c> returned an empty array.
+    /// the one outcome guaranteed to be wrong, and it is reported, never a silent success — else a
+    /// 9 MB image whose <c>/Length</c> points at a damaged xref renders as nothing while
+    /// <c>GetDecodedData()</c> returns an empty array.
     /// </summary>
     [Fact]
     public void GetObject_UnresolvableLengthAndNoEndstream_ReportsTheEmptyRead()

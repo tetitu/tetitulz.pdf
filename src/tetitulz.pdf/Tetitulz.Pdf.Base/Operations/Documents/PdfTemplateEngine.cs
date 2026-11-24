@@ -690,7 +690,7 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         /// and silently.</b> The check would find the run it had just drawn; it cannot distinguish
         /// that from a missed original, so for those keys it does not answer at all. Silence is the
         /// honest outcome here rather than a third list, because this method already never records
-        /// a success — "not reported" has always meant "nothing was proved".</para>
+        /// a success — "not reported" means "nothing was proved".</para>
         ///
         /// <para><b>Only the edited pages are scanned.</b> A token on a page this call never
         /// touched is a token it never claimed to have replaced — reporting it would turn a
@@ -1132,10 +1132,10 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
                     int len = Math.Max(1, Math.Min(c.ByteLength, bytes.Length - b));
 
                     // Keyed on the CID, not the raw code. A composite font's /W array is indexed
-                    // by CID (§9.7.4.3), and CID == code only under Identity-H — which is why this
-                    // read looked correct for years. Under a predefined CMap (UniJIS-UCS2-H and
-                    // friends) the two differ, so every advance here was the width of an unrelated
-                    // glyph and every token position computed from it was wrong.
+                    // by CID (§9.7.4.3), and CID == code only under Identity-H. Under a predefined
+                    // CMap (UniJIS-UCS2-H and friends) the two differ, so keyed on the code every
+                    // advance here would be the width of an unrelated glyph and every token
+                    // position computed from it wrong.
                     // PdfFont.SplitCodes sets Cid == Value for a simple font, so this is right for
                     // both kinds; its doc comment says so.
                     // The one width rule (GlyphWidth.TextSpace): an explicit 0 in /Widths or /W is a real

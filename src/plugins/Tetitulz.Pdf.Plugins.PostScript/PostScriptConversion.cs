@@ -352,7 +352,7 @@ namespace Tetitulz.Pdf.Plugins.PostScript
         /// Registers font programs the scanner has captured since the last call, returning the new
         /// high-water mark.
         ///
-        /// <para><b>Incremental, because execution is now streamed.</b> The scanner captures an
+        /// <para><b>Incremental, because execution is streamed.</b> The scanner captures an
         /// <c>eexec</c> section as it tokenises past it, and the <c>findfont</c> or
         /// <c>definefont</c> that reaches the program comes later in the same stream — so a single
         /// pre-run drain would find the list empty and every <c>/FontFile</c> embedding would

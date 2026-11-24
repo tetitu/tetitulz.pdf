@@ -299,16 +299,14 @@ public class BarcodeReaderTests
     // ================================================================
 
     /// <summary>
-    /// The eleven-module Stop the writer used to emit cannot be read, and the corrected
-    /// thirteen-module one can.
+    /// An eleven-module Stop cannot be read, and the thirteen-module one the writer emits can.
     /// </summary>
     /// <remarks>
-    /// <para><b>This is the behavioural proof that the fix was a fix.</b> Code 128's Stop is
-    /// 13 modules, and the writer emitted only the first 11 of them — the terminating bar was
-    /// missing, so the symbol ended in white. The table test asserts the pattern; this asserts the
-    /// consequence, which is that a conforming reader cannot find the end of such a symbol: after a
-    /// truncated Stop there is nothing but quiet zone, and quiet zone will not quantise to Stop's
-    /// remaining elements.</para>
+    /// <para><b>The behavioural proof.</b> Code 128's Stop is 13 modules; its first 11 alone omit
+    /// the terminating bar, so the symbol ends in white. The table test asserts the pattern; this
+    /// asserts the consequence, which is that a conforming reader cannot find the end of such a
+    /// symbol: after a truncated Stop there is nothing but quiet zone, and quiet zone will not
+    /// quantise to Stop's remaining elements.</para>
     ///
     /// <para><b>Both symbols here are built by hand from module strings</b>, not by calling the
     /// writer, so this says something about Code 128 rather than about what this library currently

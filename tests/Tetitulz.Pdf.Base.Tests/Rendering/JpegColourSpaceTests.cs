@@ -110,7 +110,7 @@ public class JpegColourSpaceTests
 
     /// <summary>
     /// On the spot plate the JPEG's samples are the ink, exactly — not its picture read back
-    /// through the plate's sRGB filter, which used to be reported as an approximation.
+    /// through the plate's sRGB filter, which would be an approximation.
     /// </summary>
     [Fact]
     public void ASpotJpeg_IsReadFromItsSamples_OnTheSpotPlate()

@@ -157,9 +157,9 @@ namespace Tetitulz.Pdf.Encryption
             if (output == null) throw new ArgumentNullException(nameof(output));
             if (password == null) password = "";
             // Not normalised here: SASLprep applies to a revision-5+ password only, and it is applied
-            // at the one place that knows the revision — ValidateAndDeriveAes256Key. Doing it here
-            // "pre-emptively, safe for all revisions" was wrong for a revision 2–4 password holding a
-            // no-break space or soft hyphen, which §7.6.3.3 hashes as raw Latin-1 bytes.
+            // at the one place that knows the revision — ValidateAndDeriveAes256Key. Done here, it
+            // would be wrong for a revision 2–4 password holding a no-break space or soft hyphen,
+            // which §7.6.3.3 hashes as raw Latin-1 bytes.
 
             // Buffered() rewinds a seekable input BEFORE copying: copied from its current position, a
             // FileStream a host had already read from would be a truncated, corrupt document.
@@ -294,9 +294,13 @@ namespace Tetitulz.Pdf.Encryption
                         continue;
 
                     PdfObject obj;
+                    string unreadable;
                     try
                     {
                         obj = doc.Parser.GetObject(entry.ObjectNumber);
+                        // Read at once: the slot belongs to the most recent call, and GetObject answers an
+                        // object it could not read with the null object, as it answers a genuine one.
+                        unreadable = PdfParser.LastObjectParseError;
                     }
                     catch (Exception ex)
                     {
@@ -309,15 +313,15 @@ namespace Tetitulz.Pdf.Encryption
                         continue;
                     }
 
-                    if (obj == null)
+                    if (obj == null || (obj is PdfNull && unreadable != null))
                     {
                         // A Normal xref entry whose object cannot be read is an object missing from
-                        // the output. The parser is deliberately tolerant and returns null here
-                        // rather than throwing for most damage, so without this the commonest shape
-                        // of the silent-drop defect stayed silent.
+                        // the output. The parser is deliberately tolerant and answers the null object
+                        // rather than throwing for most damage, with the reason in its slot.
                         RecordDrop(
                             $"Object {entry.ObjectNumber} could not be read at the offset its xref " +
-                            "entry names; it is absent from the output.");
+                            "entry names" + (unreadable != null ? " (" + unreadable + ")" : "") +
+                            "; it is absent from the output.");
                         continue;
                     }
 
@@ -418,7 +422,8 @@ namespace Tetitulz.Pdf.Encryption
                     try
                     {
                         ExtractObjectsFromStream(objStmStream, decryptedObjects,
-                            (objNum, index) => IsCurrentObjectStreamMember(xrefTable, objStmNum, objNum, index));
+                            (objNum, index) => IsCurrentObjectStreamMember(xrefTable, objStmNum, objNum, index),
+                            doc.Parser);
 
                         // A refusal is a return with the slot set — the per-call contract direct callers rely
                         // on. Folded into the accounting the moment it is made, because the next call clears it.
@@ -507,8 +512,8 @@ namespace Tetitulz.Pdf.Encryption
                 ComposeDropDiagnostic(firstDropReason, dropCount);
 
                 // Remove object streams from the output — their contained objects
-                // are now written as regular indirect objects. (The cross-reference stream never
-                // got in: step 1 skips it.)
+                // are written as regular indirect objects. (The cross-reference stream never
+                // gets in: step 1 skips it.)
                 foreach (int objStmNum in objectStreamNumbers)
                     decryptedObjects.Remove(objStmNum);
 
@@ -765,6 +770,9 @@ namespace Tetitulz.Pdf.Encryption
             // fallback — the one event the slot exists to surface — would be erased by every clean
             // object after it.
             LastAesCbcPaddingFallback = null;
+            _lastAesCbcMalformedLength = null;
+            _aesCbcMalformedFirst = null;
+            _aesCbcMalformedCount = 0;
 
             // Cleared here rather than only on the V=5 branch that writes it. Its own reset lived
             // inside ValidateAndDeriveAes256Key, so decrypting an RC4 or AES-128 document after a
@@ -1666,21 +1674,21 @@ namespace Tetitulz.Pdf.Encryption
             // padded block, so this is malformed. Empty, as the misaligned-length case below returns,
             // and for the same reason — handing the raw bytes back as "plaintext" echoes an attacker's
             // bytes as the decrypted value. Every sibling path fails closed the same way.
-            if (data.Length < PdfEncryptionPrimitives.AesBlockBytes)
+            // Malformed — an IV and no whole block after it: emptied, and said (LastAesCbcMalformedLength), since
+            // an emptied stream is otherwise a page that lost its content with nothing to show for it.
+            int cipherLen = data.Length - PdfEncryptionPrimitives.AesBlockBytes;
+            if (cipherLen <= 0 || cipherLen % PdfEncryptionPrimitives.AesBlockBytes != 0)
+            {
+                _aesCbcMalformedCount++;
+                _lastAesCbcMalformedLength =
+                    (_aesCbcMalformedFirst ??= $"AES-CBC data of {data.Length} bytes is not a 16-byte IV followed by whole " +
+                                               "16-byte blocks; it was decrypted to nothing")
+                    + (_aesCbcMalformedCount > 1 ? $" (and {_aesCbcMalformedCount - 1} more)." : ".");
                 return Array.Empty<byte>();
+            }
 
             byte[] iv = new byte[PdfEncryptionPrimitives.AesBlockBytes];
             Buffer.BlockCopy(data, 0, iv, 0, PdfEncryptionPrimitives.AesBlockBytes);
-
-            int cipherLen = data.Length - PdfEncryptionPrimitives.AesBlockBytes;
-            if (cipherLen <= 0)
-                return Array.Empty<byte>();
-
-            // AES-CBC requires ciphertext to be a multiple of 16 bytes.
-            // If not aligned, the data is malformed — return empty rather than
-            // leaking the raw encrypted bytes (including IV) as plaintext.
-            if (cipherLen % PdfEncryptionPrimitives.AesBlockBytes != 0)
-                return Array.Empty<byte>();
 
             byte[] ciphertext = new byte[cipherLen];
             Buffer.BlockCopy(data, PdfEncryptionPrimitives.AesBlockBytes, ciphertext, 0, cipherLen);
@@ -1695,8 +1703,8 @@ namespace Tetitulz.Pdf.Encryption
                 // PKCS#7 padding failed. Per ISO 32000 conforming AES-CBC is ALWAYS PKCS#7-padded,
                 // so a padding failure means the ciphertext is wrong (tampered, truncated, or wrong
                 // key). The default is therefore to FAIL CLOSED: tampered ciphertext must not be
-                // silently re-interpreted as valid unpadded plaintext. Historically a no-padding
-                // retry could mask exactly that. The retry is now strictly OPT-IN via
+                // silently re-interpreted as valid unpadded plaintext, which a no-padding retry would
+                // do. The retry is strictly OPT-IN via
                 // <see cref="AllowAesCbcNoPaddingFallback"/> for the rare non-conforming producer
                 // that genuinely encrypts without padding; the <see cref="LastAesCbcPaddingFallback"/>
                 // diagnostic is always set so callers can audit when the fallback fires.
@@ -1728,6 +1736,17 @@ namespace Tetitulz.Pdf.Encryption
                 }
             }
         }
+
+        /// <summary>
+        /// AES-CBC data the last document decrypted on this thread held that was not an IV followed by whole
+        /// blocks — a string or stream cut short — and was decrypted to nothing: the first described, the
+        /// rest counted. <c>null</c> when there was none. Cleared at the start of each document.
+        /// </summary>
+        public static string LastAesCbcMalformedLength => _lastAesCbcMalformedLength;
+
+        [ThreadStatic] private static string _lastAesCbcMalformedLength;
+        [ThreadStatic] private static string _aesCbcMalformedFirst;
+        [ThreadStatic] private static int _aesCbcMalformedCount;
 
         /// <summary>
         /// AES-256-GCM decryption per ISO/TS 32003 §5.2: <c>data</c> is
@@ -2158,19 +2177,24 @@ namespace Tetitulz.Pdf.Encryption
         /// takes every member, which is right only for a stream considered on its own: inside a document, an older object
         /// stream still holds copies that later revisions superseded.
         /// </param>
+        /// <param name="documentParser">
+        /// The parser of the document the stream came from, whose syntax-stream budget and image-codec
+        /// refusal the decode runs under (<see cref="PdfParser.DecodeSyntaxStream"/>), so every object
+        /// stream of a document spends one budget. <c>null</c> runs it under a budget of its own.
+        /// </param>
         /// <remarks>
-        /// <b>This is the second ObjStm index reader in the tree</b>, and it had none of the bounds
-        /// <c>PdfParser.GetObjectStreamReader</c> carries: <c>/N</c> was accepted up to
-        /// <c>int.MaxValue</c> and the index list grew to match, on every encrypted document. The
-        /// two now apply the same pair of rules from the same constants — a hard cap on the count,
-        /// and a cross-check that the decoded body is big enough for the count to be true.
+        /// <b>This is the second ObjStm index reader in the tree</b>, and it applies the bounds
+        /// <c>PdfParser.GetObjectStreamReader</c> carries, from the same constants: a hard cap on
+        /// <c>/N</c>, a cross-check that the decoded body is big enough for the count to be true, and
+        /// the decode itself under the parser's rules — an image codec refused by name, the document's
+        /// syntax-stream budget spent.
         /// </remarks>
         // internal rather than private so its bounds can be exercised directly. Reaching them
         // through PdfEncryptor would mean producing an encrypted document that still contains an
         // object stream with a hostile /N, which the encryptor's own rewrite does not preserve —
         // the test would be about the encryptor, not about this guard.
         internal static void ExtractObjectsFromStream(PdfStream objStmStream, Dictionary<int, PdfObject> decryptedObjects,
-            Func<int, int, bool> isCurrentCopy = null)
+            Func<int, int, bool> isCurrentCopy = null, PdfParser documentParser = null)
         {
             // Cleared at the START, on every path, because a caller reads it AFTER the operation.
             // [ThreadStatic] gives per-thread isolation and NOT per-document scope: without this, a
@@ -2198,8 +2222,10 @@ namespace Tetitulz.Pdf.Encryption
                 return;
             }
 
-            // GetDecodedData() decompresses the (now-decrypted) stream data
-            byte[] decoded = objStmStream.GetDecodedData();
+            // Decoded as the parser decodes an object stream: an image codec refused by name, every
+            // stage charged to the document's syntax-stream budget, nothing memoised on the stream. A refusal
+            // throws, and the caller reports the stream as one it could not expand.
+            byte[] decoded = (documentParser ?? new PdfParser(Stream.Null)).DecodeSyntaxStream(objStmStream);
             if (decoded == null || decoded.Length == 0) return;
 
             // The count must be answerable by the bytes the file supplied — see

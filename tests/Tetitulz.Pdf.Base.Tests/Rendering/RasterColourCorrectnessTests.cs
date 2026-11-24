@@ -163,8 +163,8 @@ public sealed class RasterColourCorrectnessTests
 
     /// <summary>
     /// §14.11.1: <c>/UserUnit</c> scales the default user space, so it belongs in the device
-    /// scale. It used to be multiplied into the page extent only — the bitmap grew and the content
-    /// stayed at 1x, leaving most of the page blank.
+    /// scale. Multiplied into the page extent only, the bitmap would grow and the content stay at
+    /// 1x, leaving most of the page blank.
     /// </summary>
     [Fact]
     public void UserUnit_ScalesTheContent_NotOnlyTheCanvas()
@@ -192,8 +192,8 @@ public sealed class RasterColourCorrectnessTests
     /// <remarks>
     /// This is the trap in "resolve the base space name properly": naming the base
     /// <c>Separation</c> and giving it one component is still wrong, because the component is not a
-    /// colour. The fix is to use <c>BuildIndexedPalette</c>, which already evaluates the transform —
-    /// one palette decoder instead of two that disagree.
+    /// colour. <c>BuildIndexedPalette</c> evaluates the transform — one palette decoder instead of
+    /// two that disagree.
     /// </remarks>
     [Fact]
     public void IndexedOverSeparation_EvaluatesTheTintTransform()
@@ -218,13 +218,12 @@ public sealed class RasterColourCorrectnessTests
     }
 
     /// <summary>
-    /// An <c>/Indexed</c> palette over a <c>/CalGray</c> base must apply <c>/Gamma</c>. The raster
-    /// palette builder folded CalGray into DeviceGray, which discards it.
+    /// An <c>/Indexed</c> palette over a <c>/CalGray</c> base must apply <c>/Gamma</c>; folding
+    /// CalGray into DeviceGray would discard it.
     /// </summary>
     /// <remarks>
-    /// Compared against the SVG render rather than a fixed value: the SVG palette builder was fixed
-    /// first, so the two disagreed on the same palette. Asserting equality is what catches the
-    /// divergence in either direction.
+    /// Compared against the SVG render rather than a fixed value: asserting equality is what catches
+    /// a divergence between the two palette builders in either direction.
     /// </remarks>
     [Fact]
     public void IndexedOverCalGray_AppliesGamma_AndAgreesWithSvg()

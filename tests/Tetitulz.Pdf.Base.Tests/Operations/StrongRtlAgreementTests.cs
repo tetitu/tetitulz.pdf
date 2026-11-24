@@ -66,7 +66,7 @@ public class StrongRtlAgreementTests
 
     /// <summary>
     /// <b>The floor.</b> Left-to-right and neutral characters must be RTL to neither — this is what
-    /// stops the fix being "return true".
+    /// stops the predicate being "return true".
     /// </summary>
     [Theory]
     [InlineData('A')]

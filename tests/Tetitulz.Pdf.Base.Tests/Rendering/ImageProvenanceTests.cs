@@ -53,8 +53,7 @@ public class ImageProvenanceTests
 
     /// <summary>
     /// The JFIF APP0 segment stays directly after SOI (JFIF 1.02: it "shall immediately follow the
-    /// SOI marker"), and the producer comment comes after it. This test used to assert the COM at
-    /// offset 2, pinning the defect.
+    /// SOI marker"), and the producer comment comes after it, not at offset 2.
     /// </summary>
     [Fact]
     public void RenderPageAsJpg_KeepsJfifApp0FirstAndCarriesTheProducerInALaterComment_AndStillDecodes()

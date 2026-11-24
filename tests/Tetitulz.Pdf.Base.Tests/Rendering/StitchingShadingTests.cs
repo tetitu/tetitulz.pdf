@@ -12,14 +12,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering
 {
     /// <summary>
-    /// Regression test for axial/radial shadings driven by a multi-segment
-    /// <b>stitching</b> function (FunctionType 3).  The colour resolver previously only
-    /// understood FunctionType 2 and fell back to a flat black→white ramp for anything
-    /// else, AND only sampled the two endpoints — so a rainbow gradient rendered as
-    /// grayscale.  Observed on a Cal credit-card statement
-    /// (raw/דף פירוט דיגיטלי כאל 07-25 (1).pdf) whose card "gradient strip" (a
-    /// DeviceRGB Type-3 stitching gradient filling a thin rectangle) rendered as a plain
-    /// black→white band.
+    /// Axial/radial shadings driven by a multi-segment <b>stitching</b> function
+    /// (FunctionType 3). A colour resolver understanding only FunctionType 2, falling back to a
+    /// flat black→white ramp for anything else and sampling only the two endpoints, would render
+    /// a rainbow gradient as grayscale — a card statement's "gradient strip" (a DeviceRGB Type-3
+    /// stitching gradient filling a thin rectangle) as a plain black→white band.
     /// </summary>
     public sealed class StitchingShadingTests
     {
@@ -49,8 +46,8 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering
             Obj("5 0 obj\n<< /ShadingType 2 /ColorSpace /DeviceRGB /Coords [0 50 100 50] " +
                 "/Domain [0 1] /Function 6 0 R /Extend [true true] >>\nendobj\n");
             // FunctionType 3 stitch of two Type-2 segments. The sub-functions are either
-            // INLINE (as most producers emit) or INDIRECT references (which the evaluator
-            // could not resolve before the fix — they returned 0 → flat black ramp).
+            // INLINE (as most producers emit) or INDIRECT references (which, unresolved, would
+            // return 0 → flat black ramp).
             string funcsArr = indirectSubFunctions
                 ? "[7 0 R 8 0 R]"
                 : "[<< /FunctionType 2 /Domain [0 1] /C0 [1 0 0] /C1 [0 1 0] /N 1 >> " +
@@ -96,8 +93,8 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering
             SKColor middle = bmp.GetPixel(bmp.Width / 2, y);
             SKColor right  = bmp.GetPixel(bmp.Width * 9 / 10, y);
 
-            // The pre-fix bug rendered the whole strip as a black→white ramp, so the
-            // centre was mid-gray. The interior stitch colour (green) is the key guard.
+            // A black→white ramp across the whole strip would make the centre mid-gray.
+            // The interior stitch colour (green) is the key guard.
             Assert.False(IsGray(middle), $"gradient centre was grayscale: {middle}");
             Assert.True(IsGreenish(middle), $"gradient centre should be green, was {middle}");
             Assert.True(IsReddish(left),    $"gradient start should be red, was {left}");

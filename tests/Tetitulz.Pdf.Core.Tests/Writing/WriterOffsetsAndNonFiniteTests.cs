@@ -62,7 +62,7 @@ public class WriterOffsetsAndNonFiniteTests
         Assert.Equal(1, writer.NonFiniteNumbersCoercedToZero);
 
         // Assert on the re-parsed object, not on the text: a bare `NaN` tokenizes as a keyword, so
-        // this is exactly the read that used to fail on a file this writer had just produced.
+        // this is exactly the read that would fail on a file this writer had just produced.
         var parsed = ReparseIndirectObject(ms.ToArray());
         var reparsedBox = Assert.IsType<PdfArray>(parsed[PdfName.MediaBox]);
         Assert.Equal(2, reparsedBox.Count);
@@ -100,9 +100,9 @@ public class WriterOffsetsAndNonFiniteTests
 
     /// <summary>
     /// The caller embeds a generated PDF into a container, which the <c>output</c> parameter is
-    /// documented to support. Every type-1 entry and the <c>startxref</c> used to be too large by
-    /// the prefix length, so extracting the PDF portion afterwards produced an unopenable file
-    /// with no warning at all.
+    /// documented to support. Every type-1 entry and the <c>startxref</c> count from the PDF's own
+    /// start: too large by the prefix length, they would make the extracted PDF portion an
+    /// unopenable file with no warning at all.
     /// </summary>
     [Fact]
     public void Write_ToPrePositionedStream_ProducesAFileValidOnceThePrefixIsStripped()

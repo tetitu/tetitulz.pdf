@@ -17,23 +17,23 @@ namespace Tetitulz.Pdf.Core.Tests.IO.Filters;
 /// The CCITT Huffman tables are built once, by the runtime, before anything can read them.
 /// </summary>
 /// <remarks>
-/// <para><b>They were previously built by double-checked locking with the check on the wrong side
-/// of the fill.</b> The dictionary was assigned <i>empty</i> inside the lock and populated
-/// afterwards, while the fast path read the field without the lock — so a second thread could see
-/// the non-null empty dictionary, skip the lock, and decode against run lengths that were not there
-/// yet. The black table was assigned later still, so that thread could also see it null.</para>
+/// <para><b>Not double-checked locking with the check on the wrong side of the fill.</b> A
+/// dictionary assigned <i>empty</i> inside the lock and populated afterwards, while the fast path
+/// reads the field without the lock, would let a second thread see the non-null empty dictionary,
+/// skip the lock, and decode against run lengths that are not there yet.</para>
 ///
 /// <para><b>This is not only a test-ordering problem.</b> <c>RenderAllPagesCore</c> renders pages on
 /// parallel workers, so two workers meeting a CCITT image for the first time at the same moment is
-/// the production form of it. What it produces is a decoded bitmap with wrong pixels, which no
+/// the production form of it. What it would produce is a decoded bitmap with wrong pixels, which no
 /// caller can distinguish from a correct one.</para>
 ///
 /// <para><b>It is pinned structurally rather than by racing threads, because a race cannot be
 /// tested for after the fact.</b> The window is the very first access in the process, and by the
 /// time any test runs the type is already initialised — so a concurrency test would pass whether
-/// the bug were present or not, which is the worst kind of green. A <c>readonly</c> static assigned
-/// only by a type initialiser <i>cannot</i> be observed half-built: the CLR runs the initialiser
-/// once and orders it before every access. Asserting that property is asserting the fix.</para>
+/// the defect were present or not, which is the worst kind of green. A <c>readonly</c> static
+/// assigned only by a type initialiser <i>cannot</i> be observed half-built: the CLR runs the
+/// initialiser once and orders it before every access. Asserting that property is asserting the
+/// guarantee.</para>
 /// </remarks>
 public class CcittTableInitialisationTests
 {

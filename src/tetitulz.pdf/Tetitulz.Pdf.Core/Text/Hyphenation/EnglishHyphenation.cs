@@ -43,10 +43,10 @@ namespace Tetitulz.Pdf.Core.Text.Hyphenation
         private static readonly object Gate = new object();
 
         /// <summary>
-        /// The parsed file, published whole. The three were once three static fields set one after
-        /// another and read after a check of the last one alone: on a weakly ordered processor (ARM64)
-        /// a racing first call could read the exceptions as null, or the longest pattern as 0, after
-        /// seeing the patterns. A reader of one reference to an immutable object sees all of it.
+        /// The parsed file, published whole. Three static fields set one after another and read after
+        /// a check of the last one alone would let a racing first call on a weakly ordered processor
+        /// (ARM64) read the exceptions as null, or the longest pattern as 0, after seeing the patterns.
+        /// A reader of one reference to an immutable object sees all of it.
         /// </summary>
         private sealed class Tables
         {

@@ -407,8 +407,8 @@ namespace Tetitulz.Pdf.Base.Rendering
                 // Resolved, as the raster path does at both of its /CA reads
                 // (PdfPageRenderer's PdfResolve.Number calls). Read through the plain indexer an
                 // indirect /CA yields no PdfNumber, which is indistinguishable from an absent key,
-                // so a half-transparent annotation exported fully opaque while the render honoured
-                // it — the same fix landing on one renderer only.
+                // so a half-transparent annotation would export fully opaque while the render
+                // honoured it.
                 float opacity = 1f;
                 if (PdfResolve.Number(doc, annot, PdfName.CA) is PdfNumber caNum)
                     opacity = Math.Max(0f, Math.Min(1f, (float)caNum.DoubleValue));
@@ -1003,11 +1003,11 @@ namespace Tetitulz.Pdf.Base.Rendering
             // 1, 3 and 4 operands are DeviceGray / DeviceRGB / DeviceCMYK (§12.5.2, Table 164);
             // a count of 2 is malformed and must fall back rather than be padded to RGB.
             //
-            // Routed through the shared converter, which also fixes the defect this branch used to
-            // carry: it converted the RAW operands and interpolated the result as `int`, so an
-            // out-of-range /C [-0.2 0 0 0] emitted "rgb(306,255,255)" — invalid CSS. The raster
-            // twin clamped, so the two rendered the same colour and a pixel-comparison parity test
-            // could never see it. GAPS.md §2b.
+            // Routed through the shared converter, which clamps: converting the RAW operands and
+            // interpolating the result as `int` would make an out-of-range /C [-0.2 0 0 0] emit
+            // "rgb(306,255,255)" — invalid CSS — while the raster twin clamped, so the two would
+            // render the same colour and a pixel-comparison parity test could never see it.
+            // GAPS.md §2b.
             int n = arr.Count >= PdfColorSpaceNames.CmykComponents
                         ? PdfColorSpaceNames.CmykComponents
                         : arr.Count;

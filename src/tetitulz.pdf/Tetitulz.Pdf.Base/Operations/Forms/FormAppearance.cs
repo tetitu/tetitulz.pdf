@@ -161,9 +161,9 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
         /// </summary>
         /// <remarks>
         /// The reading is <see cref="DefaultAppearanceString"/>, shared with the
-        /// renderers' fallback and the annotation appearance builder. This copy pasted the colour
-        /// operands into the appearance stream as it found them. They are numbers now, written by
-        /// the one PDF formatter, and a colour with a component that is not a number is ignored.
+        /// renderers' fallback and the annotation appearance builder. The colour operands are
+        /// numbers, written by the one PDF formatter rather than pasted as the string has them, and a
+        /// colour with a component that is not a number is ignored.
         /// </remarks>
         internal static DefaultAppearance ParseDefaultAppearance(string da)
         {
@@ -483,8 +483,8 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
             if (fontDict == null) return null;
             // Resolved, and this one is a GUARD rather than a lookup: the method refuses a Type0
             // font outright because everything downstream measures single bytes. Read raw, a legal
-            // /Subtype 12 0 R came back null, null is not /Type0, and the refusal never fired — so
-            // a composite font was measured as a simple one and every advance was wrong.
+            // /Subtype 12 0 R would come back null, null is not /Type0, and the refusal would never
+            // fire — so a composite font would be measured as a simple one and every advance be wrong.
             if ((doc.ResolveObject(fontDict[PdfName.Subtype]) as PdfName) == PdfName.Type0) { fontDict = null; return null; }
 
             // Keep the indirect reference when there is one; the appearance must not copy the

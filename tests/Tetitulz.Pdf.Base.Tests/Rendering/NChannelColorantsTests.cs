@@ -18,12 +18,12 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// carries — is the Separation a DeviceN space's <c>/Colorants</c> defines for it, where it defines one:
 /// ISO 32000-1 §8.6.6.5, the Separation's tint transform describes "the appearance of that colorant
 /// alone, whereas those of a DeviceN colour space describe only the appearance of its colorants in
-/// combination". Until 2026-10-22 the DeviceN's transform was sliced, the other inks at 0.
+/// combination" — not the DeviceN's transform sliced, the other inks at 0.
 /// </summary>
 /// <remarks>
 /// The fixture's DeviceN transform paints Spot1 at full tint as magenta and yellow (red); its
-/// <c>/Colorants</c> define Spot1 as cyan. The reference renderer's composite slices the DeviceN (red), as this
-/// renderer did; the specification's sentence decides.
+/// <c>/Colorants</c> define Spot1 as cyan. The reference renderer's composite slices the DeviceN (red);
+/// the specification's sentence decides.
 /// </remarks>
 public class NChannelColorantsTests
 {

@@ -161,7 +161,7 @@ namespace Tetitulz.Pdf.Core.Net
 
             // A relative Location resolves against the request it answered. With no request to
             // resolve against there is no target at all — refused, rather than thrown out of the
-            // Uri constructor as it once was.
+            // Uri constructor.
             Uri requested = response.RequestMessage?.RequestUri;
             if (!location.IsAbsoluteUri && (requested == null || !requested.IsAbsoluteUri))
             {

@@ -12,12 +12,12 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Filters;
 
 /// <summary>
-/// A JBIG2 stream cannot buy room in the budget it decodes under. The coverage-guided fuzzer's
-/// <c>open</c> target (2026-10-20) wrote two object streams filtered through <c>/JBIG2Decode</c>.
-/// The first, 73 bytes, sums a symbol width to −2 147 483 600, and its region charged
-/// <c>64 + width × height</c>, a negative cost that credited the stream's budget and the parser's
-/// whole-document budget above it with 38 G units. The second, 143 bytes (the first is its prefix),
-/// then decoded its full 128 Mi stream budget, 2.6 s, in each of the two recovery scans.
+/// A JBIG2 stream cannot buy room in the budget it decodes under. Two object streams filtered
+/// through <c>/JBIG2Decode</c>: the first, 73 bytes, sums a symbol width to −2 147 483 600, so a
+/// region charging <c>64 + width × height</c> would pay a negative cost, crediting the stream's
+/// budget and the parser's whole-document budget above it with 38 G units; the second, 143 bytes
+/// (the first is its prefix), would then decode its full 128 Mi stream budget, 2.6 s, in each of
+/// the two recovery scans.
 /// </summary>
 [Collection(Constants.PdfLimitsCollection.Name)]
 public sealed class Jbig2NegativeChargeTests

@@ -17,10 +17,10 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
-/// Two ways an object stream let a small file make the parser do unbounded work, found by the review
-/// of batch 131 (2026-10-15): members sharing an offset, each parsed and cached as its own copy of the
-/// same bytes; and a full index cache that admitted nothing more, so every member of a further stream
-/// re-read that stream's whole index.
+/// Two ways an object stream could let a small file make the parser do unbounded work: members
+/// sharing an offset, each parsed and cached as its own copy of the same bytes; and a full index
+/// cache that admits nothing more, so every member of a further stream re-reads that stream's
+/// whole index.
 /// </summary>
 [Collection(PdfLimitsCollection.Name)]
 public class ObjectStreamMemberBoundsTests
@@ -29,8 +29,8 @@ public class ObjectStreamMemberBoundsTests
 
     /// <summary>
     /// Members 3 and 4 name offset 0; member 5 its own. Object 3 is read, object 4 is refused with
-    /// the reason — ISO 32000-2 §7.5.7 has the offsets increase — where it used to come back as a
-    /// second copy of object 3's bytes stamped with its own number; object 5 is read.
+    /// the reason — ISO 32000-2 §7.5.7 has the offsets increase — rather than coming back as a second
+    /// copy of object 3's bytes stamped with its own number; object 5 is read.
     /// </summary>
     [Fact]
     public void AMemberAtAnOffsetAnEarlierMemberHolds_IsRefusedWithTheReason_WhereItsOwnIsRead()

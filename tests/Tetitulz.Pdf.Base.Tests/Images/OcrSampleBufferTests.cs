@@ -17,13 +17,11 @@ namespace Tetitulz.Pdf.Base.Tests.Images;
 /// </summary>
 /// <remarks>
 /// <para><b>Why these exist.</b> <c>RecognizeTextWithOcr</c> and <c>RecognizeWordsWithOcr</c> each
-/// rasterise a page and hand the bytes to a plugin, and both used to write out their own copy of the
-/// component count, the size test and the packing loop. Consolidating them onto
-/// <c>Images.OcrSampleBuffer</c> is only a consolidation if something reaches the survivor — and
-/// nothing did. Every OCR stub in this suite takes <c>byte[] pixels</c> and ignores it:
+/// rasterise a page and hand the bytes to a plugin through <c>Images.OcrSampleBuffer</c>, and
+/// every other OCR stub in this suite takes <c>byte[] pixels</c> and ignores it:
 /// <c>SearchablePdfTests.StubWordEngine</c> records <c>(width, height)</c> and drops the buffer,
-/// <c>FacadeFindingsTests.FakeOcrPlugin</c> returns a constant. Swapping red for blue in the packing
-/// loop, or filling the array with zeros, left the whole suite green.</para>
+/// <c>FacadeFindingsTests.FakeOcrPlugin</c> returns a constant. Without these, swapping red for
+/// blue in the packing loop, or filling the array with zeros, would leave the whole suite green.</para>
 ///
 /// <para><b>What the assertion is.</b> The fixture paints the page's left half red and its right
 /// half blue, so the buffer's contents are falsifiable in three independent ways at once: a channel
@@ -34,7 +32,7 @@ namespace Tetitulz.Pdf.Base.Tests.Images;
 ///
 /// <para>Both entry points are pinned rather than one, because the point of the shared helper is
 /// that the constants a plugin is <i>selected</i> by are the constants its bytes are <i>written</i>
-/// under. A test that reached only one call site would leave the other free to drift back.</para>
+/// under. A test that reached only one call site would leave the other free to drift.</para>
 /// </remarks>
 [Collection(PluginHostCollection.Name)]
 public sealed class OcrSampleBufferTests : IDisposable

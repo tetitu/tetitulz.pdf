@@ -23,23 +23,22 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// <see cref="ListItem"/>s could not.
 /// </summary>
 /// <remarks>
-/// <para><b>The gap was an ordinal with nowhere to come from.</b> A loose item carries
+/// <para><b>An ordinal needs somewhere to come from.</b> A loose item carries
 /// <see cref="ListItem.IsNumbered"/> and an <see cref="ListItem.Level"/>, and neither says which
-/// items belong together — so the marker was derived from the <i>level</i>, and three sibling items
-/// all rendered "1. ". The only way to get a real sequence was for the caller to resolve every
-/// marker itself and pass it in <see cref="ListItem.Marker"/>.</para>
+/// items belong together — so a marker derived from the <i>level</i> would render three sibling
+/// items all as "1. ", unless the caller resolved every marker itself and passed it in
+/// <see cref="ListItem.Marker"/>.</para>
 ///
-/// <para><b>Three formats gain structure, not just numbers.</b> HTML emitted a <c>&lt;p&gt;</c> with
-/// the marker as literal text — it looked like a list and was not one, so a screen reader announced
-/// nothing and a copy picked the numbers up as characters. ODT emitted a bare
-/// <c>&lt;text:p&gt;</c>. Tagged PDF emitted <c>/P</c>, never <c>/L</c>. Each now emits its own
-/// native form.</para>
+/// <para><b>Three formats get structure, not just numbers.</b> HTML writes a list, not a
+/// <c>&lt;p&gt;</c> with the marker as literal text, which looks like a list and is not one — a
+/// screen reader announces nothing and a copy picks the numbers up as characters; ODT a list, not
+/// a bare <c>&lt;text:p&gt;</c>; tagged PDF <c>/L</c>, not <c>/P</c>.</para>
 ///
 /// <para><b>Loose items are not deprecated and still render.</b> A list of one paragraph is not a
 /// list; wrapping every loose item in an <c>/L</c> of one <c>/LI</c> would be conformant and
-/// useless. The old spelling keeps the old rendering, which is also what keeps three producers that
-/// build the model directly working unchanged; since 2026-10-19 a run of two or more consecutive
-/// loose items is tagged as the list it is.</para>
+/// useless. Loose items keep their rendering, which is also what keeps three producers that build
+/// the model directly working; a run of two or more consecutive loose items is tagged as the list
+/// it is.</para>
 /// </remarks>
 public class ListContainerTests
 {
@@ -271,9 +270,9 @@ public class ListContainerTests
 
     /// <summary>A sublist item is written at its own <c>w:ilvl</c>.</summary>
     /// <remarks>
-    /// The level is how Word indents and numbers a nested item, and it replaces the explicit
-    /// <c>w:ind</c> this exporter used to write: an indent set here would fight the definition's
-    /// own, which is the more common way to get a list that looks wrong in Word.
+    /// The level is how Word indents and numbers a nested item, not an explicit <c>w:ind</c>: an
+    /// indent set here would fight the definition's own, which is the more common way to get a list
+    /// that looks wrong in Word.
     /// </remarks>
     [Fact]
     public void Docx_List_ASublistItemIsWrittenAtItsOwnLevel()
@@ -478,7 +477,7 @@ public class ListContainerTests
     }
 
     /// <summary>
-    /// Two or more consecutive loose items are a list (2026-10-19): one <c>/L</c>, an <c>/LI</c> per item
+    /// Two or more consecutive loose items are a list: one <c>/L</c>, an <c>/LI</c> per item
     /// whose paragraph is its <c>/LBody</c>, a deeper item in an <c>/L</c> inside the item before it. A
     /// paragraph ends the run, and a lone item after it is still a <c>/P</c> (the guard above).
     /// </summary>
@@ -504,7 +503,7 @@ public class ListContainerTests
     }
 
     /// <summary>
-    /// A list part of <see cref="ListBlock.NestingDepth"/> past 0 (2026-10-20) is tagged in the item last
+    /// A list part of <see cref="ListBlock.NestingDepth"/> past 0 is tagged in the item last
     /// drawn one level up: "inner" and "inner2" — the second going on from the first — in "one"'s
     /// <c>/LI</c>, "deep" in "inner"'s; "two", going on at 0, back in the outer <c>/L</c>, and "twoinner"
     /// after it in "two"'s; "other", a list of its own, a new one. A depth past every open list is the

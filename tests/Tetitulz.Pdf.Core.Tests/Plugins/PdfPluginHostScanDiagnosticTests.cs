@@ -83,8 +83,8 @@ public sealed class PdfPluginHostScanDiagnosticTests : IDisposable
     public void RegisterFromDirectory_UnloadableDll_RecordsWhyItWasDropped()
     {
         // A file matching the plugin naming pattern that is not a managed assembly at all — the
-        // stand-in for a wrong-architecture or blocked-file DLL. Assembly.LoadFrom throws, and
-        // before the fix that produced a Debug.WriteLine and nothing else.
+        // stand-in for a wrong-architecture or blocked-file DLL. Assembly.LoadFrom throws, and the
+        // failure must reach the scan's diagnostic, not a Debug.WriteLine alone.
         string dir = Path.Combine(Path.GetTempPath(), "tetitulz-plugin-scan-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(dir);
         string dll = Path.Combine(dir, "Tetitulz.Pdf.Plugins.Broken.dll");

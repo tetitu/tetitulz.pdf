@@ -349,7 +349,8 @@ namespace Tetitulz.Pdf.Signing.Cms
             byte[] bytes, X509Certificate signer, X509Certificate? issuer, List<string> warnings,
             SignatureVerificationOptions opts, DateTime assessmentTime)
         {
-            BasicOcspResp? basic = ParsedOcsp(bytes).Basic;
+            ParsedOcspEntry parsedOcsp = ParsedOcsp(bytes);
+            BasicOcspResp? basic = parsedOcsp.Basic;
             if (basic == null) return PdfRevocationStatus.Unknown;
 
             // Locate the single response for this certificate — its serial and, since serials are
@@ -361,7 +362,18 @@ namespace Tetitulz.Pdf.Signing.Cms
             // RFC 6960 §3.2: verify the responder's signature before relying on the status.
             // The responder is the issuer directly, or a delegated cert embedded in the response —
             // the one search the LTV embedder makes before writing a response into /DSS.
-            string? responder = OcspSingleResponse.WhyTheResponderCannotVouch(basic, issuer, assessmentTime);
+            // Kept with the parse, by issuer and time, as a CRL's signature check is: every certificate of every
+            // signature asks the same response again, and the search tries each certificate it carries.
+            string? responder;
+            if (issuer == null)
+                responder = OcspSingleResponse.WhyTheResponderCannotVouch(basic, issuer, assessmentTime);
+            else
+                lock (parsedOcsp)
+                {
+                    if (!parsedOcsp.Responder.TryGetValue((issuer, assessmentTime), out responder))
+                        parsedOcsp.Responder[(issuer, assessmentTime)] = responder =
+                            OcspSingleResponse.WhyTheResponderCannotVouch(basic, issuer, assessmentTime);
+                }
             if (responder != null)
             {
                 warnings.Add($"OCSP response {responder} Status ignored.");
@@ -547,6 +559,7 @@ namespace Tetitulz.Pdf.Signing.Cms
             List<string>? warnings = null)
         {
             if (doc.ResolveObject(source[new PdfName(key)]) is not PdfArray arr) yield break;
+            DocumentReads reads = ReadsOf(doc);
             var seen = new HashSet<PdfStream>(PdfReferenceEquality.Instance);
             int unreadable = 0;
             string? firstReason = null;
@@ -558,8 +571,7 @@ namespace Tetitulz.Pdf.Signing.Cms
                     warnings?.Add($"/{key} names more than {MaxStreamsPerList} streams; the rest were not read.");
                     break;
                 }
-                StreamsRead++;
-                if (!stream.TryGetDecodedData(Timestamping.DssBuilder.MaxResponseBytes, out byte[] data, out string reason))
+                if (!reads.TryDecode(stream, out byte[]? data, out string? reason))
                 {
                     unreadable++;
                     firstReason ??= reason;
@@ -570,6 +582,67 @@ namespace Tetitulz.Pdf.Signing.Cms
             if (unreadable > 0)
                 warnings?.Add($"{unreadable} /{key} stream(s) could not be read and were not consulted: {firstReason}");
         }
+
+        /// <summary>
+        /// The decoded bytes one document's <c>/DSS</c> and <c>/VRI</c> lists may cost, every list and every
+        /// question together: the verifier asks once a signature, a certificate and a source, and the inventory once
+        /// a <c>/VRI</c> entry, and a list may be named from any number of them.
+        /// </summary>
+        internal const long MaxDecodedBytesPerDocument = 256L * 1024 * 1024;
+
+        /// <summary>
+        /// What one document's revocation streams decoded to, each stream once whoever asks: a decode, or the
+        /// reason there is none, kept for the document's life — and what is left of
+        /// <see cref="MaxDecodedBytesPerDocument"/>. Every later question about a stream is answered from here, so
+        /// its parse (<see cref="ParsedCrl"/>, keyed by the buffer) is kept too.
+        /// </summary>
+        private sealed class DocumentReads
+        {
+            private readonly Dictionary<PdfStream, byte[]?> _decoded = new Dictionary<PdfStream, byte[]?>(PdfReferenceEquality.Instance);
+            private readonly Dictionary<PdfStream, string> _refused = new Dictionary<PdfStream, string>(PdfReferenceEquality.Instance);
+            private long _bytesLeft;
+
+            internal DocumentReads(long budget) => _bytesLeft = budget;
+
+            internal bool TryDecode(PdfStream stream, out byte[]? data, out string? reason)
+            {
+                lock (this)
+                {
+                    reason = null;
+                    if (_decoded.TryGetValue(stream, out data)) return true;
+                    if (_refused.TryGetValue(stream, out reason)) return false;
+
+                    long ceiling = Math.Min(Timestamping.DssBuilder.MaxResponseBytes, _bytesLeft);
+                    StreamsRead++;
+                    if (ceiling <= 0)
+                        reason = $"the document's revocation streams passed {MaxDecodedBytesPerDocument} decoded bytes together";
+                    else if (stream.TryGetDecodedDataUncached(ceiling, out data, out string why))
+                    {
+                        _bytesLeft -= data?.LongLength ?? 0;
+                        _decoded[stream] = data;
+                        return true;
+                    }
+                    else
+                    {
+                        // A refused decode spends the budget too, half of what is left: only the decoder knows
+                        // how far it got.
+                        _bytesLeft -= Math.Max(1, _bytesLeft / 2);
+                        reason = why;
+                    }
+                    _refused[stream] = reason ?? "";
+                    data = null;
+                    return false;
+                }
+            }
+        }
+
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<PdfDocument, DocumentReads> Reads =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<PdfDocument, DocumentReads>();
+
+        private static DocumentReads ReadsOf(PdfDocument doc) => Reads.GetValue(doc, _ => new DocumentReads(MaxDecodedBytesPerDocument));
+
+        /// <summary>A test seam: <paramref name="doc"/>'s revocation streams read under <paramref name="budget"/> bytes rather than <see cref="MaxDecodedBytesPerDocument"/>; before its first read.</summary>
+        internal static void LimitReads(PdfDocument doc, long budget) => Reads.Add(doc, new DocumentReads(budget));
 
         /// <summary>A CRL stream's parse, kept with its decoded buffer, and its signature check by issuer.</summary>
         private sealed class ParsedCrlEntry
@@ -582,6 +655,8 @@ namespace Tetitulz.Pdf.Signing.Cms
         private sealed class ParsedOcspEntry
         {
             internal BasicOcspResp? Basic;
+            internal readonly Dictionary<(X509Certificate Issuer, DateTime At), string?> Responder =
+                new Dictionary<(X509Certificate Issuer, DateTime At), string?>();
         }
 
         private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<byte[], ParsedCrlEntry> Crls =

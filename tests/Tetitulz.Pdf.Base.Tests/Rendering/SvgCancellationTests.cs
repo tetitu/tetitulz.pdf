@@ -15,16 +15,15 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// Cancellation on the SVG export path, which had none at all — and, since 2026-08-28, the raster
-/// cases that make the pair symmetric.
+/// Cancellation on the SVG export path, and the raster cases that make the pair symmetric.
 /// </summary>
 /// <remarks>
-/// <para><b>The asymmetry this closes.</b> The raster interpreter polls its token every 256
-/// operators and propagates it into nested forms and Type 3 glyphs, so a host can abandon a hostile
-/// page. <c>PdfSvgRenderer</c> took no token on any of its four entry points and no
-/// <c>SvgContentWriter</c> partial mentioned one — so the identical document was abandonable when
-/// rendered and uninterruptible when exported. That is the repository's recurring defect class (one
-/// renderer lagging the other) in its most consequential form: not a wrong pixel, but no way out.</para>
+/// <para><b>The asymmetry this guards.</b> The raster interpreter polls its token every 256
+/// operators and propagates it into nested forms and Type 3 glyphs, so a host can abandon a
+/// hostile page, and <c>PdfSvgRenderer</c>'s entry points take a token the same way. Without it
+/// the identical document would be abandonable when rendered and uninterruptible when exported —
+/// the repository's recurring defect class (one renderer lagging the other) in its most
+/// consequential form: not a wrong pixel, but no way out.</para>
 ///
 /// <para><b>Nothing here asserts a wall clock.</b> The token is cancelled before the call, so the
 /// first poll throws deterministically; a guard test that measures elapsed time is the pattern this

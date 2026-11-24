@@ -170,8 +170,7 @@ namespace Tetitulz.Pdf.Signing
         /// <para><b>No new traversal.</b> This is <c>PdfAcroForm.GetSignatureFields()</c> filtered
         /// by <see cref="Core.Forms.PdfSignatureField.HasSignature"/>; that walk already carries the depth cap
         /// and the reference-keyed visited set a <c>/Kids</c> cycle needs, and duplicating it here
-        /// would give the signer and this enumeration two answers about the same document — which
-        /// is the defect <c>PdfSigner</c>'s own remarks record having had twice.</para>
+        /// would give the signer and this enumeration two answers about the same document.</para>
         ///
         /// <para><b>Fully-qualified names</b> (§12.7.3.1), which is the identity that is required to
         /// be unique, and the name <c>Sign</c> adopts a prepared field by: a signature field nested

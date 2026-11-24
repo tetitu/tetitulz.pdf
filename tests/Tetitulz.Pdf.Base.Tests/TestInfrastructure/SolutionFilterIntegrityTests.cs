@@ -18,22 +18,21 @@ namespace Tetitulz.Pdf.Base.Tests.TestInfrastructure;
 /// the solution actually contains.
 /// </summary>
 /// <remarks>
-/// <para><b>This exists because a path in that file was wrong and every guard said it was fine.</b>
-/// Two entries were written with doubled backslashes — <c>src\\\\plugins\\\\…</c>, which JSON
-/// decodes to a literal <c>src\\plugins\\…</c> — so MSBuild refused the filter outright with
-/// <c>MSB5028: … includes project … that is not in the solution file</c>. That is the Linux CI
-/// job's <i>build</i> step, which means the portability leg was not being verified at all.</para>
+/// <para><b>What it catches.</b> An entry written with doubled backslashes —
+/// <c>src\\\\plugins\\\\…</c>, which JSON decodes to a literal <c>src\\plugins\\…</c> — makes MSBuild
+/// refuse the filter outright with <c>MSB5028: … includes project … that is not in the solution
+/// file</c>. That is the Linux CI job's <i>build</i> step, so the portability leg would not be
+/// verified at all.</para>
 ///
-/// <para><b>The CI step that reads this file could not have caught it.</b> It asks whether the
+/// <para><b>The CI step that reads this file cannot catch it.</b> It asks whether the
 /// filter's raw text <c>Contains</c> each project's <i>file name</i>, which a path with any
 /// separator at all satisfies. That is the right question for "did someone forget to add a new
 /// project", and the wrong one for "is the path usable" — so the two checks are complementary
 /// rather than duplicates, and this one is stated in terms of resolving the path.</para>
 ///
-/// <para><b>The first version of this file did not catch it either, and the reason is worth
-/// keeping.</b> It normalised every path before comparing — collapsing repeated separators — which
-/// is exactly the defect, so the guard papered over the thing it was written for. Windows compounds
-/// it: <c>File.Exists</c> collapses repeated separators too, so even resolving the path succeeded.
+/// <para><b>Nor can a guard that normalises paths.</b> Collapsing repeated separators before
+/// comparing is exactly the defect, so it would paper over the thing it is for. Windows compounds
+/// it: <c>File.Exists</c> collapses repeated separators too, so even resolving the path succeeds.
 /// A guard that normalises its input cannot see a defect in the input's spelling; this one asserts
 /// the spelling itself.</para>
 ///
@@ -107,7 +106,7 @@ public class SolutionFilterIntegrityTests
     /// <remarks>
     /// A filter may name only projects in the solution it filters — MSBuild treats anything else as
     /// an error rather than as a no-op — and the comparison has to be on the path, because that is
-    /// what MSBuild matches on and what was wrong.
+    /// what MSBuild matches on and what can be wrong.
     /// </remarks>
     [RepoSourceFact]
     public void EveryProjectInThePortableFilter_IsInTheSolution()

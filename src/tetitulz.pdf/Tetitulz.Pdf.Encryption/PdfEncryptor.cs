@@ -113,6 +113,7 @@ namespace Tetitulz.Pdf.Encryption
         /// </param>
         internal static void Encrypt(Stream input, Stream output, EncryptionParameters parameters, bool refuseTokenBelowVersion5)
         {
+            _lastDroppedObjects = null;
             if (input == null) throw new ArgumentNullException(nameof(input));
             if (output == null) throw new ArgumentNullException(nameof(output));
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -343,6 +344,7 @@ namespace Tetitulz.Pdf.Encryption
         internal static void EncryptKeepingOriginal(Stream input, Stream output, PdfDictionary originalEncrypt,
             byte[] fileId, PdfDecryptor.ResolvedEncryption resolved, EncryptionAlgorithm algorithm, byte[] kdfSalt)
         {
+            _lastDroppedObjects = null;
             if (input == null) throw new ArgumentNullException(nameof(input));
             if (output == null) throw new ArgumentNullException(nameof(output));
             if (originalEncrypt == null) throw new ArgumentNullException(nameof(originalEncrypt));
@@ -931,11 +933,22 @@ namespace Tetitulz.Pdf.Encryption
         /// streams and cross-reference stream are its layout (see <see cref="FileLayoutObjects"/>), and
         /// the parser hands every packed member over as an object of its own.
         /// </summary>
-        private static Dictionary<int, PdfObject> ContentObjects(PdfDocument doc, out bool inputHasObjectStreams)
+        /// <remarks>
+        /// An object the parser cannot read is not in the output, and is said: <see cref="LastDroppedObjects"/>
+        /// names the first and counts the rest — never left for the caller to infer from a missing page.
+        /// </remarks>
+        internal static Dictionary<int, PdfObject> ContentObjects(PdfDocument doc, out bool inputHasObjectStreams)
         {
             var allObjects = new Dictionary<int, PdfObject>();
             inputHasObjectStreams = false;
-            foreach (var kvp in doc.Parser.EnumerateAllObjects())
+            string firstDrop = null;
+            int drops = 0;
+            void Unreadable(int number, Exception ex)
+            {
+                drops++;
+                firstDrop ??= $"object {number} could not be read ({ex.Message})";
+            }
+            foreach (var kvp in doc.Parser.EnumerateAllObjects(Unreadable))
             {
                 if (FileLayoutObjects.IsLayout(kvp.Value))
                 {
@@ -947,8 +960,21 @@ namespace Tetitulz.Pdf.Encryption
             // The references the parser resolved into place go back before any writer sees the graph,
             // whatever layout and encryptor write it (ParserInlinedObjects).
             ParserInlinedObjects.RestoreReferences(allObjects);
+            if (drops > 0)
+                _lastDroppedObjects = firstDrop + (drops > 1 ? $" (and {drops - 1} further object(s))" : "") +
+                                      "; absent from the encrypted output.";
             return allObjects;
         }
+
+        /// <summary>
+        /// The objects the last encryption on this thread left out because the parser could not read them —
+        /// the first named, the rest counted — or <c>null</c> when every object the cross-reference table
+        /// lists was written. Set by this class and <see cref="PdfPublicKeyEncryptor"/>; cleared at the start
+        /// of each.
+        /// </summary>
+        public static string LastDroppedObjects => _lastDroppedObjects;
+
+        [ThreadStatic] internal static string _lastDroppedObjects;
 
         /// <summary>
         /// The standard handler's <c>/CF</c> with its one filter, <c>/StdCF</c>, and <c>/StmF</c> and

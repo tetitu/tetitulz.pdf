@@ -19,16 +19,14 @@ namespace Tetitulz.Pdf.Base.Tests.Operations.Documents;
 /// the file spelled it.
 /// </summary>
 /// <remarks>
-/// <para><c>PdfTemplateEngine.Serialize</c> emitted <c>"/" + n.Value</c>, and
-/// <c>PdfTokenizer.ReadName</c> <b>decodes</b> <c>#XX</c> into that value. So a page containing
-/// <c>/Name#20With#20Space BDC</c> — or an ordinary resource name such as <c>/T1#2D0</c> — came out
-/// as <c>/Name With Space</c>: <b>three tokens where the file had one</b>, on every templated
-/// page.</para>
+/// <para><c>PdfTokenizer.ReadName</c> <b>decodes</b> <c>#XX</c> into a name's value, so emitting
+/// <c>"/" + n.Value</c> would turn a page containing <c>/Name#20With#20Space BDC</c> — or an
+/// ordinary resource name such as <c>/T1#2D0</c> — into <c>/Name With Space</c>: <b>three tokens
+/// where the file had one</b>, on every templated page.</para>
 ///
-/// <para><b>This test exists because a mutation said it had to.</b> Reverting the fix left every
-/// existing templating test green — the call site had no coverage at all, which is the same hole
-/// found earlier in the subset-tag consolidation. A call site a mutation cannot reach is
-/// indistinguishable from one that was deleted.</para>
+/// <para><b>The other templating tests do not reach this call site</b>, so without this one a
+/// mutation of it survives. A call site a mutation cannot reach is indistinguishable from one
+/// that was deleted.</para>
 /// </remarks>
 public class TemplateNameEscapingTests
 {

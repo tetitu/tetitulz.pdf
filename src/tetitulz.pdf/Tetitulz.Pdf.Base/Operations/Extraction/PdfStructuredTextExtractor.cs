@@ -199,20 +199,18 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
 
             using var fontCache = new Rendering.FontCache();
 
-            // One aggregate budget per page, charged per form invocation. The depth cap and the
-            // branch-scoped visited set each bound one dimension and neither bounds the product —
-            // see PdfLimits.MaxFormXObjectInvocationsPerPage for the doubling chain that defeats
-            // both. WalkBudget rather than WorkBudget: extraction returns a partial page and says
-            // so on LastError, it does not abort the document.
-            var formBudget = new WalkBudget(PdfLimits.MaxFormXObjectInvocationsPerPage);
+            // One aggregate budget per page, charged per form invocation and by each invocation's decoded
+            // content (FormContentBudget). The depth cap and the branch-scoped visited set each bound one
+            // dimension and neither bounds the product — see PdfLimits.MaxFormXObjectInvocationsPerPage for
+            // the doubling chain that defeats both. Refused rather than thrown: extraction returns a partial
+            // page and says so on LastError, it does not abort the document.
+            var formBudget = new FormContentBudget();
             if (ops.Count > 0) InterpretOps(ops, page.Resources, doc, chars, fontCache, budget: formBudget);
             if (opts.IncludeAnnotationAppearances) AppendAnnotationText(page, doc, pageIndex, chars, fontCache, formBudget);
 
             if (formBudget.Exhausted)
-                LastError =
-                    $"Page {pageIndex + 1}: form-XObject invocations exceeded " +
-                    $"{PdfLimits.MaxFormXObjectInvocationsPerPage:N0}; the remaining forms were " +
-                    "not walked and the extracted text for this page is incomplete.";
+                LastError = formBudget.Shortfall(pageIndex,
+                    "the remaining forms were not walked and the extracted text for this page is incomplete.");
 
             DropInvisibleCopies(chars);
             DropOverlappingDuplicates(chars, drawn);
@@ -241,8 +239,9 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             LastError = null;
             var chars = new List<PdfTextChar>();
             using var fontCache = new Rendering.FontCache();
-            var budget = new WalkBudget(PdfLimits.MaxFormXObjectInvocationsPerPage);
+            var budget = new FormContentBudget();
             AppendAnnotationText(doc.Pages[pageIndex], doc, pageIndex, chars, fontCache, budget);
+            LastError ??= budget.Shortfall(pageIndex, "the remaining appearances were not read.");
             DropInvisibleCopies(chars);
             return BuildLines(chars, WordAssemblyOptions.Default);
         }
@@ -256,7 +255,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
         /// onto <c>/Rect</c> as they fit it, its text in page space.
         /// </summary>
         private static void AppendAnnotationText(PdfPage page, PdfDocument doc, int pageIndex,
-                                                 List<PdfTextChar> chars, Rendering.FontCache fontCache, WalkBudget budget)
+                                                 List<PdfTextChar> chars, Rendering.FontCache fontCache, FormContentBudget budget)
         {
             var annotsObj = page.Dictionary[PdfName.Annots];
             if (annotsObj == null) return;
@@ -385,7 +384,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             Rendering.FontCache fontCache,
             int depth = 0,
             HashSet<int> visited = null,
-            WalkBudget budget = null,
+            FormContentBudget budget = null,
             int streamObj = 0,
             TextGs initialGs = null,
             int inheritedMcid = -1,
@@ -486,10 +485,9 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
                             // An outer section's range starts before an inner one's, so an enclosing
                             // /ActualText replaces whatever this section produced and an enclosing
                             // /ReversedChars marks it again: the work is done once, by the outermost
-                            // section that does it. Each EMC re-walked every glyph since its section
-                            // began, so N nested sections around G glyphs cost N × G. (A guard of this
-                            // shape was once removed because no test saw an outcome change; its
-                            // evidence is the work, MarkedContentWork.)
+                            // section that does it. Each EMC re-walking every glyph since its section
+                            // began would cost N nested sections around G glyphs N × G; no outcome
+                            // changes without this guard, so its evidence is the work, MarkedContentWork.
                             if (section.Reversed && openReversed == 0 && openActualText == 0)
                                 MarkReversedRun(output, section);
                             if (openActualText == 0)
@@ -726,12 +724,11 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             float effectiveFontSize = gs.FontSize * gs.HorizScale;
 
             // Codes come from the font's own encoding CMap, NOT from a fixed stride.
-            // A fixed stride (FontCache.GetCharCodeSize, since removed) took the narrowest codespace, so a mixed-width CMap —
-            // 1-byte ASCII plus 2-byte CJK, which is what the Shift-JIS-based Adobe CMaps are —
-            // reported 1 and split every 2-byte code in half: the width lookup was wrong and the
-            // decoded cluster was garbage from that point on. The codec is the splitter.
-            // PdfRedactionEngine and PdfTemplateEngine were converted in the same
-            // change; a fixed stride must not come back to any of the three.
+            // A fixed stride would take the narrowest codespace, so a mixed-width CMap — 1-byte
+            // ASCII plus 2-byte CJK, which is what the Shift-JIS-based Adobe CMaps are — would give
+            // 1 and split every 2-byte code in half: the width lookup wrong and the decoded cluster
+            // garbage from that point on. The codec is the splitter, here as in PdfRedactionEngine
+            // and PdfTemplateEngine; a fixed stride must not reach any of the three.
             // A code at a time from the codec (GlyphIdResolver.NextCode), not a list per string.
             var codec = fontCache?.GetEncodingCodec(gs.FontName, resources, doc);
 
@@ -807,10 +804,10 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
 
                 // The emitted box is in PAGE space (see the class doc), but charW/charH are in
                 // unscaled TEXT space. A producer that writes "1 Tf" and carries the size in the
-                // matrix instead — Cairo and matplotlib both do, e.g. "12 0 0 12 x y Tm" — got a
-                // box 12x too small, while px/py went through fullTm and were correct. Every
-                // inter-glyph gap then dwarfed the word-split threshold in AssembleLines
-                // (gap = next.X - (prev.X + prev.Width)) and EVERY glyph became its own word.
+                // matrix instead — Cairo and matplotlib both do, e.g. "12 0 0 12 x y Tm" — would get
+                // a box 12x too small, while px/py, through fullTm, are correct. Every inter-glyph
+                // gap would then dwarf the word-split threshold in AssembleLines
+                // (gap = next.X - (prev.X + prev.Width)) and EVERY glyph become its own word.
                 // Column norms of the [a b c d] sub-matrix, so a pure rotation (norm 1) leaves
                 // the box unchanged. charW/charH themselves stay in text space: the advance
                 // below is composed INTO Tm and must not be pre-scaled.
@@ -873,14 +870,14 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             string name, PdfDictionary resources, PdfDocument doc,
             TextGs parentGs, List<PdfTextChar> output,
             Rendering.FontCache fontCache,
-            int depth, HashSet<int> visited, WalkBudget budget = null,
+            int depth, HashSet<int> visited, FormContentBudget budget = null,
             int enclosingMcid = -1, int enclosingMcidStream = 0)
         {
             // Charged before the work, once per invocation, so the aggregate is bounded even
             // where every path is short and no form repeats on its own branch. Returning here
             // leaves budget.Exhausted set, which ExtractPage turns into a LastError naming the
             // page as incomplete — a silent truncation would be worse than the hang.
-            if (budget != null && !budget.Take()) return;
+            if (budget != null && !budget.TakeInvocation()) return;
 
             var cat = resources?[PdfName.XObject];
             if (cat == null) return;
@@ -907,7 +904,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
         private static void RunFormStream(
             PdfStream formStream, string what, PdfDictionary formRes, PdfDocument doc,
             TextGs parentGs, List<PdfTextChar> output, Rendering.FontCache fontCache,
-            int depth, HashSet<int> visited, WalkBudget budget,
+            int depth, HashSet<int> visited, FormContentBudget budget,
             int enclosingMcid = -1, int enclosingMcidStream = 0)
         {
             // The cycle half of the guard. The depth cap alone bounds the stack but still walks the
@@ -932,7 +929,10 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
                 return;
             }
 
-            var ops = ContentStreamParser.Parse(data);
+            // Charged its decoded length, as the renderers charge a form's content: the invocation count
+            // alone bounds nothing a form's size chooses. Parsed once a page however often it is drawn.
+            var ops = budget != null ? budget.Operations(data) : ContentStreamParser.Parse(data);
+            if (ops == null) return;   // the page's form content is spent; the page's report says so
             var childGs = parentGs.Clone();
             if (formStream[PdfName.OC] != null
                 && Rendering.ContentStreamInterpreter.IsOcEntryHidden(formStream[PdfName.OC], childGs.HiddenLayers.Value, doc))
@@ -2163,7 +2163,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
         /// <summary>
         /// When true, each assembled line's text is rebuilt in logical reading order via the full
         /// Unicode bidi algorithm (<see cref="Tetitulz.Pdf.Core.Text.UnicodeBidi"/>) instead of the
-        /// geometric right-to-left/left-to-right sort.  This fixes mixed-direction lines common in
+        /// geometric right-to-left/left-to-right sort.  This handles mixed-direction lines common in
         /// Hebrew/Arabic invoices (e.g. an RTL label followed by an LTR amount or part-code): the
         /// label reads right-to-left while embedded numbers/codes stay intact.  Character, word, and
         /// line bounding boxes are unaffected — only <see cref="PdfTextLine.Text"/> changes.

@@ -339,7 +339,7 @@ public class HeadingHierarchyTests
     [Fact]
     public void FixHeadingHierarchy_StrongHeadingBeforeANumberedOne_DoesNotCountAsAnH1()
     {
-        // The mirror case, and the one that used to be wrong: if <H> were folded in as level 1,
+        // The mirror case, and the one easy to get wrong: if <H> were folded in as level 1,
         // the following H2 would look legal and be left alone. It is not — H2 is the FIRST
         // numbered heading, so it must become H1.
         int changed = FixHeadings(StructurePdf(Doc("H", "H2")), out byte[] output);

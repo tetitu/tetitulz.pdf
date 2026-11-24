@@ -304,13 +304,11 @@ public sealed class RenderingGapsTier12Tests
     /// (§11.7.4.2 — the nonzero-overprint rule applies only to DeviceCMYK).
     /// </summary>
     /// <remarks>
-    /// <b>This test previously asserted the opposite</b>: that <c>/op true</c> alone emitted
-    /// <c>mix-blend-mode:multiply</c>, with a DeviceRGB fill, no <c>/OPM</c> and no opt-in. That
-    /// pinned an unconditional approximation the raster path deliberately does not make — overprint
-    /// is a press behaviour that viewers expose as a preview toggle, so simulating it by default
-    /// silently changed screen output for every prepress file, and the two renderers disagreed on
-    /// every one of them. The fixture now supplies all three conditions, and the cases below pin
-    /// each one being necessary.
+    /// <c>/op true</c> alone — a DeviceRGB fill, no <c>/OPM</c>, no opt-in — emits no
+    /// <c>mix-blend-mode:multiply</c>: overprint is a press behaviour that viewers expose as a preview
+    /// toggle, so simulating it by default would silently change screen output for every prepress
+    /// file, and the two renderers would disagree on every one of them. The fixture supplies all
+    /// three conditions, and the cases below pin each one being necessary.
     /// </remarks>
     [Fact]
     public void Svg_ExtGState_OverprintFill_SimulatedOnlyWhenAllConditionsHold()

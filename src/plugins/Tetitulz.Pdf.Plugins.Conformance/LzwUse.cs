@@ -38,8 +38,7 @@ namespace Tetitulz.Pdf.Plugins.Conformance
         /// No reference is resolved here, because none can arrive: the parser resolves an indirect
         /// <c>/Filter</c>, and each reference inside a <c>/Filter</c> array, on every stream it
         /// reads (<c>PdfParser</c>, so that decoding never meets one), and an inline image's
-        /// dictionary holds none. The resolution this had was a line that did nothing — the sweep's
-        /// survivor — and <c>AnIndirectFilter_ReportsA30</c> pins the parser's half.
+        /// dictionary holds none. <c>AnIndirectFilter_ReportsA30</c> pins the parser's half.
         /// </remarks>
         internal static bool NamesLzw(PdfObject filter)
         {

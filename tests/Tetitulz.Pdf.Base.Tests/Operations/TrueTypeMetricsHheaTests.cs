@@ -12,15 +12,15 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
-/// Regression tests for <c>TrueTypeMetrics.Parse</c>'s <c>hhea</c> / <c>hmtx</c> handling.
+/// Tests for <c>TrueTypeMetrics.Parse</c>'s <c>hhea</c> / <c>hmtx</c> handling.
 ///
 /// <para>
-/// <b>The bug.</b> <c>hhea</c> is 36 bytes and <c>numberOfHMetrics</c> is its last field, at
-/// table offset 34. The parser skipped 30 bytes past <c>descender</c> (offset 8) and therefore
-/// read at offset <b>38</b> — two bytes past the end of the table. On a font whose <c>hhea</c>
-/// is the last table in the file that threw <see cref="IndexOutOfRangeException"/>; otherwise it
-/// silently produced a garbage advance-width table. <c>PdfFontSubsetter.ParseHhea</c> has always
-/// read offset 34 correctly, so the two disagreed about the same font.
+/// <b>The offset.</b> <c>hhea</c> is 36 bytes and <c>numberOfHMetrics</c> is its last field, at
+/// table offset 34, as <c>PdfFontSubsetter.ParseHhea</c> reads it too. Skipping 30 bytes past
+/// <c>descender</c> (offset 8) would read at offset <b>38</b> — two bytes past the end of the
+/// table: on a font whose <c>hhea</c> is the last table in the file that throws
+/// <see cref="IndexOutOfRangeException"/>, and otherwise it silently produces a garbage
+/// advance-width table.
 /// </para>
 ///
 /// <para>
@@ -56,7 +56,7 @@ public sealed class TrueTypeMetricsHheaTests
     public void Parse_HheaIsLastTableInFile_DoesNotThrow()
     {
         // Adversarial layout: hhea is exactly 36 bytes and ends at EOF, so a read at offset 38
-        // runs off the end of the buffer. TtfReader indexes unchecked, so pre-fix this threw.
+        // runs off the end of the buffer. TtfReader indexes unchecked, so such a read would throw.
         byte[] font = BuildFont(numberOfHMetrics: 2,
                                 advanceWidths: new[] { 500, 600 },
                                 hheaPadTo: 36,

@@ -16,8 +16,8 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// <remarks>
 /// <para>The cell is laid out again on every page the header repeats on, so <c>LayOutCellBlocks</c>
 /// meets the same positioned paragraph once per page and must add it to the section's held-back list
-/// exactly once. That one-per-paragraph rule used to be a linear <c>Exists</c> scan of the list — an
-/// O(n²) over a long multi-page table; it is now an O(1) reference-identity set probe.</para>
+/// exactly once — an O(1) reference-identity set probe, where a linear <c>Exists</c> scan of the
+/// list would be O(n²) over a long multi-page table.</para>
 /// <para>This asserts the rule's result — the paragraph is drawn once — against a control that the
 /// header really does repeat (its ordinary text appears once per page), so "drawn once" is a
 /// statement about the dedup over several repeats, not about a one-page document. An inverted or

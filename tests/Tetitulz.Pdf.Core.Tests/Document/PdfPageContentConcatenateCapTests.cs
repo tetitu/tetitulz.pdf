@@ -41,8 +41,8 @@ public class PdfPageContentConcatenateCapTests
         try
         {
             PdfLimits.MaxDecompressedBytes = 1_000_000;   // 1 MB
-            // 100 parts of 20 KB each decode to ~2 MB in total, over the 1 MB ceiling. Pre-fix this
-            // concatenated the lot; now the part that would cross the ceiling is refused.
+            // 100 parts of 20 KB each decode to ~2 MB in total, over the 1 MB ceiling: the part that
+            // would cross the ceiling is refused, rather than the lot concatenated.
             var page = PageWithParts(100);
             var ex = Assert.Throws<PdfException>(() =>
                 PdfPageContent.Concatenate(page, x => x, _ => new byte[20_000]));

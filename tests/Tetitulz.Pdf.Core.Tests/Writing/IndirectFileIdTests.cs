@@ -74,7 +74,7 @@ public class IndirectFileIdTests
 
     /// <summary>
     /// A document with no <c>/ID</c> at all still gets one — and it is <b>deterministic</b>, so two
-    /// runs over the same objects produce the same file. Without this the fix could have been "never
+    /// runs over the same objects produce the same file. Without this the rule could be "never
     /// synthesise", which would leave a rewritten file with no identifier.
     /// </summary>
     [Fact]

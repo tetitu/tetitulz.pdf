@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Text;
+using Tetitulz.Pdf.Core.Text;
 
 namespace Tetitulz.Pdf.Plugins.Docx
 {
@@ -32,45 +33,10 @@ namespace Tetitulz.Pdf.Plugins.Docx
         /// <b>Tab, line feed and carriage return are kept</b> — they are legal, and the converters
         /// split paragraphs on them, so stripping the C0 range wholesale would collapse every
         /// document to one line. Valid surrogate <i>pairs</i> are kept (astral characters are legal);
-        /// only unpaired halves, which cannot be encoded, are dropped.
+        /// only unpaired halves, which cannot be encoded, are dropped. The rule is the one the SVG export
+        /// applies to text read out of a PDF, <c>Core.Text.XmlLegalText.Remove</c>.
         /// </remarks>
-        internal static string Sanitize(string text)
-        {
-            if (string.IsNullOrEmpty(text)) return text ?? string.Empty;
-
-            // Overwhelmingly the common case: nothing to do, and no allocation.
-            bool needsWork = false;
-            for (int i = 0; i < text.Length; i++)
-            {
-                if (!IsLegalScalar(text[i])) { needsWork = true; break; }
-                if (char.IsSurrogate(text[i]))
-                {
-                    if (!(char.IsHighSurrogate(text[i]) && i + 1 < text.Length
-                          && char.IsLowSurrogate(text[i + 1])))
-                    {
-                        needsWork = true;
-                        break;
-                    }
-                    i++;   // the pair is legal; skip its low half
-                }
-            }
-            if (!needsWork) return text;
-
-            var sb = new StringBuilder(text.Length);
-            for (int i = 0; i < text.Length; i++)
-            {
-                char c = text[i];
-                if (char.IsHighSurrogate(c) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
-                {
-                    sb.Append(c).Append(text[i + 1]);
-                    i++;
-                    continue;
-                }
-                if (char.IsSurrogate(c)) continue;   // unpaired half
-                if (IsLegalScalar(c)) sb.Append(c);
-            }
-            return sb.ToString();
-        }
+        internal static string Sanitize(string text) => XmlLegalText.Remove(text);
 
         /// <summary>
         /// <see cref="Sanitize"/>, then the escape a spreadsheet cell's text needs: the underscore
@@ -106,19 +72,5 @@ namespace Tetitulz.Pdf.Plugins.Docx
             }
             return true;
         }
-
-        // XML 1.0 §2.2: #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD]. Surrogates are handled
-        // by the caller as pairs, so this only has to answer for a lone char.
-        // Written as numeric char constants rather than as the characters themselves: a raw
-        // U+D7FF / U+E000 in a source file is invisible in a diff and at the mercy of whatever
-        // encoding the next tool guesses.
-        private const char LastBeforeSurrogates = (char)0xD7FF;
-        private const char FirstAfterSurrogates = (char)0xE000;
-        private const char LastLegalBmp         = (char)0xFFFD;   // U+FFFE and U+FFFF are not Char
-
-        private static bool IsLegalScalar(char c) =>
-            c == '\t' || c == '\n' || c == '\r'
-            || (c >= ' ' && c <= LastBeforeSurrogates)
-            || (c >= FirstAfterSurrogates && c <= LastLegalBmp);
     }
 }

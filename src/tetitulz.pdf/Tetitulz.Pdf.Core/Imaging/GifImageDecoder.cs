@@ -114,6 +114,12 @@ namespace Tetitulz.Pdf.Core.Imaging
                 byte[] data = ReadSubBlocks(bytes, ref pos);
                 if (data == null) return Fail("the frame's data sub-blocks run past the end of the file");
 
+                // A frame its data could not fill is a header choosing the cost, not a short stream drawn as
+                // far as it goes: refused before the frame's buffers are made, as PNG and BMP refuse theirs.
+                long most = MostSamples(data.Length, minCodeSize);
+                if ((long)frameW * frameH > most)
+                    return Fail($"the frame's {data.Length} bytes of LZW data hold at most {most} of its {frameW}x{frameH} pixels");
+
                 byte[] indices = LzwDecode(data, minCodeSize, frameW * frameH, out int decodedPixels);
                 if (indices == null) return Fail("the frame's LZW data names a code its table does not hold");
                 // A short stream is decoded as far as it goes, the rest left at palette entry 0 as
@@ -223,6 +229,21 @@ namespace Tetitulz.Pdf.Core.Imaging
             int o = 0;
             foreach (var c in chunks) { Array.Copy(c, 0, all, o, c.Length); o += c.Length; }
             return all;
+        }
+
+        /// <summary>
+        /// The most samples <paramref name="dataBytes"/> of LZW data can stand for: the codes are at least
+        /// <paramref name="minCodeSize"/> + 1 bits each, and the j-th code after a clear names a string of at most
+        /// j samples (each table entry is its predecessor and one more), never more than the 4 096 a full table
+        /// holds — so k codes stand for at most k(k + 1) ÷ 2.
+        /// </summary>
+        internal static long MostSamples(int dataBytes, int minCodeSize)
+        {
+            const long MaxString = 4096;
+            long codes = (long)dataBytes * 8 / (minCodeSize + 1);
+            return codes <= MaxString
+                ? codes * (codes + 1) / 2
+                : MaxString * (MaxString + 1) / 2 + (codes - MaxString) * MaxString;
         }
 
         /// <summary>

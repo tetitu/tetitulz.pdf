@@ -25,18 +25,6 @@ using SKPathVerb = SkiaSharp.SKPathVerb;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Interprets a PDF content stream into SVG elements — the vector counterpart of
-    /// <see cref="ContentStreamInterpreter"/>, which does the same job onto a Skia canvas.
-    ///
-    /// <para><b>A type of its own, split as the raster interpreter is</b> — .Path, .Text,
-    /// .Shading, .Images and the rest — so a change to one renderer and not the other is a
-    /// two-file diff. A silently wrong output is, as a rule, one renderer lagging the other.</para>
-    ///
-    /// <para>It stays <c>internal</c>. Base's three <c>InternalsVisibleTo</c> friends are all
-    /// in-repo — the test project, FontDiag and the benchmarks — so no CONSUMER could see it
-    /// before and none can now; promoting it changed its nesting, not its visibility.</para>
-    /// </summary>
 internal sealed partial class SvgContentWriter
     {
         /// <summary>
@@ -309,8 +297,7 @@ internal sealed partial class SvgContentWriter
             // Delegate to the palette builder rather than decoding the table again here: a decode
             // of its own from a BARE-NAME base would make array-form bases ([/ICCBased …], [/Lab …],
             // [/CalRGB …]) 3-component DeviceRGB, drop CalGray's /Gamma, and keep a Separation/DeviceN
-            // base from its tint transform. Four implementations of
-            // one palette existed across the two renderers; there are now two, one per renderer,
+            // base from its tint transform. There are two palette builders, one per renderer,
             // each with a single entry point.
             var palette = BuildSvgIndexedPalette(baseObj, table, hival);
 
@@ -350,11 +337,10 @@ internal sealed partial class SvgContentWriter
             float[] converted;
             try
             {
-                // WITH a resolver. Passing none — the previous call — meant a Type 3 stitching
+                // WITH a resolver, as the raster path passes. Without one a Type 3 stitching
                 // function whose /Functions entries are indirect (the normal way to write one)
-                // could not reach its sub-functions, so the evaluation yielded nothing and the
-                // caller silently kept the PREVIOUS colour. The raster path has always passed
-                // `_doc.ResolveObject` here.
+                // could not reach its sub-functions, so the evaluation would yield nothing and the
+                // caller silently keep the PREVIOUS colour.
                 converted = PdfFunctionEvaluator.Evaluate(fnDict, tints, _doc.ResolveObject);
             }
             catch (Exception ex)
@@ -421,10 +407,10 @@ internal sealed partial class SvgContentWriter
             // name refers to a named entry (/Indexed, /Separation, /ICCBased, …).
             // Simple device names (DeviceGray/RGB/CMYK) have no entry.
             // §8.6.3: the four device family names and /Pattern are RESERVED, so a /ColorSpace
-            // resource cannot shadow them and they are not looked up. The raster path has always
-            // short-circuited here; this one looked the resource up first, so a page binding
-            // /DeviceGray to [/Separation /Spot /DeviceCMYK <fn>] and drawing `/DeviceGray cs`
-            // filled with the SPOT COLOUR AT FULL TINT in the export and BLACK in the render.
+            // resource cannot shadow them and they are not looked up, here as in the raster path.
+            // Looked up first, a page binding /DeviceGray to [/Separation /Spot /DeviceCMYK <fn>]
+            // and drawing `/DeviceGray cs` would fill with the SPOT COLOUR AT FULL TINT in the
+            // export and BLACK in the render.
             // Such a file is malformed -- but the two renderers disagreeing about it is not a
             // property of the file, and the spec says which answer is right.
             PdfArray csArray = null;
@@ -499,8 +485,8 @@ internal sealed partial class SvgContentWriter
         /// for the rest would be wrong in four different ways: an Indexed space painted
         /// black instead of palette entry 0, a Separation painted black instead of its tint
         /// transform at 1.0 (often a saturated spot colour), an ICCBased /N 4 space painted
-        /// black-as-RGB rather than through its own conversion, and <c>/Pattern cs</c> left the
-        /// previously selected pattern in place so the next fill re-used it.</para>
+        /// black-as-RGB rather than through its own conversion, and <c>/Pattern cs</c> would leave
+        /// the previously selected pattern in place so the next fill re-used it.</para>
         ///
         /// <para>The rule itself is <see cref="PdfColor.InitialColorOperands"/>, shared with the
         /// raster renderer: one implementation.</para>

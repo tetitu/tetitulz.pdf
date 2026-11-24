@@ -20,26 +20,25 @@ namespace Tetitulz.Pdf.Base.Tests.Fonts;
 /// ships — not only from Windows Unicode BMP.
 /// </summary>
 /// <remarks>
-/// <para><b>The defect.</b> <c>PdfFontEmbedder</c> carried its own <c>cmap</c> reader that
-/// recognised <c>(3,1)</c>, <c>(0,3)</c> and <c>(0,4)</c>, took the first match, and parsed format 4
-/// alone. For anything else it silently mapped nothing — and <c>GetWidth</c>'s fallback for an
-/// unmapped code point is <c>.notdef</c>'s advance. So the font embedded, the PDF was valid, the
-/// glyphs drew, and <b>every advance in <c>/Widths</c> was wrong</b>. Nothing throws, nothing warns,
-/// and the page simply lays out with the wrong metrics.</para>
+/// <para><b>The defect.</b> A <c>cmap</c> reader recognising only <c>(3,1)</c>, <c>(0,3)</c> and
+/// <c>(0,4)</c>, taking the first match and parsing format 4 alone, would silently map nothing for
+/// anything else — and <c>GetWidth</c>'s fallback for an unmapped code point is <c>.notdef</c>'s
+/// advance. So the font would embed, the PDF be valid, the glyphs draw, and <b>every advance in
+/// <c>/Widths</c> be wrong</b>. Nothing throws, nothing warns, and the page simply lays out with
+/// the wrong metrics.</para>
 ///
 /// <para><b>The three unsupported kinds are all ordinary fonts.</b> <c>(3,0)</c> Microsoft Symbol
 /// is what marlett, symbol, wingdings, webdings and most icon webfonts ship; <c>(1,0)</c> Macintosh
 /// Roman is common in older faces; <c>(3,10)</c> Windows UCS-4 is normal for anything with astral
-/// coverage. <c>Core.Fonts.TrueTypeFontProgram</c> had already been taught all of them, each with a
-/// comment describing this exact damage — the fix never reached the copy one folder away, which is
-/// the "landed one level short" pattern CLAUDE.md records.</para>
+/// coverage. <c>PdfFontEmbedder</c> reads them through <c>Core.Fonts.TrueTypeFontProgram</c>, which
+/// handles all of them.</para>
 ///
 /// <para><b>Why the obvious fixture cannot witness this.</b> <c>MinimalTrueType.Build(string)</c>
 /// gives every glyph the same 600-unit advance, so a reader that found the subtable and one that
 /// found nothing produce identical <c>/Widths</c> — the test passes either way. These use
 /// <c>BuildWithDistinctWidths</c>, where <c>.notdef</c> is 100 and glyph <i>i</i> is 610 + 10(i−1),
 /// so the array says which glyph was looked up. That trap is named in
-/// <c>MinimalTrueType.NotdefAdvance</c>'s own remarks and it is the reason this went unseen.</para>
+/// <c>MinimalTrueType.NotdefAdvance</c>'s own remarks.</para>
 /// </remarks>
 public sealed class EmbeddedCmapSubtableTests
 {

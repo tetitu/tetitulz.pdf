@@ -23,13 +23,13 @@ using Tetitulz.Pdf.Base.Operations;
 namespace Tetitulz.Pdf.Accessibility.Tests;
 
 /// <summary>
-/// Regression tests for the defects found by the adversarial review of the accessibility stack.
+/// Tests for defects an adversarial reading of the accessibility stack finds.
 ///
 /// <para>
 /// Each test names the failure it pins. They fall into four groups: content-stream corruption
 /// (splicing into inline-image samples), content hidden from assistive technology, false
 /// conformance claims, and false positives on valid files — plus the adversarial-input tests
-/// CLAUDE.md requires for the DoS guards this round added.
+/// CLAUDE.md requires for the stack's DoS guards.
 /// </para>
 ///
 /// <para>Every document is built in memory as ASCII bytes; nothing is read from disk.</para>
@@ -120,7 +120,7 @@ public class RepairRoundRegressionTests
     // =====================================================================
 
     /// <summary>
-    /// The highest-severity defect this round fixed. A 4x4 8-bpc DeviceGray inline image holds
+    /// The highest-severity defect here. A 4x4 8-bpc DeviceGray inline image holds
     /// exactly 16 payload bytes. When every one of those bytes happens to be printable ASCII —
     /// which is what any <em>dark</em> grayscale image looks like — the "whitespace-delimited EI
     /// followed by printable ASCII" heuristic terminates the image early, tokenises pixel data as
@@ -219,7 +219,7 @@ public class RepairRoundRegressionTests
         Assert.Contains("could not be determined", result.SkipReason, StringComparison.Ordinal);
     }
 
-    /// <summary>A declared /L still wins, and is still exact — the fix must not regress it.</summary>
+    /// <summary>A declared /L still wins, and is exact.</summary>
     [Fact]
     public void Scanner_InlineImageWithDeclaredLength_IsStillTreatedAsExact()
     {
@@ -600,7 +600,7 @@ public class RepairRoundRegressionTests
 
     /// <summary>
     /// The control: a page that really does draw an image and no text anywhere — including inside
-    /// its forms — must still be reported, or the fix above would just have disabled UA24.
+    /// its forms — must still be reported, or the test above would also pass with UA24 disabled.
     /// </summary>
     [Fact]
     public void Audit_PageWithAnImageAndNoTextAnywhere_IsStillReportedAsScanned()
@@ -1014,7 +1014,7 @@ public class RepairRoundRegressionTests
     }
 
     // =====================================================================
-    //  7. Adversarial input for the guards this round added (CLAUDE.md)
+    //  7. Adversarial input for the stack's guards (CLAUDE.md)
     // =====================================================================
 
     /// <summary>
@@ -1317,12 +1317,9 @@ public class RepairRoundRegressionTests
     /// still reported.
     /// </summary>
     /// <remarks>
-    /// <b>Renamed from <c>AutoTagThenAudit_SharedFormText_StillReportsUntaggedText</c></b>, which
-    /// named a limit item 49 removed. Its job is unchanged and still necessary: without it, the two
-    /// "no longer reports UA17" assertions above would also pass if <c>AutoTag</c> had suppressed
-    /// UA17 wholesale rather than earned its absence. Switching duplication off reproduces exactly
-    /// the state that used to be permanent, so the control still has something real to contrast
-    /// against.
+    /// Without it, the two "does not report UA17" assertions above would also pass if
+    /// <c>AutoTag</c> suppressed UA17 wholesale rather than earned its absence. Switching
+    /// duplication off gives the control something real to contrast against.
     /// </remarks>
     [Fact]
     public void AutoTagThenAudit_SharedFormWithDuplicationDisabled_StillReportsUntaggedText()

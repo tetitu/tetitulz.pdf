@@ -76,11 +76,11 @@ public class SupersededGenerationTests
 
     /// <summary>
     /// An original with no <c>%PDF-</c> header and no cross-reference table is still re-read — the
-    /// parser takes a missing header as none (since 2026-10-15; it refused the file before) and
-    /// recovers the table from the object headers — so there is no <c>/Prev</c> to chain to and the
+    /// parser takes a missing header as none and recovers the table from the object headers — so
+    /// there is no <c>/Prev</c> to chain to and the
     /// report is the unchained recovery, naming the missing offset, not a parse failure. The control
     /// is the document above, whose table reads: there the report is the re-declaration, or nothing
-    /// when it chains. The "could not be re-read" branch is now reached only by an I/O failure.
+    /// when it chains. The "could not be re-read" branch is reached only by an I/O failure.
     /// </summary>
     [Fact]
     public void AHeaderlessOriginal_IsReadByRecovery_AndTheUnchainedRevisionIsReported()

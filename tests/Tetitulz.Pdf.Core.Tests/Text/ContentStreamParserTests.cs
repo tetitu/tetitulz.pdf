@@ -67,7 +67,7 @@ public class ContentStreamParserTests
     [Fact]
     public void DoQQ_SplitIntoThreeOperators()
     {
-        // "DoQQ" with no whitespace — the bank-PDF pattern that triggered the fix.
+        // "DoQQ" with no whitespace — a pattern real producers write.
         var ops = Parse("DoQQ");
 
         Assert.Equal(3, ops.Count);

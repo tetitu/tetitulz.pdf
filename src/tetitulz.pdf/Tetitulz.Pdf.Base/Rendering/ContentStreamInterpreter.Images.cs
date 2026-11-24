@@ -21,21 +21,6 @@ using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Interprets a PDF content stream, executing drawing operators against a
-    /// <see cref="PdfRenderContext"/> backed by SkiaSharp.
-    ///
-    /// <para>Supported operator families:</para>
-    /// <list type="bullet">
-    ///   <item>Path construction: m l c v y h re</item>
-    ///   <item>Path painting: S s F f f* B B* b b* n</item>
-    ///   <item>Color: g G rg RG k K cs CS sc SC scn SCN</item>
-    ///   <item>Graphics state: q Q cm w J j M d ri i gs</item>
-    ///   <item>Text: BT ET Tf Td TD Tm T* Tj TJ ' " Tc Tw Tz TL Tr Ts</item>
-    ///   <item>XObject: Do (Form XObjects recursed; Image XObjects rasterized)</item>
-    ///   <item>Clipping: W W*</item>
-    /// </list>
-    /// </summary>
     internal sealed partial class ContentStreamInterpreter
     {
         /// <summary>
@@ -426,7 +411,7 @@ namespace Tetitulz.Pdf.Base.Rendering
             // The page's image-decoding budget: once spent, no further image is decoded, and the
             // refusal was reported once — a page of a hundred hostile JBIG2 streams is not a hundred
             // stream budgets of work (GAPS.md §7c).
-            if (FormBudget != null && !FormBudget.TryDecodeImage()) return null;
+            if (FormBudget != null && !FormBudget.TryChargeRepeatedImageDecode(stream, (long)w * h)) return null;
 
             // Drawn far smaller than it is stored, a FlateDecode image is decimated as it is
             // inflated — the samples the decimation below would keep, without the whole buffer.
@@ -1400,7 +1385,7 @@ namespace Tetitulz.Pdf.Base.Rendering
                     // The abort is carried out of the fill rather than thrown through it. A
                     // `return null` cannot cross a delegate boundary, and swallowing the budget
                     // exception inside the producer would silently paint a half-decoded image —
-                    // which is the opposite of what this catch has always meant. The flag stops
+                    // which is the opposite of what this catch means. The flag stops
                     // every later row too, so the transform is abandoned exactly where it was.
                     Exception aborted = null;
                     BitmapPixels.Fill(bmp, (row, y) =>
@@ -2044,9 +2029,7 @@ namespace Tetitulz.Pdf.Base.Rendering
         {
             // csArr = [/Indexed base hival lookup]
             // One reader, in IndexedPalette.TryReadSpace, shared with the other three /Indexed
-            // sites. This copy clamped /HiVal with a bare literal 255 rather than
-            // PdfColorSpaceNames.MaxIndexedHiVal — the same value, written where a rename could
-            // not reach it.
+            // sites.
             IndexedPalette.TryReadSpace(_doc, csArr, out var baseObj, out int hival, out byte[] table);
 
             // Resolve the base colour space into a flat index→colour palette (handles

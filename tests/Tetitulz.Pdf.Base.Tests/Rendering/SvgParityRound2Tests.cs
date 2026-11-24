@@ -180,9 +180,8 @@ public sealed class SvgParityRound2Tests
     /// path having been deleted.
     /// </summary>
     /// <remarks>
-    /// It asserted the <b>dashed</b> placeholder until a Widget gained a fallback of its own; a
-    /// widget now draws its field border, which is what the raster path has always drawn for one.
-    /// The dashed placeholder survives for subtypes nothing models — asserted in
+    /// A Widget has a fallback of its own: it draws its field border, as the raster path does. The
+    /// <b>dashed</b> placeholder is for subtypes nothing models — asserted in
     /// <c>AnnotationFallbackRenderingTests</c>, which owns that arm.
     /// <para>The border is the widget's own — Table 192's <c>/MK /BC</c> — so the fixture declares
     /// one; a widget that declares none has no border to draw (<c>WidgetBorderFallbackTests</c>).</para>

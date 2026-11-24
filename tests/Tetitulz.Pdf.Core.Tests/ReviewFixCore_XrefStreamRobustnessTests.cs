@@ -12,27 +12,25 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests;
 
 /// <summary>
-/// Review-fix coverage for xref-stream robustness and scan-recovery semantics.
+/// Xref-stream robustness and scan-recovery semantics.
 ///
 /// 1. A non-numeric <c>/W</c> or <c>/Index</c> element (e.g. <c>/W [/Foo 1 0]</c>
-///    or <c>/Index [0 2 0 R]</c>) used to throw an uncaught
-///    <c>InvalidOperationException</c> from <c>PdfArray.GetInteger</c>.  Only
-///    <see cref="PdfParseException"/> is caught by ParseCrossReferences, so the
-///    open hard-failed instead of falling into scan recovery.  The fix re-wraps
-///    these as <see cref="PdfParseException"/> so recovery engages.
+///    or <c>/Index [0 2 0 R]</c>) is a <see cref="PdfParseException"/>, which
+///    ParseCrossReferences catches, so recovery engages; an
+///    <c>InvalidOperationException</c> from <c>PdfArray.GetInteger</c> would
+///    escape it and hard-fail the open.
 ///
-/// 2. The scan-recovery path used <c>AddEntry</c> (first-wins) while scanning the
-///    file front-to-back, so for an incrementally-updated PDF the OLDEST revision
-///    of a duplicated object won.  The fix uses <c>SetEntry</c> (last-wins).
+/// 2. The scan-recovery path scans the file front-to-back with <c>SetEntry</c>
+///    (last-wins), so for an incrementally-updated PDF the NEWEST revision of a
+///    duplicated object wins; first-wins would keep the oldest.
 /// </summary>
 public class ReviewFixCore_XrefStreamRobustnessTests
 {
     [Fact]
     public void NonNumericW_TriggersRecovery_NotUncaughtThrow()
     {
-        // /W [/Foo 1 0]: element 0 is a name, not a number.  Pre-fix this threw
-        // InvalidOperationException straight out of document open.  Post-fix it
-        // becomes a PdfParseException that ParseCrossReferences catches, and the
+        // /W [/Foo 1 0]: element 0 is a name, not a number.  It becomes a
+        // PdfParseException that ParseCrossReferences catches, and the
         // scan-recovery rebuilds the xref from the "N G obj" bodies — so Open
         // succeeds and the catalog is resolvable.
         byte[] pdf = BuildXrefStreamPdfWithKeys("/W [/Foo 1 0]");

@@ -79,9 +79,16 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
         /// <summary>The file a <see cref="PdfLinkKind.RemoteGoTo"/> or <see cref="PdfLinkKind.Launch"/> link names; otherwise null.</summary>
         public string File { get; }
 
+        /// <summary>
+        /// The object number of the link annotation, or 0 when the page's <c>/Annots</c> holds it as
+        /// a direct dictionary. One annotation two pages list is two links with one number.
+        /// </summary>
+        public int ObjectNumber { get; }
+
         internal PdfLink(int pageIndex, float x, float y, float width, float height,
                          PdfLinkKind kind, string uri, int targetPageIndex,
-                         float? targetTop = null, string namedAction = null, string file = null)
+                         float? targetTop = null, string namedAction = null, string file = null,
+                         int objectNumber = 0)
         {
             PageIndex = pageIndex;
             X = x; Y = y; Width = width; Height = height;
@@ -91,6 +98,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             TargetTop = targetTop;
             NamedAction = namedAction;
             File = file;
+            ObjectNumber = objectNumber;
         }
     }
 
@@ -147,6 +155,20 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             if (path == null) throw new ArgumentNullException(nameof(path));
             _lastError = null;
             using var doc = PdfDocument.Open(path);
+            EncryptedRead.Refuse(doc, "the links", "PdfOperations.ExtractLinks(Stream, string)");
+            return Collect(doc);
+        }
+
+        /// <summary>
+        /// Returns every /Link annotation of an open document, for a caller that already holds one
+        /// — a writer planning a revision over it, say. The document is the caller's to have
+        /// decrypted: an encrypted document is refused, as by the stream overload.
+        /// <para>Check <see cref="LastError"/> — see the stream overload.</para>
+        /// </summary>
+        public static IReadOnlyList<PdfLink> ExtractLinks(PdfDocument doc)
+        {
+            if (doc == null) throw new ArgumentNullException(nameof(doc));
+            _lastError = null;
             EncryptedRead.Refuse(doc, "the links", "PdfOperations.ExtractLinks(Stream, string)");
             return Collect(doc);
         }
@@ -214,7 +236,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
 
                     var link = ResolveTarget(doc, dict, ref namedDests);
                     result.Add(new PdfLink(p, x, y, w, h, link.Kind, link.Uri, link.Page,
-                        link.Top, link.Named, link.File));
+                        link.Top, link.Named, link.File, (annots[i] as PdfReference)?.ReferenceObjectNumber ?? 0));
                 }
             }
             return result;

@@ -14,8 +14,8 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// <summary>
 /// XFDF's <c>head</c>, <c>tail</c> and <c>intent</c> attributes are an annotation's <c>/LE</c> and <c>/IT</c>
 /// (XFDF 2.0, the line, polygon/polyline and freetext attribute tables; an independent implementation reads the same names):
-/// read into the carried entries an FDF exchange keeps, and written from them. Until 2026-10-22 an XFDF
-/// export left both out though an FDF export carried them.
+/// read into the carried entries an FDF exchange keeps, and written from them, as an FDF export
+/// carries them.
 /// </summary>
 public class XfdfEndingsAndIntentTests
 {

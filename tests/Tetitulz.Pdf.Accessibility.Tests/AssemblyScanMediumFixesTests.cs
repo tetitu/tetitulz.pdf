@@ -110,10 +110,10 @@ public class AssemblyScanMediumFixesTests
     /// back byte-for-byte unchanged.
     /// </summary>
     /// <remarks>
-    /// <c>MakeTextString</c> turns null/empty into an empty <c>PdfString</c>, so the field used to be
-    /// given <c>/TU ()</c> and the method returned <c>true</c> — while the conformance checker treats
-    /// a blank <c>/TU</c> as still missing, so a subsequent audit re-reported UA08 against the same
-    /// field with nothing anywhere recording why the "successful" fix did nothing.
+    /// <c>MakeTextString</c> turns null/empty into an empty <c>PdfString</c>, so accepted, the field
+    /// would be given <c>/TU ()</c> and the method return <c>true</c> — while the conformance checker
+    /// treats a blank <c>/TU</c> as still missing, so a subsequent audit would re-report UA08
+    /// against the same field with nothing recording why the "successful" fix did nothing.
     /// </remarks>
     [Theory]
     [InlineData(null)]

@@ -33,7 +33,7 @@ public class NumberTreeCycleTests
     /// <summary>
     /// The guard's own evidence is that the call RETURNS, having visited each node once — never a
     /// wall clock. Two mutually-referencing nodes hold no <c>/Nums</c>, so a correct walk yields no
-    /// ranges; the pre-fix walk does not yield at all.
+    /// ranges; a walk with no visited set does not yield at all.
     /// </summary>
     [Fact]
     public void CyclicNumberTreeKids_TerminateInsteadOfBranchingExponentially()

@@ -495,7 +495,7 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
                 // The revision list itself is a byte-level read and stands regardless; only the
                 // object-graph half is lost, so say which half and keep the rest.
                 //
-                // Nothing clears `unattributed` here any more: PdfRevisionAttribution derives the
+                // Nothing clears `unattributed` here: PdfRevisionAttribution derives the
                 // empty list from the reason, so a partial list collected before the throw cannot
                 // reach a caller however this method returns.
                 return "the object graph could not be read: " + ex.Message;

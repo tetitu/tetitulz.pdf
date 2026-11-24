@@ -18,13 +18,13 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// An ExtGState <c>/SMask</c> applies to images, in both renderers.
 ///
 /// <para><b>Why this exists.</b> §11.6.4 applies the graphics-state soft mask to <b>every</b>
-/// painting operation. The raster path routed path fills, strokes, text and shadings through
-/// <c>DrawWithOptionalSoftMask</c> but drew images straight onto the canvas, so an image under a
-/// <c>gs</c> soft mask rendered completely unmasked — while the SVG exporter has always emitted
+/// painting operation. Routing path fills, strokes, text and shadings through
+/// <c>DrawWithOptionalSoftMask</c> but drawing images straight onto the canvas would render an image
+/// under a <c>gs</c> soft mask completely unmasked — while the SVG exporter emits
 /// <c>mask="url(#…)"</c> on its <c>&lt;image&gt;</c> elements. One file, two answers.</para>
 ///
-/// <para>Not to be confused with an image's own <c>/SMask</c> entry, which is a different feature
-/// and was always honoured: this is the mask set by <c>gs</c> on the graphics state.</para>
+/// <para>Not to be confused with an image's own <c>/SMask</c> entry, which is a different feature:
+/// this is the mask set by <c>gs</c> on the graphics state.</para>
 /// </summary>
 public class ImageSoftMaskParityTests
 {

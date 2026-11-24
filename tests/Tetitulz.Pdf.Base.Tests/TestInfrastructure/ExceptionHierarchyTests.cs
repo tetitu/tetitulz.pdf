@@ -40,10 +40,9 @@ public class ExceptionHierarchyTests
     /// </summary>
     /// <remarks>
     /// <b>A statement about which types are not library errors, not a burn-down list.</b> Adding an
-    /// entry needs a reason written here. It is currently empty, and the five that used to belong
-    /// in it were rebased instead — a work-budget refusal, a filter failure, an HTML conversion
-    /// failure, an unrenderable-text refusal and a password prompt are all "this library could not
-    /// do what you asked", which is precisely what <c>PdfException</c> means.
+    /// entry needs a reason written here. It is empty: a work-budget refusal, a filter failure, an
+    /// HTML conversion failure, an unrenderable-text refusal and a password prompt are all "this
+    /// library could not do what you asked", which is precisely what <c>PdfException</c> means.
     /// </remarks>
     private static readonly HashSet<string> OutsideTheHierarchy = new(StringComparer.Ordinal);
 

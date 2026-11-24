@@ -70,8 +70,8 @@ public class XmpDecodeTests
     }
 
     /// <summary>
-    /// The control that pins <i>why</i> the broken decoders failed, so the fix is understood rather
-    /// than just present: reading UTF-16 bytes as UTF-8 does not throw, it yields NUL-interleaved
+    /// The control that pins <i>why</i> a decoder that reads every packet as UTF-8 fails: reading
+    /// UTF-16 bytes as UTF-8 does not throw, it yields NUL-interleaved
     /// text in which the search fails.
     /// </summary>
     [Fact]

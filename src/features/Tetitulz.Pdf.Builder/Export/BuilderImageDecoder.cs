@@ -147,8 +147,10 @@ namespace Tetitulz.Pdf.Builder.Export
                 case RasterImageFormat.Bmp:
                     // Ask the decoder itself rather than guessing: RLE compression and exotic
                     // bit depths are only visible once the DIB header is read, and a second
-                    // opinion here is how CanDecode and Decode come to disagree.
-                    if (BmpImageDecoder.TryDecode(bytes, out _, out _, out _, out string bmpReason)) return true;
+                    // opinion here is how CanDecode and Decode come to disagree. Its header read
+                    // makes every refusal its decode makes, before a pixel, so the answer is the
+                    // decode's without the decode — which Decode then runs once.
+                    if (BmpImageDecoder.TryReadLayout(bytes, out _, out string bmpReason)) return true;
                     reason = bmpReason ?? "the BMP could not be decoded";
                     return false;
 

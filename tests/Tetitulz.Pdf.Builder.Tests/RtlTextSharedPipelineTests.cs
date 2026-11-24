@@ -13,15 +13,13 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// <c>Builder.Export.RtlText</c> after it stopped carrying its own shape → bidi → glyph-id walk and
-/// became an adapter onto <c>Core.Text.TextRunComposer</c>.
+/// <c>Builder.Export.RtlText</c>, an adapter onto <c>Core.Text.TextRunComposer</c>'s
+/// shape → bidi → glyph-id walk, shared with <c>DocxToPdf.Rendering.UnicodeText</c>.
 ///
-/// <para><b>What these exist to catch.</b> Two copies of that pipeline survived in the tree — this
-/// one and <c>DocxToPdf.Rendering.UnicodeText</c> — and each had acquired exactly the fix the other
-/// lacked: this one the caller-supplied base direction, that one the <b>code-point</b> walk. Merging
-/// by hand in either direction deletes one of them silently, because both defects produce a
-/// perfectly valid PDF that simply draws the wrong thing. Each fix is therefore asserted here
-/// separately, on emitted glyph ids rather than on a call having returned something.</para>
+/// <para><b>What these exist to catch.</b> The shared walk carries both the caller-supplied base
+/// direction and the <b>code-point</b> walk; either lost produces a perfectly valid PDF that simply
+/// draws the wrong thing. Each is therefore asserted here separately, on emitted glyph ids rather
+/// than on a call having returned something.</para>
 ///
 /// <para><b>Why the fixtures are mixed-script.</b> Pure Hebrew reads correctly under either base
 /// direction — it is one run that reverses as a unit — so a single-script fixture passes with the
@@ -31,7 +29,7 @@ public class RtlTextSharedPipelineTests
 {
     private const string Shalom = "שלום";
 
-    // ── the fix Builder LACKED: supplementary-plane characters ───────────────────────────────
+    // ── supplementary-plane characters: the code-point walk ──────────────────────────────────
 
     /// <summary>
     /// 𝑥 U+1D465 is <b>one</b> character, so it emits <b>one</b> glyph — the font's if it has one,
@@ -104,7 +102,7 @@ public class RtlTextSharedPipelineTests
         Assert.Equal(new[] { 0xD835 }, set.OrderBy(cp => cp).ToArray());
     }
 
-    // ── the fix Builder HAD, which the merge must not drop ───────────────────────────────────
+    // ── the caller-supplied base direction ────────────────────────────────────────────────────
 
     /// <summary>
     /// The paragraph's base direction, not the token's own first strong character, decides where a
@@ -112,8 +110,7 @@ public class RtlTextSharedPipelineTests
     /// with a strong L, so P2/P3 make it an <i>LTR paragraph</i> and the Latin word is drawn first;
     /// under the paragraph's real RTL direction the Latin run belongs on the right-hand end.
     ///
-    /// <para>This is the invoice defect the <c>BaseDirection</c> overload was added for, and it is
-    /// the fix that a merge into the DOCX renderer's copy would have deleted.</para>
+    /// <para>This is the invoice defect the <c>BaseDirection</c> overload exists for.</para>
     /// </summary>
     [HebrewCapableFontFact]
     public void MixedLatinAndHebrew_DrawsTheLatinRunLast_UnderAForcedRtlParagraph()

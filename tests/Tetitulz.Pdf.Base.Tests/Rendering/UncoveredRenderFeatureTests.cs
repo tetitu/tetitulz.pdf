@@ -364,13 +364,13 @@ public sealed class UncoveredRenderFeatureTests
 
     /// <summary>
     /// The other half of §9.4.4's spacing term: <c>Tw</c> applies to the single-byte code 32 only,
-    /// and it too was lost on the substituted path.
+    /// on the substituted path too.
     /// </summary>
     /// <remarks>
-    /// Word spacing is what justified text is built from, so this is the commonest way the defect
-    /// reached a real page. Tested separately from <c>Tc</c> because the two are not interchangeable
-    /// in the fix: <c>Tc</c> is added to every glyph, <c>Tw</c> only where
-    /// <c>codes[i].IsWordSpaceCode</c>. A fix that added both unconditionally would pass a
+    /// Word spacing is what justified text is built from, so this is the commonest way a lost term
+    /// would reach a real page. Tested separately from <c>Tc</c> because the two are not
+    /// interchangeable: <c>Tc</c> is added to every glyph, <c>Tw</c> only where
+    /// <c>codes[i].IsWordSpaceCode</c>. Adding both unconditionally would pass a
     /// <c>Tc</c>-only test and inflate every glyph here.
     /// <para>Three spaces in "H H H H" ⇒ <c>30 Tw</c> must widen the run by exactly 90 pt, and the
     /// four H glyphs must not move relative to one another beyond that.</para>

@@ -80,8 +80,8 @@ public class ExtractionAdvanceMatchesRenderingTests
     /// 500 fallback. <c>/DW</c> <i>is</i> the font declaring a width, so the fallback must not
     /// reach it.
     ///
-    /// <para>This started out asserting 500 and was wrong: for a composite font with a <c>/DW</c>
-    /// there is no "declares nothing" case at all. The genuine one needs a font that supplies no
+    /// <para>For a composite font with a <c>/DW</c> there is no "declares nothing" case at all.
+    /// The genuine one needs a font that supplies no
     /// width by any route, which is the test below.</para>
     /// </summary>
     [Fact]

@@ -116,14 +116,13 @@ public class MetricCompatibleSubstitutionTests
     // ==================================================================
 
     /// <summary>
-    /// <b>The case that reproduces the shipped defect.</b> A Standard-14 request mapped to
+    /// <b>The case the defect lives in.</b> A Standard-14 request mapped to
     /// <c>"Arial"</c>, on a host where the system answers <c>"DejaVu Sans"</c>, must be refused.
     /// </summary>
     /// <remarks>
-    /// This is the assertion the fix exists for, and the one the first version of this file did
-    /// <b>not</b> make. Mutating the call site back to its pre-fix form — exempting the Standard-14
-    /// map from the check — left all 24 predicate tests green, because none of them exercised the
-    /// branch. Pinning the decision rather than its parts is what makes that mutation land.
+    /// The predicate tests do not exercise this branch: exempting the Standard-14 map from the
+    /// check at the call site leaves them all green. Pinning the decision rather than its parts is
+    /// what makes that mutation land.
     /// </remarks>
     [Fact]
     public void AStandard14RequestAnsweredWithABroadCoverageFaceIsRefused()
@@ -171,15 +170,15 @@ public class MetricCompatibleSubstitutionTests
     /// separators, and the answer is <c>SKTypeface.FamilyName</c>, a spaced display name.
     /// </summary>
     /// <remarks>
-    /// <para><b>Every one of these was refused.</b> Family normalisation here dropped whitespace
-    /// only, so <c>"Liberation-Sans"</c> and <c>"Liberation Sans"</c> were different families and a
-    /// font that <em>is</em> installed was reported as <em>"no font matching … is installed on this
-    /// machine"</em> — while the renderer, whose predicate folds the separators, drew the page with
+    /// <para><b>Every one of these is the same family.</b> Normalisation dropping whitespace only
+    /// would make <c>"Liberation-Sans"</c> and <c>"Liberation Sans"</c> different families and
+    /// report a font that <em>is</em> installed as <em>"no font matching … is installed on this
+    /// machine"</em> — while the renderer, whose predicate folds the separators, draws the page with
     /// that very face.</para>
     ///
-    /// <para>Whitespace-only differences (<c>FamilyComparisonIgnoresCaseAndSpacing</c> above) were
-    /// always handled and are deliberately not repeated here: including them would let this theory
-    /// pass with the fix reverted.</para>
+    /// <para>Whitespace-only differences (<c>FamilyComparisonIgnoresCaseAndSpacing</c> above) are
+    /// deliberately not repeated here: including them would let this theory pass for a
+    /// whitespace-only normalisation.</para>
     /// </remarks>
     [Theory]
     [InlineData("Liberation-Sans",    "Liberation Sans")]

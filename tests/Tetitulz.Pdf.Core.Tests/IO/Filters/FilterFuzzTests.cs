@@ -336,8 +336,8 @@ public class FilterFuzzTests
 
         // Deliberately low. A guard set above a seed's length silently turns every mutation into a
         // no-op, and the theory then fuzzes a pristine payload 500 times while reporting success —
-        // which is exactly what an 8-byte guard did to the 6-byte LZW seed while this file was
-        // being written. The `differed + declined > 0` floor is what caught it; this is the fix.
+        // as an 8-byte guard would do to the 6-byte LZW seed. The `differed + declined > 0` floor
+        // catches that.
         if (b.Length < 4) return b;
 
         switch (kind)

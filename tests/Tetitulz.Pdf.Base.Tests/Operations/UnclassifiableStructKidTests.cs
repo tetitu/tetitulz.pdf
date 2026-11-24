@@ -72,18 +72,16 @@ public class UnclassifiableStructKidTests
     /// <summary>
     /// <c>&lt;&lt; /Type /StructElem /Obj 12 0 R &gt;&gt;</c> is an object reference whose
     /// <c>/Type</c> is wrong — Table 323 makes <c>/S</c> <i>Required</i> on a structure element —
-    /// which is what the Conformance plugin's twin has always said about it.
+    /// which is what the Conformance plugin's twin says about it too.
     /// </summary>
     /// <remarks>
     /// <b>Asserted on the classifier, not through <c>PdfStructureTreeReader</c>, because the reader
     /// cannot see this one.</b> It labels a leaf from the file's own <c>/Type</c> when there is one,
-    /// and the dictionary has no <c>/K</c>, so "StructElem with no children" is the answer both
-    /// before and after the change. A first version of this test went through the reader and passed
-    /// under the mutation that restores the old ladder — the name claimed the ordering rule and the
-    /// body asserted something true either way, which is the shape CLAUDE.md warns no guard can
-    /// catch. The observable consequences are in the <i>other</i> consumers: the tagged-text
+    /// and the dictionary has no <c>/K</c>, so "StructElem with no children" is the reader's answer
+    /// under either ordering; a test through the reader would pass under the mutation that reverses
+    /// the ladder. The observable consequences are in the <i>other</i> consumers: the tagged-text
     /// extractor recurses into an Element and not into an ObjectReference, and the plugin's twin
-    /// disagreed with this one on the same bytes.
+    /// would disagree with this one on the same bytes.
     /// </remarks>
     [Fact]
     public void StructElemTypeWithObjAndNoS_ClassifiesAsAnObjectReference()

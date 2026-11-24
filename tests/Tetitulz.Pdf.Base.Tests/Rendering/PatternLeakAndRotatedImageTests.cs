@@ -131,12 +131,12 @@ public class PatternLeakAndRotatedImageTests
             $"expected solid black (pattern cleared), got ({c.Red},{c.Green},{c.Blue})");
     }
 
-    // ---- Bug 1, the SVG half: the same documents, the same leak, never exercised until now ----
+    // ---- The SVG half: the same documents, the same leak ----
     //
-    // The two tests above render RASTER ONLY, and the raster path has asked
-    // `FillIsPattern && FillPatternName != null` since the leak was fixed. Every SVG paint gate
-    // asked for the NAME alone — and no colour operator clears the name — so these very fixtures
-    // still exported the pattern. Both sides now go through PatternPaint.SelectedName.
+    // The two tests above render RASTER ONLY. A paint gate asking for the NAME alone — no colour
+    // operator clears the name — would export the pattern for these very fixtures, where
+    // `FillIsPattern && FillPatternName != null` does not. Both sides go through
+    // PatternPaint.SelectedName.
 
     [Fact]
     public void SolidColorAfterPatternFill_ExportsTheSolidColour_NotThePattern()
@@ -244,9 +244,8 @@ public class PatternLeakAndRotatedImageTests
     /// <summary>
     /// The <c>sc</c> half of §8.6.8, and the one that needs the graphics state fixed rather than
     /// the paint gate: a component-only <c>sc</c> sets a solid colour, so it leaves the Pattern
-    /// space. The raster <c>OpSc</c> has always cleared <c>FillIsPattern</c> for that; the SVG one
-    /// never did, so the flag <i>and</i> the name both survived and the stale pattern painted even
-    /// once the gates agreed.
+    /// space, and both <c>OpSc</c>s clear <c>FillIsPattern</c> for that; were one not to, the flag
+    /// <i>and</i> the name would both survive and the stale pattern paint even with the gates agreeing.
     /// </summary>
     /// <remarks>
     /// Asserted as "neither renderer paints the pattern's green" rather than as a pixel match: the
@@ -309,8 +308,8 @@ public class PatternLeakAndRotatedImageTests
     {
         // CTM [0 80 -80 0 90 10] rotates the unit square 90°.  The image's horizontal
         // red→blue split must become a VERTICAL split (top vs bottom differ), proving the
-        // rotation is honoured.  Pre-fix the image was squashed into an axis-aligned box
-        // with NO rotation, so left/right (not top/bottom) carried the colours.
+        // rotation is honoured. An image squashed into an axis-aligned box with NO rotation
+        // would carry the colours left/right, not top/bottom.
         string content = "q 0 80 -80 0 90 10 cm /Img Do Q";
         byte[] pdf = BuildPdf(content, "/Resources << /XObject << /Img 5 0 R >> >>", TwoPxImageObj());
 

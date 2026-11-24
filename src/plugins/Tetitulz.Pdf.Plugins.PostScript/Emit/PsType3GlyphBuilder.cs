@@ -153,7 +153,7 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Emit
             // own of.
             child.Graphics.Gs.FontResourceName = parent.Graphics?.Gs.FontResourceName;
 
-            // Nothing to park around the run any more: a font dictionary names its own embedded
+            // Nothing to park around the run: a font dictionary names its own embedded
             // program (PsTextOps.KeyEmbedded), so a glyph procedure's findfont leaves no thread-wide
             // "pending program" for the parent's next setfont to pick up.
 

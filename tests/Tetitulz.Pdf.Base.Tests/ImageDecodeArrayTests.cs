@@ -139,13 +139,11 @@ public sealed class ImageDecodeArrayTests
     // ------------------------------------------------------------------
 
     /// <summary>
-    /// Regression: CMYK JPEG images (DeviceCMYK color space, /Decode [1 0 1 0 1 0 1 0])
-    /// were rendered with inverted colors because <c>ApplyDecodeArrayToBitmap</c> was
-    /// applied to the already-converted RGB pixels from SkiaSharp's internal JPEG
-    /// decoder (which handles the Adobe APP14 CMYK inversion automatically).
-    ///
-    /// The fix: skip /Decode remapping for JPEG images whose color space has 4
-    /// components (DeviceCMYK / ICCBased N=4).
+    /// CMYK JPEG images (DeviceCMYK color space, /Decode [1 0 1 0 1 0 1 0]) render with their
+    /// own colours: /Decode remapping is skipped for a JPEG whose color space has 4 components
+    /// (DeviceCMYK / ICCBased N=4), because SkiaSharp's JPEG decoder handles the Adobe APP14
+    /// CMYK inversion itself, and applying <c>ApplyDecodeArrayToBitmap</c> to its RGB pixels
+    /// would invert them again.
     /// </summary>
     [Fact]
     public void CmykJpeg_WithInvertedDecodeArray_DoesNotDoubleInvertColors()

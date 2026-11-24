@@ -214,12 +214,12 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Graphics
         /// <summary>
         /// Pushes a copy of the current state, refusing past <see cref="MaxStackDepth"/>.
         ///
-        /// <para>The clone was the one composite <c>gsave</c> could grow with <b>nothing</b>
-        /// watching. <see cref="ContentStreamEmitter.Save"/> caps the emitted <c>q</c> and returns
-        /// quietly, which bounds the <i>output</i> and not the engine: <c>{ gsave } loop</c> went on
-        /// cloning a ~170-byte state per iteration until <c>MaxTotalOps</c> ran out — millions of
-        /// live objects, none of them visible to <c>PsAllocationBudget</c>, and one undeduplicated
-        /// diagnostic per iteration on top.</para>
+        /// <para>The clone is the one composite <c>gsave</c> grows, so it is bounded here.
+        /// <see cref="ContentStreamEmitter.Save"/> caps the emitted <c>q</c> and returns quietly,
+        /// which bounds the <i>output</i> and not the engine: unbounded, <c>{ gsave } loop</c> would
+        /// go on cloning a ~170-byte state per iteration until <c>MaxTotalOps</c> ran out — millions
+        /// of live objects, none of them visible to <c>PsAllocationBudget</c>, and one
+        /// undeduplicated diagnostic per iteration on top.</para>
         ///
         /// <para><c>limitcheck</c> rather than a silent drop, matching <c>PsPath.Append</c>: an
         /// error is catchable by <c>stopped</c> and recoverable at top level, where dropping the

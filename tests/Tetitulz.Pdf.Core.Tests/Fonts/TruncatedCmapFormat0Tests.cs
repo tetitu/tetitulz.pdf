@@ -48,7 +48,7 @@ public class TruncatedCmapFormat0Tests
     }
 
     /// <summary>
-    /// <b>The control.</b> A complete subtable still maps all 256 codes, so the fix cannot be
+    /// <b>The control.</b> A complete subtable still maps all 256 codes, so the guard cannot be
     /// "accept anything and return whatever".
     /// </summary>
     [Fact]

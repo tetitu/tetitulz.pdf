@@ -64,13 +64,13 @@ namespace Tetitulz.Pdf.Core.Text
         /// <para><b>Escaping is not the question here — representability is.</b> XML 1.0 §2.2
         /// defines <c>Char</c> as <c>#x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] |
         /// [#x10000-#x10FFFF]</c>, and a character outside that set has <i>no spelling at all</i>:
-        /// <c>&amp;#1;</c> is as ill-formed as a raw <c>0x01</c>. So the five-entity pass could not
-        /// have fixed this and a caller could not have worked around it.</para>
+        /// <c>&amp;#1;</c> is as ill-formed as a raw <c>0x01</c>. So the five-entity pass cannot
+        /// handle it and a caller cannot work around it.</para>
         ///
-        /// <para><b>What it broke.</b> One such byte makes the entire document unparseable, not
-        /// just the element carrying it — which is how a PDF→SVG export of a composite font with no
-        /// <c>/ToUnicode</c> produced a file every XML reader rejected. There the decoded "text" is
-        /// the raw code units, and a CID of 1 is an ordinary thing for a subset font to use.</para>
+        /// <para><b>What it would break.</b> One such byte makes the entire document unparseable,
+        /// not just the element carrying it — so a PDF→SVG export of a composite font with no
+        /// <c>/ToUnicode</c> would produce a file every XML reader rejects. There the decoded "text"
+        /// is the raw code units, and a CID of 1 is an ordinary thing for a subset font to use.</para>
         ///
         /// <para><b>Dropped rather than substituted.</b> None of these characters has a glyph, so
         /// removing one changes no rendering; U+FFFD in their place would put a visible box into a
@@ -81,45 +81,6 @@ namespace Tetitulz.Pdf.Core.Text
         /// <para>The scan allocates nothing when the string is already representable, which is
         /// every string but a handful.</para>
         /// </remarks>
-        private static string StripUnrepresentable(string s)
-        {
-            int first = -1;
-            for (int i = 0; i < s.Length; i++)
-            {
-                if (IsRepresentable(s, i)) continue;
-                first = i;
-                break;
-            }
-            if (first < 0) return s;
-
-            var sb = new System.Text.StringBuilder(s.Length);
-            sb.Append(s, 0, first);
-            for (int i = first; i < s.Length; i++)
-                if (IsRepresentable(s, i)) sb.Append(s[i]);
-
-            return sb.ToString();
-        }
-
-        /// <summary>Whether the code unit at <paramref name="i"/> is XML 1.0 <c>Char</c> content.</summary>
-        /// <remarks>
-        /// A surrogate is judged by its <i>pair</i>: both halves of a well-formed pair are kept, and
-        /// a half without its partner is not. Testing the code unit alone would either delete every
-        /// astral character or keep every broken one.
-        /// </remarks>
-        private static bool IsRepresentable(string s, int i)
-        {
-            char c = s[i];
-
-            if (c == '\t' || c == '\n' || c == '\r') return true;
-            if (c < 0x20) return false;
-            if (c == 0xFFFE || c == 0xFFFF) return false;
-
-            if (char.IsHighSurrogate(c))
-                return i + 1 < s.Length && char.IsLowSurrogate(s[i + 1]);
-            if (char.IsLowSurrogate(c))
-                return i > 0 && char.IsHighSurrogate(s[i - 1]);
-
-            return true;
-        }
+        private static string StripUnrepresentable(string s) => XmlLegalText.Remove(s);
     }
 }

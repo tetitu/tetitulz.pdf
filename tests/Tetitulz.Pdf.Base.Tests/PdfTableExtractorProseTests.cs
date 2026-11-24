@@ -82,7 +82,7 @@ public class PdfTableExtractorProseTests
         Assert.DoesNotContain(CellTexts(table), t => t.Contains("prose"));
     }
 
-    /// <summary>A sentence 200pt below the grid — the case measured on 2026-10-11 ("A closing sentence" | "of prose.").</summary>
+    /// <summary>A sentence 200pt below the grid ("A closing sentence" | "of prose.").</summary>
     [Fact]
     public void AProseLineFarBelowTheGrid_IsNotARow()
     {

@@ -705,7 +705,7 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
                 // its LAST line, so every refusal path leaves it false: tested first, `!form.HasText`
                 // would make the SkipReason branch below unreachable, and a Form XObject full of
                 // untagged text would produce no warning, no SkippedPageReasons entry and no
-                // PagesPartiallyTagged increment, while the catalog went on to assert /MarkInfo
+                // PagesPartiallyTagged increment, while the catalog would still assert /MarkInfo
                 // /Marked true. TextUndetermined keeps the fast path
                 // honest for the one refusal that really does prove there is no text ("it has no
                 // content"), so this does not become a channel that fires on conformant input.
@@ -1231,9 +1231,9 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
 
                         // The page's EFFECTIVE resources, not its own /Resources key. A page
                         // inheriting from a /Pages node has no such key, and reading it directly
-                        // yielded null — so the walk found no /XObject dictionary and recorded the
-                        // invocation as unreadable. Form tagging did nothing at all for a document
-                        // laid out that way, which is common and entirely valid.
+                        // would yield null — the walk would find no /XObject dictionary and record
+                        // the invocation as unreadable, and form tagging would do nothing at all for
+                        // a document laid out that way, which is common and entirely valid.
                         Resources        = page?.Resources,
                         Names            = rewrite.InvokedXObjectNames,
                         NamesInsideArtifacts  = rewrite.NamesInsideArtifacts,
@@ -3054,8 +3054,8 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
         private static PdfNumber ResolveNumber(PdfDocument doc, PdfObject obj)
             => Internal.Resolve.Number(doc, obj, "PdfAutoTagger.ResolveNumber");
 
-        // Internal.StagedObject — see the note on PdfUaXmpWriter's forwarder: these two were the
-        // same method twice, and neither went through PdfDictionary.CloneShallow.
+        // One implementation, Internal.StagedObject, which clones through
+        // PdfDictionary.CloneShallow.
         private static PdfDictionary CloneDictionary(PdfDictionary source, int objectNumber, int generation)
             => Internal.StagedObject.CloneWithIdentity(source, objectNumber, generation);
 
@@ -3088,13 +3088,13 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
         /// </para>
         ///
         /// <para>
-        /// <b>Form XObjects are the third class, and they were being missed.</b> This walk used to
-        /// cover pages and their <c>/Annots</c> only, yet a Form XObject is the one object class
-        /// this tagger itself writes <c>/StructParents</c> onto — so a form carrying a key from the
-        /// superseded tree, which <see cref="TagForms"/> then declined (it already holds marked
-        /// content, its stream would not decode, it is shared and duplication was refused …), kept
-        /// a value the freshly generated <c>/ParentTree</c> never defines. That is the same invalid
-        /// state this method exists to prevent, produced from conformant input:
+        /// <b>Form XObjects are the third class.</b> A Form XObject is the one object class this
+        /// tagger itself writes <c>/StructParents</c> onto, so a walk covering pages and their
+        /// <c>/Annots</c> only would let a form carrying a key from the superseded tree, which
+        /// <see cref="TagForms"/> then declined (it already holds marked content, its stream would
+        /// not decode, it is shared and duplication was refused …), keep a value the freshly
+        /// generated <c>/ParentTree</c> never defines. That is the same invalid state this method
+        /// exists to prevent, produced from conformant input:
         /// ISO 32000-1 §14.7.4.4 requires every <c>/StructParent(s)</c> value to be a key in the
         /// ParentTree, so independent checkers report it against the output.
         /// <paramref name="inventoriedForms"/> is every form <see cref="TagForms"/> saw, and
@@ -3289,12 +3289,12 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
         /// Anything the two encodings disagree about still goes out as UTF-16BE with the mandatory
         /// <c>FE FF</c> marker.</para>
         ///
-        /// <para>Null and empty stay an empty string rather than throwing, as before.</para>
+        /// <para>Null and empty become an empty string rather than throwing.</para>
         /// </summary>
         private static PdfString MakeTextString(string text) => new PdfString(text ?? string.Empty);
 
         // One implementation, in Core.IO.StreamBytes. It rewinds a seekable stream before
-        // reading; this copy read from wherever the position happened to be.
+        // reading, where a copy reading from the current position would see only the rest.
         private static byte[] ReadAll(Stream stream) => StreamBytes.ReadAll(stream);
     }
 }

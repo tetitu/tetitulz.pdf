@@ -73,7 +73,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
     /// (<see cref="CheckLinkDestinationsAreStructureDestinations"/>). §8.2.5.21 and §8.2.5.22 are
     /// closed through the §8.9 and §8.10 sub-clauses that name the same structure type, so every one
     /// of the thirty-two §8.2.5 subclauses is accounted for. Each check's own remarks say what it
-    /// leaves out; see <see cref="CheckNoMarkedContentInAnnotationAppearances"/>'s own remarks.
+    /// leaves out; see <see cref="CheckNoMarkedContentReferencesIntoAnnotationAppearances"/>'s own remarks.
     /// </para>
     /// </summary>
     public static class PdfUa2StructureChecker
@@ -257,7 +257,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             RunCheck(doc, catalog, violations, "CheckEmbeddedCMapWModeConsistent", CheckEmbeddedCMapWModeConsistent);
             RunCheck(doc, catalog, violations, "CheckOutlineTitlesNoPua", CheckOutlineTitlesNoPua);
             RunCheck(doc, catalog, violations, "CheckAnnotationsIncludedInStructureTree", CheckAnnotationsIncludedInStructureTree);
-            RunCheck(doc, catalog, violations, "CheckNoMarkedContentInAnnotationAppearances", CheckNoMarkedContentInAnnotationAppearances);
+            RunCheck(doc, catalog, violations, "CheckNoMarkedContentReferencesIntoAnnotationAppearances", CheckNoMarkedContentReferencesIntoAnnotationAppearances);
             RunCheck(doc, catalog, violations, "CheckFontWidthConsistency", CheckFontWidthConsistency);
             RunCheck(doc, catalog, violations, "CheckLinkDestinationsAreStructureDestinations", CheckLinkDestinationsAreStructureDestinations);
             RunCheck(doc, catalog, violations, "CheckOutlineDestinationsAreStructureDestinations", CheckOutlineDestinationsAreStructureDestinations);
@@ -3964,8 +3964,8 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         }
 
         // ----------------------------------------------------------------
-        //  Clause 8.9.2.1 — annotation appearance streams must not use marked
-        //  content to substructure themselves
+        //  Clause 8.9.2.1 — no marked-content reference into an annotation's
+        //  appearance stream
         // ----------------------------------------------------------------
 
         /// <summary>
@@ -3975,96 +3975,90 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// already use in this file): "ISO 32000-2 enables substructure within annotation
         /// appearance streams via marked content references. Files in conformity with this
         /// document shall not use marked content references to substructure annotation appearance
-        /// streams."
+        /// streams (see ISO 32000-2:2020, Table 357)."
         /// </summary>
         /// <remarks>
-        /// <para>Unconditional on every annotation's own appearance stream, regardless of whether
-        /// the annotation itself is tagged, an artifact, or exempt from the tree-inclusion rule
-        /// above — this sentence is about what the appearance <i>content stream</i> contains, not
-        /// about the annotation's own place in the structure tree. §8.9.2.1's own note explains
-        /// why: "the effect of the above clause is to require that annotations are included as
-        /// whole objects in a single structure element," so any <c>BMC</c>/<c>BDC</c> inside one
-        /// is itself the violation, found or not by any other check in this file.</para>
-        /// <para>Reuses <see cref="PdfXValidator.PageScan.AppearanceStreams"/> outright — the
-        /// exact list <c>PdfXValidator</c>'s own X09 already built for "inspect this stream's own
-        /// dictionary and content," including every named <c>/AS</c> state, not only the one
-        /// currently selected (the clause's own text names the file's appearance streams in
-        /// general, not "the active one"). Called with <c>collectContent: false</c>: this check
-        /// decodes each appearance stream itself via <c>PdfStream.GetDecodedData()</c>, so the
-        /// page's own content and every nested form/pattern/glyph-procedure stream <c>ScanPage</c>
-        /// would otherwise decode are unneeded work for this one question.</para>
-        /// <para>De-duplicated by stream identity across the whole document (a shared appearance
-        /// referenced by several widgets, e.g. a common "off" state) — the same
-        /// <c>seenForms</c>-style dedup <c>PdfXValidator</c>'s own scan already performs internally
-        /// per page; this check adds one more, document-wide, since two different pages can each
-        /// seed the identical stream object independently.</para>
+        /// <para><b>What is forbidden is the reference, and the reference is in the structure
+        /// tree.</b> A marked-content reference (ISO 32000-2 Table 357) is an <c>/MCR</c> kid of a
+        /// structure element; its <c>/Stm</c> names the content stream its sequence lies in when
+        /// that is not the page's own, and its <c>/StmOwn</c> the object referencing that stream —
+        /// "a common use for this would be to identify the annotation dictionary owning the
+        /// appearance stream". This reports every <c>/MCR</c> whose <c>/Stm</c> is an annotation's
+        /// appearance stream, or whose <c>/StmOwn</c> is an annotation. Marked content inside an
+        /// appearance stream that no reference names is not a use of one: a text field's
+        /// appearance holds <c>/Tx BMC … EMC</c> by ISO 32000-2 §12.7.4.3, and a producer may leave
+        /// an <c>/MCID</c> there that nothing in the tree claims. NOTE 4's effect, an annotation
+        /// included whole in one element, is the <c>/OBJR</c> the tree-inclusion check reads.</para>
+        /// <para>The appearance streams are <see cref="PdfXValidator.PageScan.AppearanceStreams"/>,
+        /// every named <c>/AS</c> state included, scanned with <c>collectContent: false</c>: the
+        /// question is which streams they are, so none is decoded. A form XObject an appearance
+        /// draws is not among them; a reference into one is reported when its <c>/StmOwn</c> names
+        /// the annotation. The annotations are those the pages' <c>/Annots</c> arrays list, each
+        /// array read once however many pages share it. A page whose scan stopped at a ceiling is
+        /// said (UA2-99), since a reference into one of its appearances would go unseen.</para>
+        /// <para>The tree is <see cref="StructTreeWalker"/>'s, under its depth, node and edge
+        /// ceilings.</para>
         /// </remarks>
-        private static void CheckNoMarkedContentInAnnotationAppearances(
+        private static void CheckNoMarkedContentReferencesIntoAnnotationAppearances(
             PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
         {
             if (doc.Pages == null) return;
+            var structTreeRoot = ResolveStructTreeRoot(doc, catalog);
+            if (structTreeRoot == null) return;
 
-            int found = 0;
+            var appearances = new HashSet<PdfStream>();
+            var annotations = new HashSet<PdfDictionary>();
+            var annotsRead = new HashSet<PdfArray>();
             long documentBytes = 0;
-            long appearanceBytes = 0;
-            int unread = 0;
-            var seen = new HashSet<PdfStream>();
+            int incompletePages = 0;
 
             for (int p = 0; p < doc.Pages.Count; p++)
             {
-                if (found > IndividualReportLimit) break;
-
                 var scan = PdfXValidator.ScanPage(doc, doc.Pages[p],
                     PdfXValidator.DefaultMaxPageContentBytes, ref documentBytes,
                     PdfXValidator.DefaultMaxDocumentContentBytes, collectContent: false);
+                foreach (PdfStream ap in scan.AppearanceStreams) appearances.Add(ap);
+                if (scan.Incomplete != null) incompletePages++;
 
-                foreach (PdfStream ap in scan.AppearanceStreams)
+                if (Resolve(doc, doc.Pages[p].Dictionary?[PdfName.Annots]) is PdfArray annots && annotsRead.Add(annots))
                 {
-                    if (found > IndividualReportLimit) break;
-                    if (!seen.Add(ap)) continue;
-
-                    // Under the ceilings a page's own content has, the decode stopped there and the
-                    // bytes spending a budget of the document's: an operation list costs several times
-                    // the bytes it was parsed from, two of which are a `q`.
-                    long ceiling = Math.Min(PdfXValidator.DefaultMaxPageContentBytes,
-                                            PdfXValidator.DefaultMaxDocumentContentBytes - appearanceBytes);
-                    if (!ap.TryGetDecodedDataUncached(ceiling, out byte[] bytes, out _) || bytes.Length > ceiling)
-                    {
-                        unread++;
-                        continue;
-                    }
-                    appearanceBytes += bytes.Length;
-
-                    List<ContentStreamOperation> ops;
-                    try { ops = ContentStreamParser.Parse(bytes); }
-                    catch { continue; }
-
-                    bool hasMarkedContent = false;
-                    foreach (ContentStreamOperation op in ops)
-                    {
-                        if (op.Operator != PdfOperators.BeginMarkedContent
-                            && op.Operator != PdfOperators.BeginMarkedContentProps) continue;
-                        hasMarkedContent = true;
-                        break;
-                    }
-                    if (!hasMarkedContent) continue;
-
-                    found++;
-                    if (found > IndividualReportLimit) break;
-                    v.Add(new PdfUa2StructureViolation("UA2-8.9.2.1",
-                        "An annotation's appearance stream contains a BMC/BDC marked-content " +
-                        "operator; §8.9.2.1 prohibits using marked content to substructure an " +
-                        "annotation appearance stream (ISO 14289-2 §8.9.2.1)."));
+                    for (int i = 0; i < annots.Count; i++)
+                        if (Resolve(doc, annots[i]) is PdfDictionary annot) annotations.Add(annot);
                 }
             }
+
+            int found = 0;
+            PdfObjectIndex index = PdfObjectIndex.Build(doc);
+            StructTreeWalker.Walk(structTreeRoot, doc, index, node =>
+            {
+                if (found > IndividualReportLimit) return;
+                foreach (PdfObject rawKid in node.RawKids)
+                {
+                    if (!(Resolve(doc, rawKid) is PdfDictionary kid)) continue;
+
+                    bool intoAppearance = Resolve(doc, kid[PdfName.Stm]) is PdfStream stm && appearances.Contains(stm);
+                    bool ownedByAnnotation = Resolve(doc, kid[PdfName.StmOwn]) is PdfDictionary owner && annotations.Contains(owner);
+                    if (!intoAppearance && !ownedByAnnotation) continue;
+
+                    found++;
+                    if (found > IndividualReportLimit) return;
+                    string element = (node.Role ?? "structure element") +
+                        (node.ObjectNumber > 0 ? $" (object {node.ObjectNumber})" : "");
+                    v.Add(new PdfUa2StructureViolation("UA2-8.9.2.1",
+                        $"The {element} holds a marked-content reference whose " +
+                        (intoAppearance ? "/Stm is an annotation's appearance stream" : "/StmOwn is an annotation") +
+                        "; §8.9.2.1 prohibits using marked content references to substructure an " +
+                        "annotation appearance stream (ISO 14289-2 §8.9.2.1)."));
+                }
+            });
 
             if (found > IndividualReportLimit)
                 v.Add(new PdfUa2StructureViolation("UA2-8.9.2.1",
                     $"…and at least one more, not listed individually."));
-            if (unread > 0)
+            if (incompletePages > 0)
                 v.Add(new PdfUa2StructureViolation("UA2-99",
-                    $"{unread} annotation appearance stream(s) would not decode within the {PdfXValidator.DefaultMaxPageContentBytes}-byte " +
-                    "ceiling, or past the document's, so §8.9.2.1 was not checked in them."));
+                    $"{incompletePages} page(s) had their annotation appearances scanned only in part, " +
+                    "so §8.9.2.1's marked-content references into them were not all checked."));
         }
 
         // ----------------------------------------------------------------

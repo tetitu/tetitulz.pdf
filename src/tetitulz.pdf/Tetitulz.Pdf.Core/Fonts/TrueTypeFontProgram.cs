@@ -233,9 +233,10 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// </summary>
         public static TrueTypeFontProgram Parse(byte[] data)
         {
+            _lastParseError = null;
             try
             {
-                if (data == null || data.Length < 12) return null;
+                if (data == null || data.Length < 12) return Refuse("fewer than 12 bytes: no sfnt header");
 
                 // WOFF 2.0: Brotli-compressed and TRANSFORMED, so unwrapping it is a
                 // reconstruction rather than an inflate (Woff2Decoder). Unwrapped here, at the one
@@ -251,20 +252,20 @@ namespace Tetitulz.Pdf.Core.Fonts
                 if (Woff2Decoder.IsWoff2(data))
                 {
                     data = Woff2Decoder.Decode(data);
-                    if (data == null || data.Length < 12) return null;
+                    if (data == null || data.Length < 12) return Refuse(Woff2Decoder.LastError ?? "the WOFF 2.0 container unwrapped to fewer than 12 bytes");
                 }
 
                 if (WoffDecoder.IsWoff1(data))
                 {
                     data = WoffDecoder.Decode(data);
-                    if (data == null || data.Length < 12) return null;
+                    if (data == null || data.Length < 12) return Refuse(WoffDecoder.LastError ?? "the WOFF 1.0 container unwrapped to fewer than 12 bytes");
                 }
 
                 var m = new TrueTypeFontProgram { FontData = data };
                 var r = new Reader(data);
 
                 uint sfVersion = r.U32();
-                if (sfVersion == 0x74746366) return null; // 'ttcf' font collection — unsupported
+                if (sfVersion == 0x74746366) return Refuse("a font collection ('ttcf'), which is not read");
                 int numTables = r.U16();
                 r.Skip(6);
 
@@ -401,10 +402,27 @@ namespace Tetitulz.Pdf.Core.Fonts
                 // legitimately ships none).
                 return m;
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
+                // A null program is the contract; what the reader threw — a table's bounds, a truncated
+                // directory — is said, rather than read as "not a font".
+                return Refuse("the sfnt could not be read: " + ex.GetType().Name + ": " + ex.Message);
             }
+        }
+
+        [ThreadStatic] private static string _lastParseError;
+
+        /// <summary>
+        /// Why the last <see cref="Parse"/> on this thread returned null — too short, a WOFF container that would not
+        /// unwrap (its decoder's reason), a collection, or what the reader threw — or null when it returned a program.
+        /// Reset at the start of every call.
+        /// </summary>
+        internal static string LastParseError => _lastParseError;
+
+        private static TrueTypeFontProgram Refuse(string why)
+        {
+            _lastParseError = why;
+            return null;
         }
 
         private void ParseName(Reader r, uint tableOffset)
@@ -539,9 +557,8 @@ namespace Tetitulz.Pdf.Core.Fonts
                 _preserveExisting = true;
                 try { ParseCmapFormat(r, symbolOrMac); }
                 finally { _preserveExisting = false; }
-                // The comment above this method has always claimed the Symbolic flag is set from a
-                // (3,0) cmap; nothing set it. Only claim it when that subtable actually supplied
-                // mappings.
+                // The Symbolic flag is set from a (3,0) cmap, as the comment above this method says,
+                // and only when that subtable actually supplied mappings.
                 if (symbolIsThreeZero && _cmap.Count > before) Flags |= 4;
             }
         }
@@ -624,8 +641,9 @@ namespace Tetitulz.Pdf.Core.Fonts
             r.Skip(4);  // language
             uint nGroups = r.U32();
             // Cumulative work, as format 4 counts it: groups that overlap one another never raise
-            // _cmap.Count, so a hundred thousand copies of one 0x1FFFF-wide group were 1.3×10^10
-            // writes — groups × width, two counts the file chooses — with neither break firing.
+            // _cmap.Count, so a hundred thousand copies of one 0x1FFFF-wide group would be
+            // 1.3×10^10 writes — groups × width, two counts the file chooses — with neither break
+            // firing.
             long work = 0;
             for (uint g = 0; g < nGroups; g++)
             {

@@ -156,9 +156,9 @@ public sealed class ImageOrientationTests
 
     /// <summary>
     /// Verifies that a PDF using "DoQQ" (no whitespace between Do, Q, Q) — a pattern
-    /// emitted by some PDF generators — actually renders the image.  Before the fix,
-    /// ContentStreamParser treated "DoQQ" as a single unknown operator and the image
-    /// was silently skipped, leaving a white rectangle where the logo should appear.
+    /// emitted by some PDF generators — actually renders the image. Treated as a single unknown
+    /// operator, "DoQQ" would silently skip the image, leaving a white rectangle where the logo
+    /// should appear.
     /// </summary>
     [Fact]
     public void ImageWithConcatenatedDoQQ_RendersImage()
@@ -214,12 +214,11 @@ public sealed class ImageOrientationTests
     }
 
     /// <summary>
-    /// Regression test for the negative-d CTM vertical-flip bug (Bank Hapoalim logo).
+    /// A negative-d CTM flips an image vertically (a bank's logo is drawn this way).
     ///
-    /// Before the fix, DrawBitmap used Math.Min/Max to normalise the destination rect
-    /// and always drew bitmap row 0 at dst.Top — ignoring whether the CTM had a negative
-    /// Y-scale.  For negative-d CTMs the first stream row should appear at the VISUAL
-    /// BOTTOM (matching another reader / Windows.Data.Pdf), not the top.
+    /// Normalising the destination rect with Math.Min/Max and always drawing bitmap row 0 at
+    /// dst.Top would ignore a negative Y-scale. For negative-d CTMs the first stream row appears
+    /// at the VISUAL BOTTOM (matching another reader / Windows.Data.Pdf), not the top.
     ///
     /// The test builds a 1×4 image (rows top→bottom: red, red, blue, blue) placed with
     /// a standard negative-d CTM [w 0 0 -h x y+h].  After correct rendering the top of

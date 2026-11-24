@@ -578,7 +578,7 @@ same question. Before writing any of these, use the one implementation:
 | A CSS absolute length (`pt px pc in cm mm q`) in points or pixels — each form bit-identical to the arithmetic it replaced | `Core.Text.CssLength` (`TryToPoints`, `TryToPixels`) |
 | An XFA measurement (`in pt mm cm pc mp px`, a bare number in points; refused past `MaxTextLength`) and an `r,g,b` colour | `Builder.Import.XfaMeasure` |
 | An XFA packet's bytes, stopped at the one ceiling; whether a packet may be built into a tree — its bytes, depth, nodes and attributes, by a streaming pass that builds nothing — the datasets reader, the filler, the layout and the template reader alike | `Core.Forms.XfaPacket.BoundedBytes`; `XfaDatasets.IsWithinBounds` |
-| Text made legal in XML, each code point XML 1.0 forbids replaced with U+FFFD — the Builder's document writers and the PDF/UA XMP packet alike | `Core.Text.XmlLegalText.Replace` |
+| Text made legal in XML — each code point XML 1.0 forbids (U+FFFE and U+FFFF too) replaced with U+FFFD in text a caller authored (the Builder's document writers, the PDF/UA XMP packet), removed from text read out of a PDF (the SVG export, the PDF to Office converters), where it has no glyph | `Core.Text.XmlLegalText` (`Replace`, `Remove`) |
 | A PDF affine matrix — composed (row vectors: the left factor first), applied to a point, taken about a point (`transform-origin`), a rectangle's turned bounds — the HTML mapper composing a transform and the exporter applying it to paint and to annotation rectangles alike; in the renderers' ring, at their `float`, the same arithmetic once more (the SVG converter's `Transform` goes through it) — two by ring and precision, never a third | `Core.Writing.TransformMatrix` (producers, `double`); `Base.Rendering.PdfMatrix` (renderers, `float`) |
 | A bounded walk of the structure tree — elements in document order, each `/K` slot in array order before the element it names is entered, a parent left after its children, a shared subtree once; the depth, node and edge ceilings (`PdfLimits.MaxStructTree*`) and every unresolvable reference reported, the liveness on the walk — every reader of `/StructTreeRoot` | `Operations.Structure.StructureTreeWalk` (`Enter`, `Kid`, `Leave`, `Report`; `RawKidsOf`, `RoleOf`) |
 | `/XYZ` destination; how a destination names a page | `Core.Writing.XyzDestination` (`Build`, `PageOf`) |
@@ -731,7 +731,8 @@ most `MaxRenderReportsPerKindPerPage` times a page** (the scope both operator lo
   `InvalidDataException` leaves `FilterPipeline` as a `PdfFilterException`.
 - **Read the doc comments first** — they are usually right and the declarations wrong. **A comment
   holds one `<summary>`**: a member written in under another's comment carries both and leaves that one
-  none (guarded by `OneSummaryPerDocCommentTests`).
+  none. **A partial type is documented on one part**: the compiler publishes every part's comment, so a
+  part's note about its own file is an ordinary `//` comment (both guarded by `OneSummaryPerDocCommentTests`).
 - **A file-supplied number is not a `long` until `PdfNumber.IsInteger` says so** — a `(long)` cast of
   an out-of-range double yields `long.MinValue`. Only a literal with a period reaches that path in a test.
 - **An unreadable object is not an absent one.** `GetObject` and `ResolveObject` answer both with the

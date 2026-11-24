@@ -35,8 +35,8 @@ public sealed class PdfPermissionValueTests
     }
 
     /// <summary>
-    /// Stated as the defect rather than as the fix, so the test says what went wrong: the old
-    /// route saturates, and saturation sets every permission bit.
+    /// Stated as the defect, so the test says what would go wrong: an <c>(int)</c> cast
+    /// saturates, and saturation sets every permission bit.
     /// </summary>
     [Fact]
     public void TheOldRoute_Saturated_AndThatGrantedEveryPermission()

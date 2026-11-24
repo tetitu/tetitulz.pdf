@@ -96,6 +96,7 @@ namespace Tetitulz.Pdf.Signing
             long start = seekable.CanSeek ? seekable.Position : 0L;
 
             int signatures = 0;
+            var fetchedFor = new HashSet<string>(StringComparer.Ordinal);
             using (var doc = PdfDocument.Open(seekable))
             {
                 // Refused here rather than deeper, for the reason AddVerificationInfo states: an
@@ -125,6 +126,12 @@ namespace Tetitulz.Pdf.Signing
                                      "evidence: " + why);
                         continue;
                     }
+
+                    // A signer and chain already fetched for are not fetched for again: the evidence would be the
+                    // same, and a file chooses how many signatures repeat one CMS — each a round of network fetches.
+                    // A caller's provider is asked for each signature: it decides for itself.
+                    if (options.EvidenceProvider == null && !fetchedFor.Add(EvidenceKey(signerCert!, chain)))
+                        continue;
 
                     LtvEvidence? gathered = options.EvidenceProvider != null
                         ? options.EvidenceProvider(signerCert!, chain)
@@ -226,6 +233,14 @@ namespace Tetitulz.Pdf.Signing
                 why = ex.Message;
                 return false;
             }
+        }
+
+        /// <summary>A signer and the certificates its CMS carried, as one key: the input the default provider fetches for.</summary>
+        private static string EvidenceKey(X509Certificate signerCert, IReadOnlyList<X509Certificate> chain)
+        {
+            var key = new System.Text.StringBuilder(Convert.ToBase64String(signerCert.GetEncoded()));
+            foreach (var c in chain) key.Append('|').Append(Convert.ToBase64String(c.GetEncoded()));
+            return key.ToString();
         }
 
         /// <summary>The default provider: walk the chain and fetch.</summary>

@@ -11,12 +11,10 @@ using Tetitulz.Pdf.Core.Text;
 
 namespace Tetitulz.Pdf.Plugins.Conformance
 {
-    /// <summary>
-    /// The core rules the PDF Association's <i>PDF/X in a Nutshell</i> (CC BY 4.0,
-    /// <c>docs/iso</c>) lists as applying "in all parts and conformance levels of PDF/X" — X14 to
-    /// X19. ISO 15930 itself is not available; GAPS.md §12b records the owner's rule for building
-    /// a check from public sources, and which of the brochure's rules stay open and why.
-    /// </summary>
+    // The core rules the PDF Association's PDF/X in a Nutshell (CC BY 4.0,
+    // docs/iso) lists as applying "in all parts and conformance levels of PDF/X" — X14 to
+    // X19. ISO 15930 itself is not available; GAPS.md §12b records the owner's rule for building
+    // a check from public sources, and which of the brochure's rules stay open and why.
     public static partial class PdfXValidator
     {
         // ----------------------------------------------------------------

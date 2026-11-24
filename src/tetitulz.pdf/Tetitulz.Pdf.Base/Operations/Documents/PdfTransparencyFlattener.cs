@@ -620,7 +620,7 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         /// A Type 4 (PostScript calculator) function from <c>c m y k s1 … sn</c> to CMYK: each process
         /// ink plus every spot's tint times that spot's ink in it — the spots overprinting the process
         /// inks, as on press — clamped at 1 by the function's <c>/Range</c>, which §7.10.1 clips every
-        /// output to. (A clamp in the program as well was found to change nothing, and was removed.)
+        /// output to, so the program itself does not clamp.
         /// </summary>
         internal static PdfStream SpotTintTransform(IReadOnlyList<float[]> spotsAsCmyk)
         {

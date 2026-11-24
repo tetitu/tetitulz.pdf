@@ -98,7 +98,7 @@ public sealed class PdfLinkExtractorTests
 
     /// <summary>
     /// Named destination in the /Names /Dests name tree whose value is a direct inline
-    /// array — verifies the non-indirect path still works after the fix.
+    /// array — the non-indirect path.
     /// </summary>
     [Fact]
     public void ExtractLinks_NamedDest_ViaNameTree_WithInlineDestArray_ResolvesPage()
@@ -162,8 +162,8 @@ public sealed class PdfLinkExtractorTests
 
     /// <summary>
     /// Two-page PDF with a /Names /Dests name tree whose single entry's destination array
-    /// is stored as an INDIRECT reference (the "8 0 R" case that was previously silently
-    /// dropped by ResolveDestArray).
+    /// is stored as an INDIRECT reference (the "8 0 R" case a reader that does not resolve it
+    /// silently drops).
     /// </summary>
     private static byte[] BuildPdfWithNameTreeAndIndirectDestArray()
     {

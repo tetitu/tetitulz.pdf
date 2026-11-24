@@ -12,21 +12,18 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
-/// Defensive parser-bounds tests added in GAPS §39.C1, §39.C2, §40.P13.
+/// Defensive parser-bounds tests.
 /// Each test crafts a minimal in-memory PDF whose cross-reference stream
 /// or object stream contains a bounds-violating value and asserts the
 /// parser refuses the section instead of looping forever / silently truncating /
 /// wrapping integer arithmetic.
 ///
 /// <para><b>The evidence of the refusal is <see cref="PdfParser.LastXrefSectionError"/>, not an
-/// exception out of <see cref="PdfDocument.Open"/>.</b> These tests used to assert the throw,
-/// which was only ever an indirect proxy: <c>ParseCrossReferences</c> catches a bad section,
-/// records the reason and falls back to the recovery scan, and the exception escaped merely
-/// because that scan could not then produce a <c>/Root</c> for an xref-stream file — it looked
-/// only for the <c>trailer</c> keyword, which such a file does not contain. The scan now reads
-/// <c>/Root</c> out of the recovered <c>/Type /XRef</c> dictionary, so the document opens and the
-/// refusal has to be asserted where it is actually recorded. Deleting the /W guard makes
-/// <c>LastXrefSectionError</c> null, so each of these still fails when the guard is removed.</para>
+/// exception out of <see cref="PdfDocument.Open"/>.</b> <c>ParseCrossReferences</c> catches a bad
+/// section, records the reason and falls back to the recovery scan, which reads <c>/Root</c> out
+/// of the recovered <c>/Type /XRef</c> dictionary, so the document opens and the refusal is
+/// asserted where it is recorded. Deleting the /W guard makes <c>LastXrefSectionError</c> null,
+/// so each of these fails when the guard is removed.</para>
 /// </summary>
 public class AdversarialXrefStreamTests
 {

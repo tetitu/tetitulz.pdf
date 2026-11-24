@@ -161,7 +161,7 @@ public sealed class JpxImageAssemblyTests
             Assert.True(JpxDecodedImage.TryCreate(grid, grid.Components, 0, out _, out reason), reason);
 
             // 32 samples at the measured price; the reduced area is what is charged (2x2 x 2 at reduction 1).
-            // The price is a measurement (4 086 MB for 243 million samples on 2026-10-24), pinned: the
+            // The price is a measurement (4 086 MB for 243 million samples), pinned: the
             // assertions below are written from the constant and would follow it anywhere.
             Assert.Equal(17, JpxDecodedImage.WorkingBytesPerSample);
             PdfLimits.MaxJpxWorkingSetBytes = 32 * JpxDecodedImage.WorkingBytesPerSample - 1;

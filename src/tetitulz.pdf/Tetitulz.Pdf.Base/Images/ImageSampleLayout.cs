@@ -116,8 +116,8 @@ namespace Tetitulz.Pdf.Base.Images
         /// <c>doc</c> is a parameter because <see cref="ImageAlphaMode.None"/> is <i>also</i> what
         /// this returns for an ABSENT entry, so an unresolved one is indistinguishable from a file
         /// that never asked for alpha — and a JPX codestream's opacity channel is then dropped and
-        /// the image renders opaque. <c>Resolve</c>, the only caller, has had a document all along
-        /// and its own parameter doc says it is there to resolve an indirect <c>/ColorSpace</c>.
+        /// the image renders opaque. <c>Resolve</c>, the only caller, holds the document, which its
+        /// own parameter doc says is there to resolve an indirect <c>/ColorSpace</c>.
         /// </remarks>
         internal static ImageAlphaMode ReadSMaskInData(PdfDictionary imageDict, PdfDocument doc)
         {

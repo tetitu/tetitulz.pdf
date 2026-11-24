@@ -361,8 +361,10 @@ Tetitulz.Pdf.Base.Operations.Documents.PdfPortfolioManager::GetSchema(System.IO.
 Tetitulz.Pdf.Base.Operations.Documents.PdfPortfolioManager::GetSchema(System.String) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Documents.PortfolioField>
 Tetitulz.Pdf.Base.Operations.Documents.PdfPortfolioManager::IsPortfolio(System.IO.Stream) : System.Boolean
 Tetitulz.Pdf.Base.Operations.Documents.PdfPortfolioManager::IsPortfolio(System.String) : System.Boolean
+Tetitulz.Pdf.Base.Operations.Documents.PdfPortfolioManager::LastReadWarning : System.String { get }
 Tetitulz.Pdf.Base.Operations.Documents.PdfPortfolioManager::ListItems(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Documents.PortfolioItem>
 Tetitulz.Pdf.Base.Operations.Documents.PdfPortfolioManager::ListItems(System.String) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Documents.PortfolioItem>
+Tetitulz.Pdf.Base.Operations.Documents.PdfPortfolioManager::MaxMeasuredItemBytes : System.Int64 = 67108864
 Tetitulz.Pdf.Base.Operations.Documents.PdfProgressivePage::Content : System.Byte[] { get }
 Tetitulz.Pdf.Base.Operations.Documents.PdfProgressivePage::Error : System.String { get }
 Tetitulz.Pdf.Base.Operations.Documents.PdfProgressivePage::Missing : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Documents.PdfByteRange> { get }
@@ -424,6 +426,7 @@ Tetitulz.Pdf.Base.Operations.Documents.PdfTextRedactor::FindIsraeliIdentifiers(S
 Tetitulz.Pdf.Base.Operations.Documents.PdfTextRedactor::FindMatches(System.IO.Stream, System.Collections.Generic.IEnumerable<System.String>, Tetitulz.Pdf.Base.Operations.Documents.TextRedactionOptions = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Documents.TextRedactionMatch>
 Tetitulz.Pdf.Base.Operations.Documents.PdfTextRedactor::FindMatches(System.IO.Stream, System.String, Tetitulz.Pdf.Base.Operations.Documents.TextRedactionOptions = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Documents.TextRedactionMatch>
 Tetitulz.Pdf.Base.Operations.Documents.PdfTextRedactor::LastDocumentTextRemoved : System.String { get }
+Tetitulz.Pdf.Base.Operations.Documents.PdfTextRedactor::LastFindMatchesWarning : System.String { get }
 Tetitulz.Pdf.Base.Operations.Documents.PdfTextRedactor::Redact(System.IO.Stream, System.IO.Stream, System.Collections.Generic.IEnumerable<System.String>, Tetitulz.Pdf.Base.Operations.Documents.TextRedactionOptions = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Documents.TextRedactionMatch>
 Tetitulz.Pdf.Base.Operations.Documents.PdfTextRedactor::Redact(System.IO.Stream, System.IO.Stream, System.String, Tetitulz.Pdf.Base.Operations.Documents.TextRedactionOptions = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Documents.TextRedactionMatch>
 Tetitulz.Pdf.Base.Operations.Documents.PdfTextRedactor::RedactIsraeliIdentifiers(System.IO.Stream, System.IO.Stream, Tetitulz.Pdf.Base.Operations.Documents.TextRedactionOptions = default) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Documents.TextRedactionMatch>
@@ -581,6 +584,7 @@ Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::File : System.String { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::Height : System.Single { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::Kind : Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkKind { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::NamedAction : System.String { get }
+Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::ObjectNumber : System.Int32 { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::PageIndex : System.Int32 { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::TargetPageIndex : System.Int32 { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::TargetTop : System.Nullable<System.Single> { get }
@@ -590,6 +594,7 @@ Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::X : System.Single { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::Y : System.Single { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkExtractor::ExtractLinks(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Extraction.PdfLink>
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkExtractor::ExtractLinks(System.String) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Extraction.PdfLink>
+Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkExtractor::ExtractLinks(Tetitulz.Pdf.Core.Document.PdfDocument) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Extraction.PdfLink>
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkExtractor::LastError : System.String { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkKind::GoTo : Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkKind = 2
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkKind::Launch : Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkKind = 5
@@ -2289,6 +2294,7 @@ Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::ProofProfileUnsupported : Teti
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::RenderParameterIgnored : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 23
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::RenderResolutionReduced : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 2
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::SeparationApproximated : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 31
+Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::SpotPlatesCapped : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 40
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::TilingPatternDecodeFailed : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 6
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::TilingPatternShaderFailed : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 16
 Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind::TransparencyGroupApproximated : Tetitulz.Pdf.Base.Rendering.RenderDiagnosticKind = 3

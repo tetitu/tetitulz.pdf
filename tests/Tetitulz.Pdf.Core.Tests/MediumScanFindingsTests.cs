@@ -14,8 +14,8 @@ using Tetitulz.Pdf.Core.Text;
 namespace Tetitulz.Pdf.Core.Tests;
 
 /// <summary>
-/// Regression tests for the MEDIUM assembly-scan findings that do not warrant a file of their own.
-/// Each test names the defect it pins; the reasoning lives on the fix.
+/// Tests for defects that do not warrant a file of their own. Each test names the defect it pins;
+/// the reasoning lives on the code it guards.
 /// </summary>
 public class MediumScanFindingsTests
 {
@@ -213,8 +213,8 @@ public class MediumScanFindingsTests
     public void Lzw_CorruptCode_ReportsThatTheOutputIsTruncated()
     {
         // A code that is neither in the table nor the next entry to be added stops the decode and
-        // returns what it has — deliberately lenient, and previously entirely silent, so a
-        // half-decoded content stream was indistinguishable from a short one.
+        // returns what it has — deliberately lenient, and reported, so a half-decoded content
+        // stream is told apart from a short one.
         var filter = new LzwDecodeFilter();
         byte[] output = filter.Decode(CorruptLzw(), parameters: null);
 

@@ -19,10 +19,10 @@ namespace Tetitulz.Pdf.Core.Tests.Text
     /// otherwise as published): every case's paragraph level, its levels after L1, and its visual order after L2.
     /// </summary>
     /// <remarks>
-    /// The resolver had never met it. Measured on 2026-10-20 before the rewrite of X1–X10: 57 of 91 707 cases had
-    /// the wrong levels and 72 the wrong order — every one an explicit embedding or override beside numbers,
-    /// brackets or an isolate, because a sequence was split at isolates alone and an embedding's run took the
-    /// paragraph's sos — and an RTL embedding of <c>1 2 3</c> read as written.
+    /// The file reaches what a resolver's own tests miss: an explicit embedding or override beside numbers,
+    /// brackets or an isolate. A sequence split at isolates alone, or an embedding's run taking the paragraph's
+    /// sos, gets dozens of its cases wrong in levels and in order — and an RTL embedding of <c>1 2 3</c> then
+    /// reads as written.
     /// </remarks>
     public class BidiCharacterConformanceTests
     {

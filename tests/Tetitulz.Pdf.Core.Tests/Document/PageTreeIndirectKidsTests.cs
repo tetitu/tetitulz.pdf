@@ -45,7 +45,7 @@ public class PageTreeIndirectKidsTests
     }
 
     /// <summary>
-    /// The floor: the same tree with a DIRECT <c>/Kids</c> array must be unchanged, so the fix
+    /// The floor: the same tree with a DIRECT <c>/Kids</c> array must be unchanged, so the rule
     /// cannot be "stop treating anything as a page".
     /// </summary>
     [Fact]

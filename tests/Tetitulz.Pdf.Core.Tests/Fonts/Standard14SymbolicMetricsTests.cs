@@ -124,8 +124,8 @@ public class Standard14SymbolicMetricsTests
     /// <summary>
     /// <c>PdfSimpleFont.GetWidth</c>: a Standard-14 font with no <c>/Widths</c> measures its AFM
     /// — and for Symbol and ZapfDingbats that is by code through the built-in encoding, whatever
-    /// <c>/Encoding</c> the dictionary carries (§9.6.6.4). Before the fix both measured
-    /// <c>/MissingWidth</c>, which is 0 here.
+    /// <c>/Encoding</c> the dictionary carries (§9.6.6.4) — not <c>/MissingWidth</c>, which is 0
+    /// here.
     /// </summary>
     [Theory]
     [InlineData(StandardFonts.Symbol, 0x61, 631)]

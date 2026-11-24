@@ -521,9 +521,9 @@ namespace Tetitulz.Pdf.Plugins.Conformance
         /// (its <c>/Lang</c> or an ancestor's), an annotation's <c>/Contents</c> and a field's
         /// <c>/TU</c> (a language escape, §7.9.2.2), page text inside tagged content (an enclosing
         /// marked-content <c>/Lang</c>, or its structure element's; artifacts need none), and XMP text in
-        /// <c>x-default</c>, which only the catalog can give. the conformance corpus passes documents
-        /// that declare every language that way (7.2-t21 to -t34), and this check failed every one
-        /// of them for the missing catalog entry.</para>
+        /// <c>x-default</c>, which only the catalog can give. The conformance corpus passes documents
+        /// that declare every language that way (7.2-t21 to -t34), so a missing catalog entry alone
+        /// is no failure.</para>
         /// <para>The page-text half reads the content through <see cref="DefinedMcids"/>'s walk. It
         /// runs on every unencrypted document, since rule 7.2-29 counts the marked-content tags, and
         /// a single content stream's parse is kept for UA50 and the font walks
@@ -1191,10 +1191,10 @@ namespace Tetitulz.Pdf.Plugins.Conformance
         /// </summary>
         /// <remarks>
         /// <b>A per-page cap alone does not bound a 50 000-page file</b> — the sentence is
-        /// <c>PdfXValidator</c>'s, and this walk had the per-page half and not this one. The two
-        /// content walks in this assembly were read against each other, which is the only thing that
-        /// shows a ceiling present in one and absent in the other: each is individually reasonable,
-        /// and no test of either can see what the other bounds.
+        /// <c>PdfXValidator</c>'s, and both content walks in this assembly carry both halves. Only
+        /// reading the walks against each other shows a ceiling present in one and absent in the
+        /// other: each is individually reasonable, and no test of either can see what the other
+        /// bounds.
         /// </remarks>
         public const long DefaultMaxMcidScanBytesPerDocument = 128L * 1024 * 1024;
 
@@ -2018,13 +2018,12 @@ namespace Tetitulz.Pdf.Plugins.Conformance
 
             // `kids == null` tolerates a leaf that forgot /Type /Page — but a node that positively
             // declares /Type /Pages is not a leaf, it is an EMPTIED BRANCH, which is what a
-            // page-removal tool leaves behind. Counting it as a page shifts every later page index
-            // and runs UA25/UA26/UA27/UA50 against a non-page. Core's own walk had the same defect.
-            // One rule, in Core.Document.PdfPageTreeShape. This copy omitted Core's second clause —
-            // that an untyped, childless node must also be page-SHAPED — so a node with neither
-            // /Contents nor its own /MediaBox counted as a page, and UA25/UA26/UA27/UA50 then ran
-            // against a non-page: exactly what the comment below this one warns about, one case
-            // further out.
+            // page-removal tool leaves behind. Counting it as a page would shift every later page
+            // index and run UA25/UA26/UA27/UA50 against a non-page. One rule, in
+            // Core.Document.PdfPageTreeShape, with Core's second clause: an untyped, childless node
+            // must also be page-SHAPED. Without it a node with neither /Contents nor its own /MediaBox
+            // would count as a page, and UA25/UA26/UA27/UA50 would run against a non-page: exactly
+            // what the comment below this one warns about, one case further out.
             if (Core.Document.PdfPageTreeShape.IsLeafPage(
                     ResolveName(doc, node[PdfName.Type]), kids,
                     hasContents: node[PdfName.Contents] != null,
@@ -2394,11 +2393,11 @@ namespace Tetitulz.Pdf.Plugins.Conformance
             }
 
             // Tiling patterns and Type 3 glyph procedures carry their own /Resources, and a font
-            // reachable only through one of them was invisible to UA25/UA26 — the walk stopped at
-            // Form XObjects and returned. The deep checker
-            // (PdfDeepAccessibilityChecker.CollectFontsFrom) descends into both, so a non-embedded
-            // font inside a tiling pattern was reported by one checker and not the other, on the
-            // same file. Same budget, same depth accounting, so the traversal stays bounded.
+            // reachable only through one of them would be invisible to UA25/UA26 if the walk stopped
+            // at Form XObjects. The deep checker (PdfDeepAccessibilityChecker.CollectFontsFrom)
+            // descends into both too, so a non-embedded font inside a tiling pattern is reported by
+            // both checkers on the same file. Same budget, same depth accounting, so the traversal
+            // stays bounded.
             var patternDict = ResolveDict(doc, resources[PdfName.Pattern]);
             if (patternDict != null)
             {

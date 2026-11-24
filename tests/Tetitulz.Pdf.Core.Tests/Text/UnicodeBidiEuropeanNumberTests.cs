@@ -13,11 +13,11 @@ namespace Tetitulz.Pdf.Core.Tests.Text
     /// run per isolating run sequence, starting from the sequence's own direction (sos).
     /// </summary>
     /// <remarks>
-    /// <para><b>What was wrong:</b> the scan started from no direction at all and ran through
-    /// isolates. Digits with no letter before them therefore stayed <c>EN</c>; N1 counts <c>EN</c>
-    /// as right-to-left, so the space between two numbers resolved right-to-left and the numbers
-    /// swapped places. HTML's <c>&lt;span dir="ltr"&gt;24/09/2026 07:28&lt;/span&gt;</c> — an LTR
-    /// isolate — rendered as "07:28 24/09/2026", in right-to-left and left-to-right paragraphs
+    /// <para><b>What goes wrong otherwise:</b> a scan that starts from no direction at all and runs
+    /// through isolates leaves digits with no letter before them <c>EN</c>; N1 counts <c>EN</c> as
+    /// right-to-left, so the space between two numbers resolves right-to-left and the numbers swap
+    /// places. HTML's <c>&lt;span dir="ltr"&gt;24/09/2026 07:28&lt;/span&gt;</c> — an LTR isolate —
+    /// would render as "07:28 24/09/2026", in right-to-left and left-to-right paragraphs
     /// alike.</para>
     /// <para>The fixtures are digits and spaces only, because that is the shape that exposes it: a
     /// Latin letter anywhere before the digits would make W7 fire from the letter and hide the

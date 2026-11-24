@@ -10,21 +10,17 @@ using Tetitulz.Pdf.Core.Writing;
 
 namespace Tetitulz.Pdf.Builder.Export
 {
-    /// <summary>
-    /// Boxes around runs of blocks — <see cref="BoxStart"/> / <see cref="BoxEnd"/>: the band their
-    /// blocks lay out in, and the border and background drawn round them, sliced at a page break.
-    /// </summary>
-    /// <remarks>
-    /// <para><b>Painted behind, though drawn after.</b> A box's height is known only once its blocks
-    /// are laid out, and its background must lie beneath them. Its position in the page's content is
-    /// noted where it opens, and its fill and border — drawn when it closes, or when a page break
-    /// cuts it — are moved back to that point (<c>PdfContentStreamBuilder.MoveTailTo</c>). Boxes close
-    /// innermost first, and an inner box's position is always the later, so every position still
-    /// open stays true.</para>
-    /// <para><b>The border band is inside the box</b>, as CSS draws it: each side is stroked half its
-    /// width in from the edge, so a box with a 1pt border spans exactly its margin box less its
-    /// margins.</para>
-    /// </remarks>
+    // Boxes around runs of blocks — BoxStart / BoxEnd: the band their
+    // blocks lay out in, and the border and background drawn round them, sliced at a page break.
+    // Painted behind, though drawn after. A box's height is known only once its blocks
+    // are laid out, and its background must lie beneath them. Its position in the page's content is
+    // noted where it opens, and its fill and border — drawn when it closes, or when a page break
+    // cuts it — are moved back to that point (PdfContentStreamBuilder.MoveTailTo). Boxes close
+    // innermost first, and an inner box's position is always the later, so every position still
+    // open stays true.
+    // The border band is inside the box, as CSS draws it: each side is stroked half its
+    // width in from the edge, so a box with a 1pt border spans exactly its margin box less its
+    // margins.
     public sealed partial class PdfExporter
     {
         /// <summary>A box open around the flow (or around a cell's blocks), and the fragment it is on.</summary>

@@ -68,7 +68,7 @@ public class SharedKidsTreeBombTests
 
     /// <summary>
     /// The number tree, reachable from the public <c>PdfOperations.GetPageLabels</c>. The nodes
-    /// hold no <c>/Nums</c>, so a bounded walk yields no ranges; the pre-fix walk does not yield.
+    /// hold no <c>/Nums</c>, so a bounded walk yields no ranges; an unbounded one does not yield.
     /// </summary>
     [Fact]
     public void SharedKidsNumberTree_TerminatesInsteadOfWalkingItQuadratically()

@@ -10,22 +10,18 @@ using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Builder.Export
 {
-    /// <summary>
-    /// The one drawing of a <see cref="BoxShadow"/> — behind a paragraph's box and behind a block
-    /// box alike: a filled path at the shadow's offset when its edge is hard, and a soft-masked image
-    /// when it is blurred, since a content stream has no blur.
-    /// </summary>
-    /// <remarks>
-    /// <para><b>The blur is a raster.</b> CSS Backgrounds 3 §7.1 asks for a Gaussian whose standard
-    /// deviation is half the blur radius; the box's coverage is rasterised with its corners, blurred
-    /// separably, and drawn as an RGB image of the shadow's colour under that coverage as its soft
-    /// mask, one blur radius past the box on every side (the Gaussian's tail beyond it is under 2.3 %).
-    /// A caller's fill alpha applies to the image as it applied to the path.</para>
-    /// <para><b>The mask's size is bounded.</b> The box and the blur are author-supplied, so the
-    /// pixel count is capped at <see cref="MaxShadowMaskPixels"/> and a larger shadow is rendered
-    /// coarser rather than refused — a coarser soft edge is still the decoration asked for.</para>
-    /// <para>A blur and a spread are drawn, not reported; the two sites share one drawing.</para>
-    /// </remarks>
+    // The one drawing of a BoxShadow — behind a paragraph's box and behind a block
+    // box alike: a filled path at the shadow's offset when its edge is hard, and a soft-masked image
+    // when it is blurred, since a content stream has no blur.
+    // The blur is a raster. CSS Backgrounds 3 §7.1 asks for a Gaussian whose standard
+    // deviation is half the blur radius; the box's coverage is rasterised with its corners, blurred
+    // separably, and drawn as an RGB image of the shadow's colour under that coverage as its soft
+    // mask, one blur radius past the box on every side (the Gaussian's tail beyond it is under 2.3 %).
+    // A caller's fill alpha applies to the image as it applied to the path.
+    // The mask's size is bounded. The box and the blur are author-supplied, so the
+    // pixel count is capped at MaxShadowMaskPixels and a larger shadow is rendered
+    // coarser rather than refused — a coarser soft edge is still the decoration asked for.
+    // A blur and a spread are drawn, not reported; the two sites share one drawing.
     public sealed partial class PdfExporter
     {
         /// <summary>Pixels a point in a blurred shadow's mask: two, so the soft edge shows no steps at print size.</summary>

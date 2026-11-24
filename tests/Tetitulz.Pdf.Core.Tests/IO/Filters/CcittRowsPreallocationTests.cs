@@ -13,16 +13,16 @@ namespace Tetitulz.Pdf.Core.Tests.IO.Filters;
 /// </summary>
 /// <remarks>
 /// <para>
-/// All three CCITT decoders sized their scanline list straight from the file-controlled
-/// <c>/Rows</c> — <c>new List&lt;byte[]&gt;(rows &gt; 0 ? rows : 64)</c> — one line ABOVE the
-/// <c>ClampRowLimit</c> call that bounds the decode loop. The clamp therefore protected the loop
-/// and nothing else: the backing <c>byte[][]</c> had already been committed. <c>CcittFaxDecodeFilter</c>
-/// caps <c>/Columns</c> at 1,000,000 but applies no bound at all to <c>/Rows</c>, so a couple of
-/// hundred bytes of image XObject bought gigabytes.
+/// Sizing the scanline list straight from the file-controlled <c>/Rows</c> —
+/// <c>new List&lt;byte[]&gt;(rows &gt; 0 ? rows : 64)</c> — ahead of the <c>ClampRowLimit</c> call
+/// that bounds the decode loop would protect the loop and nothing else: the backing
+/// <c>byte[][]</c> would already be committed. <c>CcittFaxDecodeFilter</c> caps <c>/Columns</c> at
+/// 1,000,000 but applies no bound to <c>/Rows</c>, so a couple of hundred bytes of image XObject
+/// would buy gigabytes.
 /// </para>
 /// <para>
-/// <b>These assert allocation, not elapsed time.</b> The decoded output was already correctly
-/// clamped before the fix, so asserting on the returned bitmap alone cannot see this defect — the
+/// <b>These assert allocation, not elapsed time.</b> The decoded output is correctly clamped
+/// either way, so asserting on the returned bitmap alone cannot see this defect — the
 /// evidence is the allocation the guard prevents. A DoS-guard test that finishes fast has quite
 /// possibly not run.
 /// </para>
@@ -31,8 +31,8 @@ public class CcittRowsPreallocationTests
 {
     /// <summary>
     /// Rows claimed by the adversarial fixture. At 8 bytes per array reference this is a 400 MB
-    /// backing array on the unfixed code, and it is well under the row clamp's own ceiling only
-    /// after clamping — the raw value is what used to be handed to the list constructor.
+    /// backing array if handed to the list constructor raw, and it is well under the row clamp's
+    /// own ceiling only after clamping.
     /// </summary>
     private const int AdversarialRows = 50_000_000;
 
@@ -84,7 +84,7 @@ public class CcittRowsPreallocationTests
     }
 
     /// <summary>
-    /// A legitimate row count must still decode: the fix must bound the pre-size, not the image.
+    /// A legitimate row count must still decode: the guard bounds the pre-size, not the image.
     /// </summary>
     [Fact]
     public void ModestRows_StillDecodesEveryRowTheDataContains()

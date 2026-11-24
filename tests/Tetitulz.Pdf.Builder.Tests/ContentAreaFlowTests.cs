@@ -65,8 +65,8 @@ public sealed class ContentAreaFlowTests
     /// <summary>
     /// A paragraph that continues from a 150 pt area into a 300 pt one is broken again there: its lines
     /// in the wide area hold about twice the words, every word still drawn once, in order, within the
-    /// area — where it used to keep the narrow area's width. In a box of no width of its own it is broken
-    /// again too (since 2026-10-19 the box takes the wide area's width); in a box of a stated width, or
+    /// area — rather than keep the narrow area's width. In a box of no width of its own it is broken
+    /// again too (the box takes the wide area's width); in a box of a stated width, or
     /// one the split cannot take (a bordered paragraph), it keeps the width it began at.
     /// </summary>
     [Fact]

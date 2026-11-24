@@ -18,23 +18,13 @@ namespace Tetitulz.Pdf.Base.Tests.TestInfrastructure;
 /// non-empty — a blank page encodes to a perfectly valid non-empty PNG, so the test passes with
 /// the feature under test deleted outright.</para>
 ///
-/// <para><b>This is not a hypothetical.</b> Two defects closed in the 2026-07-31 rendering round —
-/// optional-content <c>/D</c> resolution and <c>BDC /OC</c> suppression, both completely
-/// non-functional — sat behind six dedicated green tests for as long as they existed, because
-/// every one of them asserted only that a PNG came back.</para>
+/// <para><b>This is not a hypothetical.</b> A completely non-functional feature — optional-content
+/// <c>/D</c> resolution, <c>BDC /OC</c> suppression — passes any number of dedicated tests that
+/// assert only that a PNG came back.</para>
 ///
-/// <para><b>There is no allow-list, and that is deliberate.</b> The guard shipped on 2026-08-02
-/// with a <c>KnownOffenders</c> set of <b>140</b> entries so it could land green over the debt that
-/// already existed while making a <i>new</i> offender impossible, plus a second <c>[Fact]</c> that
-/// failed when an entry no longer named a real offender — so the set could only ever shrink. It
-/// reached <b>zero</b> on 2026-08-04 across 50 files, and both were then deleted.</para>
-///
-/// <para>Do not reintroduce one. An empty exemption set is an invitation; no exemption set at all
-/// is a rule. If this guard flags your test, the fix is in the test. Along the way the burn-down
-/// turned up <b>nine real defects</b> that were already "covered" by green tests — the sweep and
-/// its findings are recorded in the CHANGELOG.
-/// (This comment said "eight" until 2026-08-06; GAPS.md §9 enumerates nine and notes that
-/// miscounting the <c>PdfEncryptor</c> <c>/P</c> defect is exactly what produced the lower number.)</para>
+/// <para><b>There is no allow-list, and that is deliberate.</b> An empty exemption set is an
+/// invitation; no exemption set at all is a rule. If this guard flags your test, the remedy is in
+/// the test.</para>
 ///
 /// <para><b>What is deliberately exempt.</b> A "does not throw / does not hang on hostile input"
 /// test is <i>not</i> an instance of this pattern: there the non-throw <b>is</b> the behaviour
@@ -94,11 +84,11 @@ public sealed class NoUnfalsifiableAssertionsTests
     private static readonly Regex AnyAssertion =
         new(@"(?<![\w.])Assert\.\w+", RegexOptions.Compiled);
 
-    // A rule rejecting `Assert.Null(x.LastError)` was tried here and removed: a test named
+    // No rule rejects `Assert.Null(x.LastError)`: a test named
     // "LastError_IsClearedByASubsequentSuccessfulScan" makes the slot non-null first and then
     // asserts it was cleared, which is perfectly falsifiable. The genuinely bad case — asserting
     // only "no error" for a test named after a computation — is a mismatch between a name and an
-    // assertion, and no regex can see that. It was fixed in the one test that had it instead.
+    // assertion, and no regex can see that.
 
     /// <summary>
     /// A local holding the result of <c>Record.Exception</c>. Captured so the
@@ -189,22 +179,18 @@ public sealed class NoUnfalsifiableAssertionsTests
     /// gets written weakly in the first place.</para>
     /// </summary>
     /// <remarks>
-    /// <para>The second row was added on 2026-08-06 with the <c>Record.Exception</c> rule below,
-    /// which flagged a handful of tests that <i>are</i> hostile-input guards and simply did not use
-    /// a word from the first row — an empty operand stack, a negative count, an oversized key
-    /// length, random bytes, absurd declared dimensions. Extending this set is legitimate when the
+    /// <para>The second row covers hostile-input guards that use no word from the first — an empty
+    /// operand stack, a negative count, an oversized key length, random bytes, absurd declared
+    /// dimensions — as the <c>Record.Exception</c> rule below requires. Extending this set is legitimate when the
     /// token genuinely names a hostile <b>input</b>; it is the wrong fix when the name describes the
     /// assertion ("DoesNotThrow") or claims a feature works.</para>
     ///
-    /// <para><b>"Nesting" and "Nested" were REMOVED on 2026-08-06.</b> They describe a document's
-    /// <i>structure</i>, not a hostile input — nesting two <c>BDC /OC</c> blocks is precisely what
-    /// that feature is for — and they were exempting
-    /// <c>NestedBdcBlocks_OuterHidden_BothSuppressed</c>, a behaviour claim whose body was the
-    /// laundered <c>Record.Exception</c> shape. Every genuine DoS guard whose name contains
-    /// "Nested" also carries a real token ("Bomb", "Overflow", "Depth", "Recursion", "Budget",
-    /// "Refused", "DoesNotHang", "Adversarial"), so removing these two cost no legitimate
-    /// exemption. A token that names the *shape of the input* rather than its *hostility* is
-    /// always suspect.</para>
+    /// <para><b>Not "Nesting" or "Nested".</b> They describe a document's <i>structure</i>, not a
+    /// hostile input — nesting two <c>BDC /OC</c> blocks is precisely what that feature is for — and
+    /// they would exempt a behaviour claim such as <c>NestedBdcBlocks_OuterHidden_BothSuppressed</c>.
+    /// Every genuine DoS guard whose name contains "Nested" also carries a real token ("Bomb",
+    /// "Overflow", "Depth", "Recursion", "Budget", "Refused", "DoesNotHang", "Adversarial"). A token
+    /// that names the *shape of the input* rather than its *hostility* is always suspect.</para>
     /// </remarks>
     private static readonly string[] HostileInputNameTokens =
     [

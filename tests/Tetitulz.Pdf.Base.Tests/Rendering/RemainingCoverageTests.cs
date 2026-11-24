@@ -10,17 +10,13 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// The last three entries on GAPS.md §2's "no pixel-asserting test" list: an annotation's
-/// <c>/AS</c> appearance-state selection, a CCITT image rendered end to end, and a JBIG2
-/// arithmetic generic region rendered end to end.
+/// Pixel-asserting tests for three things otherwise covered only at a lower level: an
+/// annotation's <c>/AS</c> appearance-state selection, a CCITT image rendered end to end, and a
+/// JBIG2 arithmetic generic region rendered end to end.
 ///
-/// <para>All three were covered only at a lower level — <c>/AS</c> appeared in form-filling
-/// fixtures but no test rendered a widget and checked which sub-appearance won, and both codecs
-/// had thorough filter-level tests while the one render test that mentioned CCITT deliberately
-/// registered a no-op filter to bypass the real decode. A decode that works and a decode that
-/// reaches the page are different claims — and the JBIG2 one was false: the filter handed T.88's
-/// polarity (1 = black) straight to a DeviceGray image, where 0 is black, so every JBIG2 image
-/// rendered in negative until 2026-08-12.</para>
+/// <para>A decode that works and a decode that reaches the page are different claims. Handing
+/// T.88's polarity (1 = black) straight to a DeviceGray image, where 0 is black, would render
+/// every JBIG2 image in negative while every filter-level test passed.</para>
 /// </summary>
 public sealed class RemainingCoverageTests
 {

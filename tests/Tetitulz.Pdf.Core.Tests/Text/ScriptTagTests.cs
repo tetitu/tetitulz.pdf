@@ -14,9 +14,9 @@ namespace Tetitulz.Pdf.Core.Tests.Text;
 /// <summary>
 /// Which OpenType script a run's features are looked up under: Unicode's Script property for the
 /// run's first scripted character (<see cref="UnicodeScripts"/>, generated from the Unicode
-/// Character Database), with a shaper's fallbacks. The composer used to answer Hebrew, Arabic or
-/// Latin only, so a Cyrillic, Greek, Thai or Devanagari run took Latin's lookups — or, in a font
-/// that registers its features per script, none.
+/// Character Database), with a shaper's fallbacks. A composer answering Hebrew, Arabic or Latin
+/// only would give a Cyrillic, Greek, Thai or Devanagari run Latin's lookups — or, in a font that
+/// registers its features per script, none.
 /// </summary>
 public class ScriptTagTests
 {

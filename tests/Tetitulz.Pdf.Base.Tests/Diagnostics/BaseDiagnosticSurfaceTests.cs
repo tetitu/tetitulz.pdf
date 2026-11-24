@@ -21,12 +21,11 @@ namespace Tetitulz.Pdf.Base.Tests.Diagnostics;
 /// <c>Tetitulz.Pdf.Encryption</c> and <c>Tetitulz.Pdf.Signing</c>. These pair with the Core-side
 /// coverage in <c>tests/Tetitulz.Pdf.Core.Tests/Diagnostics/DiagnosticSurfaceTests.cs</c>.
 ///
-/// <para><b>What this file used to be.</b> Every test here read a property into a local and threw
-/// it away — <c>_ = aia;</c> — or asserted <c>v == null || v is string</c>, which the compiler
-/// already guarantees. Four tests, none of which could go red. They are rewritten in two shapes:
-/// the decryptor's slots are <b>driven</b> (encrypt, decrypt, read the reason back), and the
-/// assembly-wide <c>[ThreadStatic]</c> rule CLAUDE.md states for these slots is enforced by
-/// <b>reflection over every one of them</b> rather than by naming four by hand.</para>
+/// <para><b>Two shapes, both able to go red.</b> The decryptor's slots are <b>driven</b>
+/// (encrypt, decrypt, read the reason back), and the assembly-wide <c>[ThreadStatic]</c> rule
+/// CLAUDE.md states for these slots is enforced by <b>reflection over every one of them</b>
+/// rather than by naming a few by hand. Reading a property and asserting
+/// <c>v == null || v is string</c> asserts what the compiler already guarantees.</para>
 /// </summary>
 public class BaseDiagnosticSurfaceTests
 {
@@ -83,13 +82,10 @@ public class BaseDiagnosticSurfaceTests
     /// decryptor that reported a finding about well-formed input fails here.
     /// </summary>
     /// <remarks>
-    /// <b>This summary used to say the slot "exists to say the file's <c>/CF</c> did not resolve and
-    /// I guessed".</b> That was the property's own contract until 2026-08-19, when it also began
-    /// reporting <c>/Identity</c> and <c>/CFM /None</c> — configurations where nothing fell back —
-    /// and began accumulating both keys' findings rather than holding the most recent. The property
-    /// was corrected; this copy of the old contract was left behind in the test suite, where the
-    /// assertion below stays green either way, so nothing would ever have surfaced it. See
-    /// <c>PdfDecryptor.LastCryptFilterFallback</c>'s remarks for what non-null now means.
+    /// The slot is not only "the file's <c>/CF</c> did not resolve and I guessed": it also reports
+    /// <c>/Identity</c> and <c>/CFM /None</c> — configurations where nothing fell back — and
+    /// accumulates both keys' findings rather than holding the most recent. See
+    /// <c>PdfDecryptor.LastCryptFilterFallback</c>'s remarks for what non-null means.
     /// </remarks>
     [Theory]
     [InlineData(EncryptionAlgorithm.AES128)]

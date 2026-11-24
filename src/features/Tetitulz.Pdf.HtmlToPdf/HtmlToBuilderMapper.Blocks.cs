@@ -192,7 +192,7 @@ namespace Tetitulz.Pdf.HtmlToPdf
                         else if (sink.Count > before && sink[before] is M.BoxStart clearedBox) clearedBox.ClearFloats = true;
                         // An empty clearing element — the clearfix `<div style="clear:both">` —
                         // produces no block to carry it: the next block does, here or after the
-                        // container closes, or the text after the floats went on beside them.
+                        // container closes, or the text after the floats would go on beside them.
                         else if (sink.Count == before) _clearPending = true;
                     }
                 }

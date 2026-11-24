@@ -210,7 +210,7 @@ namespace Tetitulz.Pdf.DocxToPdf
             section.RightToLeftLayout = sectionBidi != null && (sectionBidi.Val == null || sectionBidi.Val.Value);
 
             // w:pgNumType: the PAGE field's format — Roman, letters, Hebrew — and the number the
-            // section starts at. The legacy renderer read the format; this path read neither.
+            // section starts at, as the legacy renderer reads them.
             var pageNumbers = sectPr.GetFirstChild<W.PageNumberType>();
             section.PageNumberFormat = Rendering.DocxRenderContext.MapPageNumberFormat(pageNumbers?.Format);
             if (pageNumbers?.Start?.Value is int start) section.PageNumberStart = start;
@@ -748,8 +748,8 @@ namespace Tetitulz.Pdf.DocxToPdf
                     var styleFmt = _sr.ResolveTableStyleFormat(wt, rowIdx, rows.Count, colIdx, span, colCount);
                     var mc = MapCell(wc, depth, styleFmt);
                     // Each side from the cell's tcBorders, the table's tblBorders, the style's and its conditional
-                    // ones, by the cell's place — the legacy renderer's resolution. This path read none of them, so
-                    // every table drew the full default grid whatever its borders said.
+                    // ones, by the cell's place — the legacy renderer's resolution. Reading none of them, every
+                    // table would draw the full default grid whatever its borders said.
                     var borders = _sr.ResolveCellBorders(wc, wt, rowIdx, rows.Count, colIdx, span, colCount);
                     // Resolved for the cell's logical place; a mirrored table draws it at the other end.
                     if (mt.RtlColumns) (borders.Left, borders.Right) = (borders.Right, borders.Left);

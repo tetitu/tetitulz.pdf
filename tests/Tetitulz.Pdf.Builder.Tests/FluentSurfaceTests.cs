@@ -12,13 +12,13 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// The fluent façade reaching model properties it previously could not, so a code-first caller no
-/// longer has to abandon the chain and construct <c>Model.*</c> objects by hand.
+/// The fluent façade reaching model properties, so a code-first caller does not have to abandon
+/// the chain and construct <c>Model.*</c> objects by hand.
 ///
 /// <para><b>Each case asserts the model property the method sets</b>, not that <c>Build()</c>
 /// returned something. A builder method that returned <c>this</c> and did nothing would satisfy
 /// every "it produced a document" assertion, which is precisely the shape banned test pattern 3
-/// describes — and precisely how the original chained-formatting methods stayed silent no-ops.</para>
+/// describes — and precisely how chained-formatting methods can stay silent no-ops.</para>
 ///
 /// <para>Two cases go further than the model, because the model alone cannot show them: the nested
 /// table renders through to a content stream, and the untouched-path case compares whole

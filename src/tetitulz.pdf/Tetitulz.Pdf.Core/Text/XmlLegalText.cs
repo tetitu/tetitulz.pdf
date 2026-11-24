@@ -8,12 +8,59 @@ using System.Xml;
 namespace Tetitulz.Pdf.Core.Text
 {
     /// <summary>
-    /// Text made legal in an XML document: the ODT and DOCX writers' model strings and an XMP packet's
-    /// title alike. A code point XML 1.0 forbids — a stray control character, a lone surrogate, U+FFFF —
-    /// makes a document not well-formed when written raw, and an <see cref="XmlWriter"/> throw on it.
+    /// Text made legal in an XML document. A code point XML 1.0 forbids — a stray control character, a lone
+    /// surrogate, U+FFFF — makes a document not well-formed when written raw, and an <see cref="XmlWriter"/>
+    /// throw on it. Two answers, each for its own text: <see cref="Replace"/> marks the loss in text a caller
+    /// authored (the Builder's ODT and DOCX writers, an XMP packet's title); <see cref="Remove"/> drops what has
+    /// no glyph from text read out of a PDF (the SVG export, the PDF to Office converters), where U+FFFD would
+    /// put a visible box in place of nothing.
     /// </summary>
-    internal static class XmlLegalText
+    public static class XmlLegalText
     {
+        /// <summary>
+        /// <paramref name="s"/> with every code point XML 1.0 does not allow removed — tab, line feed and carriage
+        /// return kept, a surrogate pair kept whole and a lone half dropped. Null is the empty string. Allocates
+        /// nothing when the text is already legal.
+        /// </summary>
+        public static string Remove(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return s ?? "";
+            int first = -1;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (IsLegalAt(s, i)) continue;
+                first = i;
+                break;
+            }
+            if (first < 0) return s;
+
+            var sb = new StringBuilder(s.Length);
+            sb.Append(s, 0, first);
+            for (int i = first; i < s.Length; i++)
+                if (IsLegalAt(s, i)) sb.Append(s[i]);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Whether the code unit at <paramref name="i"/> is XML 1.0 <c>Char</c> content. A surrogate is judged by
+        /// its pair: both halves of a well-formed pair are kept, a half without its partner is not.
+        /// </summary>
+        private static bool IsLegalAt(string s, int i)
+        {
+            char c = s[i];
+            if (char.IsHighSurrogate(c)) return i + 1 < s.Length && char.IsLowSurrogate(s[i + 1]);
+            if (char.IsLowSurrogate(c)) return i > 0 && char.IsHighSurrogate(s[i - 1]);
+            return IsLegalChar(c);
+        }
+
+        /// <summary>
+        /// Whether a code unit that is no surrogate is XML 1.0 <c>Char</c> (§2.2): tab, line feed, carriage return,
+        /// U+0020 to U+D7FF and U+E000 to U+FFFD. Not <see cref="XmlConvert.IsXmlChar"/>, which admits U+FFFE and
+        /// U+FFFF.
+        /// </summary>
+        private static bool IsLegalChar(char c)
+            => c == '\t' || c == '\n' || c == '\r' || (c >= ' ' && c < '\uD800') || (c >= (char)0xE000 && c <= (char)0xFFFD);
+
         /// <summary>
         /// <paramref name="s"/> with every code point XML 1.0 does not allow replaced by U+FFFD;
         /// <paramref name="changed"/> says whether any was. Null is the empty string.
@@ -36,7 +83,7 @@ namespace Tetitulz.Pdf.Core.Text
                     continue;
                 }
 
-                if (XmlConvert.IsXmlChar(c))   // false for a lone surrogate and for the forbidden controls
+                if (IsLegalChar(c))   // false for a lone surrogate, the forbidden controls, U+FFFE and U+FFFF
                 {
                     sb?.Append(c);
                 }

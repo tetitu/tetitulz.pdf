@@ -12,11 +12,10 @@ namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
 /// The model-validation walk bounds a paragraph's placement chain. A paragraph's
-/// <c>Placement.Following</c> recursed through the walk's <c>Paragraph</c> step, not its <c>Block</c>
-/// step, so the depth cap <c>Block</c> carries was not on that path: a paragraph placed with itself in
-/// its <c>Following</c>, or a long chain of them, overflowed the stack during validation — uncatchably,
-/// before any exporter ran (2026-10-22). The exporter draws the following paragraphs flat and would have
-/// produced a document.
+/// <c>Placement.Following</c> recurses through the walk's <c>Paragraph</c> step, not its <c>Block</c>
+/// step, so without a cap of its own a paragraph placed with itself in its <c>Following</c>, or a long
+/// chain of them, would overflow the stack during validation — uncatchably, before any exporter ran.
+/// The exporter draws the following paragraphs flat and would produce a document.
 /// </summary>
 public sealed class ModelCyclePlacementTests
 {

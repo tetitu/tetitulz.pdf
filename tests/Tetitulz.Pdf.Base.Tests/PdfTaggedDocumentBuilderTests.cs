@@ -288,8 +288,8 @@ namespace Tetitulz.Pdf.Base.Tests
         // ---------------------------------------------------------------
 
         /// <summary>
-        /// ISO 14289-1 7.21.4.1: every font used for rendering is embedded. The text used to be
-        /// drawn in a non-embedded Helvetica under a <c>pdfuaid:part</c> declaration.
+        /// ISO 14289-1 7.21.4.1: every font used for rendering is embedded — not a non-embedded
+        /// Helvetica under a <c>pdfuaid:part</c> declaration.
         /// </summary>
         [Fact]
         public void Build_EmbedsTheFontItDrawsWith()
@@ -362,8 +362,8 @@ namespace Tetitulz.Pdf.Base.Tests
 
         /// <summary>
         /// §14.7.4.4: the parent tree is keyed by the page's <c>/StructParents</c> and holds an
-        /// array indexed by MCID. It used to be keyed by the MCIDs, with no <c>/StructParents</c> on
-        /// the page, so no element could be found from its content. Read raw — this is the shape a
+        /// array indexed by MCID. Keyed by the MCIDs, with no <c>/StructParents</c> on the page, no
+        /// element could be found from its content. Read raw — this is the shape a
         /// reader relies on, and the extractor above walks the tree from the other end.
         /// </summary>
         [Fact]

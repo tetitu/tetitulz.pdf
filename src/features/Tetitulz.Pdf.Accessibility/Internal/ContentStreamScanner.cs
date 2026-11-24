@@ -93,8 +93,8 @@ namespace Tetitulz.Pdf.Accessibility.Internal
         /// <para><b>The operand is read from the end, not the start.</b> A content stream is
         /// postfix, so <c>/Name Do</c> puts the name immediately before the operator — and a
         /// malformed stream that left extra operands on the stack would otherwise yield whichever
-        /// stale value happened to be first. Both copies already did this; stating it once means
-        /// the reason survives.</para>
+        /// stale value happened to be first. Both callers rely on this, so the reason is stated
+        /// here, once.</para>
         /// </remarks>
         public IReadOnlyList<string> InvokedXObjectNames()
         {

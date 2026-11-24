@@ -16,10 +16,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
-/// Penetration-test regression suite (PT review, 2026-06-08). Each test feeds the
-/// kind of malformed/adversarial input that would, pre-fix, force a multi-GB
-/// allocation, an uncaught exception out of document-open, or an unbounded loop /
-/// StackOverflow. See GAPS.md §85.
+/// Adversarial-input suite. Each test feeds the kind of malformed input that would,
+/// unguarded, force a multi-GB allocation, an uncaught exception out of
+/// document-open, or an unbounded loop / StackOverflow.
 /// </summary>
 public class SecurityHardeningTests
 {
@@ -28,9 +27,9 @@ public class SecurityHardeningTests
     [Fact]
     public void Parser_HugeStreamLength_ClampsInsteadOfAllocatingGigabytes()
     {
-        // A tiny file whose content stream declares /Length 2,000,000,000. Pre-fix the
-        // parser kept that value and did `new byte[2_000_000_000]` → OOM. The fix scans
-        // for the real endstream and hard-clamps to the remaining file size.
+        // A tiny file whose content stream declares /Length 2,000,000,000. Kept as it is,
+        // that value would mean `new byte[2_000_000_000]` → OOM. The parser scans for the
+        // real endstream and hard-clamps to the remaining file size.
         const string content = "BT ET";
         var sb = new StringBuilder();
         sb.Append("%PDF-1.4\n");

@@ -361,27 +361,23 @@ namespace Tetitulz.Pdf.Base.Operations
         /// bounded by <see cref="PdfLimits.MaxTreeDepth"/> <b>and</b> by a visited set.
         /// </summary>
         /// <remarks>
-        /// <para><b>The depth cap alone was not a guard.</b> Its comment said the cap "prevents
-        /// stack-overflow DoS via adversarial PDFs with thousands of nested kid arrays" — true, and
-        /// it stopped the wrong failure. With no record of what had already been visited, a field
-        /// whose <c>/Kids</c> names the same object twice <i>doubles</i> the work at every level, so
-        /// sixty such levels — well under the cap, and therefore never throwing — are 2<sup>60</sup>
+        /// <para><b>A depth cap alone is not a guard.</b> It prevents a stack overflow on thousands
+        /// of nested kid arrays, but with no record of what has already been visited, a field whose
+        /// <c>/Kids</c> names the same object twice <i>doubles</i> the work at every level, so sixty
+        /// such levels — well under the cap, and therefore never throwing — would be 2<sup>60</sup>
         /// calls out of the public <see cref="ExtractActions(System.IO.Stream)"/>.
         /// <b>A depth cap bounds one branch; it does not bound the number of branches.</b></para>
-        /// <para>The cap's <i>other</i> half was wrong too: it aborted the whole walk rather than the
-        /// offending branch, so on a two-node <c>/Kids</c> cycle every action in the document —
-        /// including fields listed after the cycle — was lost to an
-        /// <see cref="InvalidOperationException"/> thrown out of a public API. Cutting at the repeat
-        /// keeps the rest of the tree.</para>
-        /// <para>It survived because a cycle guard is an <i>absence</i>: nothing asserts that a walk
-        /// terminated, and every non-adversarial fixture is a tree, where the guard is invisible.</para>
+        /// <para>The cut is at the repeat, not the whole walk: aborting the walk on a two-node
+        /// <c>/Kids</c> cycle would lose every action in the document — including fields listed
+        /// after the cycle — to an exception thrown out of a public API.</para>
+        /// <para>A cycle guard is an <i>absence</i>: nothing asserts that a walk terminated, and
+        /// every non-adversarial fixture is a tree, where the guard is invisible.</para>
         /// <para>The visited set is keyed on the resolved dictionary instance, so it catches a repeat
         /// whether the file reaches it by the same reference or a different one, and it covers direct
         /// dictionaries that have no object number. It is also the set the annotation walk skips.</para>
         /// <para>A node's name is <see cref="FieldNames.Qualify"/> of its parent's and its own
-        /// resolved <c>/T</c>: the name <c>PdfFormField.FullyQualifiedName</c> gives it. The
-        /// <c>/T</c> was read raw and the join written out here, so an indirect <c>/T</c> named
-        /// nothing and an empty one added a trailing period.</para>
+        /// resolved <c>/T</c>: the name <c>PdfFormField.FullyQualifiedName</c> gives it, so an
+        /// indirect <c>/T</c> names its node and an empty one adds no trailing period.</para>
         /// </remarks>
         private static void CollectFieldActions(Walk walk, PdfArray fieldsArray, string parentName, int depth)
         {

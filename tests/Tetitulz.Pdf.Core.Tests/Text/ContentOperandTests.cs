@@ -11,8 +11,8 @@ namespace Tetitulz.Pdf.Core.Tests.Text;
 /// <summary>
 /// Unit tests for <see cref="ContentOperand"/> — the shared operand-coercion helper
 /// that the content-stream interpreter, SVG renderer, and graphics extractor all
-/// delegate to. Verifies the out-of-range / type-mismatch defaulting rules that the
-/// previously-duplicated per-file helpers relied on.
+/// delegate to. Verifies the out-of-range / type-mismatch defaulting rules those
+/// callers rely on.
 /// </summary>
 public sealed class ContentOperandTests
 {

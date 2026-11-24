@@ -41,11 +41,10 @@ public class ReviewFixFonts_AdversarialTests
     /// the test would pass equally well on a font that was never parsed at all, which is the failure
     /// mode banned pattern 3 exists for.</para>
     ///
-    /// <para><b>This replaced a 10-second <c>Stopwatch</c> on the calling thread</b> (see CLAUDE.md
-    /// → "Diagnosing a red whole-solution run" §4): under a full-solution run elapsed time measures
-    /// the machine's backlog, not the parser's work, and three guard tests in exactly that band
-    /// flaked on 2026-08-23. The clock also could not fail for the right reason — it passed whether
-    /// the cap fired or the subtable was simply never read.</para>
+    /// <para><b>Not a <c>Stopwatch</c></b> (see CLAUDE.md → "Diagnosing a red whole-solution run"
+    /// §4): under a full-solution run elapsed time measures the machine's backlog, not the parser's
+    /// work. A clock also cannot fail for the right reason — it passes whether the cap fired or the
+    /// subtable was simply never read.</para>
     /// </summary>
     [Fact]
     public void TrueTypeCmap4_WorkCapTruncatesAnOversizedSubtable()
@@ -153,7 +152,7 @@ public class ReviewFixFonts_AdversarialTests
         using var doc = BuildMinimalDoc();
 
         // /W = [0 2000000000 1000] — Format 2 (c1 c2 w) with a ~2-billion-wide span.
-        // Pre-fix this allocates ~2 billion dictionary entries and OOMs.
+        // Unbounded, this would allocate ~2 billion dictionary entries and OOM.
         var w = new PdfArray();
         w.Add(new PdfNumber(0));
         w.Add(new PdfNumber(2000000000));
@@ -206,7 +205,7 @@ public class ReviewFixFonts_AdversarialTests
         // No ToUnicode and no recognised CID ordering → identity fallback path.
         var font = new PdfType0Font(fontDict, doc, toUnicode: null, cmapMaxCodeBytes: 2);
 
-        // 0xFFFF (the highest BMP code point) must now round-trip; pre-fix it was dropped.
+        // 0xFFFF (the highest BMP code point) must round-trip, not be dropped.
         string decoded = font.Decode(new byte[] { 0xFF, 0xFF });
         Assert.Equal(((char)0xFFFF).ToString(), decoded);
 

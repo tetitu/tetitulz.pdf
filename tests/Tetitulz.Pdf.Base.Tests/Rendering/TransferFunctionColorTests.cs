@@ -13,7 +13,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
 /// A graphics-state transfer function (/TR, /TR2) must remap fill/stroke colours, not just
-/// image samples (PDF §10.4). Pre-fix it was applied only to image bitmaps.
+/// image samples (PDF §10.4).
 /// </summary>
 public class TransferFunctionColorTests
 {
@@ -21,7 +21,7 @@ public class TransferFunctionColorTests
     public void TransferFunction_RemapsFillColor()
     {
         // Fill a rectangle in DeviceGray 0.25 (→ 64) with an inverting /TR (x → 1−x),
-        // so the painted gray becomes ~191. Without the fix it would stay ~64.
+        // so the painted gray becomes ~191. Applied to images alone, it would stay ~64.
         var pdf = new StringBuilder();
         pdf.Append("%PDF-1.4\n");
         var off = new List<int>();

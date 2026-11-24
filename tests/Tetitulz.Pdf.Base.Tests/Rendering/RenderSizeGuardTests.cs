@@ -74,7 +74,7 @@ public class RenderSizeGuardTests
     [Fact]
     public void RenderPage_AbsurdMediaBox_ProducesBoundedBitmap()
     {
-        // 200000 x 5 pt page: pre-fix this allocated a 200000-wide bitmap.
+        // 200000 x 5 pt page: unguarded, a 200000-wide bitmap.
         byte[] pdf = BuildBlankPagePdf(mediaBox: "[0 0 200000 5]");
         byte[] png = PdfPageRenderer.RenderPage(new MemoryStream(pdf), 0, dpi: 72);
 
@@ -92,7 +92,7 @@ public class RenderSizeGuardTests
     public void RenderPage_HugeImageXObject_SkippedWithDiagnostic_NoOom()
     {
         // 50000 x 50000 declared image (2.5 billion px) with a tiny data stream.
-        // Pre-fix: new SKColor[2_500_000_000] / SKBitmap(50000,50000) -> OOM / overflow.
+        // Unguarded: new SKColor[2_500_000_000] / SKBitmap(50000,50000) -> OOM / overflow.
         byte[] pdf = BuildHugeImagePdf(width: 50000, height: 50000);
 
         var events = new List<(RenderDiagnosticKind kind, string detail)>();
@@ -124,8 +124,8 @@ public class RenderSizeGuardTests
     [Fact]
     public void RenderPage_NonFiniteType3FontMatrix_DoesNotThrow()
     {
-        // /FontMatrix [1e40 0 0 1e40 0 0] parses to +Infinity floats; pre-fix the
-        // resulting advance (Infinity) poisoned the text matrix.  The guard resets to
+        // /FontMatrix [1e40 0 0 1e40 0 0] parses to +Infinity floats; unguarded, the
+        // resulting advance (Infinity) would poison the text matrix. The guard resets to
         // the default 0.001 glyph space.  This must complete and return a valid bitmap.
         byte[] pdf = BuildType3Pdf(fontMatrix: "[1e40 0 0 1e40 0 0]");
         byte[] png = PdfPageRenderer.RenderPage(new MemoryStream(pdf), 0, dpi: 72);

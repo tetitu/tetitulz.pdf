@@ -16,8 +16,8 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// <summary>
 /// The barcode function characters — Code 128's FNC1–FNC4 and Data Matrix's FNC1, structured append,
 /// reader programming and macros — reported rather than refused (ISO/IEC 15417 and 16022, as an independent reader
-/// and an independent writer read them). Until 2026-10-17 every one of them refused the symbol by name; GS1-128 labels,
-/// the commonest Code 128 on a shipping document, did not read at all.
+/// and an independent writer read them). Refusing them would leave GS1-128 labels, the commonest
+/// Code 128 on a shipping document, unread.
 /// </summary>
 public class BarcodeFunctionCharacterTests
 {
@@ -282,7 +282,7 @@ public class BarcodeFunctionCharacterTests
     }
 
     /// <summary>
-    /// The four ISO-8859 parts no target framework carries (2026-10-20), read through the generated tables —
+    /// The four ISO-8859 parts no target framework carries, read through the generated tables —
     /// the Unicode Consortium's mapping files: byte A1 is U+0104 in 8859-10 (ECI 12) and 8859-16 (18), U+0E01
     /// in 8859-11 (13), U+1E02 in 8859-14 (16); a byte below A0 is itself, ASCII 'A' here.
     /// </summary>
@@ -314,8 +314,7 @@ public class BarcodeFunctionCharacterTests
     }
 
     /// <summary>
-    /// What cannot be decoded is refused with its reason: an ECI no assignment names (19 — Shift JIS
-    /// until 2026-10-18 and ISO-8859-10 until 2026-10-20, the examples here before, are read now) by its
+    /// What cannot be decoded is refused with its reason: an ECI no assignment names (19) by its
     /// number; bytes the set cannot hold (a lone C3 in UTF-8, a byte above 127 in US-ASCII, DB in
     /// ISO-8859-11, which defines no character there); and with the refusals, the acceptance above.
     /// </summary>

@@ -16,16 +16,16 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// <summary>
 /// Run styling in the ODT exporter.
 ///
-/// <para><b>What was wrong.</b> Every <see cref="TextRun"/> was written as bare text: bold, italic,
-/// underline, strike, colour, highlight, size, family and super/subscript were all dropped, and —
-/// unlike the images and background images this exporter drops — <b>without a diagnostic</b>. So an
-/// ODT export looked like it had worked and had quietly lost every distinction the document made.
+/// <para><b>What it guards against.</b> A <see cref="TextRun"/> written as bare text would drop
+/// bold, italic, underline, strike, colour, highlight, size, family and super/subscript — unlike the
+/// images and background images this exporter drops, <b>without a diagnostic</b> — so an ODT export
+/// would look like it had worked and have quietly lost every distinction the document made.
 /// </para>
 ///
-/// <para><b>Why it needed a two-pass writer.</b> ODF has no inline style attribute: a
+/// <para><b>Why a two-pass writer.</b> ODF has no inline style attribute: a
 /// <c>&lt;text:span&gt;</c> can only name a style, and automatic styles are declared in their own
 /// element <i>before</i> <c>&lt;office:body&gt;</c>. A single-pass writer has nowhere to put a
-/// style at the moment it finds it needs one, which is how the omission survived.</para>
+/// style at the moment it finds it needs one.</para>
 ///
 /// <para>These assert on the parsed XML rather than on substrings — a style whose declaration is
 /// present but whose span references a different name produces perfectly plausible-looking markup

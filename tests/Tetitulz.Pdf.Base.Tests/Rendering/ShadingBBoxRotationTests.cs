@@ -16,16 +16,16 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// A shading's <c>/BBox</c> is clipped as the <b>quadrilateral</b> the CTM maps it to (§8.7.4.3).
 /// </summary>
 /// <remarks>
-/// <para><b>It used to be the axis-aligned box of two transformed corners, which is only the right
-/// answer when the matrix has no rotation or skew.</b> At 45° the two opposite corners of a square
-/// map to points sharing an x, so the fitted rect had <i>zero width</i> and the shading painted
-/// nothing at all. At other angles it was merely too small.</para>
+/// <para><b>The axis-aligned box of two transformed corners is only the right answer when the
+/// matrix has no rotation or skew.</b> At 45° the two opposite corners of a square map to points
+/// sharing an x, so such a rect would have <i>zero width</i> and the shading paint nothing at all;
+/// at other angles it would merely be too small.</para>
 ///
-/// <para><b>The SVG writer already got this right and said why</b>: its <c>EmitBBoxClip</c> emits a
-/// closed quadrilateral, with remarks noting that a rotated or skewed matrix maps the box to a
-/// parallelogram an <c>x/y/width/height</c> rect cannot express. The reasoning sat in the tree while
-/// the raster half kept the rect — this repository's most-repeated rendering defect, and the reason
-/// the two renderers are asserted against each other rather than each against itself.</para>
+/// <para><b>Both renderers clip the quadrilateral</b>: the SVG writer's <c>EmitBBoxClip</c> emits a
+/// closed one, because a rotated or skewed matrix maps the box to a parallelogram an
+/// <c>x/y/width/height</c> rect cannot express. A rect on one side would be this repository's
+/// most-repeated rendering defect, and the reason the two renderers are asserted against each
+/// other rather than each against itself.</para>
 /// </remarks>
 public class ShadingBBoxRotationTests
 {

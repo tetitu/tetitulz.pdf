@@ -1460,16 +1460,31 @@ namespace Tetitulz.Pdf.Core.Writing
             if (!MatchesAscii(bytes, p, "obj")) return XrefSectionKind.None;
             p += 3;
 
-            // …declaring /Type /XRef, somewhere in the object's dictionary. Bounded so a hostile
-            // offset cannot make this walk the whole file.
+            // …declaring /Type /XRef in the object's dictionary: the name /Type, white space, the name /XRef
+            // ending at a delimiter. Not /XRefStm, not the bytes of the stream's data or of a later object:
+            // the read stops at the object's `stream` or `endobj`. Bounded so a hostile offset cannot make
+            // this walk the whole file.
             int limit = (int)Math.Min(end, (long)p + XrefStreamProbeWindowBytes);
-            for (int i = p; i + 5 <= limit; i++)
+            for (int i = p; i < limit; i++)
             {
-                if (bytes[i] != (byte)'/') continue;
-                if (MatchesAscii(bytes, i + 1, "XRef")) return XrefSectionKind.Stream;
+                if (MatchesAscii(bytes, i, "stream") || MatchesAscii(bytes, i, "endobj")) break;
+                if (bytes[i] != (byte)'/' || !MatchesAscii(bytes, i + 1, "Type") || !EndsName(bytes, i + 5, limit)) continue;
+                int j = i + 5;
+                while (j < limit && IsPdfWhitespace(bytes[j])) j++;
+                if (j + 5 <= limit && bytes[j] == (byte)'/' && MatchesAscii(bytes, j + 1, "XRef") && EndsName(bytes, j + 5, limit))
+                    return XrefSectionKind.Stream;
             }
 
             return XrefSectionKind.None;
+        }
+
+        /// <summary>Whether a name ends at <paramref name="at"/>: the window's end, white space or a delimiter (§7.2.3).</summary>
+        private static bool EndsName(byte[] bytes, int at, int limit)
+        {
+            if (at >= limit) return true;
+            byte b = bytes[at];
+            return IsPdfWhitespace(b) || b == (byte)'/' || b == (byte)'<' || b == (byte)'>' || b == (byte)'[' || b == (byte)']'
+                || b == (byte)'(' || b == (byte)')' || b == (byte)'{' || b == (byte)'}' || b == (byte)'%';
         }
 
         private static bool TrySkipUnsignedInteger(byte[] bytes, ref int p)
@@ -1596,9 +1611,9 @@ namespace Tetitulz.Pdf.Core.Writing
             return true;
         }
 
-        // §7.2.3 Table 1. One implementation, in PdfConstants — this was a fourth private copy of
-        // the same six bytes, and the copy that mattered was PdfParser.FindStartXref's INLINE set
-        // of three, which is why a survey for "IsPdfWhitespace" would never have found the defect.
+        // §7.2.3 Table 1. One implementation, in PdfConstants — every reader of the six bytes,
+        // including PdfParser.FindStartXref, asks it; an inline set of three would be invisible to a
+        // survey for "IsPdfWhitespace".
         private static bool IsPdfWhitespace(byte b) => PdfConstants.IsWhitespace(b);
 
         private static bool NeedsLeadingEol(byte[] originalBytes)

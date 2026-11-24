@@ -63,7 +63,7 @@ public class TypelessMarkedContentReferenceTests
     }
 
     /// <summary>
-    /// The floor: a genuine nested structure element must still be recursed into, so the fix
+    /// The floor: a genuine nested structure element must still be recursed into, so the rule
     /// cannot be "treat every typeless dictionary as a leaf".
     /// </summary>
     [Fact]

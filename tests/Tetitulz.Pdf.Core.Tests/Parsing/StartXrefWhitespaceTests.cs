@@ -30,8 +30,8 @@ namespace Tetitulz.Pdf.Core.Tests.Parsing;
 public sealed class StartXrefWhitespaceTests
 {
     /// <summary>
-    /// The three that were already accepted, as the control — without them a reader cannot tell
-    /// "the fix works" from "the fixture never exercised the gap".
+    /// The three ordinary separators, as the control — without them a reader cannot tell "the
+    /// rule works" from "the fixture never exercised the gap".
     /// </summary>
     [Theory]
     [InlineData("\r")]

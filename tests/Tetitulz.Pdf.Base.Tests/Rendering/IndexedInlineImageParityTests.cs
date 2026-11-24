@@ -18,15 +18,15 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// An inline image whose colour space uses §8.9.7 Table 93's abbreviations <i>inside</i> the
 /// <c>/Indexed</c> array — <c>[/I /G 1 &lt;…&gt;]</c> — and the two renderers agreeing about it.
 ///
-/// <para><b>They did not, twice, and both times the raster path was the one that was wrong.</b>
-/// <c>ExpandAbbreviatedImageDict</c> expands the <b>top-level</b> <c>/CS</c> name and deliberately
-/// leaves an array head alone, so both <c>/I</c> and the base <c>/G</c> arrive as written:</para>
+/// <para><b>Two ways to disagree.</b> <c>ExpandAbbreviatedImageDict</c> expands the
+/// <b>top-level</b> <c>/CS</c> name and deliberately leaves an array head alone, so both
+/// <c>/I</c> and the base <c>/G</c> arrive as written:</para>
 /// <list type="number">
-///   <item>the raster recognition test compared against <c>/Indexed</c> only, so
-///     <c>[/I …]</c> was not treated as indexed at all and the samples were strided by the base
-///     space's component count instead of one index per pixel;</item>
-///   <item>the raster palette builder had no <c>/G</c> or <c>/CMYK</c> case, so a grey palette was
-///     read three bytes per entry where the file wrote one.</item>
+///   <item>a recognition test comparing against <c>/Indexed</c> only would not treat
+///     <c>[/I …]</c> as indexed at all, striding the samples by the base space's component count
+///     instead of one index per pixel;</item>
+///   <item>a palette builder with no <c>/G</c> or <c>/CMYK</c> case would read a grey palette three
+///     bytes per entry where the file wrote one.</item>
 /// </list>
 ///
 /// <para>Each assertion is a decoded colour, because both defects produce a full-size image of

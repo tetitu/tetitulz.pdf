@@ -191,8 +191,8 @@ namespace Tetitulz.Pdf.Accessibility.Fonts
         /// <see cref="PdfFontSubsetter.TryMapCodePointsToCffGlyphs"/>, not by this method.</b> A bare
         /// CFF has no cmap, so the obvious <c>TrueTypeFontProgram.TryGetGlyph</c> answers nothing for
         /// it; that resolver falls back to the font's own glyph names, which is a fact the font
-        /// states rather than a guess about it. Writing the cmap lookup inline here is what kept
-        /// bare CFF declining for the first half of this round.</para>
+        /// states rather than a guess about it. A cmap lookup written inline here would make every
+        /// bare CFF decline.</para>
         /// <para>First, <b>the output is the same length as the input</b> — blanking overwrites
         /// charstrings where they sit so that no offset inside the CFF moves. The saving is entirely
         /// in the Flate-encoded <c>/FontFile3</c>, which is what actually goes into the file. Do not

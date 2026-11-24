@@ -55,9 +55,8 @@ public class DeclaredLengthCeilingTests
         Assert.Null(data);
         Assert.Contains("/DL", reason, StringComparison.Ordinal);
 
-        // The bounded inflate that used to answer this copies 80 KB chunks into a doubling
-        // MemoryStream up to the ceiling, so it allocates megabytes; a refusal that read /DL first
-        // allocates a message.
+        // A bounded inflate copies 80 KB chunks into a doubling MemoryStream up to the ceiling,
+        // so it allocates megabytes; a refusal that reads /DL first allocates a message.
         Assert.True(allocated < 256 * 1024,
             $"allocated {allocated} bytes refusing a stream whose /DL was already over the ceiling");
     }

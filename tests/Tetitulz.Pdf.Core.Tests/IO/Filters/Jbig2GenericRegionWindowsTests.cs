@@ -11,10 +11,10 @@ namespace Tetitulz.Pdf.Core.Tests.IO.Filters;
 
 /// <summary>
 /// The generic region decoder forms its context from sliding windows — one per run of template
-/// positions that are consecutive in index and in x on one row — where it used to read every
-/// position of the template, bounds-checked, for every pixel (61 ns a pixel; the composition
-/// budget's 128 Mi pixels, which a 98-byte symbol dictionary spends in full, were eight seconds:
-/// GAPS.md §7c). This suite runs that per-position loop, kept here as the reference, over the same
+/// positions that are consecutive in index and in x on one row — rather than reading every
+/// position of the template, bounds-checked, for every pixel (61 ns a pixel: the composition
+/// budget's 128 Mi pixels, which a 98-byte symbol dictionary spends in full, would take eight
+/// seconds). This suite runs that per-position loop, kept here as the reference, over the same
 /// MQ decoder and the same bytes, and asks for the same bitmap: every template, with the nominal AT
 /// pixels and with each moved where the windows cannot merge it (another row, the row below, the
 /// current row at and past x, far outside), TPGDON on and off, a skip bitmap, widths that are not

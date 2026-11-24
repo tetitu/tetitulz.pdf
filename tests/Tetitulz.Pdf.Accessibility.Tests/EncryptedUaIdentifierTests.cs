@@ -445,14 +445,11 @@ public sealed class EncryptedUaIdentifierTests
     /// one, and the appended trailer points at it.
     /// </summary>
     /// <remarks>
-    /// <para><b>This was a pinned limitation until 2026-08-15, and it became a round trip exactly as
-    /// its own note said it should.</b> A minted <c>/Info</c> is only useful if the appended trailer
-    /// references it, and <c>Run</c>'s delegate returned <i>objects</i> — it had no channel for a
-    /// trailer entry. So the object was written and unreachable: a title nobody could read, which is
-    /// UA04 failing silently. The <c>EncryptedRevision</c> overload of <c>Run</c> carries the
-    /// <c>/Info</c> number, and the writer already took <c>/Info</c> from
-    /// <c>IncrementalUpdateOptions.OriginalTrailer</c> — so nothing new had to be taught to the
-    /// writer.</para>
+    /// <para><b>A minted <c>/Info</c> is only useful if the appended trailer references it.</b> A
+    /// delegate returning <i>objects</i> alone has no channel for a trailer entry, so the object
+    /// would be written and unreachable: a title nobody can read, which is UA04 failing silently.
+    /// The <c>EncryptedRevision</c> overload of <c>Run</c> carries the <c>/Info</c> number, and the
+    /// writer takes <c>/Info</c> from <c>IncrementalUpdateOptions.OriginalTrailer</c>.</para>
     /// <para>The fixture must have <b>no</b> <c>/Info</c>, or the minting branch is never taken and
     /// this passes while proving nothing — the companion test above covers the revise branch.</para>
     /// </remarks>

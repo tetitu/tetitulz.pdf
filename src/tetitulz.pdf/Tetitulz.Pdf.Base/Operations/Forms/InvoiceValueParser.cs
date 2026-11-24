@@ -815,8 +815,8 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
             => at >= 0 && at + token.Length <= t.Length
                && string.Compare(t, at, token, 0, token.Length, StringComparison.OrdinalIgnoreCase) == 0;
 
-        // The currency the string names anywhere, as a whole token: ILS before USD before EUR, as
-        // this has always ranked them, then the first other. "DETAILS" does not name ILS.
+        // The currency the string names anywhere, as a whole token: ILS before USD before EUR,
+        // then the first other. "DETAILS" does not name ILS.
         private static string DetectCurrency(string t)
         {
             bool ils = false, usd = false, eur = false;

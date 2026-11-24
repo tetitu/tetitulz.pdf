@@ -139,10 +139,10 @@ public class OptionalContentStructParentsTests
     // =====================================================================
 
     /// <summary>
-    /// The false positive. Pre-fix the <c>/OC</c> <c>BDC</c> was counted as a structural sequence
-    /// the moment its tag was seen not to be <c>/Artifact</c>, so page 2 — whose every drawing
-    /// operator is inside an artifact sequence — was reported as an Error for a key that ISO 32000-1
-    /// Table 30 does not require of it.
+    /// The false positive. Counting the <c>/OC</c> <c>BDC</c> as a structural sequence the moment
+    /// its tag is seen not to be <c>/Artifact</c> would report page 2 — whose every drawing operator
+    /// is inside an artifact sequence — as an Error for a key that ISO 32000-1 Table 30 does not
+    /// require of it.
     /// </summary>
     [Fact]
     public void OptionalContentWrapperRoundAnArtifact_IsNotReportedAsMissingStructParents()
@@ -164,7 +164,7 @@ public class OptionalContentStructParentsTests
     // =====================================================================
 
     /// <summary>
-    /// The control that keeps the fix from being a blanket suppression: the same page with a
+    /// The control that keeps the rule from being a blanket suppression: the same page with a
     /// sequence that really does name an <c>/MCID</c> must still be reported.
     /// </summary>
     [Fact]

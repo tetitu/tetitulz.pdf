@@ -386,9 +386,9 @@ namespace Tetitulz.Pdf.Plugins.Html
                     "<div class=\"pdf-page\" style=\"width:{0}px;height:{1}px\">\n", cssW, cssH));
 
                 // Optional: render page as background image for graphics/non-text content.
-                // Budgeted through the SAME accountant as the raster path — this path ignored
-                // MaxEmbeddedImageBytes entirely, which is why the budget is now an object both
-                // paths hold rather than a local variable one of them happened to keep.
+                // Budgeted through the SAME accountant as the raster path, so MaxEmbeddedImageBytes
+                // holds here too: the budget is an object both paths hold rather than a local
+                // variable one of them keeps.
                 byte[]? png = budget.TryRenderPage(source, pi, opts.ImageDpi);
                 if (png != null)
                 {

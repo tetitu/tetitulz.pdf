@@ -10,14 +10,14 @@ namespace Tetitulz.Pdf.Core.Util
     /// A per-document ceiling on the decoded bytes <see cref="Objects.PdfStream"/> keeps memoized.
     /// A stream caches its decoded data for its own lifetime, which is the document's; a
     /// whole-document pass that decodes each stream once — rendering every page, extracting all text,
-    /// a validator — therefore held the <i>sum</i> of every stream's decoded content, not the largest
-    /// (DoS finding F3). Past this ceiling a stream decodes without caching, so the retained total is
+    /// a validator — would therefore hold the <i>sum</i> of every stream's decoded content, not the
+    /// largest. Past this ceiling a stream decodes without caching, so the retained total is
     /// bounded while decodes under it (a page repainted in tiles, render plus text on one document)
     /// stay cached and cheap.
     /// </summary>
     /// <remarks>
     /// One instance per parsed document, referenced by every stream the parser builds. A stream with
-    /// no budget — one a writer built, not the parser — always caches, as it always did. The default
+    /// no budget — one a writer built, not the parser — always caches. The default
     /// ceiling is generous enough that every real document stays fully cached and byte-for-byte
     /// unchanged; only a pathological one that retains hundreds of megabytes of decoded content starts
     /// decoding uncached. Shared across the threads a batch render splits a document over, so the

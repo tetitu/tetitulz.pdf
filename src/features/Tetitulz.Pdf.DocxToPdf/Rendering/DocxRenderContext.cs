@@ -104,11 +104,10 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         /// </summary>
         /// <remarks>
         /// The requirement is narrowed by <see cref="FontResolver.RequiredCodePoints"/> — whitespace
-        /// is not evidence of coverage — and this path was hit hardest by the defect that helper
-        /// records: the author had shipped the exact font for the text, and a <c>&lt;w:tab/&gt;</c>
-        /// or <c>&lt;w:br/&gt;</c> in the same run made <c>Covers(U+0009)</c> / <c>Covers(U+000A)</c>
-        /// false, so their own embedded face was rejected in favour of an OS substitute — or, on a
-        /// host with no covering font, of blanks.
+        /// is not evidence of coverage. Here that matters most: the author has shipped the exact font
+        /// for the text, and a <c>&lt;w:tab/&gt;</c> or <c>&lt;w:br/&gt;</c> in the same run would
+        /// make <c>Covers(U+0009)</c> / <c>Covers(U+000A)</c> false, so their own embedded face would
+        /// be rejected in favour of an OS substitute — or, on a host with no covering font, of blanks.
         /// </remarks>
         internal Tetitulz.Pdf.Core.Fonts.TrueTypeFontProgram ResolveEmbeddedFont(
             string family, bool bold, bool italic, IEnumerable<int> requiredCodePoints)
@@ -779,7 +778,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         /// distance, where a one-line footer's does, and the lines before it rise above. The band is
         /// laid out downward from one default line above the distance, as every block is, and then
         /// moved up by the rest of what it took — its content under one translation, the links and
-        /// bookmarks it registered with it — so a footer of several lines no longer runs below the page.
+        /// bookmarks it registered with it — so a footer of several lines does not run below the page.
         /// </summary>
         private void RenderFooterBand(PdfPageBuilder page, int pageNumber, OpenXmlElement part, double footerDist,
             ParagraphRenderer paragraphRenderer, TableRenderer tableRenderer)

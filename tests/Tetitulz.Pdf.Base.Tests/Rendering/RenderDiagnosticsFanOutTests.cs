@@ -37,8 +37,8 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 public sealed class RenderDiagnosticsFanOutTests
 {
     /// <summary>
-    /// The test the pre-fix sink would have failed: the throwing subscriber is registered first, so
-    /// a single multicast invoke never reaches the collector.
+    /// The throwing subscriber is registered first, so a sink using a single multicast invoke would
+    /// never reach the collector.
     /// </summary>
     [Fact]
     public void AThrowingSubscriber_DoesNotBlindTheOnesAfterIt()

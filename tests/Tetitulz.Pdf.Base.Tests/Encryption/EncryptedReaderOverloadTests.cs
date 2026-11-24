@@ -241,14 +241,9 @@ public sealed class EncryptedReaderOverloadTests
 
     /// <summary>
     /// The plugin-dispatched validators reach the plugin with <b>plaintext</b>: the password is
-    /// consumed in Base and the decrypted stream crosses the boundary, so the plugin contract never
-    /// changed.
+    /// consumed in Base and the decrypted stream crosses the boundary, so the plugin contract
+    /// carries no password — the dispatch passes a <c>Stream</c>.
     /// </summary>
-    /// <remarks>
-    /// These three were the last entries on the facade burn-down, recorded as needing "a design
-    /// decision about carrying a password across the plugin contract". That was wrong — the dispatch
-    /// already passes a <c>Stream</c>. Verifying it cost one look at the call site.
-    /// </remarks>
     [Fact]
     public void Validate_WithThePassword_ReachesThePluginWithPlaintext()
     {

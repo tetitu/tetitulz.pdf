@@ -17,10 +17,8 @@ namespace Tetitulz.Pdf.Base.Images
     /// </summary>
     public static class PdfImageExtractor
     {
-        // The most decoded image data this extractor writes to disk per image. NOT the zip-bomb
-        // guard: GetDecodedData has already inflated the
-        // stream by the time this is compared, under Core's own ceiling
-        // (PdfLimits.MaxDecompressedBytes, FilterPipeline). This bounds the file, not the decode.
+        // The most decoded image data this extractor decodes and writes per image: the decode is refused
+        // at it, never inflated further and compared after.
         private const int MaxDecompressedImageBytes = 256 * 1024 * 1024;
 
         /// <summary>
@@ -109,11 +107,17 @@ namespace Tetitulz.Pdf.Base.Images
 
             var results = new List<PdfImageInfo>();
             var undecoded = new Core.Util.DistinctStrings();
+            var unwritten = new Core.Util.DistinctStrings();
+            // One call's files together, under one total: Deflate's thousand to one makes a one-megabyte PDF of
+            // image bombs a gigabyte of files, every one inside the per-image ceiling.
+            long room = PdfLimits.MaxExtractedImageBytesPerCall;
             int imageIndex = 0;
             foreach (var (page, number, stream) in entries)
             {
                 imageIndex++;
-                var imageInfo = ExtractSingleImage(doc, stream, page + 1, imageIndex, outputDirectory, out string why);
+                var imageInfo = ExtractSingleImage(doc, stream, page + 1, imageIndex, outputDirectory, room, out string why, out bool pastTotal);
+                if (pastTotal) unwritten.Add($"image {imageIndex} (object {number}, page {page + 1})");
+                if (imageInfo != null) room -= imageInfo.FileSize;
                 if (why != null)
                     undecoded.Add($"image {imageIndex} (object {number}, page {page + 1}): its stream could not be decoded ({why}); "
                                   + (imageInfo != null ? "its encoded bytes were written" : "nothing was written"));
@@ -121,6 +125,11 @@ namespace Tetitulz.Pdf.Base.Images
                     results.Add(imageInfo);
             }
             if (undecoded.Count > 0) _lastExtractionWarning = undecoded.Joined("; ") + ".";
+            if (unwritten.Count > 0)
+                _lastExtractionWarning = (_lastExtractionWarning == null ? "" : _lastExtractionWarning + " ")
+                    + "The images written reached PdfLimits.MaxExtractedImageBytesPerCall ("
+                    + PdfLimits.MaxExtractedImageBytesPerCall.ToString("N0", System.Globalization.CultureInfo.InvariantCulture)
+                    + " bytes); not written: " + unwritten.Joined(", ") + ".";
             return results;
         }
 
@@ -132,9 +141,10 @@ namespace Tetitulz.Pdf.Base.Images
         }
 
         private static PdfImageInfo ExtractSingleImage(PdfDocument doc, PdfStream imageStream,
-            int pageNumber, int imageIndex, string outputDirectory, out string undecodedBecause)
+            int pageNumber, int imageIndex, string outputDirectory, long room, out string undecodedBecause, out bool pastTotal)
         {
             undecodedBecause = null;
+            pastTotal = false;
             int width  = (doc.ResolveObject(imageStream[PdfName.Width])  as PdfNumber)?.IntValue ?? 0;
             int height = (doc.ResolveObject(imageStream[PdfName.Height]) as PdfNumber)?.IntValue ?? 0;
             int bpc    = (doc.ResolveObject(imageStream[PdfName.BitsPerComponent]) as PdfNumber)?.IntValue ?? EightBitsPerComponent;
@@ -188,11 +198,10 @@ namespace Tetitulz.Pdf.Base.Images
                 // FlateDecode or other - decode and save as raw pixel data or try to construct PPM
                 try
                 {
-                    byte[] decoded = imageStream.GetDecodedData();
-                    if (decoded != null && decoded.Length > MaxDecompressedImageBytes)
-                        throw new PdfException(
-                            $"Decompressed image data ({decoded.Length:N0} bytes) exceeds the " +
-                            $"{MaxDecompressedImageBytes / (1024 * 1024)} MB safety limit.");
+                    // Refused at the ceiling, never inflated past it; and uncached, so the document holds no quarter
+                    // of a gigabyte an image once its file is written. The call's total is held below, on what is written.
+                    if (!imageStream.TryGetDecodedDataUncached(MaxDecompressedImageBytes, out byte[] decoded, out string refused))
+                        throw new PdfException(refused ?? "it does not decode");
 
                     // A chain ending in an image codec decodes to the codec's own bitstream — the
                     // pipeline passes DCT and JPX through — which is that format's file, not samples to
@@ -242,6 +251,11 @@ namespace Tetitulz.Pdf.Base.Images
 
             if (imageData == null || imageData.Length == 0)
                 return null;
+            if (imageData.LongLength > room)
+            {
+                pastTotal = true;
+                return null;
+            }
 
             // Write the file
             string fileName = $"image_{imageIndex:D4}{extension}";

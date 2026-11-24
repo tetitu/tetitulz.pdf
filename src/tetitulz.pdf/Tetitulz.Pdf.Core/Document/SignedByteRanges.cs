@@ -365,10 +365,12 @@ namespace Tetitulz.Pdf.Core.Document
                 if (element is PdfReference && doc != null)
                     element = doc.ResolveObject(element);
 
-                if (!(element is PdfNumber number))
+                // §12.8.1: integers. A real is not truncated into one: 100.5 read as 100 is a range this
+                // reader and a stricter one disagree on.
+                if (!(element is PdfNumber number) || !number.IsInteger)
                 {
                     error = $"Invalid /ByteRange element at index {i}: expected integer, got " +
-                            (array[i]?.GetType().Name ?? "null") + ".";
+                            (element is PdfNumber real ? "the real " + real : array[i]?.GetType().Name ?? "null") + ".";
                     return false;
                 }
 

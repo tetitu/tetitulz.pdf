@@ -76,8 +76,8 @@ public sealed class IccTransformTests
 
     /// <summary>
     /// A grey ICC profile with a linear tone curve says 0.5 is half the luminance of white, which
-    /// encodes to sRGB 188. DeviceGray — the fallback, and previously the only behaviour — paints
-    /// 128. The gap between them is the whole test.
+    /// encodes to sRGB 188. DeviceGray — the fallback — paints 128. The gap between them is the
+    /// whole test.
     /// </summary>
     [Fact]
     public void IccBasedGrayFill_LinearToneCurve_PaintsProfileLuminanceNotDeviceGrey()
@@ -452,7 +452,7 @@ public sealed class IccTransformTests
     /// <remarks>
     /// <b>A control, not a discriminating test.</b> It asserts the device fallback, which is exactly
     /// what disabling the SVG routing produces — so it stays green under that mutation, and that is
-    /// the point: the fallback must survive the fix intact. The discriminating half of the pair is
+    /// the point: the fallback must survive intact. The discriminating half of the pair is
     /// <see cref="IccBasedRgbFill_SvgConsultsTheProfileLikeTheRasterPath"/>, which does fail.
     /// </remarks>
     [Fact]
@@ -551,7 +551,7 @@ public sealed class IccTransformTests
     /// <summary>
     /// A provider implementing <see cref="IIccIntentColorTransformProvider"/> receives the intent the
     /// fill was set under (<c>/Saturation ri</c>) and black-point compensation on, and its colour is
-    /// the one painted. Until 2026-10-17 no host provider could receive the intent.
+    /// the one painted.
     /// </summary>
     [Fact]
     public void IccBasedFill_IntentAwareProvider_ReceivesTheFillsIntent()

@@ -15,16 +15,15 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts;
 /// Adversarial-input guards for <see cref="CMapParser"/> range parsing.
 ///
 /// <para>
-/// <b>The bug.</b> Both <c>ParseBfRange</c> and <c>ParseCidRangeReverse</c> clamped their range
-/// length with <c>if (endCode - startCode &gt; MaxRangeLength)</c> — signed <c>int</c> arithmetic.
-/// A crafted range such as <c>&lt;FFFFFFFF&gt; &lt;7FFFFFFF&gt;</c> makes that difference wrap
-/// negative, so the clamp never fires and the following loop runs for roughly four billion
-/// iterations. <c>PdfFont</c> feeds raw <c>/ToUnicode</c> stream bytes straight into this parser
-/// with no try/catch and no time budget, so a single crafted font hangs the calling thread —
-/// unauthenticated, from nothing but opening a PDF.
+/// <b>The hazard.</b> A range-length clamp of <c>if (endCode - startCode &gt; MaxRangeLength)</c>
+/// in signed <c>int</c> arithmetic, in <c>ParseBfRange</c> or <c>ParseCidRangeReverse</c>, lets a
+/// crafted range such as <c>&lt;FFFFFFFF&gt; &lt;7FFFFFFF&gt;</c> wrap that difference negative, so
+/// the clamp never fires and the following loop runs for roughly four billion iterations.
+/// <c>PdfFont</c> feeds raw <c>/ToUnicode</c> stream bytes straight into this parser, so a single
+/// crafted font would hang the calling thread — unauthenticated, from nothing but opening a PDF.
 /// </para>
 /// <para>
-/// Every test here is time-bounded rather than merely asserting a result: pre-fix the parser
+/// Every test here is time-bounded rather than merely asserting a result: an unguarded parser
 /// never returns, so an unbounded assertion would hang the whole test run instead of failing.
 /// </para>
 /// </summary>
@@ -145,8 +144,8 @@ public class CMapParserAdversarialTests
     // document, not Unicode order).
 
     /// <summary>
-    /// The array form on a single physical line always worked — confirms this test file didn't
-    /// previously cover it (the multi-line bug below could hide behind it otherwise).
+    /// The array form on a single physical line — covered here so the multi-line case below cannot
+    /// hide behind it.
     /// </summary>
     [Fact]
     public void ParseToUnicode_BfRangeArrayForm_SingleLine_MapsCorrectly()

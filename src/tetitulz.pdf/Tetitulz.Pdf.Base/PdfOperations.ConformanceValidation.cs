@@ -28,12 +28,11 @@ namespace Tetitulz.Pdf.Base
         /// <param name="password">User or owner password.</param>
         /// <remarks>
         /// <para>A separate overload with a <b>required</b> password: appending
-        /// <c>password = null</c> to the signature above is a binary break, and the shipped overload
-        /// keeps its original call path so its behaviour is untouched.</para>
+        /// <c>password = null</c> to the signature above would be a binary break, and the
+        /// password-free overload keeps its own call path.</para>
         /// <para><b>The password does not cross the plugin boundary — the decrypted stream does.</b>
-        /// This was recorded as needing "a design decision about carrying a password across the
-        /// plugin contract", and that was wrong: the dispatch already passes a <c>Stream</c>, so
-        /// <c>WithDecrypted</c> hands the plugin plaintext and the contract is unchanged. It is the
+        /// The dispatch passes a <c>Stream</c>, so <c>WithDecrypted</c> hands the plugin plaintext
+        /// and the plugin contract carries no password. It is the
         /// same inversion used everywhere else here — the <i>operation</i> or the <i>data</i>
         /// travels, never the key.</para>
         /// </remarks>

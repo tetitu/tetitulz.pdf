@@ -21,19 +21,19 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 /// pointers that implement it.
 ///
 /// <para>
-/// <b>The hole these lock shut.</b> UA14 used to ask only "does the page's <c>/StructParents</c>
-/// key exist in <c>/Nums</c>, and is its value an array"; UA16 and UA30 accepted any integer in
-/// <c>/K</c> as "real content". So a document could name MCIDs no page contains, point every
+/// <b>The hole these lock shut.</b> If UA14 asked only "does the page's <c>/StructParents</c>
+/// key exist in <c>/Nums</c>, and is its value an array", and UA16 and UA30 accepted any integer
+/// in <c>/K</c> as "real content", a document could name MCIDs no page contains, point every
 /// array slot at the wrong element, and leave the page's real marked content owned by nobody —
-/// and the whole audit reported zero tagging findings, because every individual pointer was
-/// syntactically valid. That is the hollow-tagging failure the feature exists to prevent, wearing
-/// a different disguise.
+/// and the whole audit would report zero tagging findings, because every individual pointer is
+/// syntactically valid. That is the hollow-tagging failure the feature exists to prevent,
+/// wearing a different disguise.
 /// </para>
 ///
 /// <para>
 /// Also here: the <c>/OBJR</c> whose optional <c>/Type</c> is absent (ISO 32000-1 Table 325 makes
-/// only <c>/Obj</c> Required), which used to be invisible and produced a false UA16 <i>and</i> a
-/// false UA23 on a perfectly legal file; and the adversarial Form XObject document that made the
+/// only <c>/Obj</c> Required), which, invisible, would produce a false UA16 <i>and</i> a false
+/// UA23 on a perfectly legal file; and an adversarial Form XObject document that would make the
 /// audit's form scanning quadratic.
 /// </para>
 ///
@@ -223,17 +223,17 @@ public class ParentTreeMappingTests
         Assert.Contains(WithCode(issues, "UA14"),
             i => Mentions(i, "no structure element claims"));
 
-        // And the pre-existing checks stay silent, which is the point — a bare integer used to be
-        // enough to satisfy every one of them.
+        // And the other checks stay silent, which is the point — a bare integer is enough to
+        // satisfy every one of them.
         Assert.Empty(WithCode(issues, "UA16"));
         Assert.Empty(WithCode(issues, "UA17"));
         Assert.Empty(WithCode(issues, "UA18"));
     }
 
     /// <summary>
-    /// The audit as a whole must fail this document. Before the fix it reported nothing at all
-    /// about the tagging, so a file whose structure tree reached no content could be presented as
-    /// conforming once its title and XMP were in place.
+    /// The audit as a whole must fail this document. Reporting nothing about the tagging would let
+    /// a file whose structure tree reaches no content be presented as conforming once its title and
+    /// XMP were in place.
     /// </summary>
     [Fact]
     public void Check_BrokenMcidMapping_ProducesBlockingErrors()
@@ -557,10 +557,10 @@ public class ParentTreeMappingTests
     /// <summary>
     /// <b>The false positive.</b> ISO 32000-1 Table 325 marks <c>/Type</c> on an object reference
     /// dictionary Optional — only <c>/Obj</c> is Required — so this document is exactly as legal
-    /// as the typed one above. It used to be accused twice: the <c>&lt;Link&gt;</c> wrapper was
-    /// reported as a leaf referencing no content (UA16), and the annotation it wraps as reachable
-    /// from no <c>/OBJR</c> (UA23), with remediation advice telling the author to add an
-    /// <c>/OBJR</c> that was already there.
+    /// as the typed one above. Requiring <c>/Type</c> would accuse it twice: the
+    /// <c>&lt;Link&gt;</c> wrapper as a leaf referencing no content (UA16), and the annotation it
+    /// wraps as reachable from no <c>/OBJR</c> (UA23), with remediation advice telling the author
+    /// to add an <c>/OBJR</c> that is already there.
     /// </summary>
     [Fact]
     public void Check_ObjrWithoutType_IsStillRecognised()

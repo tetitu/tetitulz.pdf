@@ -12,11 +12,10 @@ using Tetitulz.Pdf.Base.Operations.Extraction;
 namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
-/// Review-fix regression: PdfLayoutAnalyzer.DetectColumns must clamp the X-bucket
-/// resolution. A glyph placed at a huge X coordinate makes the page-width span ≈ 1e9,
-/// which previously allocated a per-X bool[] grid of ~1e9 columns → OutOfMemory / hang
-/// on the DEFAULT extraction path (every Extract() calls DetectColumns via the
-/// PdfPageTextLayout constructor).
+/// PdfLayoutAnalyzer.DetectColumns must clamp the X-bucket resolution. A glyph placed at a
+/// huge X coordinate makes the page-width span ≈ 1e9, which unclamped would allocate a per-X
+/// bool[] grid of ~1e9 columns → OutOfMemory / hang on the DEFAULT extraction path (every
+/// Extract() calls DetectColumns via the PdfPageTextLayout constructor).
 /// </summary>
 public class ReviewFixOps_DetectColumnsDosTests
 {
@@ -60,7 +59,7 @@ public class ReviewFixOps_DetectColumnsDosTests
     public void Extract_GlyphAtHugeX_DoesNotOomOrHang()
     {
         // One normal glyph near the origin and one placed ~500 million points to the
-        // right. Pre-fix this forced xBuckets ≈ 5e8 → a multi-gigabyte allocation.
+        // right. Unclamped, xBuckets ≈ 5e8 → a multi-gigabyte allocation.
         const string cs =
             "BT /F1 12 Tf 50 700 Td (A) Tj ET\n" +
             "BT /F1 12 Tf 500000000 700 Td (B) Tj ET\n";

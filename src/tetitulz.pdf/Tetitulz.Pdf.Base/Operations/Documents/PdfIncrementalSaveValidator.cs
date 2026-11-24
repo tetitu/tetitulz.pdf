@@ -132,11 +132,11 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
 
                 foreach (var (field, sig) in SignatureFieldWalk.DistinctSignatures(acro))
                 {
-                    // ONE reader, in Core's SignedByteRanges. This copy was the weakest kind:
-                    // GetArray does not follow a reference, so `/ByteRange 9 0 R` (§7.3.10 permits
-                    // it) read as absent and the signature vanished from the report entirely —
-                    // and an indirect ELEMENT made GetLong throw, which the blanket catch below
-                    // turns into losing every signature after it as well, not just this one.
+                    // ONE reader, in Core's SignedByteRanges, which follows references. GetArray
+                    // does not, so through it `/ByteRange 9 0 R` (§7.3.10 permits it) would read as
+                    // absent and the signature vanish from the report entirely — and an indirect
+                    // ELEMENT would make GetLong throw, which the blanket catch below would turn
+                    // into losing every signature after it as well, not just this one.
                     if (!SignedByteRanges.TryRead(sig, doc, out var br, out _)) continue;
 
                     long s1 = br.Offset1, l1 = br.Length1;

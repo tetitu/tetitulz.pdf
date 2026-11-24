@@ -17,7 +17,7 @@ namespace Tetitulz.Pdf.Core.Forms
     /// </summary>
     /// <remarks>
     /// <para><b>An empty partial name adds no segment.</b> <see cref="PdfFormField.FullyQualifiedName"/>
-    /// has always skipped one, and <see cref="AcroFieldClassification"/> reads a node whose
+    /// skips one, and <see cref="AcroFieldClassification"/> reads a node whose
     /// <c>/T</c> is empty as a widget, which contributes no name. So the name every form reader
     /// lists for a field is the one without it.</para>
     /// <para><b>One join</b>, for the field model, <c>PdfActionRunner</c>'s field search, the FDF

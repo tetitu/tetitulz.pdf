@@ -82,8 +82,8 @@ public sealed class TableOfContentsTests
     /// PDF/UA's "strong structure" heading takes its level from how deeply its <c>/Sect</c>
     /// elements nest, not from its name. This model nests exactly one — every
     /// <see cref="Section"/> is a <c>/Sect</c> under the root and nothing else is a section — so
-    /// the level it carries is 1, and the entry is placed there rather than dropped. (It used to be
-    /// dropped as unplaceable; <c>TocSectionNumberingTests</c> pins the derivation.)
+    /// the level it carries is 1, and the entry is placed there rather than dropped as unplaceable.
+    /// (<c>TocSectionNumberingTests</c> pins the derivation.)
     /// </remarks>
     [Fact]
     public void ABareStrongStructureHeadingIsPlacedAtItsSectionDepth()

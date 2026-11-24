@@ -20,18 +20,17 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// stroked element in both renderers, not only a <c>&lt;path&gt;</c> and a path stroke.
 /// </summary>
 /// <remarks>
-/// <para><b>Two defects of one shape.</b> The raster text sites built an <c>SKPaint</c> inline and
-/// set only style, colour and width, so a stroked run silently took Skia's defaults for the other
-/// four however the file had set <c>J</c>, <c>j</c>, <c>M</c> or <c>d</c> — while a path stroke
-/// beside it honoured them. The SVG <c>&lt;text&gt;</c> and glyph-outline emitters wrote none of
-/// the four either. Both now go through one place per renderer.</para>
+/// <para><b>One place per renderer.</b> An <c>SKPaint</c> built inline with only style, colour and
+/// width would give a stroked run Skia's defaults for the other four however the file had set
+/// <c>J</c>, <c>j</c>, <c>M</c> or <c>d</c> — while a path stroke beside it honoured them; the SVG
+/// <c>&lt;text&gt;</c> and glyph-outline emitters likewise.</para>
 ///
-/// <para><b>And the SVG miter limit was wrong for the default graphics state.</b> The exporter
-/// omitted <c>stroke-miterlimit</c> whenever it equalled 10 — PDF's initial value — on a comment's
-/// claim that "PDF and SVG both default to 10". SVG's initial value is <b>4</b>, so every ordinary
-/// stroke, in every file that never writes an <c>M</c> operator, exported with an effective limit
-/// of 4 while the raster path stroked it at 10. Sharp joins came out as spikes in the render and
-/// bevels in the export.</para>
+/// <para><b>And the SVG miter limit for the default graphics state.</b> Omitting
+/// <c>stroke-miterlimit</c> whenever it equals 10 — PDF's initial value — on the claim that "PDF
+/// and SVG both default to 10" would be wrong: SVG's initial value is <b>4</b>, so every ordinary
+/// stroke, in every file that never writes an <c>M</c> operator, would export with an effective
+/// limit of 4 while the raster path strokes it at 10. Sharp joins would come out as spikes in the
+/// render and bevels in the export.</para>
 ///
 /// <para>SVG assertions parse the document as an <see cref="XDocument"/>, never as a substring.
 /// Raster assertions are ink counts, because which face the platform substitutes for a

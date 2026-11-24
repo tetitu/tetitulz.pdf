@@ -159,4 +159,47 @@ public sealed class FieldLockForgeryTests
 
         Assert.Empty(Violations(Revise(signed, new Dictionary<int, string> { [6] = "<< /FT /Tx /T (pq) /V (2) >>" })));
     }
+
+    /// <summary>
+    /// <b>The appearance stream rewritten in place</b>, under its own object number: the field and its <c>/AP</c>
+    /// still name the same reference, and what a reader draws changed. The control rewrites it with the same content.
+    /// </summary>
+    [Theory]
+    [InlineData("(forged)", 1)]
+    [InlineData("(signed)", 0)]
+    public void AdversarialAppearanceStream_RewrittenInPlace_IsReported(string text, int violations)
+    {
+        static string Appearance(string shown) => $"<< /Length {shown.Length + 3} >>\nstream\n{shown} Tj\nendstream";
+        byte[] signed = Signed("(a)", "<< /FT /Tx /T (a) /V (1) /AP << /N 6 0 R >> >>", Appearance("(signed)"));
+
+        Assert.Equal(violations, Violations(Revise(signed, new Dictionary<int, string> { [6] = Appearance(text) })).Count);
+    }
+
+    /// <summary>
+    /// A locked parent whose fields lie deeper than the walk reads cannot be checked, and says so; the control, a
+    /// chain inside the depth, is checked and clean.
+    /// </summary>
+    [Theory]
+    [InlineData(105, true)]
+    [InlineData(20, false)]
+    public void AdversarialFieldTreeDeeperThanTheWalk_IsReportedUncheckable(int depth, bool uncheckable)
+    {
+        var bodies = new List<string>
+        {
+            "<< /Type /Catalog /Pages 2 0 R /AcroForm << /Fields [4 0 R 5 0 R] >> >>",
+            "<< /Type /Pages /Kids [] /Count 0 >>",
+            "<< /Type /Sig /ByteRange [0 @END @END 0] /Contents <00> " + string.Format(CultureInfo.InvariantCulture, Lock, "(p)") + " >>",
+            "<< /FT /Sig /T (signature) /V 3 0 R >>",
+        };
+        for (int i = 0; i < depth; i++)
+            bodies.Add(i == depth - 1
+                ? $"<< /FT /Tx /T (k{i}) /V (1) /Parent {4 + i} 0 R >>"
+                : $"<< /T ({(i == 0 ? "p" : "k" + i)}) /Kids [{6 + i} 0 R]" + (i == 0 ? "" : $" /Parent {4 + i} 0 R") + " >>");
+        byte[] signed = Assemble(bodies, Assemble(bodies, 0).Length);
+
+        List<string> found = Violations(Revise(signed, new Dictionary<int, string> { [2] = "<< /Type /Pages /Kids [] /Count 0 >>" }));
+
+        Assert.Equal(uncheckable, found.Any(v => v.Contains("nested deeper than", System.StringComparison.Ordinal)));
+        if (!uncheckable) Assert.Empty(found);
+    }
 }

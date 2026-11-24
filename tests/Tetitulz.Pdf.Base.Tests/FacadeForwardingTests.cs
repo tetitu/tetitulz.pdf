@@ -92,7 +92,7 @@ public sealed class FacadeForwardingTests : IDisposable
     /// <summary>
     /// A null stream is refused naming the facade's parameter, <c>input</c> — not the name of
     /// whatever helper further down would have tripped over it. The per-page overload is the
-    /// control: it has always named it.
+    /// control: it names it too.
     /// </summary>
     [Fact]
     public void ExtractText_NullStream_IsRefusedUnderItsOwnName()

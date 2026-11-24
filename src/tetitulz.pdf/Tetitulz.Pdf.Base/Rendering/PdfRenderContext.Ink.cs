@@ -9,38 +9,34 @@ using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Ink deposition for <c>/Separation</c> and <c>/DeviceN</c> colorants — the half of
-    /// <see cref="InkAccumulator"/> that decides <b>which pixels</b> an ink reaches.
-    /// </summary>
-    /// <remarks>
-    /// <para><b>Why the geometry lives here and not in the interpreter.</b> Where the ink lands is
-    /// the same question as where the paint lands, and this class already owns every term of that
-    /// answer: the current path, the clip, the stroke pen's real width under the CTM, and the page
-    /// transform. The interpreter's copy re-derived the last of those and got it wrong — the current
-    /// path is already in Y-down page-point space, and it applied the page flip a second time, so
-    /// every coverage map came back mirrored about the page's horizontal centre line. A fixture
-    /// whose artwork is a full-page rectangle cannot see that, which is why it survived.</para>
-    ///
-    /// <para><b>Coverage is rasterised, not approximated by a bounding box.</b> The path's bounds
-    /// at full tint are the right answer only for an unclipped axis-aligned rectangle: a diagonal
-    /// hairline would report the whole page as inked, a circle its square, a clipped fill everything
-    /// outside the clip. For an ink
-    /// <i>inventory</i> those are tolerable; for the ink <i>estimate</i> a prepress caller wants,
-    /// they are the whole measurement.</para>
-    ///
-    /// <para><b>A stroke is rasterised as a stroke</b>, under the pen the paint will actually use.
-    /// The path's bounds know nothing of the pen, so an axis-aligned rule — most of the vector content
-    /// of an invoice — would be recorded exactly one pixel wide however wide the line was set. Note
-    /// that <see cref="SKRect.IsEmpty"/> is <b>false</b> for a zero-height rectangle in SkiaSharp, so
-    /// such a rule would not be dropped outright; it would be recorded,
-    /// and recorded far too thin, which is the harder of the two to notice.</para>
-    ///
-    /// <para><b>None of this runs on an ordinary render.</b> Every entry point returns immediately
-    /// when no <see cref="InkAccumulator"/> is attached, and one is attached only by
-    /// <c>PdfPageRenderer.ExtractInkCoverage</c>. The clip tracking below is gated on the same
-    /// test, so a normal page pays neither the path intersections nor the allocation.</para>
-    /// </remarks>
+    // Ink deposition for /Separation and /DeviceN colorants — the half of
+    // InkAccumulator that decides which pixels an ink reaches.
+    // Why the geometry lives here and not in the interpreter. Where the ink lands is
+    // the same question as where the paint lands, and this class already owns every term of that
+    // answer: the current path, the clip, the stroke pen's real width under the CTM, and the page
+    // transform. The interpreter's copy re-derived the last of those and got it wrong — the current
+    // path is already in Y-down page-point space, and it applied the page flip a second time, so
+    // every coverage map came back mirrored about the page's horizontal centre line. A fixture
+    // whose artwork is a full-page rectangle cannot see that, which is why it survived.
+    //
+    // Coverage is rasterised, not approximated by a bounding box. The path's bounds
+    // at full tint are the right answer only for an unclipped axis-aligned rectangle: a diagonal
+    // hairline would report the whole page as inked, a circle its square, a clipped fill everything
+    // outside the clip. For an ink
+    // inventory those are tolerable; for the ink estimate a prepress caller wants,
+    // they are the whole measurement.
+    //
+    // A stroke is rasterised as a stroke, under the pen the paint will actually use.
+    // The path's bounds know nothing of the pen, so an axis-aligned rule — most of the vector content
+    // of an invoice — would be recorded exactly one pixel wide however wide the line was set. Note
+    // that SKRect.IsEmpty is false for a zero-height rectangle in SkiaSharp, so
+    // such a rule would not be dropped outright; it would be recorded,
+    // and recorded far too thin, which is the harder of the two to notice.
+    //
+    // None of this runs on an ordinary render. Every entry point returns immediately
+    // when no InkAccumulator is attached, and one is attached only by
+    // PdfPageRenderer.ExtractInkCoverage. The clip tracking below is gated on the same
+    // test, so a normal page pays neither the path intersections nor the allocation.
     internal sealed partial class PdfRenderContext : IDisposable
     {
         /// <summary>

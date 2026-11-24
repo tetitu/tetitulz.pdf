@@ -159,10 +159,10 @@ namespace Tetitulz.Pdf.Builder.Export
         /// before any <c>w:num</c> (<c>CT_Numbering</c>, ISO/IEC 29500 §17.9.17).
         /// </summary>
         /// <remarks>
-        /// Appending it at the end was wrong whenever a <c>w:num</c> was already there — a second
-        /// list's definition, or any list allocated after a literal-marker instance wrote its
-        /// <c>w:num</c>, landed after that instance. The out-of-order part makes Word repair it on
-        /// open and a strict OOXML validator reject it. Inserting after the last existing
+        /// Appending it at the end would be wrong whenever a <c>w:num</c> is already there — a
+        /// second list's definition, or any list allocated after a literal-marker instance wrote its
+        /// <c>w:num</c>, would land after that instance, and the out-of-order part makes Word repair
+        /// it on open and a strict OOXML validator reject it. Inserting after the last existing
         /// <c>w:abstractNum</c> (or before the first <c>w:num</c> when there is none yet) keeps the
         /// two groups apart however the two allocators interleave; this exporter writes no
         /// <c>w:numPicBullet</c>, the only element that would precede an abstract definition.

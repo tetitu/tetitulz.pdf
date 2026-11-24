@@ -27,10 +27,10 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// when it produced a subset.
         /// </summary>
         /// <remarks>
-        /// A <c>(null, null)</c> return has always meant "embed the whole program", and the callers
-        /// do exactly that — but it conflated "this font has no <c>glyf</c> table" with "this font's
-        /// licence forbids subsetting", and the second is something a caller may need to explain to
-        /// someone. Set on every declining path, cleared on every succeeding one.
+        /// A <c>(null, null)</c> return means "embed the whole program", and the callers do exactly
+        /// that — but it covers both "this font has no <c>glyf</c> table" and "this font's licence
+        /// forbids subsetting", and the second is something a caller may need to explain to someone.
+        /// Set on every declining path, cleared on every succeeding one.
         /// </remarks>
         internal static string LastDeclineReason => _lastDecline;
 
@@ -235,8 +235,8 @@ namespace Tetitulz.Pdf.Core.Fonts
                 if (glyph >= _numGlyphs) yield break;
                 long s = _loca[glyph], e = _loca[glyph + 1];
                 if (e <= s) yield break;
-                // Bounded by the glyph's own end (CompositeGlyph's remarks): this read on into the
-                // next glyph while a malformed record kept MORE_COMPONENTS set.
+                // Bounded by the glyph's own end (CompositeGlyph's remarks), so a malformed record that
+                // keeps MORE_COMPONENTS set cannot read on into the next glyph.
                 foreach (int at in CompositeGlyph.ComponentIndexOffsets(_glyf, (int)s, (int)e))
                     yield return CompositeGlyph.ReadIndex(_glyf, at);
             }
@@ -321,11 +321,10 @@ namespace Tetitulz.Pdf.Core.Fonts
             /// <see cref="SfntBuilder"/> — the single sfnt assembler.
             /// </summary>
             /// <remarks>
-            /// This copy was correct about tag ordering (ordinal) but derived its directory hints
-            /// from <c>Math.Log</c>, and hardcoded the TrueType sfnt version, which is the reason
-            /// the CFF path could not reuse it. <c>Patch</c> already zeroes
-            /// <c>head.checkSumAdjustment</c>; the builder zeroes it again before summing, so it is
-            /// belt-and-braces rather than a dependency.
+            /// The builder orders the tags ordinally, derives the directory hints by integer
+            /// arithmetic and takes the sfnt version from its caller, so the CFF path shares it.
+            /// <c>Patch</c> already zeroes <c>head.checkSumAdjustment</c>; the builder zeroes it again
+            /// before summing, so it is belt-and-braces rather than a dependency.
             /// </remarks>
             private static byte[] WriteSfnt(Dictionary<string, byte[]> tables)
             {

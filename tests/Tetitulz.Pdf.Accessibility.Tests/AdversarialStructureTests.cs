@@ -30,8 +30,8 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 /// that would have hung / stack-overflowed pre-fix").
 ///
 /// <para>
-/// <b>What "pre-fix" means here.</b> Every structure-tree walker in this repository used to cap
-/// recursion <em>depth</em> and nothing else. A <c>/K</c> cycle whose elements each list the
+/// <b>What "pre-fix" means here:</b> a structure-tree walker that caps recursion
+/// <em>depth</em> and nothing else. A <c>/K</c> cycle whose elements each list the
 /// other twice therefore costs 2^100 visits under the 100-level cap — not a slow operation, an
 /// unbounded one. The documents built below are exactly that shape, so a walker without a
 /// visited set cannot finish them inside any timeout, while a correctly guarded one finishes in
@@ -591,8 +591,8 @@ public class AdversarialStructureTests
                 return result;
             });
 
-        // Exactly one Figure is reachable. Under the pre-fix walk it would have been revisited
-        // once per path through the cycle.
+        // Exactly one Figure is reachable. A walk with no visited set would revisit it once per
+        // path through the cycle.
         Assert.Equal(1, run.Result.Updated);
         Assert.Equal(0, run.Result.Failed);
     }
@@ -899,22 +899,15 @@ public class AdversarialStructureTests
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>This test asserted the opposite until 2026-08-14, and the assertion was not true of the
-    /// code.</b> It required no <c>UA99</c> at all, under the name
-    /// <c>Audit_DeeplyNestedAcyclicTree_Completes</c> and the claim that the audit "walks a
-    /// 5,000-level tree to a conclusion instead of bailing out of it". It does not:
-    /// <c>StructTreeWalker.DefaultMaxDepth</c> is 100, so 4,900 of these levels were never visited
-    /// and every element-level check ran on a list of the first hundred. What the test really
-    /// pinned was that the bail-out was <i>silent</i> — the walker raised a diagnostics event, which
-    /// is not part of <c>AccessibilityAuditReport</c>, and the report was byte-identical to one in
-    /// which the whole tree had been examined and found clean.
+    /// <b>The audit does not walk a 5,000-level tree to a conclusion.</b>
+    /// <c>StructTreeWalker.DefaultMaxDepth</c> is 100, so 4,900 of these levels are never visited
+    /// and every element-level check runs on a list of the first hundred. The walker's diagnostics
+    /// event is not part of <c>AccessibilityAuditReport</c>, so without the UA99 the report would
+    /// be byte-identical to one in which the whole tree had been examined and found clean.
     /// </para>
     /// <para>
-    /// So the name and the claim moved to what the code does, rather than the assertion moving to
-    /// whatever the code happened to produce — the failure mode CLAUDE.md describes as "a test whose
-    /// name and body disagree", which no guard can catch. The termination half of the original
-    /// claim is kept and is still the reason the fixture is 5,000 levels deep: <c>RunGuarded</c>
-    /// fails if the walk hangs or overflows the stack.
+    /// The fixture is 5,000 levels deep for the termination half: <c>RunGuarded</c> fails if the
+    /// walk hangs or overflows the stack.
     /// </para>
     /// <para>
     /// Its <c>PdfUaChecker</c> sibling below is a different engine with its own traversal, and it

@@ -132,12 +132,11 @@ public sealed class EncryptedRoundTripTests
     }
 
     /// <summary>
-    /// Regression for a defect this round trip's permission test exposed:
-    /// <c>PdfEncryptor.ComputePermissionValue</c> OR-ed <c>0x4</c> into <c>/P</c> as if bit 3 were
-    /// reserved. Bit 3 <b>is</b> the print permission, so <b>every</b> document this library
-    /// encrypted granted printing regardless of what the caller asked for — a caller who denied
-    /// printing got a printable file and no indication of it. Bits 1-2 are the ones that shall be
-    /// zero, and the 0xFFC mask already leaves them clear.
+    /// <c>PdfEncryptor.ComputePermissionValue</c> does not OR <c>0x4</c> into <c>/P</c> as if bit 3
+    /// were reserved. Bit 3 <b>is</b> the print permission, so that would make <b>every</b> document
+    /// this library encrypts grant printing regardless of what the caller asked for — a caller who
+    /// denied printing would get a printable file and no indication of it. Bits 1-2 are the ones
+    /// that shall be zero, and the 0xFFC mask leaves them clear.
     /// </summary>
     [Theory]
     [InlineData(EncryptionAlgorithm.RC4_128)]

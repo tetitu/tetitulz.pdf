@@ -21,9 +21,9 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// painting the annotation onto the page".
 /// </summary>
 /// <remarks>
-/// <para><b>Only <c>/CA</c> was read.</b> <c>/BM</c> was dropped in both renderers, so a
-/// <c>/Multiply</c> stamp over text painted opaque Normal; and <c>/ca</c> — the entry that governs a
-/// group composite — was never consulted. Which alpha a group composite takes is decided once, in
+/// <para><b>All three entries are read.</b> Without <c>/BM</c> a <c>/Multiply</c> stamp over text
+/// would paint opaque Normal, and <c>/ca</c> is the entry that governs a group composite. Which
+/// alpha a group composite takes is decided once, in
 /// <c>AnnotationAppearance.CompositeAlpha</c>: §11.6.4.4 (34121–34122) says "the nonstroking alpha
 /// constant shall also be applied when painting a transparency group's results onto its backdrop",
 /// and Table 166 (38526–38527) makes <c>/CA</c> the nonstroking value when <c>/ca</c> is absent —

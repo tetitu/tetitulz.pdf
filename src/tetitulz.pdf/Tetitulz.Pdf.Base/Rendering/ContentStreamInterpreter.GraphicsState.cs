@@ -18,21 +18,6 @@ using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Interprets a PDF content stream, executing drawing operators against a
-    /// <see cref="PdfRenderContext"/> backed by SkiaSharp.
-    ///
-    /// <para>Supported operator families:</para>
-    /// <list type="bullet">
-    ///   <item>Path construction: m l c v y h re</item>
-    ///   <item>Path painting: S s F f f* B B* b b* n</item>
-    ///   <item>Color: g G rg RG k K cs CS sc SC scn SCN</item>
-    ///   <item>Graphics state: q Q cm w J j M d ri i gs</item>
-    ///   <item>Text: BT ET Tf Td TD Tm T* Tj TJ ' " Tc Tw Tz TL Tr Ts</item>
-    ///   <item>XObject: Do (Form XObjects recursed; Image XObjects rasterized)</item>
-    ///   <item>Clipping: W W*</item>
-    /// </list>
-    /// </summary>
     internal sealed partial class ContentStreamInterpreter
     {
         // ---- CTM ----
@@ -157,8 +142,8 @@ namespace Tetitulz.Pdf.Base.Rendering
 
             // /D [array phase] — dash pattern from ExtGState (same pair the 'd' operator takes).
             // One implementation, in DashPattern.TryReadExtGState, which the SVG writer also calls:
-            // this copy resolved only the outer two objects, so an indirect dash length or phase
-            // read as 0, and an empty array left a stale phase behind.
+            // it resolves every element, so an indirect dash length or phase is read rather than 0,
+            // and an empty array leaves no stale phase behind.
             if (DashPattern.TryReadExtGState(_doc, extGs, out float[] gsDash, out float gsDashPhase))
             {
                 _ctx.GS.DashPattern = gsDash;

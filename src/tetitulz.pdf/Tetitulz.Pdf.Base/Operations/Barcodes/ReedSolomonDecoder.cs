@@ -62,18 +62,15 @@ namespace Tetitulz.Pdf.Base.Operations.Barcodes
             var corrected = (int[])received.Clone();
             if (!Forney(field, syndromes, locator, positions, corrected)) return false;
 
-            // There was a syndrome re-check here, and it was removed as dead — deliberately, with
-            // the reasoning recorded rather than the line kept "just in case", because an inert
-            // guard beside a real hazard is the hardest kind to see through.
+            // No syndrome re-check follows, deliberately: an inert guard beside a real hazard is the
+            // hardest kind to see through.
             //
-            // It cannot fire. Given a locator of degree L ≤ ecLength/2 whose L roots all land inside
-            // the word — which the three guards above have already established — Forney's magnitudes
-            // annihilate all `ecLength` syndromes by construction. A mutation deleting the re-check
-            // survived, and both explanations were then tested: 3 155 answered corrections across
-            // eight different (data, ec) shapes, every one of them damaged beyond the code's reach,
-            // produced zero activations.
+            // It could not fire. Given a locator of degree L ≤ ecLength/2 whose L roots all land
+            // inside the word — which the three guards above have already established — Forney's
+            // magnitudes annihilate all `ecLength` syndromes by construction; across eight (data, ec)
+            // shapes, every word damaged beyond the code's reach that was answered had zero syndromes.
             //
-            // What the re-check could never do is the thing worth knowing: a word that lands within
+            // What a re-check could never do is the thing worth knowing: a word that lands within
             // the correction radius of a *different* valid codeword decodes to that codeword, and
             // its syndromes are zero. No guard fixes that — it is the code's distance, and the only
             // real answer is the check digit or CRC that the layer above carries.

@@ -11,15 +11,11 @@ namespace Tetitulz.Pdf.Core.Tests;
 /// <summary>
 /// Pins <c>Tetitulz.Pdf.Core</c>'s exported surface against <c>tests/ApiSnapshots</c>.
 ///
-/// <para><b>This file exists because the baseline did, and nothing read it.</b> The repo-shape guard
+/// <para><b>A baseline needs a comparison.</b> The repo-shape guard
 /// (<c>ApiBaselineCoverageTests</c>) asserts that every packable project <i>has</i> a baseline file,
 /// which is not the same as asserting that anything <i>compares</i> against it — and the difference
-/// is invisible, because a baseline nothing reads is byte-identical to one that passes. Five
-/// projects had the file and no comparison — Tetitulz.Pdf.Core among them — and they were the four core-ring assemblies plus
-/// one plugin: precisely the packages every other package depends on. Noticed while checking
-/// whether a change to Core needed a baseline update, and finding there was nothing to update
-/// against. Three of the four core-ring baselines matched on the first run — they were accurate,
-/// just unasserted, which is exactly the state that decays without anyone seeing it.</para>
+/// is invisible, because a baseline nothing reads is byte-identical to one that passes. An accurate
+/// but unasserted baseline is exactly the state that decays without anyone seeing it.</para>
 ///
 /// <para>A failure is not automatically a bug — an intended API change fails here once, and the fix
 /// is to accept the regenerated <c>.actual</c> file <i>in the same commit</i>, which turns the diff

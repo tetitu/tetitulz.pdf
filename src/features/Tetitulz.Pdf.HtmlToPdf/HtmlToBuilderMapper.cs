@@ -60,12 +60,11 @@ namespace Tetitulz.Pdf.HtmlToPdf
     /// <b>1.0</b> <c>@font-face</c> IS honoured — Core's <c>WoffDecoder</c> unwraps it — as are
     /// <c>.ttf</c>/<c>.otf</c>.)
     ///
-    /// <para><b>This summary lives here and nowhere else.</b> It was copied onto <b>thirteen</b> of
-    /// the partials, and every copy still said flex, grid and float were unsupported — nine days
-    /// and three shipped layout features after they stopped being. One copy had additionally
-    /// drifted, gaining an <c>opacity</c> line the other twelve lacked. The seven partials that
-    /// actually implement those features are precisely the ones that never carried the header, so
-    /// nothing pointed at the contradiction. A partial class needs the doc once.</para>
+    /// <para><b>This summary lives here and nowhere else.</b> The compiler merges every part's
+    /// doc comment into the type's one entry, and copies on the partials go stale one by one
+    /// without anything pointing at the contradiction; each part's note about its own file is an
+    /// ordinary comment there. A partial class needs the doc once (guarded by
+    /// <c>OneSummaryPerDocCommentTests</c>).</para>
     /// </summary>
     internal sealed partial class HtmlToBuilderMapper
     {

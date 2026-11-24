@@ -14,9 +14,8 @@ namespace Tetitulz.Pdf.Builder.Export
         /// <summary>
         /// Draw it anyway through the standard-14 fallback — where every code point above U+00FF
         /// becomes <c>'?'</c> — and raise a <see cref="BuilderDiagnosticKind.FontNotResolved"/>
-        /// diagnostic. The default, because it is what the exporter has always done: changing the
-        /// pixels for existing callers would be a silent regression on any host without a
-        /// covering font.
+        /// diagnostic. The default, because any other default would silently change the pixels
+        /// existing callers get on a host without a covering font.
         /// </summary>
         Report = 0,
 
@@ -197,7 +196,7 @@ namespace Tetitulz.Pdf.Builder.Export
         public double Scale { get; set; } = 1.0;
 
         // Chromium's supported print-scale band. Out of range is clamped rather than thrown,
-        // because the browser engine has always clamped here (an out-of-range value otherwise
+        // because the browser engine clamps here (an out-of-range value otherwise
         // fails deep inside Playwright with an opaque error) and the two engines must not
         // disagree about what a given Scale means.
         private const double MinScale = 0.1;

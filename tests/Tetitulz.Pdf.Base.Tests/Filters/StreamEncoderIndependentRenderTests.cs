@@ -12,9 +12,8 @@ namespace Tetitulz.Pdf.Base.Tests.Filters;
 /// <summary>
 /// The stream encoders' output read by a decoder this repository did not write (<see cref="IndependentImageRender"/>):
 /// CCITT Group 4 (the redactor writes bilevel images with it), LZW in both
-/// <c>/EarlyChange</c> settings, and RunLength. Each round-tripped only through this library's own
-/// decoders until 2026-10-18, and three barcode writers that night were found unreadable by others
-/// for exactly that reason: a writer and its reader can share a mistake.
+/// <c>/EarlyChange</c> settings, and RunLength. A round trip through this library's own decoders
+/// alone proves nothing a writer and its reader share: they can share a mistake.
 /// </summary>
 public class StreamEncoderIndependentRenderTests
 {

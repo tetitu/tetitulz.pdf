@@ -30,15 +30,16 @@ namespace Tetitulz.Pdf.Base.Operations
         /// <param name="doc">The document the writer opened.</param>
         /// <param name="action">What the caller asked for, as in "Cannot <i>add annotations to</i> an encrypted document".</param>
         /// <param name="written">What would be written in clear text, as in "<i>they</i> would be written".</param>
+        /// <param name="route">The encrypted route to name, as a sentence; <see langword="null"/> names the round trip.</param>
         /// <exception cref="PdfEncryptedDocumentException">The document is encrypted.</exception>
-        internal static void Refuse(PdfDocument doc, string action, string written)
+        internal static void Refuse(PdfDocument doc, string action, string written, string route = null)
         {
             if (!doc.IsEncrypted) return;
             throw new PdfEncryptedDocumentException(
                 "Cannot " + action + " an encrypted document: " + written + " would be written in clear " +
                 "text where the reader expects per-object ciphertext, and this assembly cannot encrypt. " +
-                "Decrypt first (Tetitulz.Pdf.Encryption.PdfDecryptor), edit, then re-encrypt — or use " +
-                "Tetitulz.Pdf.Encryption.PdfEncryptedRoundTrip.Run.");
+                (route ?? "Decrypt first (Tetitulz.Pdf.Encryption.PdfDecryptor), edit, then re-encrypt — or use " +
+                          "Tetitulz.Pdf.Encryption.PdfEncryptedRoundTrip.Run."));
         }
     }
 }

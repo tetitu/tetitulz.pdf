@@ -23,12 +23,12 @@ public class Jbig2RefinementTests
     /// with TPGRON on then refines it into T and replaces what is under it.
     /// <list type="bullet">
     /// <item>Through the page: the refinement names no region, so its reference is the page under
-    /// it (§7.4.7.4). It was null, read as white.</item>
+    /// it (§7.4.7.4), not a null reference read as white.</item>
     /// <item>Through an intermediate region: the refinement names segment 2, a generic region
-    /// decoded and kept (§7.4.7.4). It was skipped, so the reference was null again.</item>
+    /// decoded and kept (§7.4.7.4), not skipped.</item>
     /// </list>
-    /// Both used to fail twice over: TPGRON copied the reference's row instead of decoding the
-    /// pixels whose neighbourhood is not uniform, which put the arithmetic decoder out of step.
+    /// Both also need TPGRON read as the standard says: copying the reference's row instead of
+    /// decoding the pixels whose neighbourhood is not uniform puts the arithmetic decoder out of step.
     /// </summary>
     [Theory]
     [InlineData(false)]

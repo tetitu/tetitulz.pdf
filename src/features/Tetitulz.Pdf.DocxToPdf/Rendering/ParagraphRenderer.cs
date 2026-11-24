@@ -1276,11 +1276,11 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         ///
         /// <para>
         /// <see cref="TextSegment.Width"/> knows nothing about word spacing, yet the <c>xs[]</c>
-        /// array it fed drives the /Link rectangles, the highlight rectangles, the equation
-        /// placement, the right/decimal tab's look-ahead sum and the underline/strike rules. On a
-        /// justified line with ten spaces stretched by 3 pt, the last segment's glyphs are drawn
-        /// 30 pt to the right of where all five were placed: the underline sat under the preceding
-        /// words and clicking the visible link did nothing.
+        /// array built from these widths drives the /Link rectangles, the highlight rectangles, the
+        /// equation placement, the right/decimal tab's look-ahead sum and the underline/strike rules.
+        /// On a justified line with ten spaces stretched by 3 pt, the last segment's glyphs are drawn
+        /// 30 pt to the right of where <see cref="TextSegment.Width"/> alone would place them: the
+        /// underline would sit under the preceding words and a click on the visible link would miss it.
         /// </para>
         ///
         /// <para>

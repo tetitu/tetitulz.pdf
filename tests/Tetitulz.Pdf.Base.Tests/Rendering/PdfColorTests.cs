@@ -13,9 +13,8 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
 /// Tests for <see cref="PdfColor"/>, the single source of truth for PDF colour-space
-/// → sRGB conversion shared by the SkiaSharp interpreter and the SVG renderer. Includes
-/// a regression test for the round-34 fix where the SVG renderer gained the precise
-/// CalRGB transform it previously dropped (falling back to plain DeviceRGB).
+/// → sRGB conversion shared by the SkiaSharp interpreter and the SVG renderer — the precise
+/// CalRGB transform included, not plain DeviceRGB.
 /// </summary>
 public sealed class PdfColorTests
 {

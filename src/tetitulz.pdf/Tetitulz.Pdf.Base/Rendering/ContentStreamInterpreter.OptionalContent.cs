@@ -19,21 +19,6 @@ using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Interprets a PDF content stream, executing drawing operators against a
-    /// <see cref="PdfRenderContext"/> backed by SkiaSharp.
-    ///
-    /// <para>Supported operator families:</para>
-    /// <list type="bullet">
-    ///   <item>Path construction: m l c v y h re</item>
-    ///   <item>Path painting: S s F f f* B B* b b* n</item>
-    ///   <item>Color: g G rg RG k K cs CS sc SC scn SCN</item>
-    ///   <item>Graphics state: q Q cm w J j M d ri i gs</item>
-    ///   <item>Text: BT ET Tf Td TD Tm T* Tj TJ ' " Tc Tw Tz TL Tr Ts</item>
-    ///   <item>XObject: Do (Form XObjects recursed; Image XObjects rasterized)</item>
-    ///   <item>Clipping: W W*</item>
-    /// </list>
-    /// </summary>
     internal sealed partial class ContentStreamInterpreter
     {
         /// <summary>
@@ -63,10 +48,10 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// number and resolving first would throw that away.
         /// </summary>
         /// <remarks>
-        /// Both call sites pass a different shape and both were wrong before. XObjects and
-        /// annotations carry <c>/OC</c> pointing at the OCG; <c>BDC</c> instead names a
-        /// <c>/Properties</c> resource that <em>is</em> the OCG. The single old helper always
-        /// looked for an <c>/OC</c> key, so a <c>/OC /P BDC … EMC</c> block was never suppressed.
+        /// The call sites pass different shapes. XObjects and annotations carry <c>/OC</c> pointing
+        /// at the OCG; <c>BDC</c> instead names a <c>/Properties</c> resource that <em>is</em> the
+        /// OCG. A helper that always looked for an <c>/OC</c> key would never suppress a
+        /// <c>/OC /P BDC … EMC</c> block.
         /// </remarks>
         internal static bool IsOcEntryHidden(
             PdfObject ocEntry,
@@ -192,18 +177,72 @@ namespace Tetitulz.Pdf.Base.Rendering
             // EvaluateVeOperand via EvaluateVeExpr, so they never re-enter this guard.
             if (depth == 0)
             {
-                try { return EvaluateVeExpr(expr, hiddenOcgs, doc, 0); }
-                catch (VeDepthExceededException) { return true; }
+                // One verdict an expression for a hidden set: every BDC, XObject and annotation naming the
+                // OCMD asks again, and the expression is the same.
+                VeVerdict known = VeVerdicts.GetValue(expr, _ => new VeVerdict());
+                lock (known)
+                {
+                    if (ReferenceEquals(known.HiddenOcgs, hiddenOcgs) && known.Document == doc && known.Visible is bool v)
+                        return v;
+                }
+                bool visible;
+                try { visible = EvaluateVeExpr(expr, hiddenOcgs, doc, 0, new Dictionary<PdfArray, bool>(PdfReferenceEquality.Instance)); }
+                catch (VeDepthExceededException) { visible = true; }
+                lock (known)
+                {
+                    known.HiddenOcgs = hiddenOcgs;
+                    known.Document = doc;
+                    known.Visible = visible;
+                }
+                return visible;
             }
-            return EvaluateVeExpr(expr, hiddenOcgs, doc, depth);
+            return EvaluateVeExpr(expr, hiddenOcgs, doc, depth, new Dictionary<PdfArray, bool>(PdfReferenceEquality.Instance));
         }
 
+        /// <summary>The last verdict an expression received, and the hidden set and document it was for.</summary>
+        private sealed class VeVerdict
+        {
+            internal System.Collections.Generic.ISet<int> HiddenOcgs;
+            internal PdfDocument Document;
+            internal bool? Visible;
+        }
+
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<PdfArray, VeVerdict> VeVerdicts =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<PdfArray, VeVerdict>();
+
+        /// <summary>
+        /// An array's verdict within one evaluation: the expression is a graph whose arrays a file may share, and
+        /// evaluated as a tree a sub-array named N times at each of D levels is visited N^D times — the depth cap
+        /// alone bounds one branch, not the number of branches. Each array is evaluated once.
+        /// </summary>
         private static bool EvaluateVeExpr(
             PdfArray expr,
             System.Collections.Generic.ISet<int> hiddenOcgs,
             PdfDocument doc,
-            int depth)
+            int depth,
+            Dictionary<PdfArray, bool> memo)
         {
+            if (memo.TryGetValue(expr, out bool done)) return done;
+            bool verdict = EvaluateVeArray(expr, hiddenOcgs, doc, depth, memo);
+            memo[expr] = verdict;
+            return verdict;
+        }
+
+        /// <summary>
+        /// How many visibility-expression arrays this thread has evaluated, all calls together: the evidence that a
+        /// shared sub-array is evaluated once an evaluation, and an expression once a hidden set — a verdict cannot
+        /// show which. A test reads the difference across one render.
+        /// </summary>
+        [ThreadStatic] internal static long VeArraysEvaluated;
+
+        private static bool EvaluateVeArray(
+            PdfArray expr,
+            System.Collections.Generic.ISet<int> hiddenOcgs,
+            PdfDocument doc,
+            int depth,
+            Dictionary<PdfArray, bool> memo)
+        {
+            VeArraysEvaluated++;
             if (expr == null || expr.Count == 0) return true;
             if (depth >= PdfLimits.MaxVisibilityExpressionDepth) throw new VeDepthExceededException();
 
@@ -214,15 +253,15 @@ namespace Tetitulz.Pdf.Base.Rendering
             {
                 case "And":
                     for (int i = 1; i < expr.Count; i++)
-                        if (!EvaluateVeOperand(expr[i], hiddenOcgs, doc, depth + 1)) return false;
+                        if (!EvaluateVeOperand(expr[i], hiddenOcgs, doc, depth + 1, memo)) return false;
                     return true;
                 case "Or":
                     for (int i = 1; i < expr.Count; i++)
-                        if (EvaluateVeOperand(expr[i], hiddenOcgs, doc, depth + 1)) return true;
+                        if (EvaluateVeOperand(expr[i], hiddenOcgs, doc, depth + 1, memo)) return true;
                     return false;
                 case "Not":
                     if (expr.Count < 2) return true;
-                    return !EvaluateVeOperand(expr[1], hiddenOcgs, doc, depth + 1);
+                    return !EvaluateVeOperand(expr[1], hiddenOcgs, doc, depth + 1, memo);
                 default:
                     return true; // Unknown operator — fail open (show content).
             }
@@ -232,14 +271,15 @@ namespace Tetitulz.Pdf.Base.Rendering
             PdfObject operand,
             System.Collections.Generic.ISet<int> hiddenOcgs,
             PdfDocument doc,
-            int depth = 0)
+            int depth,
+            Dictionary<PdfArray, bool> memo)
         {
             if (depth >= PdfLimits.MaxVisibilityExpressionDepth) throw new VeDepthExceededException();
             var resolved = doc != null ? (doc.ResolveObject(operand) ?? operand) : operand;
 
             // Sub-expression (nested array starting with /And/Or/Not).
             if (resolved is PdfArray arr && arr.Count > 0 && arr[0] is PdfName)
-                return EvaluateVeExpr(arr, hiddenOcgs, doc, depth + 1);
+                return EvaluateVeExpr(arr, hiddenOcgs, doc, depth + 1, memo);
 
             // OCG reference — check against hidden set.
             if (operand is PdfReference pr)

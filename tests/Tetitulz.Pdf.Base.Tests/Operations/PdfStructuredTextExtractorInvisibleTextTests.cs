@@ -12,29 +12,26 @@ using Tetitulz.Pdf.Base.Operations.Extraction;
 namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
-/// Regression tests for text render mode (ISO 32000-1 Table 106 / "Tr") awareness in structured
+/// Tests for text render mode (ISO 32000-1 Table 106 / "Tr") awareness in structured
 /// text extraction.
 ///
 /// <para><b>Invisible text is extracted, except where it copies visible text.</b> Modes 3 and 7
-/// are how an OCR tool puts searchable text over a scanned page. The first fix for the bug below
-/// dropped every such glyph, so a scanned page extracted as nothing, and search-driven redaction
-/// found nothing to remove. A glyph is now dropped only when a visible glyph of similar size and
-/// the same rotation covers its centre.</para>
+/// are how an OCR tool puts searchable text over a scanned page, so dropping every such glyph
+/// would extract a scanned page as nothing, and search-driven redaction would find nothing to
+/// remove. A glyph is dropped only when a visible glyph of similar size and the same rotation
+/// covers its centre.</para>
 ///
-/// <para><b>Real bug this covers</b>: found via a downstream app importing a real, non-synthetic
-/// "digital statement" PDF (a modern, accessibility-conscious template) — <see cref="PdfStructuredTextExtractor"/>
-/// extracted <i>every</i> glyph regardless of render mode, so a page that draws an invisible
-/// (mode 3) searchable/accessibility text layer directly alongside styled visible glyphs for the
-/// SAME content emitted both copies into <c>output</c>. Once clustered into the same line, the two
-/// interleaved character streams came out as literal character-doubled garbage
-/// (<c>"מזון ומשקאות"</c>-shaped input became <c>"ממזזווןן..."</c>-shaped output) — and in the worst
-/// observed case, a real transaction's date/merchant fields corrupted past the point the
-/// downstream parser's line-matching regex could recognize it, silently dropping a real charge.
-/// This was previously misdiagnosed as the (real, but different, and still open) bidi-reordering
-/// duplication bug tracked in GAPS.md §21 — that one only fires when a caller explicitly opts into
+/// <para><b>What the rule prevents.</b> A page that draws an invisible (mode 3)
+/// searchable/accessibility text layer directly alongside styled visible glyphs for the SAME
+/// content — a modern, accessibility-conscious "digital statement" template does — would, with
+/// every glyph extracted regardless of render mode, emit both copies. Clustered into the same
+/// line, the two interleaved character streams come out as character-doubled garbage
+/// (<c>"מזון ומשקאות"</c>-shaped input becomes <c>"ממזזווןן..."</c>-shaped output), corrupting a
+/// transaction's date and merchant fields past what a downstream line-matching parser can
+/// recognise, and silently dropping a real charge. It is distinct from the bidi-reordering
+/// duplication tracked in GAPS.md §21, which fires only when a caller opts into
 /// <c>WordAssemblyOptions.ApplyBidi</c>/<c>TableExtractionOptions.ApplyBidi</c> (both default
-/// <see langword="false"/>), which structured-text extraction's default path never does. This is a
-/// distinct, always-on gap: invisible/clip-only render modes were never filtered at all.</para>
+/// <see langword="false"/>), as structured-text extraction's default path never does.</para>
 /// </summary>
 public class PdfStructuredTextExtractorInvisibleTextTests
 {

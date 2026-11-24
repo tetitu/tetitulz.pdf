@@ -46,10 +46,8 @@ public class ReviewFixSigning_WeakAlgorithmTests
     /// With rejection explicitly disabled, a SHA-1 CMS signature is integrity-valid and flagged.
     /// </summary>
     /// <remarks>
-    /// RENAMED from <c>Sha1_FlaggedWeak_ButStillValidByDefault</c> on 2026-08-12: the body sets
-    /// <c>RejectWeakAlgorithms = false</c> explicitly, and that is no longer the default, so the
-    /// old name asserted something the test never exercised. It survives the polarity flip
-    /// precisely because it opts out — which is what makes it the control for the new default.
+    /// The body sets <c>RejectWeakAlgorithms = false</c> explicitly, which is not the default — and
+    /// that opt-out is what makes it the control for the default.
     /// </remarks>
     [Fact]
     public void Sha1_FlaggedWeak_ButStillValidWhenRejectionIsDisabled()

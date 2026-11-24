@@ -678,11 +678,11 @@ public class AnnotationStructureTests
     }
 
     /// <summary>
-    /// <b>The regression this work exists for.</b> Before the fix, remediating a document with an
-    /// annotation produced a UA23 that the input did not have: the auto-tagger emitted no /OBJR,
-    /// the stale-link purge then stripped the annotation's /StructParent, and the after-audit —
-    /// now looking at a document that claims to be tagged — reported the annotation as unreachable.
-    /// A remediation pass must never introduce a violation.
+    /// <b>A remediation pass must never introduce a violation.</b> Without an /OBJR from the
+    /// auto-tagger, remediating a document with an annotation would produce a UA23 the input did
+    /// not have: the stale-link purge would strip the annotation's /StructParent, and the
+    /// after-audit — looking at a document that claims to be tagged — would report the annotation
+    /// as unreachable.
     /// </summary>
     [Fact]
     public void RemediateWithReport_DocumentWithAnnotation_DoesNotIntroduceUa23()

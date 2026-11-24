@@ -62,8 +62,7 @@ public class RenderEntryPointTests
     }
 
     /// <summary>
-    /// The JPEG batch path used to be a sequential loop opening a document per page while its PNG
-    /// sibling shared one; both now go through the same core. Correctness first: every page must
+    /// The JPEG and PNG batch paths go through the same core. Correctness first: every page must
     /// match the single-page JPEG render.
     /// </summary>
     [Fact]

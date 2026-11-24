@@ -187,7 +187,7 @@ public class RecoveryNewestCopyTests
     /// The tail was cut off inside the last <c>trailer</c> dictionary, so nothing it names can be
     /// read, and the <c>startxref</c> that survives — revision 1's — points into the header, so the
     /// file can only be recovered. The revision before the cut still names <c>/Root</c> and
-    /// <c>/Info</c>. Only the last keyword used to be read, so a file like this had no <c>/Info</c>.
+    /// <c>/Info</c>, which a reading of the last keyword alone would lose.
     /// </summary>
     /// <remarks>
     /// Truncation alone would not do: with revision 2's <c>startxref</c> gone, the parser finds

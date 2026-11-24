@@ -25,10 +25,8 @@ namespace Tetitulz.Pdf.Core.Fonts
         {
             BaseFont = ReadBaseFontAndWidths(fontDict, document, toUnicode);
             // /MissingWidth and §9.6.6.4's Symbolic flag — one implementation for both simple
-            // subtypes, in PdfSimpleFont. This copy tested "bit 3 set AND bit 6 clear" and read
-            // both entries non-resolving, under a comment claiming its TrueType sibling "makes the
-            // same distinction"; it made neither. See ReadFontDescriptor for what Table 123
-            // actually says and why bit 3 alone is the rule both subtypes now apply.
+            // subtypes, in PdfSimpleFont. See ReadFontDescriptor for what Table 123 actually says
+            // and why bit 3 alone is the rule both subtypes apply.
             bool symbolic = ReadFontDescriptor(fontDict, document);
 
             // §9.6.6's whole encoding ladder — one implementation for both simple subtypes, in

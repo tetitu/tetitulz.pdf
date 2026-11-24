@@ -27,7 +27,7 @@ namespace Tetitulz.Pdf.Core.Util
     /// UNTRUSTED input, so an amplification ("loop bomb") cannot spin the CPU indefinitely.
     ///
     /// <para>Per-loop caps do NOT compose: three nested loops each individually capped at 1e6
-    /// still multiply to 1e18 body executions. The fix is ONE budget for the whole operation,
+    /// still multiply to 1e18 body executions. The answer is ONE budget for the whole operation,
     /// ticked in every loop iteration / per unit of work; when it is exhausted it throws
     /// <see cref="WorkBudgetExceededException"/>, unwinding every nested loop at once. This
     /// centralises the otherwise-scattered <c>if (++n &gt; MAX) throw</c> guards so the aggregate

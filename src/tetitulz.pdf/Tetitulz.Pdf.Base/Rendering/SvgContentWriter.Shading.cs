@@ -25,18 +25,6 @@ using SKPathVerb = SkiaSharp.SKPathVerb;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Interprets a PDF content stream into SVG elements — the vector counterpart of
-    /// <see cref="ContentStreamInterpreter"/>, which does the same job onto a Skia canvas.
-    ///
-    /// <para><b>A type of its own, split as the raster interpreter is</b> — .Path, .Text,
-    /// .Shading, .Images and the rest — so a change to one renderer and not the other is a
-    /// two-file diff. A silently wrong output is, as a rule, one renderer lagging the other.</para>
-    ///
-    /// <para>It stays <c>internal</c>. Base's three <c>InternalsVisibleTo</c> friends are all
-    /// in-repo — the test project, FontDiag and the benchmarks — so no CONSUMER could see it
-    /// before and none can now; promoting it changed its nesting, not its visibility.</para>
-    /// </summary>
 internal sealed partial class SvgContentWriter
     {
         private void OpSh(ContentStreamOperation op)
@@ -68,8 +56,7 @@ internal sealed partial class SvgContentWriter
 
             // try/finally, not a straight-line close: Execute catches per operator, so a throw
             // out of an emitter would otherwise leave the clip group open and the document
-            // no longer well-formed XML — which is how the unbalanced-group defect this
-            // writer already had once got in.
+            // no longer well-formed XML.
             try
             {
                 if (shType == 2 || shType == 3)
@@ -219,7 +206,14 @@ internal sealed partial class SvgContentWriter
                     res.Set(PdfName.Shading, shadingCat);
 
                     using var fc = new FontCache();
-                    var interp = new ContentStreamInterpreter(ctx, _doc, res, fc) { HiddenOcgs = HiddenOcgs };
+                    // Under the page's budget and the caller's cancellation, as every other interpreter runs: the
+                    // mesh build's bitmap and its pieces' area, the functions it samples, are the page's work.
+                    var interp = new ContentStreamInterpreter(ctx, _doc, res, fc)
+                    {
+                        HiddenOcgs = HiddenOcgs,
+                        FormBudget = Shared?.FormBudget,
+                        CancellationToken = CancellationToken,
+                    };
                     interp.Execute(System.Text.Encoding.ASCII.GetBytes("/S0 " + PdfOperators.ShadingFill));
                 }
 

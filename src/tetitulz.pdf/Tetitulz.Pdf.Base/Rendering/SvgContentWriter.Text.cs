@@ -26,18 +26,6 @@ using SKPathVerb = SkiaSharp.SKPathVerb;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Interprets a PDF content stream into SVG elements — the vector counterpart of
-    /// <see cref="ContentStreamInterpreter"/>, which does the same job onto a Skia canvas.
-    ///
-    /// <para><b>A type of its own, split as the raster interpreter is</b> — .Path, .Text,
-    /// .Shading, .Images and the rest — so a change to one renderer and not the other is a
-    /// two-file diff. A silently wrong output is, as a rule, one renderer lagging the other.</para>
-    ///
-    /// <para>It stays <c>internal</c>. Base's three <c>InternalsVisibleTo</c> friends are all
-    /// in-repo — the test project, FontDiag and the benchmarks — so no CONSUMER could see it
-    /// before and none can now; promoting it changed its nesting, not its visibility.</para>
-    /// </summary>
 internal sealed partial class SvgContentWriter
     {
         private void BeginText()
@@ -297,8 +285,8 @@ internal sealed partial class SvgContentWriter
         {
             if (op.Operands.Length < 6) return;
             float[] m = { Flt(op,0), Flt(op,1), Flt(op,2), Flt(op,3), Flt(op,4), Flt(op,5) };
-            // Same guard, same reason as OpCm — ContentStreamInterpreter.OpTm has had it and this
-            // side did not, so a non-finite Tm reached the export as literal NaN/Infinity.
+            // Same guard, same reason as OpCm, as ContentStreamInterpreter.OpTm has: a non-finite
+            // Tm would reach the export as literal NaN/Infinity.
             if (!MatrixGuard.AllFinite(m))
             {
                 RenderDiagnostics.Report(RenderDiagnosticKind.ContentStreamError,
@@ -562,8 +550,7 @@ internal sealed partial class SvgContentWriter
         private void AdvanceType3(int code, PdfArray widthsArr, int firstChar, float[] fm)
         {
             // §9.4.4's tx, in the Type3Encoding leaf — one implementation, shared with the raster
-            // path. This copy distributed /Th across the three terms rather than scaling their sum;
-            // algebraically equal, and nothing tied the two together.
+            // path.
             float tx = Type3Encoding.AdvanceTx(
                 Type3Encoding.GlyphWidth(code, widthsArr, firstChar, fm, _doc), code,
                 _gs.FontSize, _gs.CharSpacing, _gs.WordSpacing, _gs.HorizScale);
@@ -576,14 +563,14 @@ internal sealed partial class SvgContentWriter
         /// graphics state's solid colour - reporting the loss when it cannot be built.
         /// </summary>
         /// <remarks>
-        /// <b>One decision, four sites.</b> The two path sites (fill and stroke) were changed to
-        /// paint <c>none</c> and report, with the note that "falling through to _gs.FillColor
-        /// paints whatever solid colour the graphics state happened to be left holding, which is a
-        /// confidently wrong result rather than a visibly missing one" - and the two <b>text</b>
-        /// sites went on doing exactly that. <c>/Pattern cs /P1 scn BT (Hello) Tj ET</c> with an
-        /// unbuildable /P1 renders as nothing and exported as solid black text, because the Pattern
-        /// colour space sets no fill colour and the state still holds 8.4.1's initial black.
-        /// Extracting the decision is what stops the four drifting again.
+        /// <b>One decision, four sites.</b> The two path sites (fill and stroke) and the two
+        /// <b>text</b> sites all paint <c>none</c> and report: falling through to _gs.FillColor paints
+        /// whatever solid colour the graphics state happened to be left holding, which is a
+        /// confidently wrong result rather than a visibly missing one.
+        /// <c>/Pattern cs /P1 scn BT (Hello) Tj ET</c> with an unbuildable /P1 renders as nothing, and
+        /// through the fill colour would export as solid black text, because the Pattern colour space
+        /// sets no fill colour and the state still holds 8.4.1's initial black. One decision keeps the
+        /// four from drifting.
         /// </remarks>
         private string ResolvePatternPaintOrNone(string patternName, string what,
                                                  float[] elementInverse = null)
@@ -741,10 +728,10 @@ internal sealed partial class SvgContentWriter
                 ? $" stroke-width=\"{F(StrokeWidthOrHairline(_gs.LineWidth, CtmScale(_gs.CTM)) / CtmScale(fullM))}\""
                   + StrokeGeometryAttributes(CtmScale(fullM))
                 : "";
-            // EmitTextPaint puts the active soft mask on it too. Every other painting element
-            // carries it, and this one once did not, so text that took the plain <text> path (a
-            // base-14 or any non-embedded font, the common case for ordinary Latin text) rendered
-            // completely unmasked while the same run in an embedded font was masked.
+            // EmitTextPaint puts the active soft mask on it too, as on every other painting
+            // element; without it, text that took the plain <text> path (a base-14 or any
+            // non-embedded font, the common case for ordinary Latin text) would render completely
+            // unmasked while the same run in an embedded font was masked.
             EmitTextPaint(attrs => head + attrs + body,
                 () => TextFillAttributes(textFill, textFillVal),
                 () => textStroke ? $" stroke=\"{StrokePaint}\"{textStrokeShape}{TextStrokeOpacity()}" : "",
@@ -1381,9 +1368,7 @@ internal sealed partial class SvgContentWriter
         }
 
         // The half-em fallback for a non-finite advance — one implementation in
-        // MatrixGuard.SanitizeAdvance, shared with the raster interpreter. This copy wrote the
-        // finiteness predicate out twice rather than calling MatrixGuard.IsFinite as the raster
-        // copy already did, so the two could drift on the predicate and on the fallback separately.
+        // MatrixGuard.SanitizeAdvance, shared with the raster interpreter.
         private static float SanitizeAdv(float advancePts, float fontSize)
             => MatrixGuard.SanitizeAdvance(advancePts, fontSize);
 

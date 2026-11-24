@@ -197,10 +197,9 @@ public class PartiallyBorderedTableTests
     /// line at 125 is the left cell's, and the right cell holds "B" alone.
     /// </summary>
     /// <remarks>
-    /// Each cell used to take every word whose centroid fell within <c>SnapTolerance</c> of its box,
-    /// so a word that close to a line was both cells' — and an invoice reader asking for the cell
-    /// a header word named took the empty sliver beside it. The outer edges still snap, the test
-    /// above.
+    /// A cell taking every word whose centroid fell within <c>SnapTolerance</c> of its box would make
+    /// a word that close to a line both cells' — and an invoice reader asking for the cell a header
+    /// word named would take the empty sliver beside it. The outer edges still snap, the test above.
     /// </remarks>
     [Fact]
     public void AWordNearAnInteriorLineIsInOneCell()

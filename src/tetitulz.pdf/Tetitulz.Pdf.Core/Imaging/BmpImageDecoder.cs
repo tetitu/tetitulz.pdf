@@ -26,7 +26,98 @@ namespace Tetitulz.Pdf.Core.Imaging
         /// </summary>
         public static bool TryDecode(byte[] b, out byte[] rgb, out int width, out int height, out string reason)
         {
-            rgb = null; width = 0; height = 0; reason = null;
+            rgb = null; width = 0; height = 0;
+            if (!TryReadLayout(b, out Layout layout, out reason)) return false;
+            int w = layout.Width, h = layout.Height, bpp = layout.BitsPerPixel, compression = layout.Compression;
+            int rowBytes = layout.RowBytes, pixelOffset = layout.PixelOffset;
+            bool topDown = layout.TopDown;
+            byte[] palette = layout.Palette;
+            uint rMask = layout.RedMask, gMask = layout.GreenMask, bMask = layout.BlueMask;
+
+            rgb = new byte[w * h * 3];
+
+            for (int y = 0; y < h; y++)
+            {
+                int srcRow = topDown ? y : h - 1 - y;
+                int rowStart = pixelOffset + srcRow * rowBytes;
+                int dst = y * w * 3;
+
+                for (int x = 0; x < w; x++)
+                {
+                    byte r, g, bl;
+                    switch (bpp)
+                    {
+                        case 1:
+                        case 2:
+                        case 4:
+                        case 8:
+                        {
+                            int bitIndex = x * bpp;
+                            int byteIndex = rowStart + (bitIndex >> 3);
+                            int shift = 8 - bpp - (bitIndex & 7);
+                            int idx = (b[byteIndex] >> shift) & ((1 << bpp) - 1);
+                            int p = idx * 4;
+                            if (palette == null || p + 2 >= palette.Length) { r = g = bl = 0; }
+                            else { bl = palette[p]; g = palette[p + 1]; r = palette[p + 2]; }  // BGRA order
+                            break;
+                        }
+                        case 16:
+                        {
+                            int o = rowStart + x * 2;
+                            uint v = (uint)(b[o] | (b[o + 1] << 8));
+                            r = ScaleMask(v, rMask);
+                            g = ScaleMask(v, gMask);
+                            bl = ScaleMask(v, bMask);
+                            break;
+                        }
+                        case 24:
+                        {
+                            int o = rowStart + x * 3;
+                            bl = b[o]; g = b[o + 1]; r = b[o + 2];
+                            break;
+                        }
+                        case 32:
+                        {
+                            int o = rowStart + x * 4;
+                            if (compression == BiBitfields)
+                            {
+                                // Assembled entirely in uint. Only `b[o + 3] << 24` can reach bit 31,
+                                // so mixing it with the int sub-expression promoted both to long and
+                                // sign-extended the int half (CS0675). That half is three bytes shifted
+                                // at most 16, hence provably in 0..0x00FFFFFF and never negative, so the
+                                // value was already correct — the casts state that rather than rely on it.
+                                uint v = (uint)b[o] | ((uint)b[o + 1] << 8) | ((uint)b[o + 2] << 16) | ((uint)b[o + 3] << 24);
+                                r = ScaleMask(v, rMask);
+                                g = ScaleMask(v, gMask);
+                                bl = ScaleMask(v, bMask);
+                            }
+                            else { bl = b[o]; g = b[o + 1]; r = b[o + 2]; }   // the 4th byte is unused in BI_RGB
+                            break;
+                        }
+                        default:
+                            reason = $"{bpp} bits per pixel is not supported";
+                            rgb = null;
+                            return false;
+                    }
+
+                    rgb[dst++] = r; rgb[dst++] = g; rgb[dst++] = bl;
+                }
+            }
+
+            width = w;
+            height = h;
+            return true;
+        }
+
+        /// <summary>
+        /// Whether <see cref="TryDecode"/> would decode <paramref name="b"/>, answered from the headers alone: every
+        /// refusal the decode makes is made here, before a pixel is read, so a caller that only asks (a converter
+        /// choosing whether to keep a picture) pays for no decode. The layout is what the decode reads its pixels by.
+        /// </summary>
+        internal static bool TryReadLayout(byte[] b, out Layout layout, out string reason)
+        {
+            layout = default;
+            reason = null;
 
             if (b == null || b.Length < 54) { reason = "the file is too short to be a BMP"; return false; }
             if (b[0] != 'B' || b[1] != 'M') { reason = "missing the BM signature"; return false; }
@@ -119,79 +210,31 @@ namespace Tetitulz.Pdf.Core.Imaging
                 return false;
             }
 
-            rgb = new byte[w * h * 3];
+            layout = new Layout(w, h, topDown, bpp, compression, palette, rMask, gMask, bMask, rowBytes, pixelOffset);
+            return true;
+        }
 
-            for (int y = 0; y < h; y++)
+        /// <summary>What a BMP's headers say its pixels are: size, row order, depth, coding, palette, masks, stride and offset.</summary>
+        internal readonly struct Layout
+        {
+            internal Layout(int width, int height, bool topDown, int bitsPerPixel, int compression, byte[] palette,
+                uint redMask, uint greenMask, uint blueMask, int rowBytes, int pixelOffset)
             {
-                int srcRow = topDown ? y : h - 1 - y;
-                int rowStart = pixelOffset + srcRow * rowBytes;
-                int dst = y * w * 3;
-
-                for (int x = 0; x < w; x++)
-                {
-                    byte r, g, bl;
-                    switch (bpp)
-                    {
-                        case 1:
-                        case 2:
-                        case 4:
-                        case 8:
-                        {
-                            int bitIndex = x * bpp;
-                            int byteIndex = rowStart + (bitIndex >> 3);
-                            int shift = 8 - bpp - (bitIndex & 7);
-                            int idx = (b[byteIndex] >> shift) & ((1 << bpp) - 1);
-                            int p = idx * 4;
-                            if (palette == null || p + 2 >= palette.Length) { r = g = bl = 0; }
-                            else { bl = palette[p]; g = palette[p + 1]; r = palette[p + 2]; }  // BGRA order
-                            break;
-                        }
-                        case 16:
-                        {
-                            int o = rowStart + x * 2;
-                            uint v = (uint)(b[o] | (b[o + 1] << 8));
-                            r = ScaleMask(v, rMask);
-                            g = ScaleMask(v, gMask);
-                            bl = ScaleMask(v, bMask);
-                            break;
-                        }
-                        case 24:
-                        {
-                            int o = rowStart + x * 3;
-                            bl = b[o]; g = b[o + 1]; r = b[o + 2];
-                            break;
-                        }
-                        case 32:
-                        {
-                            int o = rowStart + x * 4;
-                            if (compression == BiBitfields)
-                            {
-                                // Assembled entirely in uint. Only `b[o + 3] << 24` can reach bit 31,
-                                // so mixing it with the int sub-expression promoted both to long and
-                                // sign-extended the int half (CS0675). That half is three bytes shifted
-                                // at most 16, hence provably in 0..0x00FFFFFF and never negative, so the
-                                // value was already correct — the casts state that rather than rely on it.
-                                uint v = (uint)b[o] | ((uint)b[o + 1] << 8) | ((uint)b[o + 2] << 16) | ((uint)b[o + 3] << 24);
-                                r = ScaleMask(v, rMask);
-                                g = ScaleMask(v, gMask);
-                                bl = ScaleMask(v, bMask);
-                            }
-                            else { bl = b[o]; g = b[o + 1]; r = b[o + 2]; }   // the 4th byte is unused in BI_RGB
-                            break;
-                        }
-                        default:
-                            reason = $"{bpp} bits per pixel is not supported";
-                            rgb = null;
-                            return false;
-                    }
-
-                    rgb[dst++] = r; rgb[dst++] = g; rgb[dst++] = bl;
-                }
+                Width = width; Height = height; TopDown = topDown; BitsPerPixel = bitsPerPixel; Compression = compression;
+                Palette = palette; RedMask = redMask; GreenMask = greenMask; BlueMask = blueMask; RowBytes = rowBytes; PixelOffset = pixelOffset;
             }
 
-            width = w;
-            height = h;
-            return true;
+            internal int Width { get; }
+            internal int Height { get; }
+            internal bool TopDown { get; }
+            internal int BitsPerPixel { get; }
+            internal int Compression { get; }
+            internal byte[] Palette { get; }
+            internal uint RedMask { get; }
+            internal uint GreenMask { get; }
+            internal uint BlueMask { get; }
+            internal int RowBytes { get; }
+            internal int PixelOffset { get; }
         }
 
         /// <summary>

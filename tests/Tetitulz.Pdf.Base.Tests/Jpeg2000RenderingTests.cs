@@ -118,7 +118,7 @@ public sealed class Jpeg2000RenderingTests
         using var bmp = Rendering.PixelAssert.Render(BuildPdfWithJpxImage());
 
         // Drawn by `q 100 0 0 100 100 600 cm /Im1 Do Q` over (100,600)-(200,700): the four
-        // quadrant centres the raw-path fallback used to paint.
+        // quadrant centres a raw-path fallback would paint.
         foreach ((float x, float y) in new[] { (125f, 675f), (175f, 675f), (125f, 625f), (175f, 625f) })
         {
             SKColor at = Rendering.PixelAssert.At(bmp, x, y);

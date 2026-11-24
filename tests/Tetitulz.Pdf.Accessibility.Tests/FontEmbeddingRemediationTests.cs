@@ -302,15 +302,12 @@ public class FontEmbeddingRemediationTests
     /// already implied — and the warning says so.
     /// </summary>
     /// <remarks>
-    /// <para><b>Renamed rather than re-asserted.</b> This test used to be
-    /// <c>Standard14WithoutEncoding_GetsWinAnsiAndSaysSo</c> and pinned the wrong behaviour:
-    /// <c>PlanSimpleFont</c> discarded the effective encoding it had just resolved
-    /// (AdobeStandardEncoding) and substituted WinAnsi. The two tables disagree across the whole
-    /// upper half — 0xFB is germandbls in one and ucircumflex in the other, 0xE1 is AE against
-    /// aacute, 0xD0 is emdash against eth — so a German invoice drawing <c>(Stra\373e) Tj</c> against
-    /// an unencoded /Helvetica came out of remediation reading "Straûe", with the synthesised
-    /// /Widths carrying the wrong advance to match. The old warning told the caller only that
-    /// 0x27 and 0x60 had changed and that "advance widths are unchanged".</para>
+    /// <para><b>Not WinAnsi.</b> <c>PlanSimpleFont</c> keeps the effective encoding it resolved
+    /// (AdobeStandardEncoding). The two tables disagree across the whole upper half — 0xFB is
+    /// germandbls in one and ucircumflex in the other, 0xE1 is AE against aacute, 0xD0 is emdash
+    /// against eth — so substituting WinAnsi would make a German invoice drawing
+    /// <c>(Stra\373e) Tj</c> against an unencoded /Helvetica come out of remediation reading
+    /// "Straûe", with the synthesised /Widths carrying the wrong advance to match.</para>
     /// </remarks>
     [Fact]
     public void Standard14WithoutEncoding_GetsStandardEncodingAndSaysSo()
@@ -1252,12 +1249,9 @@ public class FontEmbeddingRemediationTests
         // "the subset succeeded" stamps an ABCDEF+ tag onto the font and blanks every glyph the
         // page draws, which is what this refusal exists to prevent.
         //
-        // THE FIXTURE USED TO BE A WINDOWS-SYMBOL (3,0) FONT, and that is no longer a font which
-        // loses every glyph: the subsetter now scores (3,0) and folds the 0xF000 PUA convention,
-        // so symbol/wingdings/marlett subset properly. The refusal this test guards is still
-        // right and still reachable -- an unmapped character set reaches it by a different road --
-        // so the fixture moved and the name did not. (A test whose name and body disagree is the
-        // failure mode no guard can catch.)
+        // NOT A WINDOWS-SYMBOL (3,0) FONT: the subsetter scores (3,0) and folds the 0xF000 PUA
+        // convention, so symbol/wingdings/marlett subset properly. An unmapped character set is
+        // the road to this refusal.
         byte[] font = MinimalTrueType.Build("XYZ");
         Assert.Equal(4, MinimalTrueType.ReadNumGlyphs(font));      // .notdef + X,Y,Z
 
@@ -1471,11 +1465,11 @@ public class FontEmbeddingRemediationTests
     public void FormXObjectInvokedManyTimes_IsScannedOncePerResourceDictionary()
     {
         // The glyph-usage scan's visited set is a PATH guard — it is removed again on the way out —
-        // so a form invoked N times in sequence used to be entered N times, and each entry paid a
-        // full tokenising pass over the child plus a token array of roughly two bytes per byte of
-        // it, straight onto the large-object heap. The old budget could not stop it: it was spent
-        // one unit per token PRODUCED, and a stream of nothing but spaces produces none, so the
-        // cost was N x sizeof(child) for N units of a 20,000,000-unit budget. 66 KB of PDF bought
+        // so a form invoked N times in sequence is entered N times; unbudgeted, each entry would
+        // pay a full tokenising pass over the child plus a token array of roughly two bytes per
+        // byte of it, straight onto the large-object heap. A budget spent one unit per token
+        // PRODUCED cannot stop it — a stream of nothing but spaces produces none — so the cost
+        // would be N x sizeof(child) for N units of a 20,000,000-unit budget: 66 KB of PDF buying
         // gigabytes of allocation.
         const int Invocations = 100;
         const int ChildBytes  = 1024 * 1024;
@@ -1711,9 +1705,9 @@ public class FontEmbeddingRemediationTests
     /// <summary>
     /// A substituted Standard-14 face is the weight and slant its name says: <c>Helvetica-Bold</c>
     /// embeds a bold program, <c>Helvetica-Oblique</c> an italic one, through
-    /// <c>Core.Fonts.FontNameStyle</c> — the renderer's reading of the same name. The dedup sweep's
-    /// row D05 (2026-10-21) made the remediator ask for a regular face every time and no test
-    /// failed: every other test supplies its program through <c>FontProvider</c>. The face is the
+    /// <c>Core.Fonts.FontNameStyle</c> — the renderer's reading of the same name. Every other test
+    /// supplies its program through <c>FontProvider</c>, so a remediator asking for a regular face
+    /// every time would fail nothing else. The face is the
     /// host's, so the test skips where the host has no metric-compatible family in all four styles;
     /// plain Helvetica is the control, a regular face.
     /// </summary>

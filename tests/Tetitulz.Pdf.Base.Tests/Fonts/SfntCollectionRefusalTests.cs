@@ -19,7 +19,7 @@ namespace Tetitulz.Pdf.Base.Tests.Fonts;
 /// <c>numTables</c>, and the first face's u32 offset where the first directory record's tag goes.
 /// A reader with no signature test therefore does not fault — it finds one table with a nonsense
 /// name at a nonsense offset, locates no <c>head</c>, <c>hhea</c>, <c>maxp</c> or <c>hmtx</c>, and
-/// returns every metric at its default. Measured before the fix:
+/// returns every metric at its default. Measured without the test:
 /// <c>upm=1000 asc=0 desc=0 bbox=0,0,0,0</c>, every advance 500, and <c>EmbedFont</c> writing
 /// <c>/Ascent 0 /Descent 0 /FontBBox [0 0 0 0]</c> over a <c>/FontFile2</c> holding the whole
 /// collection — which §9.9 defines as a single TrueType font program. Valid-looking PDF, unusable

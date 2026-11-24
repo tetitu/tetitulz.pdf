@@ -287,7 +287,7 @@ public class AttachmentWriterFindingsTests
         Assert.Null(PdfAttachmentManager.LastListError);
     }
 
-    /// <summary>An extraction that misses past the limit says so; it used to be a plain "not found".</summary>
+    /// <summary>An extraction that misses past the limit says so, rather than a plain "not found".</summary>
     [Fact]
     public void AnExtractionThatMissesPastTheLimitIsReported()
     {

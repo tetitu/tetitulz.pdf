@@ -59,8 +59,8 @@ namespace Tetitulz.Pdf.Core.Writing
 
         private int _fontCounter;
         private int _imageCounter;
-        // -1, not 0: the first optional-content name has always been OC0, and MintName advances
-        // the counter before it names.
+        // -1, not 0: the first optional-content name is OC0, and MintName advances the counter
+        // before it names.
         private int _optionalContentCounter = -1;
         private int _gsCounter;
 
@@ -522,10 +522,6 @@ namespace Tetitulz.Pdf.Core.Writing
             return name;
         }
 
-        /// <summary>
-        /// Sorts stops, clamps their offsets into 0..1, drops duplicates, and pads the ends so the
-        /// list always spans the whole domain. Returns null when there is nothing to draw.
-        /// </summary>
         [ThreadStatic] private static string _lastShadingTruncation;
 
         /// <summary>
@@ -538,6 +534,10 @@ namespace Tetitulz.Pdf.Core.Writing
         /// </summary>
         public static string LastShadingTruncation => _lastShadingTruncation;
 
+        /// <summary>
+        /// Sorts stops, clamps their offsets into 0..1, drops duplicates, and pads the ends so the
+        /// list always spans the whole domain. Returns null when there is nothing to draw.
+        /// </summary>
         private static List<ShadingStop> NormaliseStops(IReadOnlyList<ShadingStop> stops)
         {
             _lastShadingTruncation = null;
@@ -940,22 +940,11 @@ namespace Tetitulz.Pdf.Core.Writing
         /// <summary>True when every opened marked-content sequence has been closed.</summary>
         internal bool MarkedContentBalanced => _markedContentDepth == 0;
 
-        // A structure role or artifact type reaching the content stream as a PDF name. These come
-        // from PdfStructureTypes, but a caller can pass its own, and an unescaped delimiter would
-        // corrupt the stream.
-        private static string EscapeName(string name)
-        {
-            if (string.IsNullOrEmpty(name)) return "P";
-            var sb = new StringBuilder(name.Length);
-            foreach (char c in name)
-            {
-                if (c > 0x20 && c < 0x7F && c != '/' && c != '(' && c != ')' && c != '<' && c != '>'
-                    && c != '[' && c != ']' && c != '{' && c != '}' && c != '%' && c != '#')
-                    sb.Append(c);
-                else sb.Append('#').Append(((int)c & 0xFF).ToString("X2", CultureInfo.InvariantCulture));
-            }
-            return sb.Length == 0 ? "P" : sb.ToString();
-        }
+        // A structure role, artifact type, optional-content or resource name reaching the content stream
+        // as a PDF name, through the writer's own escape (UTF-8, then #XX): the tag and the /S or
+        // /Properties key it names are then the same bytes, and an unescaped delimiter cannot corrupt
+        // the stream.
+        private static string EscapeName(string name) => PdfNameEscape.Escape(name);
 
         // Text operators
         // ------------------------------------------------------------------

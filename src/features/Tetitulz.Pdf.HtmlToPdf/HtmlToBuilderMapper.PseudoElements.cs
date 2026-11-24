@@ -11,23 +11,21 @@ using M = Tetitulz.Pdf.Builder.Model;
 
 namespace Tetitulz.Pdf.HtmlToPdf
 {
-    /// <summary>
-    /// <c>::before</c> and <c>::after</c> — generated inline content.
-    ///
-    /// <para><b>The decline this replaces said "no pseudo-element box".</b> True of CSS's model,
-    /// and not what the common case needs: <c>content: "→ "</c> or <c>content: "»"</c> generates an
-    /// <i>inline</i> box, which in this document model is a text run at the front or back of the
-    /// paragraph's runs. No box is required. The declines table's own note — "today's
-    /// skip-on-selector-throw is correct" — described the cascade dropping these selectors into the
-    /// same catch as genuinely unsupported ones, which is what made the two indistinguishable.</para>
-    ///
-    /// <para><b>What is not generated,</b> each reported rather than silently skipped:
-    /// <c>content: url(…)</c> (an image, not a run), counters (<c>counter()</c> needs a document-wide
-    /// counter model), and a pseudo-element the author made <c>display: block</c> — that one really
-    /// does need a box, and generating an inline run for it would put the text on the wrong line.
-    /// <c>attr()</c> <i>is</i> supported, because the value is on the element and needs no machinery
-    /// at all.</para>
-    /// </summary>
+    // ::before and ::after — generated inline content.
+    //
+    // The decline this replaces said "no pseudo-element box". True of CSS's model,
+    // and not what the common case needs: content: "→ " or content: "»" generates an
+    // inline box, which in this document model is a text run at the front or back of the
+    // paragraph's runs. No box is required. The declines table's own note — "today's
+    // skip-on-selector-throw is correct" — described the cascade dropping these selectors into the
+    // same catch as genuinely unsupported ones, which is what made the two indistinguishable.
+    //
+    // What is not generated, each reported rather than silently skipped:
+    // content: url(…) (an image, not a run), counters (counter() needs a document-wide
+    // counter model), and a pseudo-element the author made display: block — that one really
+    // does need a box, and generating an inline run for it would put the text on the wrong line.
+    // attr() is supported, because the value is on the element and needs no machinery
+    // at all.
     internal sealed partial class HtmlToBuilderMapper
     {
         /// <summary>

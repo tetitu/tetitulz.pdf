@@ -154,11 +154,11 @@ public sealed class AppearanceFontLicenceTests : IDisposable
     /// is used and the appearance is drawn.
     /// </summary>
     /// <remarks>
-    /// <para>Until 2026-09-04 the failure text that reached <c>FormFillResult.Warnings</c> ended
-    /// "set <c>FontResolutionRequest.AllowRestrictedSystemFonts</c>…" — naming a property that
-    /// existed on the resolver's request and on <b>neither</b> options type a caller of this path
-    /// can construct. <b>A remedy the caller cannot act on is worse than no remedy</b>: it reads as
-    /// a supported opt-in and sends them looking for an API that is not there.</para>
+    /// <para>The failure text that reaches <c>FormFillResult.Warnings</c> names an option a caller
+    /// of this path can set, not <c>FontResolutionRequest.AllowRestrictedSystemFonts</c>, which
+    /// exists on the resolver's request and on <b>neither</b> options type such a caller can
+    /// construct. <b>A remedy the caller cannot act on is worse than no remedy</b>: it reads as a
+    /// supported opt-in and sends them looking for an API that is not there.</para>
     ///
     /// <para>This is the pair to <c>FormFilling_DoesNotEmbedARestrictedHostFont</c> above. Without
     /// it "the gate refuses" is satisfied by a gate that is a wall, and a deployment that owns the
@@ -224,18 +224,16 @@ public sealed class AppearanceFontLicenceTests : IDisposable
     /// <remarks>
     /// <para><b>The substitution itself is correct and stays.</b> That is what
     /// <c>AllowSystemFontSubstitution</c> is for, and refusing here would break a caller who
-    /// supplies a brand font and allows substitution as a safety net for scripts it lacks. What
-    /// was wrong is that it was silent: <c>SystemFontResolver</c> coverage-tests the provider's
-    /// font like any other candidate and falls through with nothing said, so a caller who supplied
-    /// a font <i>because they hold its licence</i> shipped a different one under the same call,
-    /// with the only trace being <c>FontResolution.FromSystem</c> — which this path did not read.
-    /// Before the resolver was on this path at all, the provider's font was used unconditionally,
-    /// so nothing was ever substituted behind the caller's back.</para>
+    /// supplies a brand font and allows substitution as a safety net for scripts it lacks. It must
+    /// not be silent: <c>SystemFontResolver</c> coverage-tests the provider's font like any other
+    /// candidate and falls through with nothing said, so a caller who supplied a font <i>because
+    /// they hold its licence</i> would ship a different one under the same call, the only trace
+    /// being <c>FontResolution.FromSystem</c>, which this path reads into a warning.</para>
     ///
     /// <para>Both halves are asserted, because either alone passes for the wrong reason: the glyph
     /// count says a covering font really was embedded (a bare warning would also fit a refusal),
-    /// and the warning says the caller can find out (four glyphs alone would also fit the silent
-    /// fall-through this exists to end).</para>
+    /// and the warning says the caller can find out (four glyphs alone would also fit a silent
+    /// fall-through).</para>
     /// </remarks>
     [Fact]
     public void FormFilling_ReportsAHostFontEmbeddedInPlaceOfTheSuppliedOne()
@@ -312,12 +310,10 @@ public sealed class AppearanceFontLicenceTests : IDisposable
     /// </summary>
     /// <remarks>
     /// <para>This is the only reachable assertion on <c>SystemFontResolver</c>'s provider
-    /// diagnostic. It used to be written into <c>_lastResolutionError</c> mid-call, and every exit
-    /// from <c>Resolve</c> either cleared that slot (success) or overwrote it (failure), so no
-    /// caller could ever read it through <c>LastResolutionError</c> — a diagnostic that was
-    /// recorded and never reportable for its whole life. It is folded into the failure reason now,
-    /// which is where a caller acts on it, and the failure reason is what this path appends to its
-    /// own message.</para>
+    /// diagnostic. It is folded into the failure reason, which is where a caller acts on it, and
+    /// the failure reason is what this path appends to its own message; written into
+    /// <c>_lastResolutionError</c> mid-call, it would be cleared or overwritten by every exit from
+    /// <c>Resolve</c> and never be reportable.</para>
     ///
     /// <para>The assertion is on the <b>reason</b>, not on the refusal: three separate guards
     /// produce "no appearance was drawn" here, so a test asserting only that would pass with the

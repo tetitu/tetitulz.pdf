@@ -30,16 +30,16 @@ namespace Tetitulz.Pdf.Core.Tests.Net;
 /// <para><b>The exchange is scripted in memory.</b> The transport's connection seam hands it a stream
 /// that answers with the scripted bytes a few at a time, so a line splits across reads, and records what
 /// was written. No socket carries the hostile framings: an HTTP-aware filter on the loopback interface
-/// (an antivirus web shield, on the machine these were written on) rewrote a malformed chunked response
-/// in flight, and a test would then have asserted about the filter.</para>
+/// (an antivirus web shield, for one) can rewrite a malformed chunked response in flight, and a test
+/// would then assert about the filter.</para>
 /// <para><b>Sockets where the socket is the point</b>: the vetted connection refusing a loopback host
 /// whose listener the seam's control reaches, and TLS against a loopback server, where the server sees
 /// the name the client authenticated with.</para>
 /// <para><b>No clocks.</b> A stalled stream signals when a read waits on it; a cancellation is asked for
 /// after that. That includes <c>HttpClient.Timeout</c>'s default of 100 s, which every scripted client
-/// turns off: on 2026-10-21 the five-bytes-a-read chunk-line test waited 1 min 51 s for its thread
-/// under a whole-solution coverage run and failed on the client's timeout, not the transport's
-/// refusal. A hang still fails, at the scripted stall's own minute.</para>
+/// turns off: under a whole-solution coverage run a five-bytes-a-read test can wait longer than that
+/// for its thread, and would then fail on the client's timeout, not the transport's refusal. A hang
+/// still fails, at the scripted stall's own minute.</para>
 /// </remarks>
 public sealed class GuardedHttpTransportTests
 {

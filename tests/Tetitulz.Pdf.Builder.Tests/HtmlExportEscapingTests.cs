@@ -174,8 +174,8 @@ public class HtmlExportEscapingTests
     /// <summary>
     /// A bare-hex colour — the form OOXML's <c>w:color</c> (<c>ST_HexColorRGB</c>) carries and the
     /// DOCX mapper copies into the model — is written with the leading <c>#</c> CSS requires
-    /// (Builder-1:9). <c>SafeColor</c> used to return it unchanged, so <c>color:FF0000</c> reached
-    /// the browser invalid and was ignored: the HTML lost a colour the PDF kept. The negative
+    /// (Builder-1:9). Returned unchanged, <c>color:FF0000</c> would reach the browser invalid and be
+    /// ignored: the HTML would lose a colour the PDF keeps. The negative
     /// assertion sits beside the positive one, so an empty style could not pass it.
     /// </summary>
     [Fact]

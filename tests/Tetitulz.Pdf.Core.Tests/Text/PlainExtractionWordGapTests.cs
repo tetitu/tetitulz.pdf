@@ -114,7 +114,7 @@ public sealed class PlainExtractionWordGapTests
 
     /// <summary>
     /// A rotated line does not run along x, so the gap is not measured across it and the operand
-    /// decides: the space a move of six glyph widths past five glyphs has always read.
+    /// decides: a move of six glyph widths past five glyphs reads as a space.
     /// </summary>
     [Fact]
     public void ATdOnARotatedLine_IsReadByItsOperand()

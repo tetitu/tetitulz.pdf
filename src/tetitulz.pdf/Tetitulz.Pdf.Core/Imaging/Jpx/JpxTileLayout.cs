@@ -390,8 +390,9 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
             // The addition cannot overflow under the default ceilings: the tile's area was checked by
             // division against PdfLimits.MaxImagePixelArea, so wide × high is far below 2^63, and
             // three bands over a precinct grid halved per side stay below 3 × 2^61. A host that
-            // raises that limit past about 2^61 re-opens the question; the invariant is the default's magnitude, not this line. (A guard on a
-            // negative addition survived mutation — no input reaches it — and was removed.)
+            // raises that limit past about 2^61 re-opens the question; the invariant is the default's
+            // magnitude, not this line, and no guard on a negative addition follows, since no input
+            // reaches one.
             long before = structures;
             structures += added;
             if (structures > limit)

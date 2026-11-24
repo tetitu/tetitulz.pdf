@@ -1519,6 +1519,13 @@ summary above its own rewrite.
 that holds two. A comment that puts a member's parameters or remarks before its summary is one comment
 and is not counted.
 
+**A partial type is documented on one part.** The compiler merges every part's documentation comment
+into the type's one XML doc entry, so a type documented on several parts publishes each summary, and
+copies of the type's summary on the parts go stale one at a time with nothing pointing at the
+contradiction. The type's summary stands on its main part; what a part says about its own file is an
+ordinary `//` comment there. The same test names every partial type (namespace-qualified) documented
+on more than one part.
+
 **A class of defect found by reading is then probed by running**. A read of one component for
 the number-reaches-a-file class can come back clean while the class is present one layer down: a
 Builder document with every measurement NaN would export if Core's `PdfDocumentBuilder.AddPage` tested

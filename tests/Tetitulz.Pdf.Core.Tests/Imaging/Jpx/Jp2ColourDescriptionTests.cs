@@ -617,7 +617,7 @@ public sealed class Jp2ColourDescriptionTests
             PlanRefusal(rgb, Comps(8, 8, 8), WithColourSpace(4)), StringComparison.Ordinal);
 
         // Fewer components than channels: the leading ones are used, the rest reported unused —
-        // what an RGB /ColorSpace on a four-channel file without a cdef has always meant here.
+        // what an RGB /ColorSpace on a four-channel file without a cdef means here.
         Jp2PdfChannelPlan fewer = Plan(Read(Header(H.Ihdr(64, 64, 4, 7), H.ColrEnumerated(16))), Comps(8, 8, 8, 8), WithColourSpace(3));
         Assert.Equal(new[] { 0, 1, 2 }, fewer.ColourChannels);
         Assert.Equal(-1, fewer.OpacityChannel);
@@ -776,8 +776,7 @@ public sealed class Jp2ColourDescriptionTests
 
     /// <summary>
     /// Announced with nothing to apply to: opaque, with a deviation — the rule the plugin path's
-    /// <c>ImageSampleLayout</c> has always applied to the same file, so the two decoders agree.
-    /// This was a refusal until Wave 15g reconciled the two.
+    /// <c>ImageSampleLayout</c> applies to the same file, so the two decoders agree.
     /// </summary>
     [Fact]
     public void Plan_SMaskInData_WithNoSpareChannel_IsIgnoredWithADeviation()

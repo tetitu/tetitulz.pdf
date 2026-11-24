@@ -100,7 +100,7 @@ public sealed class StencilPatternFillSvgTests
         Assert.True(painted.Count > 0,
             "no element paints the stencil with a pattern; the stencil is baked to a solid colour.");
 
-        // And nothing paints it black — the pre-fix output was a black shape with no pattern at all.
+        // And nothing paints it black — a black shape with no pattern at all is the failure.
         Assert.DoesNotContain(doc.Descendants(),
             e => (string)e.Attribute("fill") == "rgb(0,0,0)" && e.Attribute("mask") != null);
     }
@@ -133,7 +133,7 @@ public sealed class StencilPatternFillSvgTests
     [Fact]
     public void StencilUnderSolidFill_StillTakesThePlainImagePath()
     {
-        // The control. Without it the fix could have routed EVERY stencil through the mask branch
+        // The control. Without it the writer could route EVERY stencil through the mask branch
         // and both assertions above would still pass, while every ordinary stencil changed shape.
         var doc = Parse(RenderSvg(patternFill: false));
 

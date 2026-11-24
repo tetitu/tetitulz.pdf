@@ -18,13 +18,12 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// apply to the painting of images or shadings".
 /// </summary>
 /// <remarks>
-/// <para><b>This suite used to assert the opposite.</b> From 2026-08-18 a DeviceCMYK image under
-/// <c>/OPM 1</c> was composited per sample, a zero component leaving the backdrop's colorant alone —
-/// magenta over cyan made blue. The clause above says it shall not, and the reference renderer's
-/// separation output agrees: an overprinting DeviceCMYK image knocks black out under a zero K sample
-/// (found while building separations). An overprinting image writes every
-/// colorant its colour space names, which for DeviceCMYK, grey and RGB is all four process
-/// colorants — exactly the ordinary draw on a composite. The composite is gone.</para>
+/// <para><b>No per-sample composite.</b> A DeviceCMYK image under <c>/OPM 1</c> composited per
+/// sample, a zero component leaving the backdrop's colorant alone, would make magenta over cyan
+/// blue. The clause above says it shall not, and the reference renderer's separation output
+/// agrees: an overprinting DeviceCMYK image knocks black out under a zero K sample. An
+/// overprinting image writes every colorant its colour space names, which for DeviceCMYK, grey and
+/// RGB is all four process colorants — exactly the ordinary draw on a composite.</para>
 ///
 /// <para>What overprint still changes for an image is a colorant set naming some colorants and not
 /// others (§11.7.4.5): a Separation-Cyan image keeps the magenta beneath it (separation output again).
@@ -68,7 +67,7 @@ public class ImageOverprintTests
     /// leaves the rest alone, which its composite does not show; DeviceCMYK, <c>/All</c> and a
     /// DeviceN of all four process inks write every colorant, so there is nothing to report. The
     /// raster renderer simulates every one of them on the page's separation plates, so it reports
-    /// none (since 2026-10-04; the pixels are <c>ASeparationCyanImage_KeepsTheMagentaBeneathIt</c>).
+    /// none (the pixels are <c>ASeparationCyanImage_KeepsTheMagentaBeneathIt</c>).
     /// </summary>
     [Theory]
     [MemberData(nameof(Spaces))]

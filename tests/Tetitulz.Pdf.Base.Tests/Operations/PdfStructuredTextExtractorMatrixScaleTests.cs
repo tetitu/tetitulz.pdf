@@ -107,7 +107,7 @@ public class PdfStructuredTextExtractorMatrixScaleTests
         Assert.Equal(viaTf[0].Width,  viaMatrix[0].Width,  precision: 3);
         Assert.Equal(viaTf[0].Height, viaMatrix[0].Height, precision: 3);
 
-        // And the box is the 12pt one, not the 1pt one — pins the direction of the fix.
+        // And the box is the 12pt one, not the 1pt one — pins the direction of the scaling.
         Assert.Equal(12f, viaMatrix[0].Height, precision: 3);
     }
 
@@ -124,7 +124,7 @@ public class PdfStructuredTextExtractorMatrixScaleTests
     }
 
     // ==================================================================
-    //  Rotation carries no scale — guards the column-norm form of the fix
+    //  Rotation carries no scale — guards the column-norm form of the scaling
     // ==================================================================
 
     [Fact]

@@ -110,8 +110,8 @@ namespace Tetitulz.Pdf.Core.Fonts
 
             // The directory-fits check, the per-table range check and the tag rules are
             // SfntTableDirectory's — the one reader shared by the three places that re-emit a font.
-            // This copy used Encoding.ASCII, which substitutes '?' for any byte above 0x7E and so
-            // silently renamed such a table on the way back out.
+            // It reads a tag as its bytes; Encoding.ASCII would substitute '?' for any byte above
+            // 0x7E and so silently rename such a table on the way back out.
             if (!SfntTableDirectory.TryRead(fontBytes, out var records, out reason))
                 return null;
 

@@ -75,63 +75,66 @@ namespace Tetitulz.Pdf.Core.IO.Filters
         }
 
         /// <summary>
-        /// The one walk over the runs: decoding into a buffer, or — <paramref name="measureOnly"/> —
-        /// stepping over them to find the end. Returns null when measuring.
+        /// The decode, or — <paramref name="measureOnly"/> — the end alone, returning null. The runs are walked
+        /// once to measure the output, which is refused past <paramref name="maxOutputBytes"/> before a byte is
+        /// written, and once more into an array of exactly that length: written a byte at a time into a growing
+        /// stream, a decode would allocate about three and a half times its output.
         /// </summary>
         private static byte[] Run(byte[] data, int start, int count, long maxOutputBytes, out int end,
                                   bool measureOnly)
         {
+            long length = Walk(data, start, count, out end, null);
+            if (measureOnly) return null;
+            if (length > maxOutputBytes || length > int.MaxValue)
+                throw new System.IO.InvalidDataException($"RunLengthDecode: output exceeded {maxOutputBytes} bytes");
+            var output = new byte[length];
+            Walk(data, start, count, out _, output);
+            return output;
+        }
+
+        /// <summary>
+        /// The one walk over the runs (§7.4.5): the decoded length, and the bytes written into
+        /// <paramref name="output"/> when it is given — an array of that length.
+        /// </summary>
+        private static long Walk(byte[] data, int start, int count, out int end, byte[] output)
+        {
             end = -1;
             int limit = start + count;
-
-            using (var output = measureOnly ? null : new MemoryStream())
+            long written = 0;
+            int i = start;
+            while (i < limit)
             {
-                int i = start;
-                while (i < limit)
+                int length = data[i++];
+
+                if (length == EndOfData)
                 {
-                    int length = data[i++];
-
-                    if (length == EndOfData)
-                    {
-                        end = i;
-                        break;
-                    }
-
-                    if (length <= MaxLiteral)
-                    {
-                        // Copy (length + 1) literal bytes
-                        int run = length + 1;
-                        if (i + run > limit) run = limit - i; // clamp on truncated stream
-                        if (run <= 0) break;
-                        if (output != null)
-                        {
-                            if (output.Length + run > maxOutputBytes)
-                                throw new System.IO.InvalidDataException(
-                                    $"RunLengthDecode: output exceeded {maxOutputBytes} bytes");
-                            output.Write(data, i, run);
-                        }
-                        i += run;
-                    }
-                    else
-                    {
-                        // Repeat next byte (257 - length) times
-                        int run = 257 - length;
-                        if (i >= limit)
-                            break;
-                        byte b = data[i++];
-                        if (output != null)
-                        {
-                            if (output.Length + run > maxOutputBytes)
-                                throw new System.IO.InvalidDataException(
-                                    $"RunLengthDecode: output exceeded {maxOutputBytes} bytes");
-                            for (int j = 0; j < run; j++)
-                                output.WriteByte(b);
-                        }
-                    }
+                    end = i;
+                    break;
                 }
 
-                return output?.ToArray();
+                if (length <= MaxLiteral)
+                {
+                    // Copy (length + 1) literal bytes
+                    int run = length + 1;
+                    if (i + run > limit) run = limit - i; // clamp on truncated stream
+                    if (run <= 0) break;
+                    if (output != null) System.Buffer.BlockCopy(data, i, output, (int)written, run);
+                    written += run;
+                    i += run;
+                }
+                else
+                {
+                    // Repeat next byte (257 - length) times
+                    int run = 257 - length;
+                    if (i >= limit)
+                        break;
+                    byte b = data[i++];
+                    if (output != null)
+                        for (int j = 0, at = (int)written; j < run; j++) output[at + j] = b;
+                    written += run;
+                }
             }
+            return written;
         }
     }
 }

@@ -1023,7 +1023,7 @@ namespace Tetitulz.Pdf.HtmlToPdf
         /// </summary>
         /// <remarks>
         /// <para>A shorthand with no style word still draws. CSS would draw nothing (the omitted
-        /// style is <c>none</c>), but <c>border:1px #ccc</c> has always drawn here and documents
+        /// style is <c>none</c>), but <c>border:1px #ccc</c> draws here, and documents
         /// written against this engine rely on it; an explicit <c>none</c> or <c>hidden</c> does
         /// suppress the edge.</para>
         /// <para><c>transparent</c> is a colour that paints nothing, and it is kept as a flag rather

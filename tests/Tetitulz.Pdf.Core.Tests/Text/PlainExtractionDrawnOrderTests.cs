@@ -84,8 +84,8 @@ public sealed class PlainExtractionDrawnOrderTests
     /// <summary>
     /// A right-to-left line whose left end is Latin — a Hebrew word ending in a code, drawn "XY" then
     /// gimel, bet, alef — reads back right to left, the Hebrew first: its ends disagree and most of its
-    /// letters are Hebrew. Asked of its leftmost strong character, as until 2026-10-22, it read left to
-    /// right, the code first. The control: the same letters with Latin the more read left to right.
+    /// letters are Hebrew. Asked of its leftmost strong character, it would read left to right, the
+    /// code first. The control: the same letters with Latin the more read left to right.
     /// </summary>
     [Fact]
     public void ARightToLeftLineWithLatinAtItsLeftEnd_ReadsRightToLeft()

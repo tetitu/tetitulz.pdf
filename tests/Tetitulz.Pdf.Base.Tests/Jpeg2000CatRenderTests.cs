@@ -17,9 +17,8 @@ namespace Tetitulz.Pdf.Base.Tests;
 /// End-to-end regression test for JPEG 2000 (JPXDecode) image rendering by the in-house decoder,
 /// with no plugin registered.
 ///
-/// The PDF Association's UnknownFilter-objstm.pdf embeds a 100x67 JP2 "cat" photo. Before
-/// Core decoded JPEG 2000 itself (Wave 15), the page rendered nothing for that image without a
-/// JPX plugin (the old external codec's, retired on 2026-09-26); the in-house decoder is the codec now. This test
+/// The PDF Association's UnknownFilter-objstm.pdf embeds a 100x67 JP2 "cat" photo, which Core
+/// decodes itself with no JPX plugin registered. This test
 /// builds an equivalent in-memory PDF whose only content is the cat image filling the page, then
 /// asserts the rendered output is the photo (lots of non-white, varied pixels) rather than a
 /// blank page.

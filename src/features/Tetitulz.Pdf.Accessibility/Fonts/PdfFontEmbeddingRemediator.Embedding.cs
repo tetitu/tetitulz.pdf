@@ -360,7 +360,7 @@ namespace Tetitulz.Pdf.Accessibility.Fonts
             // ---- 8. a Type 1 subset's /CharSet ---------------------------------------
             // ISO 19005-1 6.3.5: a Type 1 font subset's descriptor lists the character names in the
             // subset — the names the drawn codes select through the font's encoding, as written above.
-            // Without it the PDF/A-1 converter after this pass produced a file that fails rule 6.3.5-2.
+            // Without it the PDF/A-1 converter after this pass would produce a file that fails rule 6.3.5-2.
             if (subsetPrefix != null && plan?.Encoding != null && (site.Subtype == "Type1" || site.Subtype == "MMType1"))
             {
                 PdfDictionary written = modified.TryGetValue(site.FontObjectNumber, out PdfObject staged) && staged is PdfDictionary stagedFont

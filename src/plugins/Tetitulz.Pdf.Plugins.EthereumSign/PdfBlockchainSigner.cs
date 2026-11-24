@@ -196,8 +196,8 @@ namespace Tetitulz.Pdf.Plugins.EthereumSign
 
         /// <summary>
         /// Builds the <c>/BlockchainProof</c> dictionary. <c>/HashedLength</c> goes in last so it
-        /// is the final entry of the emitted dictionary, matching the layout the signer has always
-        /// produced.
+        /// is the final entry of the emitted dictionary, the layout every proof this signer writes
+        /// carries.
         /// </summary>
         private static PdfDictionary BuildProofDictionary(BlockchainProof proof, int hashedLength)
         {

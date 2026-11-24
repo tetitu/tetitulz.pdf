@@ -566,9 +566,9 @@ namespace Tetitulz.Pdf.Base.Operations.Fonts
 
             // ---- name and cmap tables ----
             //
-            // Both come from Core's TrueTypeFontProgram — the one reader for each — rather than
-            // from this type's own scans, which disagreed with it about which name record wins and
-            // about which cmap subtables exist. Parsed once and shared.
+            // Both come from Core's TrueTypeFontProgram — the one reader for each — so the embedder
+            // and Core agree about which name record wins and which cmap subtables exist. Parsed once
+            // and shared.
             TrueTypeFontProgram program = TrueTypeFontProgram.Parse(data);
             if (program != null)
             {

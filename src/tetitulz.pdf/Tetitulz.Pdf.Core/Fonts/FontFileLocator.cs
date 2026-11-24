@@ -404,10 +404,10 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// ordinally first, would make which face a page draws in depend on the order the font
         /// directories happen to be listed in.</para>
         ///
-        /// <para><b>The scan this drops was not worth keeping.</b> It stopped at the first
-        /// score-0 file, but <see cref="EnumerateFontFiles"/> is a cached in-memory list and
-        /// <see cref="FindFamilyFile"/> memoises its answer per family, so the saving was part of
-        /// one list walk on a cache miss — against a tie-break that is now deterministic across
+        /// <para><b>A scan stopping at the first score-0 file would not be worth having.</b>
+        /// <see cref="EnumerateFontFiles"/> is a cached in-memory list and
+        /// <see cref="FindFamilyFile"/> memoises its answer per family, so the saving would be part
+        /// of one list walk on a cache miss — against a tie-break that is deterministic across
         /// hosts, which is the property <c>TETITULZ_PDF_FONTDIR</c> exists to give a server.</para>
         /// </remarks>
         private static string MatchStem(string stem, bool bold, bool italic)

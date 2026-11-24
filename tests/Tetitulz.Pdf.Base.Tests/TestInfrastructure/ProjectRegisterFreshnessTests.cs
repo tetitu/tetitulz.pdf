@@ -18,20 +18,17 @@ namespace Tetitulz.Pdf.Base.Tests.TestInfrastructure;
 ///
 /// <para><b>Why this exists.</b> CLAUDE.md states, twice and emphatically, that "a register row is
 /// a hypothesis; the code is the authority", and that a hand-maintained number "drifts the moment
-/// anyone adds a test". Both rows guarded here had in fact drifted: a 17th plugin
-/// (<c>Plugins.HtmlBrowser</c>) shipped while the file still said "the 16 plugins under
-/// <c>src/plugins/</c>" and listed sixteen by name, and the package count still said 25. Nothing
-/// noticed, because <b>nothing enforces prose</b> — which is the repo's own phrasing, and the
-/// reason the fix is a guard rather than another correction.</para>
+/// anyone adds a test". A plugin shipped while the file names one fewer, or a package count left
+/// behind, is noticed by nothing, because <b>nothing enforces prose</b> — the reason this is a
+/// guard rather than a correction.</para>
 ///
 /// <para><b>Scope, deliberately narrow.</b> This checks only claims that are a list of directory
 /// names or a count of projects — facts with exactly one right answer that can be read off the
 /// tree. It does not attempt to validate prose, architecture rationale, or anything requiring
 /// judgement; those stay review-enforced, as CLAUDE.md says they must.</para>
 ///
-/// <para>The line-number references elsewhere in CLAUDE.md are deliberately <i>not</i> guarded:
-/// two of them were stale as well, and the fix there was to tell the reader to find CI steps by
-/// name instead. Pinning line numbers with a test would preserve the wrong habit.</para>
+/// <para>CLAUDE.md carries no line-number references to guard: it tells the reader to find CI
+/// steps by name instead. Pinning line numbers with a test would preserve the wrong habit.</para>
 /// </summary>
 public class ProjectRegisterFreshnessTests
 {

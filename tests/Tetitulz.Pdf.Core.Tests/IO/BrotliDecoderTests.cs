@@ -15,8 +15,8 @@ using Ours = Tetitulz.Pdf.Core.IO.Brotli.BrotliDecoder;
 namespace Tetitulz.Pdf.Core.Tests.IO;
 
 /// <summary>
-/// The library's own Brotli decoder (RFC 7932), which replaced an external package on 2026-10-18 (the
-/// owner's decision). Every stream but the hand-built ones is made by .NET's <see cref="BrotliEncoder"/>
+/// The library's own Brotli decoder (RFC 7932). Every stream but the hand-built ones is made by .NET's
+/// <see cref="BrotliEncoder"/>
 /// — Google's C encoder inside the runtime — so the decoder is checked against an implementation it
 /// shares nothing with; the hand-built ones pin what an encoder may never emit for a short input, the
 /// static dictionary's transforms one by one, against the RFC's own definitions.

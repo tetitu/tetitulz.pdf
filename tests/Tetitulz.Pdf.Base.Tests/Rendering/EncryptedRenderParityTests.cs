@@ -16,14 +16,13 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// Every rasterizing entry point must resolve an encrypted document before reading its content
 /// streams, and must accept a password to do so.
 ///
-/// <para><b>What was wrong.</b> Decryption was written inline in
-/// <c>RenderPage(Stream,int,int,PdfRenderOptions)</c> and nowhere else, so
+/// <para><b>What one entry point alone would leave.</b> Decryption written inline in
+/// <c>RenderPage(Stream,int,int,PdfRenderOptions)</c> and nowhere else would let
 /// <see cref="PdfPageRenderer.RenderPageAsJpg(Stream,int,int,int,PdfRenderOptions)"/>, the
-/// <c>RenderAllPages*</c> family and both tile paths opened the encrypted file and handed its
-/// still-encrypted content streams to the interpreter. Those streams do not inflate, so the page
-/// came out blank: <b>the same PDF rendered correctly to PNG and blank to JPEG.</b> The inline
-/// path also hardcoded the empty password, so a document with a real user password could not be
-/// rendered at all.</para>
+/// <c>RenderAllPages*</c> family and both tile paths hand still-encrypted content streams to the
+/// interpreter. Those streams do not inflate, so the page would come out blank: <b>the same PDF
+/// rendered correctly to PNG and blank to JPEG.</b> A hardcoded empty password would leave a
+/// document with a real user password unrenderable.</para>
 ///
 /// <para>Each test below asserts a decoded red pixel from the fixture's rectangle. A blank page is
 /// a valid non-empty PNG/JPEG, so "bytes came back" would pass against the defect — these read

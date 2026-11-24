@@ -148,9 +148,9 @@ public class DecompressionBombTests
     [Fact]
     public void FilterPipeline_TwoStageFlateDecode_CumulativeCapThrowsBeforeOomRisk()
     {
-        // Pre-fix hole: each filter stage caps its own output at 512 MB, but a
-        // 16-stage chain has no shared budget — 16 × 512 MB = 8 GB total is
-        // theoretically possible before any per-stage guard fires.
+        // The hole a shared budget closes: each filter stage caps its own output at
+        // 512 MB, so without one a 16-stage chain could reach 16 × 512 MB = 8 GB
+        // before any per-stage guard fires.
         //
         // Setup: compress 2 MB of zeros twice. During the two-stage decode:
         //   Stage 1: ~100 bytes → ~2 KB (inner_compressed)

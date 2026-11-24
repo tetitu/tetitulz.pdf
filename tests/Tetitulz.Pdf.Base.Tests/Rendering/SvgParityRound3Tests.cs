@@ -574,16 +574,12 @@ public sealed class SvgParityRound3Tests
     }
 
     /// <summary>
-    /// And the CMYK image path <b>rounds</b> — in both renderers, because as of 2026-08-08 they
-    /// call the same converter (<c>PdfColor.CmykToRgb</c>) instead of each inlining
-    /// <c>r = (1−c)(1−k)</c>.
+    /// And the CMYK image path <b>rounds</b> — in both renderers, because they call the same
+    /// converter (<c>PdfColor.CmykToRgb</c>) instead of each inlining <c>r = (1−c)(1−k)</c>.
     /// </summary>
     /// <remarks>
-    /// This test previously asserted 216 and was named <c>CmykImage_TruncatesLikeTheRasterPath</c>.
-    /// Truncation was never a colour-science decision: an earlier round found the SVG export one
-    /// level lighter than the render and unified the two on the raster path's convention, which
-    /// happened to truncate. Every CIE space in <c>PdfColor</c> already rounded via
-    /// <c>Clamp255</c>, so that left one file holding two conventions, and truncation biases every
+    /// Rounding, not truncation: every CIE space in <c>PdfColor</c> rounds via <c>Clamp255</c>, so
+    /// truncating here would leave one file holding two conventions, and truncation biases every
     /// channel down half a level. GAPS.md §2b step 4.
     /// </remarks>
     [Fact]

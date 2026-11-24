@@ -383,8 +383,7 @@ public class RenderingFixesTests
         //   /DW2 [880 1000]          — default vertical advance = 1000 units = 1.0 em
         //   /W2  [0 [500 100 -880]]  — CID 0: advance=500, origin_x=100, origin_y=-880
         //
-        // Before the fix, ParseW2Array read triplet+1 (=100, the x-origin).
-        // After the fix it reads triplet+0 (=500, the advance).
+        // ParseW2Array reads triplet+0 (=500, the advance), not triplet+1 (=100, the x-origin).
         byte[] pdf = BuildPdfWithW2Font(
             dw2: "[880 1000]",
             w2: "[0 [500 100 -880]]");
@@ -595,8 +594,8 @@ public class RenderingFixesTests
         // When a tiling pattern is used inside a CTM with a negative x-scale
         // (horizontal flip: -1 0 0 1 ...) the shader local matrix must NOT
         // include gsCTM⁻¹, because path points are already in page space.
-        // Before the fix, gsCTMInv was included, which doubled the x-flip and
-        // mirrored the stamp image rendered by the pattern.
+        // Including gsCTMInv would double the x-flip and mirror the stamp image
+        // rendered by the pattern.
         //
         // Build: a 10×10 page, pattern fills a 5×5 rect via a -1 0 0 1 CTM.
         // Pattern paints the top-left 3×3 area red.  If the x-flip is handled
@@ -1575,8 +1574,8 @@ public class RenderingFixesTests
         // /D [1 0] is the abbreviated form of /Decode [1 0] (PDF spec Table 92).
         // A pixel with raw value 0 (black) through decode [1,0] maps to
         //   x_out = 1 + 0 * (0-1) = 1.0 → 255 = white.
-        // Before the fix, /D was never renamed to /Decode so the array was ignored
-        // and the black pixel rendered black, not white.
+        // Were /D not renamed to /Decode, the array would be ignored and the black
+        // pixel render black, not white.
         const string cs =
             "612 0 0 792 0 0 cm\n" +
             "BI\n/W 1\n/H 1\n/BPC 8\n/CS /G\n/D [1 0]\n/F /AHx\nID\n00>\nEI";
@@ -1808,9 +1807,9 @@ public class RenderingFixesTests
         // Build a minimal PDF with a TrueType font that uses afii57xxx glyph names
         // in its /Differences array (as produced by Israeli PDF generators).
         // The font uses char codes 0xE0-0xFA for Hebrew alef-tav.
-        // Before the fix, TryGetGlyphUnicode("afii57664") returned false, so the
-        // /Differences were ignored and the font fell back to WinAnsiEncoding,
-        // mapping 0xE0 → U+00E0 (à) — not found in the Hebrew font → wrong glyph.
+        // Were TryGetGlyphUnicode("afii57664") to return false, the /Differences would
+        // be ignored and the font fall back to WinAnsiEncoding, mapping 0xE0 → U+00E0
+        // (à) — not found in the Hebrew font → wrong glyph.
 
         // Build a minimal 1-page PDF with a fake Helvetica font (no embed needed
         // for a smoke test) and an Encoding with afii57xxx Differences.
@@ -1886,8 +1885,8 @@ public class RenderingFixesTests
     {
         // A 4x2 Indexed-RGB image with /BitsPerComponent 4 stores 2 palette indices
         // per byte (high nibble = left pixel, low nibble = right pixel).
-        // Before the fix, DecodeIndexedBitmap treated every byte as one pixel index,
-        // producing garbled colors (border lines rendered black instead of gray).
+        // Treating every byte as one pixel index would produce garbled colors
+        // (border lines rendered black instead of gray).
         //
         // Image layout (palette: 0=white #FFFFFF, 1=gray #A4A4A4):
         //   row 0 bytes: 0x01 0x01  → pixels [0,1, 0,1] → white, gray, white, gray
@@ -2057,7 +2056,7 @@ public class RenderingFixesTests
     //  ObjStm with unknown filter: font dict unresolvable → SkiaSharp widths
     //
     //  When the font dictionary lives inside an ObjStm whose /Filter is
-    //  unknown (e.g. XXXDecode), LookupFontDict returns null.  The fix must
+    //  unknown (e.g. XXXDecode), LookupFontDict returns null. The renderer must
     //  still mark the font as a system fallback so that glyph spacing uses
     //  SkiaSharp-measured advances rather than a hardcoded 500/1000-em default.
     //  We simulate this by building a PDF whose /F0 references a missing
@@ -2198,8 +2197,8 @@ public class RenderingFixesTests
 
         // The page has two glyphs ('A' and 'B') rendered as 8×8 black bitmaps.
         // 'A' is at ~x=20 and 'B' is ~12px to the right.
-        // Before the fix, 'B' rendered off-screen (Tm reset to identity → position
-        // jumped to near (0,0)).  After the fix both should appear in the visible area.
+        // Both must appear in the visible area — with Tm reset to identity, 'B' would
+        // jump to near (0,0), off-screen.
         int leftmostBlack = int.MaxValue, rightmostBlack = int.MinValue;
         for (int x = 0; x < bmp.Width; x++)
             for (int y = 0; y < bmp.Height; y++)

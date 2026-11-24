@@ -12,7 +12,7 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// A run drawn in a standard-14 face, kerned when asked (2026-10-20): Helvetica's <c>KPX A V -70</c> is
+/// A run drawn in a standard-14 face, kerned when asked: Helvetica's <c>KPX A V -70</c> is
 /// written as <c>[(A) 70 (V)] TJ</c> and counted in the run's width; unasked, the same <c>(AV) Tj</c>.
 /// </summary>
 public class Standard14KerningExportTests

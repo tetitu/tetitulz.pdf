@@ -398,7 +398,7 @@ public class FormXObjectExtractionCacheTests
 
     /// <summary>
     /// The allocation fixture: one form with a 100-entry /ToUnicode and a 256-entry /Widths —
-    /// an ordinary embedded-font shape, and the work that used to be redone per invocation.
+    /// an ordinary embedded-font shape, and work that must not be redone per invocation.
     /// </summary>
     private static byte[] MeasurableFormPdf(int invocations)
     {

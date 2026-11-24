@@ -443,8 +443,8 @@ namespace Tetitulz.Pdf.Core.Functions
 
         /// <summary>
         /// <c>/Size</c> as integers. A non-numeric entry becomes <b>1</b>, not 0 — matching the
-        /// per-axis default the sampled-function path has always applied, and a 0 would make the
-        /// table unaddressable.
+        /// per-axis default the sampled-function path applies, and a 0 would make the table
+        /// unaddressable.
         /// </summary>
         private static int[] SizeInts(PdfArray arr)
         {
@@ -457,10 +457,10 @@ namespace Tetitulz.Pdf.Core.Functions
         /// <summary>Element <paramref name="i"/>, or 0 past the end — <see cref="GetArrFloat"/>'s rule.</summary>
         private static float At(float[] a, int i) => i < a.Length ? a[i] : 0f;
 
-        // Both call the resolver only for a value that IS a PdfReference, which is what `Deref`
-        // above has always done. `PdfParser.ResolveObject` returns a non-reference unchanged, so
-        // the result is identical — it just stops a delegate invocation and a type test happening
-        // for every direct value on a path that reads ten keys per evaluation.
+        // Both call the resolver only for a value that IS a PdfReference, as `Deref` above does.
+        // `PdfParser.ResolveObject` returns a non-reference unchanged, so the result is identical
+        // — it just saves a delegate invocation and a type test for every direct value on a path
+        // that reads ten keys per evaluation.
 
         private static PdfArray ResolvedArray(PdfDictionary fn, PdfName key,
             Func<PdfObject, PdfObject> resolve)

@@ -18,9 +18,9 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// (<c>SvgFontFace.Describe</c>).
 /// </summary>
 /// <remarks>
-/// Until 2026-10-21 the first and third counted <c>Heavy</c> and <c>Black</c> as bold and the
-/// renderer did not, so <c>Arial,Black</c> was measured as Helvetica-Bold and drawn as regular Arial —
-/// the rows marked below. The assertions are about the style chosen, not a typeface resolved, so the
+/// Were the sites to disagree on <c>Heavy</c> and <c>Black</c>, <c>Arial,Black</c> would be measured
+/// as Helvetica-Bold and drawn as regular Arial — the rows marked below. The assertions are about
+/// the style chosen, not a typeface resolved, so the
 /// host's installed fonts cannot answer for the code.
 /// </remarks>
 public class FontNameStyleTests

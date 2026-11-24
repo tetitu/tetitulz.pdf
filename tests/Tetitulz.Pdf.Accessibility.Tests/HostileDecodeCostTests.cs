@@ -201,58 +201,43 @@ public sealed class HostileDecodeCostTests
         Assert.Equal(1, RefusedFormScans(PageDrawing(new[] { over, fits })));
     }
 
-    // ---------------------------------------------------------------- PDF/UA-2's appearance walk
+    // ---------------------------------------------------------------- PDF/UA-2's references into appearances
 
-    private static PdfUa2StructureResult Ua2(IReadOnlyList<string> appearances)
+    private static PdfUa2StructureResult Ua2(string appearance, string kids)
     {
-        string annots = string.Concat(appearances.Select((_, i) => $"{4 + 2 * i} 0 R "));
         var bodies = new List<string>
         {
-            "<< /Type /Catalog /Pages 2 0 R /Lang (en) >>",
+            "<< /Type /Catalog /Pages 2 0 R /Lang (en) /StructTreeRoot 6 0 R >>",
             "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-            $"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 100 100] /Annots [{annots}] >>",
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 100 100] /Annots [4 0 R] >>",
+            "<< /Type /Annot /Subtype /Stamp /Rect [0 0 10 10] /AP << /N 5 0 R >> >>",
+            appearance,
+            "<< /Type /StructTreeRoot /K 7 0 R >>",
+            "<< /Type /StructElem /S /Annot /P 6 0 R /Pg 3 0 R /K " + kids + " >>",
         };
-        for (int i = 0; i < appearances.Count; i++)
-        {
-            bodies.Add($"<< /Type /Annot /Subtype /Stamp /Rect [0 0 10 10] /AP << /N {5 + 2 * i} 0 R >> >>");
-            bodies.Add(appearances[i]);
-        }
 
         using var ms = new MemoryStream(Pdf(bodies));
         return PdfUa2StructureChecker.Validate(ms);
     }
 
     /// <summary>
-    /// <b>Past the ceiling is not parsed, and that is said.</b> The stream's first operator is a
-    /// <c>BMC</c> the check would report; the control's identical start, under the ceiling, is reported.
+    /// <b>§8.9.2.1 is judged from the structure tree, so no appearance stream is decoded for it.</b>
+    /// The appearance's data is not Flate data and will not decode; a reference into it is reported,
+    /// and no part of the check is said to be missing. The control names the same stream from an
+    /// <c>/OBJR</c>, which includes the annotation whole.
     /// </summary>
     [Fact]
-    public void AdversarialAppearancePastTheCeiling_IsNotReadAndTheCheckSaysSo()
+    public void AdversarialAppearanceThatWillNotDecode_IsJudgedByTheTreeAlone()
     {
-        const long PageCeiling = 8L * 1024 * 1024;
+        const string Corrupt =
+            "<< /Type /XObject /Subtype /Form /BBox [0 0 10 10] /Filter /FlateDecode /Length 6 >>\nstream\nvvvvvv\nendstream";
 
-        var hostile = Ua2(new[] { FlateForm("/P BMC EMC ", PageCeiling / 11 + 1) });
-        Assert.DoesNotContain(hostile.Violations, v => v.Code == "UA2-8.9.2.1");
-        Assert.Contains(hostile.Violations, v => v.Code == "UA2-99" && v.Message.StartsWith("1 annotation appearance", StringComparison.Ordinal));
+        var hostile = Ua2(Corrupt, "<< /Type /MCR /Stm 5 0 R /MCID 0 >>");
+        Assert.Contains(hostile.Violations, v => v.Code == "UA2-8.9.2.1" && v.Message.Contains("marked-content reference", StringComparison.Ordinal));
+        Assert.DoesNotContain(hostile.Violations, v => v.Code == "UA2-99" && v.Message.Contains("§8.9.2.1", StringComparison.Ordinal));
 
-        var control = Ua2(new[] { FlateForm("/P BMC EMC ", 8) });
-        Assert.Contains(control.Violations, v => v.Code == "UA2-8.9.2.1");
-        Assert.DoesNotContain(control.Violations, v => v.Code == "UA2-99" && v.Message.Contains("annotation appearance", StringComparison.Ordinal));
-    }
-
-    /// <summary>
-    /// The document's budget, in streams of nothing but white space, which parse to no operations: sixteen
-    /// fit in 128 MiB exactly and the seventeenth is not read.
-    /// </summary>
-    [Fact]
-    public void AdversarialManyAppearances_StopAtTheDocumentsBudget()
-    {
-        string eightMegabytes = FlateForm(" ", 8L * 1024 * 1024);
-        var appearances = Enumerable.Repeat(eightMegabytes, 17).ToList();
-
-        var result = Ua2(appearances);
-
-        Assert.Contains(result.Violations, v => v.Code == "UA2-99" && v.Message.StartsWith("1 annotation appearance", StringComparison.Ordinal));
+        var control = Ua2(Corrupt, "<< /Type /OBJR /Obj 4 0 R >>");
+        Assert.DoesNotContain(control.Violations, v => v.Code == "UA2-8.9.2.1");
     }
 
     // ---------------------------------------------------------------- the font scan

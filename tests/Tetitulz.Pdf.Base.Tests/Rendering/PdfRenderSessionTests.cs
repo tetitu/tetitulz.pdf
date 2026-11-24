@@ -163,12 +163,11 @@ public class PdfRenderSessionTests
     /// original does.
     /// </summary>
     /// <remarks>
-    /// <b>Regression test for a defect found reviewing this round's own diff.</b> The session
-    /// accepted <see cref="PdfRenderOptions.Password"/> and never used it: the one-shot entry
-    /// points call <c>EnsureDecryptedStream</c> per call, and the session's <c>Open</c> went
-    /// straight to <c>PdfDocument.Open</c>. Every encrypted document rendered through a session
-    /// therefore disagreed with the same document rendered through <c>PdfPageRenderer</c> — the
-    /// two-paths-disagreeing shape this repository keeps finding, reintroduced by a new API.
+    /// The one-shot entry points call <c>EnsureDecryptedStream</c> per call, and the session uses
+    /// <see cref="PdfRenderOptions.Password"/> the same way; a session <c>Open</c> going straight to
+    /// <c>PdfDocument.Open</c> would make every encrypted document rendered through a session disagree
+    /// with the same document rendered through <c>PdfPageRenderer</c> — the two-paths-disagreeing
+    /// shape this repository keeps finding.
     /// </remarks>
     [Fact]
     public void EncryptedDocument_RendersThroughASessionAsItDoesOneShot()
@@ -352,11 +351,10 @@ public class PdfRenderSessionTests
     /// A second <see cref="IDisposable.Dispose"/> is idempotent: it neither throws nor un-disposes.
     /// </summary>
     /// <remarks>
-    /// Asserting the post-state rather than only that the call is quiet. The body used to be two
-    /// <c>Dispose()</c> calls and nothing else, which passes with disposal deleted outright — the
-    /// build-failing guard in <c>NoUnfalsifiableAssertionsTests</c> flagged it, correctly. "Does not
-    /// throw" is only the behaviour under test when the input is hostile; here the interesting claim
-    /// is that the object is still disposed, which is what a resurrecting second Dispose would break.
+    /// Asserting the post-state rather than only that the call is quiet: two <c>Dispose()</c> calls
+    /// and nothing else would pass with disposal deleted outright. "Does not throw" is only the
+    /// behaviour under test when the input is hostile; here the interesting claim is that the object
+    /// is still disposed, which is what a resurrecting second Dispose would break.
     /// </remarks>
     [Fact]
     public void DisposingTwice_LeavesTheSessionDisposed()

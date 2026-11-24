@@ -174,8 +174,8 @@ namespace Tetitulz.Pdf.Signing
                 // signatures" — indistinguishable from "this document is not signed", which is a
                 // wrong answer to a security question rather than a missing feature.
                 //
-                // The list stays empty (this verifier holds no decryptor and must not guess), but
-                // the reason is now on the diagnostic slot the class already documents.
+                // The list stays empty (this verifier holds no decryptor and must not guess), and
+                // the reason goes on the diagnostic slot the class documents.
                 if (document.IsEncrypted)
                     _lastVerificationError = EncryptedAcroFormUnreadable;
                 return results;
@@ -188,6 +188,11 @@ namespace Tetitulz.Pdf.Signing
             var context = new VerificationContext(document, original, openSignedRevision, options);
 
             var sigFields = document.AcroForm.GetSignatureFields();
+            // A field the walk could not read is not a signature it can list: said, not read as "unsigned".
+            if (document.AcroForm.UnreadableNodes.Count > 0)
+                _lastVerificationError ??= "The form's field tree holds " + document.AcroForm.UnreadableNodes.Count.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                    + " entr" + (document.AcroForm.UnreadableNodes.Count == 1 ? "y" : "ies") + " that could not be read, so a signature among them is not listed: "
+                    + string.Join("; ", System.Linq.Enumerable.Take(document.AcroForm.UnreadableNodes, 20)) + ".";
             var signatures = new List<(SignatureVerificationResult Result, PdfDictionary? Signature)>();
             foreach (var field in sigFields)
             {
@@ -1421,9 +1426,7 @@ namespace Tetitulz.Pdf.Signing
                 if ((Res(doc, v, PdfName.SubFilter) as PdfName)?.Value != "ETSI.RFC3161") continue;
 
                 // The same one reader VerifyField uses, so the two cannot disagree about which
-                // timestamps are readable — this copy resolved the array and type-checked the
-                // elements, but by hand, four lines that had to stay in step with the other five
-                // sites by review alone.
+                // timestamps are readable.
                 var contents = v.GetString(PdfName.Contents);   // in place, per §12.8.1 — see VerifyField
                 if (contents == null) continue;
                 if (!SignedByteRanges.TryRead(v, doc, out var byteRange, out _)) continue;

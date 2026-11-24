@@ -25,28 +25,16 @@ using SKPathVerb = SkiaSharp.SKPathVerb;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Interprets a PDF content stream into SVG elements — the vector counterpart of
-    /// <see cref="ContentStreamInterpreter"/>, which does the same job onto a Skia canvas.
-    ///
-    /// <para><b>A type of its own, split as the raster interpreter is</b> — .Path, .Text,
-    /// .Shading, .Images and the rest — so a change to one renderer and not the other is a
-    /// two-file diff. A silently wrong output is, as a rule, one renderer lagging the other.</para>
-    ///
-    /// <para>It stays <c>internal</c>. Base's three <c>InternalsVisibleTo</c> friends are all
-    /// in-repo — the test project, FontDiag and the benchmarks — so no CONSUMER could see it
-    /// before and none can now; promoting it changed its nesting, not its visibility.</para>
-    /// </summary>
 internal sealed partial class SvgContentWriter
     {
         private void OpCm(ContentStreamOperation op)
         {
             if (op.Operands.Length < 6) return;
             float[] m = { Flt(op,0), Flt(op,1), Flt(op,2), Flt(op,3), Flt(op,4), Flt(op,5) };
-            // The guard the raster interpreter has always had (ContentStreamInterpreter.OpCm) and
-            // this side did not: a NaN/Inf operand poisons the CTM for the rest of the q…Q scope,
-            // and here it reaches the output as literal `d="MInfinity,NaN …"`, which no viewer
-            // renders. Same message as the raster site, so the two can be compared.
+            // The guard the raster interpreter has too (ContentStreamInterpreter.OpCm): a NaN/Inf
+            // operand poisons the CTM for the rest of the q…Q scope, and here it would reach the
+            // output as literal `d="MInfinity,NaN …"`, which no viewer renders. Same message as
+            // the raster site, so the two can be compared.
             if (!MatrixGuard.AllFinite(m))
             {
                 RenderDiagnostics.Report(RenderDiagnosticKind.ContentStreamError,
@@ -325,9 +313,8 @@ internal sealed partial class SvgContentWriter
 
             // /Font: [fontDictRef size] — §8.4.5 Table 58. Updates the current font selection so
             // subsequent text ops use the right face without a separate `Tf`. Read through
-            // ExtGStateFont, which the raster interpreter also calls: this copy accepted only the
-            // conformant reference shape and the raster one accepted only a /Name, so the two were
-            // mutually exclusive and each file's font was selected by exactly one of them.
+            // ExtGStateFont, which the raster interpreter also calls, so both renderers select the
+            // same font from the same entry.
             if (ExtGStateFont.TryRead(_doc, extGs, _resources, "SVG: ",
                                       out string gsFontName, out float? gsFontSize))
             {
@@ -356,7 +343,7 @@ internal sealed partial class SvgContentWriter
 
         /// <summary>
         /// Reports, once per page, that a graphics-state parameter was read, stored and not
-        /// honoured — the SVG half of the pair the raster interpreter has always reported.
+        /// honoured — the SVG half of the pair the raster interpreter reports.
         ///
         /// <para>The scope differs from the raster path's on purpose and the difference is
         /// observable: this one is per <i>page</i> (the shared registry reaches every child writer)

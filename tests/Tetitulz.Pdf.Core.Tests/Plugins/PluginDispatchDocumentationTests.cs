@@ -12,23 +12,21 @@ namespace Tetitulz.Pdf.Core.Tests.Plugins;
 
 /// <summary>
 /// <c>PdfPluginHost</c>'s remarks carry a table headed "Which plugin types the library dispatches
-/// automatically". Its first row used to be <c>IPdfProcessingHook</c> → "Before/after every
-/// <c>PdfOperations</c> write operation", and <b>nothing in the library has ever called
-/// <c>InvokeBeforeProcess</c> or <c>InvokeAfterProcess</c></b> — <c>PdfOperations</c>' own source
-/// says as much four lines into the file, so the two documents contradicted each other and the
-/// wrong one was the document a plugin author reads.
+/// automatically". A row such as <c>IPdfProcessingHook</c> → "Before/after every
+/// <c>PdfOperations</c> write operation" is a promise to a plugin author, and <b>nothing in the
+/// library calls <c>InvokeBeforeProcess</c> or <c>InvokeAfterProcess</c></b>.
 ///
-/// <para>The failure it enabled is silent by construction: a compliance plugin implementing
-/// <c>OnBeforeProcess</c> to strip embedded JavaScript would register, report as registered, and
-/// never once be called, with every document written unsanitized and nothing thrown or reported.
-/// Its own unit tests — which call <c>host.InvokeBeforeProcess</c> directly — would pass, because
-/// they exercise the host method rather than a dispatch that exists.</para>
+/// <para>The failure such a row enables is silent by construction: a compliance plugin
+/// implementing <c>OnBeforeProcess</c> to strip embedded JavaScript would register, report as
+/// registered, and never once be called, with every document written unsanitized and nothing
+/// thrown or reported. Its own unit tests — which call <c>host.InvokeBeforeProcess</c> directly —
+/// would pass, because they exercise the host method rather than a dispatch that exists.</para>
 ///
 /// <para>This guard is the enforcement, and it is <b>self-cleaning in both directions</b>: an
 /// interface may sit in the auto-dispatch table if and only if something outside
 /// <c>PdfPluginHost.cs</c> actually invokes it. Wiring the processing hooks into the
-/// Stream-in/Stream-out operations later lets the row go back with no change here; re-adding the
-/// row without the wiring fails.</para>
+/// Stream-in/Stream-out operations lets the row in with no change here; adding the row without
+/// the wiring fails.</para>
 /// </summary>
 public class PluginDispatchDocumentationTests
 {

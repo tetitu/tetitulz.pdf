@@ -18,10 +18,9 @@ namespace Tetitulz.Pdf.Base.Tests;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The library already has 86 files of hostile-input coverage aimed at individual parsers. What was
-/// missing was the end-to-end question a caller actually asks: <i>if I hand this thing a corrupt
-/// file, what happens?</i> These eight shapes were measured on 2026-08-12 and all eight behaved;
-/// the value is that they keep behaving.
+/// Beside the hostile-input coverage aimed at individual parsers, this asks the end-to-end question
+/// a caller actually asks: <i>if I hand this thing a corrupt file, what happens?</i> Eight shapes,
+/// each held to behaving.
 /// </para>
 /// <para>
 /// <b>What counts as a pass.</b> Either a documented failure — <see cref="PdfException"/> and its

@@ -156,8 +156,8 @@ namespace Tetitulz.Pdf.Core.Plugins
         /// If a plugin with the same name is already registered.
         /// <para>
         /// <see cref="DuplicatePluginException"/> derives from <c>PdfException</c>, <b>not</b> from
-        /// <see cref="InvalidOperationException"/>, so an existing
-        /// <c>catch (InvalidOperationException)</c> around <c>Register</c> no longer catches a
+        /// <see cref="InvalidOperationException"/>, so a
+        /// <c>catch (InvalidOperationException)</c> around <c>Register</c> does not catch a
         /// duplicate registration. Catch <see cref="DuplicatePluginException"/> (or
         /// <c>PdfException</c>) instead.
         /// </para>

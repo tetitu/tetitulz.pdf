@@ -19,13 +19,13 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Signing;
 
 /// <summary>
-/// Locks in ֲ§59 (C1) and ֲ§60-equivalent (C3): DssBuilder now verifies
-/// every OCSP response's signature against an issuer-anchored responder
-/// cert before embedding it, and rejects stale responses outright.
+/// DssBuilder verifies every OCSP response's signature against an
+/// issuer-anchored responder cert before embedding it, and rejects stale
+/// responses outright.
 ///
-/// Pre-fix, an attacker-controlled OCSP endpoint could return a
-/// fabricated "good" status for a revoked cert, and a stale (post-
-/// nextUpdate) response was embedded into the DSS dictionary anyway.
+/// Otherwise an attacker-controlled OCSP endpoint could return a fabricated
+/// "good" status for a revoked cert, and a stale (post-nextUpdate) response
+/// would be embedded into the DSS dictionary anyway.
 /// </summary>
 public class DssBuilderOcspValidationTests
 {

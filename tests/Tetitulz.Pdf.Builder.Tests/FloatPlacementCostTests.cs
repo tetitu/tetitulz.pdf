@@ -55,8 +55,8 @@ public class FloatPlacementCostTests
             long big = WorkFor(1000);   // 4× the floats
 
             // Linear: past the cap each float adds a bounded, constant amount of scanning, so 4× the
-            // floats is about 4× the work. Before the fix each float scanned every exclusion on the
-            // page, so 4× the floats was ~16× the work — which this ×8 ceiling refuses.
+            // floats is about 4× the work. Each float scanning every exclusion on the page would make
+            // 4× the floats ~16× the work — which this ×8 ceiling refuses.
             Assert.True(big < small * 8, $"float placement work grew faster than linearly: {small} → {big}");
             // And the work is genuinely spent (not a dead counter the cap zeroed): the control render
             // below has floats, so some exclusions are examined.

@@ -77,7 +77,7 @@ public sealed class ColourDuplicationGapTests
     [Fact]
     public void AnnotationCmykColour_OperandAboveOne_StaysWithinTheRgbGamut()
     {
-        // The other end of the range: k > 1 drives (1-k) negative, which used to emit a
+        // The other end of the range: k > 1 drives (1-k) negative, which unclamped would emit a
         // negative channel.
         byte[] pdf = AnnotationPdf("/C [0 0 0 1.4]");
 
@@ -92,15 +92,9 @@ public sealed class ColourDuplicationGapTests
     [Fact]
     public void AnnotationCmykColour_InRangeOperand_IsUnchangedByTheClampFix()
     {
-        // Guards the fix against over-reach: clamping must not perturb a legal operand.
-        // 0.5 cyan, no black → (1-0.5)*(1-0) = 0.5 → 127.5, which rounds to 128.
-        //
-        // This value was written to pin the annotation path's convention ahead of the CMYK
-        // unification (GAPS.md §2b step 4), on the expectation that unifying would move it.
-        // It did not: the annotation paths already rounded, and rounding is what the whole tree
-        // was unified onto — so the assertion is unchanged across that change. Recorded because
-        // "the test I expected to re-baseline didn't need re-baselining" is evidence the two
-        // conventions were reconciled in the direction this path already had right.
+        // Guards the clamp against over-reach: clamping must not perturb a legal operand.
+        // 0.5 cyan, no black → (1-0.5)*(1-0) = 0.5 → 127.5, which rounds to 128 — the one
+        // rounding convention the whole tree's CMYK conversion uses (GAPS.md §2b).
         byte[] pdf = AnnotationPdf("/C [0.5 0 0 0]");
 
         var triples = RgbTriples(RenderSvg(pdf));
@@ -133,7 +127,7 @@ public sealed class ColourDuplicationGapTests
         // 1. the shared converter itself
         Assert.Equal(Expected, PdfColor.CmykToRgb(0.5f, 0f, 0f, 0f).Red);
 
-        // 2. the component-array converter in the same file (used to be a second implementation)
+        // 2. the component-array converter in the same file (one implementation with the first)
         Assert.Equal(Expected,
             PdfColor.ComponentsToColor(new[] { 0.5f, 0f, 0f, 0f },
                 Tetitulz.Pdf.Core.Constants.PdfColorSpaceNames.DeviceCMYK).Red);

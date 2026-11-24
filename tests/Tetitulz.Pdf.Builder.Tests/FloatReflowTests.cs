@@ -477,9 +477,8 @@ public sealed class FloatReflowTests
     /// <remarks>
     /// <b><c>BuilderDiagnostics.OnEvent</c> is a process-wide static event</b>, so an unfiltered
     /// handler turns this assertion into a claim about everything running in the test host — the
-    /// coupling that produced real intermittents elsewhere in this repository. Filtering to the
-    /// calling thread is the fix the register prescribes; serialising the collection would hide
-    /// the coupling rather than remove it.
+    /// coupling that produces intermittent failures. Filtering to the calling thread is the remedy;
+    /// serialising the collection would hide the coupling rather than remove it.
     /// </remarks>
     private static List<string> Approximations(Action export)
     {

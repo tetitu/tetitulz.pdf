@@ -25,7 +25,7 @@ namespace Tetitulz.Pdf.Base.Tests.Encryption;
 /// <para>Every assertion here decrypts the output and reads the value back. That is the only check
 /// that means anything: an appended revision written in clear text produces a file that opens
 /// perfectly well and whose field values decrypt to noise, so "it wrote a valid PDF" is precisely
-/// the assertion that cannot tell the fix from the bug.</para>
+/// the assertion that cannot tell an encrypted revision from a clear-text one.</para>
 /// </summary>
 public class EncryptedIncrementalUpdateTests
 {
@@ -298,7 +298,7 @@ public class EncryptedIncrementalUpdateTests
 
     /// <summary>
     /// Reading an encrypted form through the ordinary reader is refused — an encrypted document
-    /// exposes no catalog, and the empty list it used to return claimed a form with no fields —
+    /// exposes no catalog, and an empty list would claim a form with no fields —
     /// and the refusal names the encrypted-aware entry point.
     /// </summary>
     [Fact]

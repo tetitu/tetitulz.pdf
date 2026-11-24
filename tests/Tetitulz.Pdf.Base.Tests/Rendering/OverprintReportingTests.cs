@@ -33,19 +33,15 @@ public class OverprintReportingTests
 
     /// <summary>
     /// One page, two distinct gaps — an RGB source colour and a shading, both under
-    /// <c>/op true</c>. Both must be named. Under the old single-flag guard the fill painted first,
-    /// took the flag, and the second operation was silent.
+    /// <c>/op true</c>. Both must be named; a single-flag guard would let the fill painted first take
+    /// the flag and leave the second operation silent.
     /// </summary>
     /// <remarks>
-    /// The second half of the fixture was an <b>image</b> until 2026-08-18. Once DeviceCMYK images
-    /// gained simulation, an RGB image and an RGB fill decline for the <i>same</i> reason — and
-    /// the guard correctly says it once, which left this test with one report and no way to
-    /// demonstrate what it is about. A shading is a genuinely different reason, so the claim
-    /// survives with a fixture that can still make it.
+    /// The second half is a <b>shading</b>, a genuinely different reason; an RGB image would decline
+    /// for the same reason as the RGB fill, and the guard says that once. Simulation is off: with it
+    /// on, the raster renderer simulates a page that overprints through its separation plates
+    /// (<c>OverprintPreview</c>) and declines nothing.
     /// </remarks>
-    /// <para><b>Simulation off since 2026-10-04.</b> With it on, the raster renderer simulates a page
-    /// that overprints through its separation plates (<c>OverprintPreview</c>) and declines nothing,
-    /// so the reasons that remain to tell apart are the opt-in and the operator-level ones.</para>
     [Fact]
     public void TwoDifferentSkipReasons_OnOnePage_AreBothReported()
     {
@@ -59,8 +55,8 @@ public class OverprintReportingTests
 
     /// <summary>
     /// The same reason twice in one page is still said once — the reason the guard exists at all.
-    /// Two RGB fills, one report. (It was two RGB images until 2026-10-03, when an overprinting
-    /// image stopped being a reason at all — §8.6.7; see <c>OverprintOnAnRgbImage_ReportsNothing</c>.)
+    /// Two RGB fills, one report. (An overprinting image is no reason at all — §8.6.7; see
+    /// <c>OverprintOnAnRgbImage_ReportsNothing</c>.)
     /// </summary>
     [Fact]
     public void TheSameSkipReasonTwice_IsReportedOnce()
@@ -99,8 +95,7 @@ public class OverprintReportingTests
     /// <summary>
     /// An overprinting shading or pattern fill is named when simulation is off, and simulated —
     /// nothing reported — when it is on: the raster renderer composites it on the page's separation
-    /// plates (<c>OverprintPreview</c>). It used to be reported either way, the per-paint
-    /// compositor having no way to simulate it.
+    /// plates (<c>OverprintPreview</c>).
     /// </summary>
     [Theory]
     [InlineData("q /GS0 gs 0 0 0 1 k /Sh1 sh Q", "shading (sh)")]
@@ -116,12 +111,8 @@ public class OverprintReportingTests
     /// per colorant like a path stroke's.
     /// </summary>
     /// <remarks>
-    /// <para><b>This test used to assert the opposite under the name
-    /// <c>OverprintInATextRenderModeOtherThanFill_IsReported</c></b>: every mode but 0 was declined
-    /// as "a text render mode other than 0", the mode reported and the pen painted opaque. Both
-    /// halves of every painting mode go through glyph capture now, so that reason no longer exists
-    /// and a report here would be a diagnostic that lies. Renamed rather than re-asserted, because
-    /// a test whose name and body disagree is the failure no guard can catch.</para>
+    /// <para>Both halves of every painting mode go through glyph capture, so "a text render mode
+    /// other than 0" is no reason to decline, and a report here would be a diagnostic that lies.</para>
     /// <para>The sink is filtered to this thread because the assertion is negative.</para>
     /// </remarks>
     [Theory]
@@ -191,9 +182,8 @@ public class OverprintReportingTests
     // ====================================================================
 
     /// <summary>
-    /// With <c>SimulateOverprint</c> off — the default — the raster path used to return silently
-    /// while the SVG writer reported, so the same prepress file was announced by one exporter and
-    /// not the other. Both report now.
+    /// With <c>SimulateOverprint</c> off — the default — both renderers report, so the same prepress
+    /// file is not announced by one exporter and not the other.
     /// </summary>
     [Fact]
     public void SimulationOff_IsReportedByBothRenderers()
@@ -212,8 +202,8 @@ public class OverprintReportingTests
 
     /// <summary>
     /// A page runs many SVG writers — one per form XObject, pattern cell, soft mask, Type 3 glyph
-    /// and annotation appearance — and the guard used to be a field on the writer, so each of them
-    /// re-reported the same thing. This page overprints on its own content <i>and</i> inside a form
+    /// and annotation appearance — so a guard held as a field on the writer would let each of them
+    /// re-report the same thing. This page overprints on its own content <i>and</i> inside a form
     /// XObject; one report is the whole claim.
     /// </summary>
     [Fact]

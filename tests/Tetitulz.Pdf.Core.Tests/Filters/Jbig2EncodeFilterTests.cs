@@ -221,11 +221,10 @@ public class Jbig2EncodeFilterTests
     /// other implementation does at the same boundary. A test expecting equality is comparing two
     /// different conventions.</para>
     ///
-    /// <para><b>There is no switch that would "fix" it, and there used to be.</b>
-    /// <c>EmitLegacyInvertedPolarity</c> let a caller ask for T.88 polarity back; it was a
-    /// process-wide mutable static, so flipping it inside a test would have made this assertion
-    /// depend on what else the process was doing — and it has since been deleted outright, because
-    /// a compatibility flag for a defect is how the defect comes back (GAPS.md §2d).</para>
+    /// <para><b>There is no switch that would "fix" it.</b> A flag letting a caller ask for T.88
+    /// polarity back would be a process-wide mutable static, making this assertion depend on what
+    /// else the process was doing — and a compatibility flag for a defect is how the defect comes back
+    /// (GAPS.md §2d).</para>
     ///
     /// <para>The padding bits past the width are not part of the image and the decoder may leave
     /// them however it likes, so this walks pixels rather than bytes.</para>

@@ -16,7 +16,7 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// shipping packages before it ever reaches an external consumer. That makes the baseline worth
 /// more for this assembly than for a leaf one.</para>
 ///
-/// <para>A failure is not automatically a bug — an intended API change fails here once, and the fix
+/// <para>A failure is not automatically a bug — an intended API change fails here once, and the answer
 /// is to accept the regenerated <c>.actual</c> file <i>in the same commit</i>, which turns the diff
 /// into the migration record. What the guard prevents is a change nobody noticed.</para>
 /// </summary>

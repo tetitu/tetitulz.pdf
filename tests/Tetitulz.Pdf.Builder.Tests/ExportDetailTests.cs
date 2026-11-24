@@ -17,9 +17,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// Low-severity export details where the output was wrong or silent: duplicate ODF identifiers,
-/// a colour that could not be parsed and was painted black without saying so, and a font file that
-/// is present but broken looking exactly like one that is absent.
+/// Low-severity export details where the output could be wrong or silent: duplicate ODF
+/// identifiers, a colour that cannot be parsed painted black without saying so, and a font file
+/// that is present but broken looking exactly like one that is absent.
 /// </summary>
 public class ExportDetailTests
 {

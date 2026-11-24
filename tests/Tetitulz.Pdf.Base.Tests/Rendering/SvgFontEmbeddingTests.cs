@@ -24,9 +24,8 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// normally drawn as vector <c>&lt;path&gt;</c> outlines — the actual glyph shapes — and needs no
 /// font-face. Two populations fall past that with a font program sitting in the file: a
 /// <b>vertical writing-mode</b> run (§9.7.4.3), which the outline emitter declines outright, and
-/// a program SkiaSharp would not load. Both used to be drawn in a family picked by name
-/// similarity, which for vertical CJK is a substitute with the wrong shapes and the wrong
-/// metrics.</para>
+/// a program SkiaSharp would not load. Drawn in a family picked by name similarity, both would
+/// get, for vertical CJK, a substitute with the wrong shapes and the wrong metrics.</para>
 ///
 /// <para>Every fixture here therefore draws through <c>/Identity-V</c>, and the acceptance
 /// control at the bottom draws the same font horizontally to prove the outline path still wins

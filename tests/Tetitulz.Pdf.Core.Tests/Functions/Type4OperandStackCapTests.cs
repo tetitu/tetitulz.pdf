@@ -65,8 +65,8 @@ public class Type4OperandStackCapTests
         }) { IsBackground = true };
         worker.Start();
 
-        // Pre-fix this thread grew the heap to gigabytes; the join would not return in time, or the
-        // test host would be killed over its memory ceiling. Either is the kill.
+        // Uncapped, this thread grows the heap to gigabytes; the join would not return in time, or
+        // the test host would be killed over its memory ceiling. Either is the kill.
         Assert.True(worker.Join(TimeSpan.FromSeconds(30)), "the copy-bomb did not finish — the stack was not capped");
         Assert.Null(unexpected);
         Assert.True(refused, "the copy-bomb was not refused as a work-budget overflow");

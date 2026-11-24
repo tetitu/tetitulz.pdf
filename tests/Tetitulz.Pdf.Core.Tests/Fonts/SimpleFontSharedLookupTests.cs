@@ -19,17 +19,14 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts;
 /// §9.6.6 defines them once for both.
 /// </summary>
 /// <remarks>
-/// <para><b>Why this suite exists.</b> The two classes carried byte-identical bodies for
-/// <c>HasExplicitWidth</c> and <c>Decode</c> and the same <c>/Widths</c> lookup inside
-/// <c>GetWidth</c>, over six privately duplicated fields, and that had already produced a live
-/// defect: §9.6.6.4's implicit-base-encoding rule was fixed in the TrueType copy only, so byte
-/// 0x27 with no <c>/Encoding</c> extracted as U+2019 through one class and U+0027 through the
-/// other. They now share <c>PdfSimpleFont</c>.</para>
+/// <para><b>Why this suite exists.</b> The two classes share <c>PdfSimpleFont</c>; as copies they
+/// would drift — §9.6.6.4's implicit-base-encoding rule in one copy only would extract byte 0x27
+/// with no <c>/Encoding</c> as U+2019 through one class and U+0027 through the other.</para>
 ///
 /// <para><b>Each case asserts the value, not merely the agreement.</b> Two implementations that
-/// are one implementation agree by construction, so an equality-only test would be a tautology
-/// the moment the merge landed. The expected width and the expected decoded string are named
-/// here; the cross-subtype comparison is the part that would catch a future re-fork.</para>
+/// are one implementation agree by construction, so an equality-only test would be a tautology.
+/// The expected width and the expected decoded string are named here; the cross-subtype
+/// comparison is the part that would catch a future re-fork.</para>
 ///
 /// <para><b>The last case is the one that separates them</b>, and it is deliberately left
 /// separate: only Type 1 falls back to Standard-14 AFM metrics when the font has no
@@ -111,18 +108,10 @@ public class SimpleFontSharedLookupTests
     /// is not a <c>/Widths</c> entry, and space detection and combining-mark placement need to
     /// tell the two apart.
     ///
-    /// <para><b>This test asserted the opposite until 2026-08-27, and its name said so.</b> It
-    /// read <c>WithNoWidthsArray_OnlyTheType1FontFallsBackToStandard14Metrics</c> and pinned
-    /// <c>/MissingWidth</c> — i.e. <b>0</b> — for the TrueType side, calling the asymmetry "the
-    /// one place the two are allowed to differ". §9.6.3 Table 113 carries the same "Required
-    /// except for the standard 14 fonts" note as Table 111, so
-    /// <c>/Subtype /TrueType /BaseFont /Arial</c> with no <c>/Widths</c> is legal — and every
-    /// glyph in such a font drew at zero advance. The asymmetry was a defect, not a rule.</para>
-    ///
-    /// <para>It is <b>renamed</b> rather than edited in place. CLAUDE.md: when a behaviour
-    /// changes, rename the test or restore the behaviour — never edit the assertion and leave the
-    /// name, because a name that contradicts its body is the one failure mode no guard here
-    /// catches.</para>
+    /// <para><b>Both subtypes, not Type 1 alone.</b> §9.6.3 Table 113 carries the same "Required
+    /// except for the standard 14 fonts" note as Table 111, so <c>/Subtype /TrueType /BaseFont
+    /// /Arial</c> with no <c>/Widths</c> is legal — and measured at <c>/MissingWidth</c>, <b>0</b>,
+    /// every glyph in such a font would draw at zero advance.</para>
     /// </summary>
     [Fact]
     public void WithNoWidthsArray_BothSimpleSubtypesFallBackToStandard14Metrics()

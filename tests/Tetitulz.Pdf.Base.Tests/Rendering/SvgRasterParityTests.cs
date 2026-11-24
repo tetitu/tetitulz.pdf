@@ -217,10 +217,10 @@ public sealed class SvgRasterParityTests
     /// painting the pattern that is no longer selected.
     /// </summary>
     /// <remarks>
-    /// The raster path has asked for both since the leak was fixed
-    /// (<c>PatternLeakAndRotatedImageTests</c>, a statement whose QR code came out solid magenta);
-    /// all five SVG gates asked for the name alone, so this page rendered the device colour and
-    /// exported the pattern. Both now go through <c>PatternPaint.SelectedName</c>.
+    /// Both renderers ask for both, through <c>PatternPaint.SelectedName</c>
+    /// (<c>PatternLeakAndRotatedImageTests</c>: a statement whose QR code would come out solid
+    /// magenta); SVG gates asking for the name alone would make this page render the device colour
+    /// and export the pattern.
     /// <para>The colour is pinned as well as matched, because "both renderers export the pattern"
     /// would satisfy equality just as well as "both paint the device colour".</para>
     /// </remarks>
@@ -299,8 +299,7 @@ public sealed class SvgRasterParityTests
 
     /// <summary>
     /// An image XObject whose <c>/OC</c> names an OCG that the default configuration turns OFF is
-    /// skipped by the raster path and used to be exported anyway — so a watermark the viewer hides
-    /// was in the SVG.
+    /// skipped by both renderers — exported anyway, a watermark the viewer hides would be in the SVG.
     /// </summary>
     [Fact]
     public void HiddenOcgImageXObject_IsNotExported()
@@ -529,10 +528,10 @@ public sealed class SvgRasterParityTests
     /// resource dictionary says.
     /// </summary>
     /// <remarks>
-    /// The raster path has always short-circuited the reserved names before the resource lookup;
-    /// the SVG writer looked the resource up first. So this page -- which binds /DeviceGray to a
-    /// spot colour -- filled BLACK when rendered and the SPOT COLOUR AT FULL TINT when exported,
-    /// because Table 74's initial colour for a Separation is 1.0 in every component.
+    /// Both renderers short-circuit the reserved names before the resource lookup. Looking the
+    /// resource up first would make this page -- which binds /DeviceGray to a spot colour -- fill
+    /// BLACK when rendered and the SPOT COLOUR AT FULL TINT when exported, because Table 74's
+    /// initial colour for a Separation is 1.0 in every component.
     /// <para><b>The file is malformed, and that is not a reason to leave it.</b> Two renderers
     /// disagreeing is a property of this library, not of the input, and here the spec says plainly
     /// which of the two answers is right. Asserting only that they MATCH would also pass if both
@@ -891,7 +890,7 @@ public sealed class SvgRasterParityTests
 
     /// <summary>
     /// With simulation off both renderers name the <b>same</b> operation — one shared message table.
-    /// With it on they part, by the owner's choice (2026-10-04): the raster renderer simulates the
+    /// With it on they part, by the owner's choice: the raster renderer simulates the
     /// shading or pattern on the page's separation plates and says nothing, while the SVG writer,
     /// which has no plates, still names it.
     /// </summary>
@@ -944,17 +943,15 @@ public sealed class SvgRasterParityTests
     }
 
     /// <summary>
-    /// The image row left the theory above twice. First by being <b>implemented</b> on the raster
-    /// side only (a DeviceCMYK image composited per sample, 2026-08-18), which parted the two
-    /// renderers; then (2026-10-03) by that composite being <b>removed</b>: §8.6.7 keeps non-zero
-    /// overprint mode off images, so an overprinting image in DeviceCMYK, grey or RGB writes every
-    /// process colorant and its ordinary draw is exact. The renderers agree again, through one rule
+    /// The image row is not in the theory above: §8.6.7 keeps non-zero overprint mode off images, so
+    /// an overprinting image in DeviceCMYK, grey or RGB writes every process colorant and its ordinary
+    /// draw is exact. The renderers agree through one rule
     /// (<c>OverprintCompositor.ImageLeavesColorantsAlone</c>, ImageOverprintTests): neither says
     /// anything about this DeviceRGB image. The RGB fill beside it is the potency control — both
     /// do report that, so the silence about the image is not a deaf sink.
     /// </summary>
     /// <remarks>
-    /// With simulation off, since 2026-10-04: with it on the raster renderer simulates the whole
+    /// With simulation off: with it on the raster renderer simulates the whole
     /// page on its plates and reports nothing at all, so the potency control is the opt-in report
     /// both renderers give the fill.
     /// </remarks>
@@ -1009,19 +1006,18 @@ public sealed class SvgRasterParityTests
     }
 
     /// <summary>
-    /// <c>/TK</c> is the one entry that left the table above, and it left it by being
-    /// <b>implemented</b>: the raster path opens a knockout layer
+    /// <c>/TK</c> is not in the table above, because it is <b>implemented</b>: the raster path opens
+    /// a knockout layer
     /// (<c>ContentStreamInterpreter.BeginTextKnockout</c>), and the SVG writer — which has no
     /// knockout model — emulates the common case exactly, glyphs painted opaque inside a group at
-    /// their one alpha (<c>SvgContentWriter.BeginTextKnockout</c>). This case used to assert that
-    /// the SVG side reported it, and was renamed when that stopped being true; the case below
-    /// keeps a deviation the SVG writer still reports.
+    /// their one alpha (<c>SvgContentWriter.BeginTextKnockout</c>); the case below keeps a deviation
+    /// the SVG writer still reports.
     ///
-    /// <para>Note the fixture has to <b>draw text at a translucent alpha</b>. The report now fires
-    /// from <c>BT</c> on the state the text object opens with, not from the <c>gs</c> that sets
-    /// the key — <c>/TK</c>'s initial value is <c>true</c>, so gating on the token announced the
-    /// deviation only for files redundantly restating the default and stayed silent on every file
-    /// that simply relied on it.</para>
+    /// <para>Note the fixture has to <b>draw text at a translucent alpha</b>. The report fires from
+    /// <c>BT</c> on the state the text object opens with, not from the <c>gs</c> that sets the key —
+    /// <c>/TK</c>'s initial value is <c>true</c>, so gating on the token would announce the deviation
+    /// only for files redundantly restating the default and stay silent on every file that simply
+    /// relies on it.</para>
     /// </summary>
     [Fact]
     public void TextKnockout_IsHonouredByBothRenderers()
@@ -1155,14 +1151,11 @@ public sealed class SvgRasterParityTests
     /// must treat both spellings alike.
     /// </summary>
     /// <remarks>
-    /// <para>The SVG writer's dispatch used to swallow the operator with a bare <c>break</c>, so the
-    /// ExtGState form was at least stored while the operator form vanished — which is why the pair
-    /// is asserted together.</para>
-    /// <para><b>What is asserted moved twice as the intent became readable.</b> Both renderers
-    /// used to report <c>/Saturation ri</c> as ignored, then only <c>/AbsoluteColorimetric ri</c>,
-    /// while the relative table stood in for it. Every intent is honoured now, so neither renderer
-    /// reports any; that both <b>read</b> the operator — absolute colorimetric visibly differs from
-    /// relative in each — is <c>IccAbsoluteColorimetricTests</c>' pair of renderer tests.</para>
+    /// <para>A dispatch swallowing the operator with a bare <c>break</c> would store the ExtGState
+    /// form while the operator form vanished — which is why the pair is asserted together.</para>
+    /// <para>Every intent is honoured, so neither renderer reports any; that both <b>read</b> the
+    /// operator — absolute colorimetric visibly differs from relative in each — is
+    /// <c>IccAbsoluteColorimetricTests</c>' pair of renderer tests.</para>
     /// </remarks>
     [Theory]
     [InlineData("/Saturation ri 0 0 100 100 re f")]
@@ -1363,9 +1356,9 @@ public sealed class SvgRasterParityTests
     /// </summary>
     /// <remarks>
     /// <c>/S /Transparency</c> is written out rather than left to default, so this fixture
-    /// measures <c>/CS</c> alone. The absent-<c>/S</c> case is its own test below — it used to be
-    /// a live divergence (raster defaulted it to a transparency group, SVG did not), and writing
-    /// <c>/S</c> in every fixture is precisely why nothing caught it.
+    /// measures <c>/CS</c> alone. The absent-<c>/S</c> case is its own test below — the renderers
+    /// could disagree on it (one defaulting it to a transparency group, the other not), and writing
+    /// <c>/S</c> in every fixture would hide that.
     /// </remarks>
     private static byte[] GroupCsPdf(string cs)
     {

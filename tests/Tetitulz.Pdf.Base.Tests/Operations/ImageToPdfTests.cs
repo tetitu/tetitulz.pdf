@@ -474,7 +474,7 @@ public sealed class ImageToPdfTests
     /// A multi-page TIFF becomes one PDF page <b>per TIFF page</b>, not one per file.
     /// </summary>
     /// <remarks>
-    /// <para><b>The page count is the assertion, and it is the thing that was wrong to assume.</b>
+    /// <para><b>The page count is the assertion, and it is the thing easy to get wrong.</b>
     /// Every other format this accepts is one image, so the batch loop counted inputs; a TIFF is a
     /// linked list of IFDs and a scanner writes one per sheet, so counting inputs under-reports a
     /// three-sheet scan as one page.</para>

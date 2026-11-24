@@ -54,9 +54,9 @@ public class Type4RollOperatorTests
     }
 
     /// <summary>
-    /// <c>j = 0</c> is the identity. This is the case the old code accidentally got right for
-    /// <c>3 1 roll</c>, so asserting it alone would have proved nothing — it is here to pin that
-    /// the fix did not turn a no-op into a rotation.
+    /// <c>j = 0</c> is the identity. A swapped-operand reading gets <c>3 1 roll</c> right by
+    /// accident, so asserting it alone would prove nothing — it is here to pin that no no-op is
+    /// turned into a rotation.
     /// </summary>
     [Fact]
     public void Roll_ZeroJ_LeavesTheStackUnchanged()

@@ -175,11 +175,9 @@ public class CffGlyphRenderingTests
         var font = MakeFont(new[] { cs });
         var outline = Type2CharstringEvaluator.Evaluate(font, 0);
 
-        // A moveto and nothing else: one point, at the horizontal offset the charstring asked for.
-        // This assertion used to read `Assert.True(outline.Path.PointCount > 0 || true, …)` — the
-        // `|| true` made it a tautology, so it passed with the evaluator returning an empty path,
-        // or the wrong point, or a vertical one. Its vmoveto sibling twelve lines below had the
-        // real assertion all along.
+        // A moveto and nothing else: one point, at the horizontal offset the charstring asked for —
+        // asserted exactly, since a point count alone passes for an empty path, the wrong point or a
+        // vertical one.
         Assert.Equal("MC", Verbs(outline.Path));
         Assert.Equal(1, outline.Path.PointCount);
         Assert.Equal(new SKPoint(50f, 0f), outline.Path[0]);

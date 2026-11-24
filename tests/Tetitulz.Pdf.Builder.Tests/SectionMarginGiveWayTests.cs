@@ -17,12 +17,11 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// </summary>
 /// <remarks>
 /// With <c>MarginTop + MarginBottom &gt;= PageHeightPt</c> (or the same on the width) the content box
-/// is zero or less, and the exporter used to draw one line per page — a 1 KB document became
-/// hundreds of thousands of pages. The margins now give way to zero on the swallowed axis, so a
-/// degenerate section lays out in about as many pages as a normal one, with every word kept, and the
-/// give-way is reported rather than silent. This is the Builder twin of DocxToPdf's
-/// <c>SectionPageSize</c> fix (the F11 DoS sibling), reached through the Builder API and HTML
-/// <c>@page</c> alike.
+/// is zero or less, and drawing one line per page would make a 1 KB document hundreds of thousands
+/// of pages. The margins give way to zero on the swallowed axis, so a degenerate section lays out in
+/// about as many pages as a normal one, with every word kept, and the give-way is reported rather
+/// than silent. This is the Builder twin of DocxToPdf's <c>SectionPageSize</c> rule, reached through
+/// the Builder API and HTML <c>@page</c> alike.
 /// </remarks>
 public class SectionMarginGiveWayTests
 {

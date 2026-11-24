@@ -12,9 +12,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// Penetration-test regression suite for the rendering pipeline (PT review, 2026-06-08,
-/// round 36). Adversarial inputs that, pre-fix, caused a StackOverflow or a multi-GB
-/// allocation when rendering an untrusted PDF.
+/// Adversarial inputs for the rendering pipeline that, unguarded, cause a StackOverflow or a
+/// multi-GB allocation when rendering an untrusted PDF.
 /// </summary>
 public class SecurityHardeningRenderTests
 {
@@ -39,9 +38,9 @@ public class SecurityHardeningRenderTests
     [Fact]
     public void SelfReferentialTilingPattern_DoesNotStackOverflow()
     {
-        // A tiling pattern whose cell content re-paints itself via /P0. Pre-fix, the inner
-        // RenderToBitmap interpreter reset RenderDepth to 0, so the MaxRenderDepth guard never
-        // fired and the pattern recursed unbounded → StackOverflow.
+        // A tiling pattern whose cell content re-paints itself via /P0. An inner RenderToBitmap
+        // interpreter resetting RenderDepth to 0 would keep the MaxRenderDepth guard from ever
+        // firing, and the pattern would recurse unbounded → StackOverflow.
         string cell = "/Pattern cs /P0 scn 0 0 10 10 re f";
         string pattern = "5 0 obj\n<< /Type /Pattern /PatternType 1 /PaintType 1 /TilingType 1 " +
             $"/BBox [0 0 10 10] /XStep 10 /YStep 10 /Resources << /Pattern << /P0 5 0 R >> >> /Length {cell.Length} >>\n" +
@@ -72,8 +71,8 @@ public class SecurityHardeningRenderTests
     [Fact]
     public void VisibilityExpression_DeeplyNested_TerminatesWithoutStackOverflow()
     {
-        // [/Not [/Not [/Not … ]]] 5000 deep. Pre-fix, EvaluateVisibilityExpression ↔
-        // EvaluateVeOperand recursed once per level → StackOverflow. The depth cap stops it.
+        // [/Not [/Not [/Not … ]]] 5000 deep. EvaluateVisibilityExpression ↔ EvaluateVeOperand
+        // recurse once per level, so uncapped → StackOverflow. The depth cap stops it.
         PdfArray cur = new PdfArray();
         cur.Add(new PdfName("Or")); // empty Or → leaf
         for (int i = 0; i < 5000; i++)

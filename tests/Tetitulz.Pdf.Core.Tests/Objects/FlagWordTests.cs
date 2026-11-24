@@ -52,8 +52,8 @@ public class FlagWordTests
     }
 
     /// <summary>
-    /// <c>/P</c> goes through the same rule. <c>1e30</c> used to be cast unchecked and saturate to
-    /// all ones — every permission granted, from a number no producer writes.
+    /// <c>/P</c> goes through the same rule. <c>1e30</c> cast unchecked would saturate to all ones —
+    /// every permission granted, from a number no producer writes.
     /// </summary>
     [Fact]
     public void APermissionValueThatIsNotAnIntegerIsUnreadable_NotEveryPermission()

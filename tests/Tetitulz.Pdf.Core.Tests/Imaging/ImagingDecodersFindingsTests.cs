@@ -118,6 +118,46 @@ public class ImagingDecodersFindingsTests
     }
 
     /// <summary>
+    /// A frame its data could not fill is refused before its buffers are made: two bytes of LZW at minimum code size
+    /// 2 are five codes, at most 1 + 2 + 3 + 4 + 5 = 15 samples, so a 16-pixel frame is the header choosing the
+    /// cost. The 15-pixel frame, which the data could fill, is the short stream drawn as far as it goes.
+    /// </summary>
+    [Theory]
+    [InlineData(15, true)]
+    [InlineData(16, false)]
+    public void Gif_AFrameItsDataCannotFill_IsRefused(int width, bool decodes)
+    {
+        Assert.Equal(decodes, GifImageDecoder.TryDecode(Gif(width), out _, out _, out _, out _, out _));
+        Assert.Contains(decodes ? "ended after" : "hold at most 15 of its 16x1 pixels", GifImageDecoder.LastError);
+    }
+
+    /// <summary>
+    /// The hostile shape: a few dozen bytes declaring 4000 × 4000 pixels, one byte of data. Refused, not a 16 MB index
+    /// buffer, 48 MB of RGB and a sixteen-million-step fill.
+    /// </summary>
+    [Fact]
+    public void Gif_AdversarialHugeFrameOfOneDataByte_IsRefused()
+    {
+        var ms = new MemoryStream();
+        ms.Write(System.Text.Encoding.ASCII.GetBytes("GIF89a"));
+        ms.Write(new byte[] { 0xA0, 0x0F, 0xA0, 0x0F, 0x80, 0, 0, 0, 0, 0, 255, 255, 255 });
+        ms.Write(new byte[] { 0x2C, 0, 0, 0, 0, 0xA0, 0x0F, 0xA0, 0x0F, 0, 2, 1, 0x44, 0, 0x3B });
+
+        Assert.False(GifImageDecoder.TryDecode(ms.ToArray(), out _, out _, out _, out _, out _));
+        Assert.Contains("hold at most 3 of its 4000x4000 pixels", GifImageDecoder.LastError);
+    }
+
+    /// <summary>The bound itself, pinned: below a full table, k(k + 1) ÷ 2 for k codes; past it, 4 096 a code.</summary>
+    [Theory]
+    [InlineData(1, 2, 3L)]
+    [InlineData(3000, 8, 3_555_111L)]
+    [InlineData(10_000, 2, 100_837_376L)]
+    public void Gif_TheMostSamplesItsDataHolds(int bytes, int minCodeSize, long most)
+    {
+        Assert.Equal(most, GifImageDecoder.MostSamples(bytes, minCodeSize));
+    }
+
+    /// <summary>
     /// A GIF89a with a two-entry global table (entry 0 is 10, 20, 30) and one frame of
     /// <paramref name="width"/> by 1 whose LZW data, at minimum code size 2, is ClearTable (4),
     /// index 0, EndOfData (5), packed least significant bit first: one pixel.

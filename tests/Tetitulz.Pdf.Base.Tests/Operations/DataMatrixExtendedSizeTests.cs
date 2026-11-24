@@ -10,12 +10,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
-/// The Data Matrix sizes the reader took on 2026-10-18, each from an independent writer (checked in as
+/// The Data Matrix sizes past 52×52 and the DMRE sizes, each from an independent writer (checked in as
 /// module rows): ISO 21471's rectangular extension (DMRE) — 20×44, and 26×40 and 26×48, the two whose
 /// placement needs Annex E's row wrap — and ISO/IEC 16022's larger squares: 64×64 (four regions a
 /// side, two blocks), 104×104 (six blocks) and 144×144 (ten uneven blocks, its error correction in the
-/// order an independent reader writes). Until then the reader knew nothing past 52×52 and no DMRE size, and passed
-/// such symbols over.
+/// order an independent reader writes).
 /// </summary>
 public class DataMatrixExtendedSizeTests
 {

@@ -17,12 +17,12 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// font's <b>writing mode</b>, exactly as the visible path does.
 /// </summary>
 /// <remarks>
-/// <para><c>DrawInvisibleRun</c> called <c>AdvanceTm</c>, which composes <c>[1 0 0 1 tx 0]</c> — a
-/// purely horizontal step — and never consulted <c>GetWMode</c>. So a vertical CJK page carrying an
-/// OCR overlay (an Identity-V font under <c>3 Tr</c>) laid that run out <b>left to right</b>, while
-/// the SVG exporter laid it top to bottom and this same renderer's <i>visible</i> path laid it top
-/// to bottom too. The renderer disagreed with itself between render mode 3 and render mode 0 for
-/// one font and one string.</para>
+/// <para><c>AdvanceTm</c> composes <c>[1 0 0 1 tx 0]</c> — a purely horizontal step — so an
+/// invisible run advancing through it without consulting <c>GetWMode</c> would lay a vertical CJK
+/// page's OCR overlay (an Identity-V font under <c>3 Tr</c>) out <b>left to right</b>, while the SVG
+/// exporter and this same renderer's <i>visible</i> path lay it top to bottom: the renderer
+/// disagreeing with itself between render mode 3 and render mode 0 for one font and one
+/// string.</para>
 ///
 /// <para><b>How an invisible run is observed at all.</b> It draws nothing, so its advance is only
 /// visible in where the <i>next</i> glyph lands. Each fixture shows one glyph under <c>3 Tr</c> and
@@ -30,11 +30,10 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// position <b>is</b> the first glyph's advance. That is CLAUDE.md's rule for advance defects made
 /// concrete: the glyph that fails stays correct and only the ones after it move.</para>
 ///
-/// <para><b>Two earlier instruments could not see this.</b> A pixel-comparing raster/SVG parity test
-/// cannot, because each renderer stays internally self-consistent. And the first version of this
-/// file used <c>PdfStructuredTextExtractor</c>, which has its own text-position state machine and
-/// never reaches <c>DrawInvisibleRun</c> — it reported a horizontal step for the vertical case with
-/// the fix fully applied.</para>
+/// <para><b>Two other instruments cannot see this.</b> A pixel-comparing raster/SVG parity test
+/// cannot, because each renderer stays internally self-consistent. And
+/// <c>PdfStructuredTextExtractor</c> has its own text-position state machine and never reaches
+/// <c>DrawInvisibleRun</c>.</para>
 /// </remarks>
 public class InvisibleRunWritingModeTests
 {
@@ -57,7 +56,7 @@ public class InvisibleRunWritingModeTests
     }
 
     /// <summary>
-    /// <b>The control.</b> A horizontal font must still advance across — otherwise the fix could be
+    /// <b>The control.</b> A horizontal font must still advance across — otherwise the rule could be
     /// "always advance downward", which is the same defect mirrored.
     /// </summary>
     [Fact]

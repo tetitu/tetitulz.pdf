@@ -12,8 +12,8 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// A template packet nested past <see cref="XfaTemplate.MaxXmlDepth"/> is refused at load, before the
 /// per-level recursions below it run. <c>XDocument.Load</c> builds the tree iteratively, but reading a
 /// value's text, cloning a prototype and walking the subform tree each recurse once a level, so a packet
-/// a few thousand elements deep — well under the element budget — overflowed the thread stack
-/// uncatchably and took the host process down (2026-10-22).
+/// a few thousand elements deep — well under the element budget — would overflow the thread stack
+/// uncatchably and take the host process down.
 /// </summary>
 public class XfaDepthRefusalTests
 {

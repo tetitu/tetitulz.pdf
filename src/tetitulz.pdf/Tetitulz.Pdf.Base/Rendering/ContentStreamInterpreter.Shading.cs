@@ -19,21 +19,6 @@ using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Interprets a PDF content stream, executing drawing operators against a
-    /// <see cref="PdfRenderContext"/> backed by SkiaSharp.
-    ///
-    /// <para>Supported operator families:</para>
-    /// <list type="bullet">
-    ///   <item>Path construction: m l c v y h re</item>
-    ///   <item>Path painting: S s F f f* B B* b b* n</item>
-    ///   <item>Color: g G rg RG k K cs CS sc SC scn SCN</item>
-    ///   <item>Graphics state: q Q cm w J j M d ri i gs</item>
-    ///   <item>Text: BT ET Tf Td TD Tm T* Tj TJ ' " Tc Tw Tz TL Tr Ts</item>
-    ///   <item>XObject: Do (Form XObjects recursed; Image XObjects rasterized)</item>
-    ///   <item>Clipping: W W*</item>
-    /// </list>
-    /// </summary>
     internal sealed partial class ContentStreamInterpreter
     {
         private void OpSh(ContentStreamOperation op)
@@ -540,6 +525,9 @@ namespace Tetitulz.Pdf.Base.Rendering
             int pixW = Math.Max(1, Math.Min(PdfLimits.MaxShadingDimension, SaturatingCast.ToInt(_ctx.PageWidth  * _ctx.DpiScale)));
             int pixH = Math.Max(1, Math.Min(PdfLimits.MaxShadingDimension, SaturatingCast.ToInt(_ctx.PageHeight * _ctx.DpiScale)));
 
+            // Rebuilt for every `sh` and pattern fill, so the bitmap is the page's to pay for as every
+            // offscreen bitmap is, and each triangle below its device area at a shading's weight.
+            if (FormBudget != null && !FormBudget.TryChargeOffscreenPixels((long)pixW * pixH)) return null;
             using var bitmap = new SKBitmap(pixW, pixH, SKColorType.Rgba8888, SKAlphaType.Premul);
             // /Background (PDF §8.7.4.3): areas of the mesh's bounding region not covered by
             // any triangle take this colour under a shading pattern; default transparent, and
@@ -651,6 +639,12 @@ namespace Tetitulz.Pdf.Base.Rendering
                         int i01 = i00 + 1;
                         int i10 = (r + 1) * verticesPerRow + c;
                         int i11 = i10 + 1;
+                        if (!ChargeMeshArea(pixW, pixH, vertices[i00].x, vertices[i00].y, vertices[i01].x, vertices[i01].y,
+                                            vertices[i10].x, vertices[i10].y, vertices[i11].x, vertices[i11].y))
+                        {
+                            r = rows;   // the page's paints are spent: what is drawn stands
+                            break;
+                        }
                         latticeBatch.Add(canvas,
                             vertices[i00].x, vertices[i00].y, vertices[i00].c,
                             vertices[i01].x, vertices[i01].y, vertices[i01].c,
@@ -718,6 +712,7 @@ namespace Tetitulz.Pdf.Base.Rendering
                 var (xa, ya, ca, _) = vertices[ia];
                 var (xb, yb, cb, _) = vertices[ib];
                 var (xc, yc, cc, _) = vertices[ic];
+                if (!ChargeMeshArea(pixW, pixH, xa, ya, xb, yb, xc, yc, xc, yc)) break;
                 freeFormBatch.Add(canvas, xa, ya, ca, xb, yb, cb, xc, yc, cc);
 
                 prevA = ia; prevB = ib; prevC = ic;
@@ -726,6 +721,32 @@ namespace Tetitulz.Pdf.Base.Rendering
 
             return SKShader.CreateBitmap(bitmap,
                 SKShaderTileMode.Clamp, SKShaderTileMode.Clamp);
+        }
+
+        /// <summary>
+        /// Charges a piece of a mesh — a triangle, a lattice cell, a patch — the device area its bounding box covers
+        /// inside the shading bitmap, at <see cref="RenderBudget.ShadingPaintWeight"/>, against the page's paint
+        /// budget. False once that budget is spent (reported once by the budget), and the caller draws no more of the
+        /// mesh. True with no page budget.
+        /// </summary>
+        /// <remarks>
+        /// A mesh is built again for every <c>sh</c> and pattern fill, and each piece may cover the whole bitmap, so
+        /// the shader's own final paint is the least of what it costs: uncharged, a few kilobytes of full-page patches
+        /// are tens of seconds of rasterising each.
+        /// </remarks>
+        private bool ChargeMeshArea(int pixW, int pixH, params float[] corners)
+        {
+            if (FormBudget == null) return true;
+            float minX = float.MaxValue, minY = float.MaxValue, maxX = float.MinValue, maxY = float.MinValue;
+            for (int i = 0; i + 1 < corners.Length; i += 2)
+            {
+                minX = Math.Min(minX, corners[i]); maxX = Math.Max(maxX, corners[i]);
+                minY = Math.Min(minY, corners[i + 1]); maxY = Math.Max(maxY, corners[i + 1]);
+            }
+            double w = (double)Math.Min(maxX, pixW) - Math.Max(minX, 0f);
+            double h = (double)Math.Min(maxY, pixH) - Math.Max(minY, 0f);
+            if (!(w > 0) || !(h > 0)) return true;
+            return FormBudget.TryChargePaint(w * h * RenderBudget.ShadingPaintWeight);
         }
 
         /// <summary>
@@ -850,6 +871,8 @@ namespace Tetitulz.Pdf.Base.Rendering
             // allocate unbounded full-page bitmaps.
             int pixW = Math.Max(1, Math.Min(PdfLimits.MaxShadingDimension, SaturatingCast.ToInt(_ctx.PageWidth  * _ctx.DpiScale)));
             int pixH = Math.Max(1, Math.Min(PdfLimits.MaxShadingDimension, SaturatingCast.ToInt(_ctx.PageHeight * _ctx.DpiScale)));
+            // The page's to pay for, as every offscreen bitmap is (and each patch below, its device area).
+            if (FormBudget != null && !FormBudget.TryChargeOffscreenPixels((long)pixW * pixH)) return null;
             var bitmap = new SKBitmap(pixW, pixH, SKColorType.Rgba8888, SKAlphaType.Premul);
             try
             {
@@ -952,6 +975,10 @@ namespace Tetitulz.Pdf.Base.Rendering
                         break;
                     }
                     surfacePoints += pointsPerSurface;
+
+                    var outline = new float[2 * pointsPerPatch];
+                    for (int i = 0; i < pointsPerPatch; i++) { outline[2 * i] = cps[i].x; outline[2 * i + 1] = cps[i].y; }
+                    if (!ChargeMeshArea(pixW, pixH, outline)) break;   // the page's paints are spent
 
                     // Render the patch: evaluate the surface on the N×N flattening grid
                     // and emit triangles cell-by-cell with bilinear-interpolated colour. The four

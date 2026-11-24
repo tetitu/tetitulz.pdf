@@ -253,9 +253,9 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// A section's <c>w:pgNumType</c> — its format and its start — reaches the Builder path: page 1
-        /// of a section starting at 4 in upper Roman shows IV. The path read neither until 2026-10-21,
-        /// so every Builder-path page number was decimal from 1; the control is the same document
-        /// without the element, which shows 1.
+        /// of a section starting at 4 in upper Roman shows IV. Read for neither, every Builder-path page
+        /// number would be decimal from 1; the control is the same document without the element, which
+        /// shows 1.
         /// </summary>
         [Fact]
         public void BuilderPath_PageNumberType_SetsTheFormatAndTheStart()

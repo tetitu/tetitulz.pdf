@@ -652,8 +652,8 @@ public sealed class FigureInferenceTests
     /// </summary>
     /// <remarks>
     /// §8.10.1 makes a form without <c>/Resources</c> resolve names against the page that draws it.
-    /// Here both pages bind <c>/Im0</c> to one image object, so there is exactly one answer — the
-    /// form was refused whole until 2026-10-17, which left this, the common shape, untagged.
+    /// Here both pages bind <c>/Im0</c> to one image object, so there is exactly one answer;
+    /// refusing the form whole would leave this, the common shape, untagged.
     /// </remarks>
     [Fact]
     public void ASharedFormWithNoResources_IsOfferedAnImageEveryPageBindsAlike()

@@ -110,6 +110,24 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
         /// <summary>This workspace's HT block decoder (ITU-T T.814), for a tile-component of HT code-blocks: made on first use, reused after.</summary>
         internal JpxHtBlockDecoder Ht => _ht ?? (_ht = new JpxHtBlockDecoder());
 
+        private Dictionary<int, long[]> _blockValues;
+
+        /// <summary>
+        /// A zeroed array of exactly <paramref name="length"/> values, this workspace's own: the transcoder decodes
+        /// each block into one and re-codes it, and its encoders take an array of the block's area. A tile's blocks
+        /// come in at most four sizes (whole, and cut by the right edge, the bottom, or both), so one array a size
+        /// serves every block this workspace decodes. The caller is done with it before it asks again.
+        /// </summary>
+        internal long[] BlockValues(int length)
+        {
+            _blockValues ??= new Dictionary<int, long[]>();
+            if (!_blockValues.TryGetValue(length, out long[] values))
+                _blockValues[length] = values = new long[length];
+            else
+                Array.Clear(values, 0, length);
+            return values;
+        }
+
         private long[] _data = Array.Empty<long>();     // twice the magnitude, with the half bit; the sign is in the flags
         private byte[] _joined = Array.Empty<byte>();
         private Segment[] _segments = new Segment[8];

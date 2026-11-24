@@ -80,7 +80,7 @@ public sealed class PostScriptXObjectRenderTests : IDisposable
 
     /// <summary>
     /// The transform reaches the output too: the same square translated by 100 in x lands 100
-    /// further right, and no longer covers where it used to be.
+    /// further right, and does not cover where the untranslated one does.
     /// </summary>
     [Fact]
     public void PsXObject_WithATranslate_MovesTheDrawing()

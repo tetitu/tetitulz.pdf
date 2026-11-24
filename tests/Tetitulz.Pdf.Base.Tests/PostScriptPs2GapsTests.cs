@@ -17,10 +17,8 @@ namespace Tetitulz.Pdf.Base.Tests;
 /// - Color-key masking (/Mask array on image XObjects) — transparent-color compositing
 /// </summary>
 /// <remarks>
-/// The transfer-function and colour-key tests assert on <b>decoded pixels</b>. They previously
-/// checked only that a PNG came back, which cannot tell an applied transfer function from an
-/// ignored one — one of them even carried the comment "(identity test for robustness)" while
-/// claiming in its name to test inversion.
+/// The transfer-function and colour-key tests assert on <b>decoded pixels</b>: that a PNG came
+/// back cannot tell an applied transfer function from an ignored one.
 /// </remarks>
 public sealed class PostScriptPs2GapsTests
 {
@@ -104,9 +102,8 @@ public sealed class PostScriptPs2GapsTests
 
     /// <summary>
     /// The real check for /TR: <c>C0=[1] C1=[0]</c> maps every component v → 1-v, so the
-    /// image's red pixel must come out cyan. This test previously asserted only that a PNG
-    /// was produced, and its own comment conceded it was "an identity test for robustness" —
-    /// it passed with transfer functions entirely unimplemented.
+    /// image's red pixel must come out cyan. That a PNG was produced would pass with transfer
+    /// functions entirely unimplemented.
     /// </summary>
     [Fact]
     public void ExtGState_TR_InvertFunction_InvertsImagePixels()
