@@ -50,8 +50,8 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts
         /// The one family match: separators and case folded, so the family a PostScript name derives
         /// to matches the one the platform reports — and the platform's substitute for an unknown
         /// family, or a different family sharing a prefix, does not. <c>FontCache</c>,
-        /// <c>SystemFontResolver</c> and the Accessibility font remediator each held a copy, two of
-        /// them with a different separator set (Wave 17, R8.4).
+        /// <c>SystemFontResolver</c> and the Accessibility font remediator all call it, so no copy keeps a
+        /// separator set of its own.
         /// </summary>
         [Theory]
         [InlineData("Times New Roman", "TimesNewRoman", true)]

@@ -405,18 +405,11 @@ public class RepairRoundRegressionTests
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>Renamed from <c>AutoTag_FormSharedByTwoPages_IsNotTaggedAndBothPagesAreReported</c>.</b>
     /// One stream dictionary carries one <c>/StructParents</c>, so a shared form's marked content
-    /// could belong to only one of the pages — which used to make this permanent. Item 49's escape
-    /// is to give each page its own copy of the form;
+    /// can belong to only one of the pages. The escape is to give each page its own copy of the form;
     /// <see cref="AutoTagOptions.DuplicateSharedFormXObjects"/> turns that off for a caller who
-    /// needs the object graph left as it was found, and this pins what they get instead: the old
-    /// behaviour, reported the way it always was.
-    /// </para>
-    /// <para>
-    /// The assertions are unchanged from the version that named the old default. Only the option
-    /// and the name moved — the behaviour still exists, it is simply no longer what happens
-    /// automatically.
+    /// needs the object graph left as it was found, and this pins what they get instead: the form
+    /// untagged, and both pages reported.
     /// </para>
     /// </remarks>
     [Fact]
@@ -457,9 +450,9 @@ public class RepairRoundRegressionTests
     /// A page drawing an <b>image</b> XObject is fully tagged — an image holds no text.
     /// </summary>
     /// <remarks>
-    /// The partial-tagging warning used to fire on <i>any</i> <c>Do</c>, so an ordinary page with
-    /// a logo was reported as partially tagged and <c>PagesPartiallyTagged</c> counted pages where
-    /// the tagging was complete. A number that over-reports is one a caller learns to ignore,
+    /// A partial-tagging warning firing on <i>any</i> <c>Do</c> would report an ordinary page with a
+    /// logo as partially tagged, and <c>PagesPartiallyTagged</c> would count pages where the tagging
+    /// is complete. A number that over-reports is one a caller learns to ignore,
     /// which costs the real signal its meaning.
     /// </remarks>
     [Fact]
@@ -648,8 +641,8 @@ public class RepairRoundRegressionTests
     // =====================================================================
 
     /// <summary>
-    /// UA17 used to ask "does this page contain any BDC at all". One artifact sequence therefore
-    /// immunised every untagged run beside it — the exact hollow-tagging case the check exists to
+    /// UA17 does not ask "does this page contain any BDC at all": one artifact sequence would then
+    /// immunise every untagged run beside it — the exact hollow-tagging case the check exists to
     /// catch. The rule is per text-showing operator: ISO 14289-1 §7.1 requires <em>all</em>
     /// content to be tagged or marked as an artifact.
     /// </summary>

@@ -23,7 +23,7 @@ namespace Tetitulz.Pdf.Core.Tests.Document;
 /// <para><b>Every assertion reads the emitted bytes, including inside deflated streams.</b> The
 /// defect this class pins is precisely one an object-graph assertion could not see: the script was
 /// gone from the dictionary and present in the file — in the raw bytes, or inflated out of an
-/// object stream the rewrite used to copy through verbatim. <see cref="MarkerSurvives"/> looks in
+/// object stream a rewrite copied through verbatim. <see cref="MarkerSurvives"/> looks in
 /// both places, so a payload hiding in a compressed container is found.</para>
 /// </remarks>
 public class SanitizerReachabilityLeakTests

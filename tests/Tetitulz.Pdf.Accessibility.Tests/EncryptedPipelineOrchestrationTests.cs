@@ -17,7 +17,7 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 
 /// <summary>
 /// The remediation pipeline run against an <b>encrypted</b> document, in place — the capability the
-/// nine <c>Plan</c> methods existed for, and the last piece of plan 11's W1-1.
+/// <c>Plan</c> methods exist for.
 /// </summary>
 /// <remarks>
 /// <para><b>One pipeline, not two.</b> Every gate — requested / applicable / superseded, the
@@ -28,10 +28,9 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 /// <para><b>The safety property that matters most is negative:</b> a step with no encrypted route
 /// must never fall through to its clear-text writer. That would append a revision the encryption
 /// dictionary does not describe, producing a file no reader can open — from an operation the caller
-/// asked for in order to improve the document. <c>SkipUnencryptable</c> is the mechanism, and it now
-/// has <b>no callers</b>: all nine steps gained a route on 2026-08-15, <c>SetDocumentMetadata</c>
-/// last. It is kept because the next step added will need it, and because deleting it would make
-/// falling through the path of least resistance.</para>
+/// asked for in order to improve the document. <c>SkipUnencryptable</c> is the mechanism, and it has
+/// <b>no callers</b>: every step has an encrypted route. It is kept because the next step added may
+/// need it, and because deleting it would make falling through the path of least resistance.</para>
 /// </remarks>
 public sealed class EncryptedPipelineOrchestrationTests
 {
@@ -179,8 +178,8 @@ public sealed class EncryptedPipelineOrchestrationTests
 
         RemediationReport enc = Remediate(Encrypt(plain), OwnerPassword, out _);
 
-        // Every step must agree now, including SetDocumentMetadata -- it gained its encrypted route
-        // on 2026-08-15, so there is no longer a step exempt from this comparison.
+        // Every step must agree, including SetDocumentMetadata: no step is exempt from this
+        // comparison.
         var clearApplied = clear.Steps.Where(s => s.Applied).Select(s => s.Name)
                                 .OrderBy(n => n).ToList();
         var encApplied = enc.Steps.Where(s => s.Applied).Select(s => s.Name)

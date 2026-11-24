@@ -21,9 +21,9 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// <remarks>
 /// <para><b>The converter is <c>IccOutputTransform</c>'s second consumer</b>, after the separation
 /// plates: the perceptual table, black-point compensation on, white kept white — a common viewer's and
-/// the reference renderer's defaults. It used to evaluate <c>B2A0</c> raw through a helper of its own, with
-/// neither, so a press profile whose black is L* 20 put 100 % K under sRGB black and ink under sRGB
-/// white wherever its table did.</para>
+/// the reference renderer's defaults. <c>B2A0</c> evaluated raw, with neither, would put 100 % K under
+/// sRGB black for a press profile whose black is L* 20, and ink under sRGB white wherever its table
+/// does.</para>
 ///
 /// <para><b>Each claim beside the answer it rules out.</b> The compensated black is asserted
 /// against the uncompensated one, and white's empty inks against a near-white pixel that the same

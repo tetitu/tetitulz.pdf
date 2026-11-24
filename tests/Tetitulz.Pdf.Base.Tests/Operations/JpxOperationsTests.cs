@@ -21,7 +21,7 @@ using H = Tetitulz.Pdf.TestHelpers.Jp2Headers;
 namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
-/// The operations beside the renderers that see a <c>JPXDecode</c> image's pixels (Wave 15g), with
+/// The operations beside the renderers that see a <c>JPXDecode</c> image's pixels, with
 /// no plugin registered: image export to PNG, the page thumbnail reader, the colour-space
 /// converter and its inventory.
 /// </summary>
@@ -96,7 +96,7 @@ public sealed class JpxOperationsTests : IDisposable
     }
 
     /// <summary>
-    /// What the reader cannot carry, it says (the review of 2026-09-26, row 30): a
+    /// What the reader cannot carry, it says: a
     /// <c>/ColorSpace</c> array keeps the codestream and <see cref="PdfThumbnailManager.LastError"/>
     /// names it; an opacity channel is left out of the samples and named; the control leaves the
     /// slot null.
@@ -191,7 +191,7 @@ public sealed class JpxOperationsTests : IDisposable
     /// <summary>
     /// Under /SMaskInData 2 the samples are premultiplied by the opacity: the straight colour is
     /// what converts — divided out first, through the one un-premultiply rule — and the opacity
-    /// goes out as the /SMask, which is straight by definition (the review of 2026-09-26, row 7).
+    /// goes out as the /SMask, which is straight by definition.
     /// The mode-1 conversion of the same bytes differs.
     /// </summary>
     [Fact]

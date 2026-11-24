@@ -17,13 +17,11 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <b>glyph</b> and the <b>advance</b> alike, each exactly once.
 /// </summary>
 /// <remarks>
-/// <b>Both renderers were wrong here, in opposite directions, and neither could see the other.</b>
-/// The raster path scaled an embedded font's advances by <c>Th³</c> (the width scale was read off
-/// the text matrix's X axis, which already carries <c>Th</c>, and the draw-time matrix applied it a
-/// third time). The SVG path advanced correctly but built its glyph matrix in
-/// <c>AppendTypefaceGlyphOutline</c> without <c>Th</c> at all, so every outline drew at full width
-/// under a half-width advance — the very defect the 2026-08-07 round had fixed in raster, surviving
-/// on the one SVG site that builds its own matrix.
+/// <b>Each renderer can go wrong here in its own direction, and neither can see the other.</b>
+/// A width scale read off the text matrix's X axis, which already carries <c>Th</c>, and applied
+/// again at draw time scales an embedded font's advances by <c>Th³</c>; a glyph matrix built in
+/// <c>AppendTypefaceGlyphOutline</c> without <c>Th</c> draws every outline at full width under a
+/// half-width advance — on the one SVG site that builds its own matrix.
 /// <para>Asserting on the emitted matrices rather than on rasterised pixels is what makes this
 /// checkable: the <c>&lt;use&gt;</c> transform carries the glyph scale in slot <c>a</c> and the pen
 /// position in slot <c>e</c>, so one parse yields both halves of the claim.</para>

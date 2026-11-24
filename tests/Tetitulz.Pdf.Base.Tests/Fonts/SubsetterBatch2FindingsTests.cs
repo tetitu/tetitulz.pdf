@@ -118,7 +118,7 @@ public class SubsetterBatch2FindingsTests
 
     /// <summary>
     /// Malformed: glyph 1 is a composite naming glyph 500 in a four-glyph font. The component is
-    /// dropped and reported; it used to index loca out of range.
+    /// dropped and reported, rather than indexing loca out of range.
     /// </summary>
     [Fact]
     public void Subset_Malformed_ACompositeComponentPastNumGlyphs_IsDropped()

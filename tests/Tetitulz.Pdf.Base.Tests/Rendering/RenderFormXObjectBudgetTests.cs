@@ -152,10 +152,10 @@ public class RenderFormXObjectBudgetTests
     /// <summary>
     /// A Type 3 glyph that shows four glyphs of its own font is the doubling chain inside a font: no
     /// name repeats along a branch (it is one glyph), the depth cap stops every branch at 24, and
-    /// 4^24 branches start. The structure fuzzer's first finding (GAPS.md §9, 2026-10-16): every
-    /// generated <c>font-recursion</c> file, the ten-glyph one included, hung both renderers for the
-    /// whole 120-second window. A glyph procedure is now charged to the page's invocation budget as
-    /// a form is, in both renderers, and the refusal is the budget's.
+    /// 4^24 branches start. Uncharged, every <c>font-recursion</c> file the structure fuzzer generates,
+    /// the ten-glyph one included, would hang both renderers for its whole 120-second window. A glyph
+    /// procedure is charged to the page's invocation budget as a form is, in both renderers, and the
+    /// refusal is the budget's.
     /// </summary>
     [Theory]
     [InlineData("raster")]

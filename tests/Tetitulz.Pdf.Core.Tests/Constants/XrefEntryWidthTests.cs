@@ -13,9 +13,9 @@ namespace Tetitulz.Pdf.Core.Tests.Constants;
 /// bytes for every input it accepts, and refuse the inputs it cannot.
 /// </summary>
 /// <remarks>
-/// <para><b>The 10-digit offset ceiling used to live only in <c>PdfWriter</c>.</b> That left the
-/// shared helper — the one this type's own doc comment tells every writer to use, and which four
-/// other writers do use — willing to format an 11-digit offset. The result is a <b>21-byte</b> row
+/// <para><b>The 10-digit offset ceiling is the shared helper's</b> — the one this type's own doc
+/// comment tells every writer to use — not <c>PdfWriter</c>'s alone. An 11-digit offset would make
+/// a <b>21-byte</b> row
 /// against the <see cref="PdfXrefFormat.EntryLength"/> invariant this very type declares, and a
 /// classic cross-reference table is read by fixed-width position: one long row shifts the meaning of
 /// every entry after it, so the damage is to the whole table rather than to one object.</para>

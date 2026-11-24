@@ -126,8 +126,8 @@ public sealed class RasterParityRound2Tests
 
     /// <summary>
     /// §8.6.6.3: an <c>/Indexed</c> space is ONE component (a palette index) whatever its base is —
-    /// including when the base is itself an array, which is the form that used to make the shading
-    /// resolver report the family "Indexed" and the arity 3.
+    /// including when the base is itself an array, the form that could make a shading resolver
+    /// report the family "Indexed" and the arity 3.
     /// </summary>
     [Fact]
     public void ResolveSpace_IndexedOverAnArrayBase_IsOneComponent()
@@ -344,10 +344,9 @@ public sealed class RasterParityRound2Tests
     // ====================================================================
 
     /// <summary>
-    /// §8.9.6.2: a stencil mask is one-component and 1-bit. It used to get the 3-component RGB
-    /// fallback (only one of the five resolvers knew about <c>/ImageMask</c>), which shut off the
-    /// 1-bpc decode path and left only a fallback demanding <c>data.Length == stride*h</c>
-    /// EXACTLY — so any trailing padding dropped the image.
+    /// §8.9.6.2: a stencil mask is one-component and 1-bit, in every resolver. Given the 3-component
+    /// RGB fallback, it would shut off the 1-bpc decode path and leave only a fallback demanding
+    /// <c>data.Length == stride*h</c> EXACTLY — so any trailing padding would drop the image.
     /// </summary>
     [Theory]
     [InlineData(0)]    // the control: no padding, which always worked

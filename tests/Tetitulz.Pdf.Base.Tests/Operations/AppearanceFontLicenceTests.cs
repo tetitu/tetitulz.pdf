@@ -22,14 +22,12 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// a substituted host font: AcroForm appearance generation and signature appearance generation.
 /// </summary>
 /// <remarks>
-/// <para><b>Why this file exists, and why the resolver's own licence tests were not enough.</b>
-/// <c>SystemFontLicenceGateTests</c> has covered <c>SystemFontResolver</c>'s gate since it shipped,
-/// and it was green the whole time these two paths were bypassing the resolver entirely: they ran
-/// their own search through <c>Base.Operations.Forms.FormFontSource</c>, which never read
-/// <c>fsType</c> at all. So <c>AllowSystemFontSubstitution</c> embedded host fonts whose own licence
-/// bits forbid embedding, and every test of the gate passed while the gate was not on the path.
-/// <b>Covering a function is not covering the decision that uses it</b> — the same finding the
-/// 2026-08-29 liveness sweep recorded, reached from the other direction.</para>
+/// <para><b>Why the resolver's own licence tests are not enough.</b>
+/// <c>SystemFontLicenceGateTests</c> covers <c>SystemFontResolver</c>'s gate, and would stay green
+/// if these two paths bypassed the resolver with a search of their own that never reads
+/// <c>fsType</c> — <c>AllowSystemFontSubstitution</c> would then embed host fonts whose own licence
+/// bits forbid embedding, with every test of the gate passing while the gate was not on the path.
+/// <b>Covering a function is not covering the decision that uses it.</b></para>
 ///
 /// <para>Host-independent by construction: <c>TETITULZ_PDF_FONTDIR</c> <i>replaces</i> the OS search
 /// path, so the only font either path can find is the one each test writes. That matters more here

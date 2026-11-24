@@ -29,7 +29,7 @@ public sealed class FdfObjectBoundaryTests
     [Fact]
     public void AFieldValueHoldingTheWordEndobj_IsReadWhole()
     {
-        // The value's "endobj" used to end the catalog, whose dictionary then never closed.
+        // The value's "endobj" must not end the catalog, whose dictionary would then never close.
         var data = Read("%FDF-1.2\n" +
                         "1 0 obj\n<< /FDF << /Fields [<< /T (note) /V (see endobj here) >>] >> >>\nendobj\n" +
                         "trailer\n<< /Root 1 0 R >>\n%%EOF\n");

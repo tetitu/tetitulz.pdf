@@ -134,7 +134,7 @@ public sealed class OverlappingDuplicateGlyphTests
     {
         // A 3e38 text-matrix scale makes each "A" infinitely wide, and moving two units left puts
         // both at X = -infinity. A range search around such a glyph has inverted bounds and throws,
-        // which used to cost the whole page its text.
+        // which must not cost the whole page its text.
         var page = Page(
             "BT /F1 12 Tf 300000000000000000000000000000000000000.0 0 0 1 0 0 Tm -2 0 Td " +
             "(A) Tj 0 0 Td (A) Tj ET\n" +

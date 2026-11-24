@@ -168,11 +168,9 @@ public class CffGlyphMappingTests
     /// CID outside the font's glyph range fails the call rather than being passed through as one.
     /// </summary>
     /// <remarks>
-    /// <para><b>The bounds check had no coverage.</b> A 2026-08-29 liveness sweep neutralised
-    /// <c>cid &lt; 0 || cid &gt;= glyphCount</c> and nothing reddened in Core, Base or the
-    /// Maintenance plugin — the three assemblies that reach it. The sibling test above exercises the
-    /// same branch with CIDs 2 and 4 against a five-glyph font, both comfortably in range, so it
-    /// could not tell the guard from its absence.</para>
+    /// <para><b>The bounds check needs its own case.</b> The sibling test above exercises the same
+    /// branch with CIDs 2 and 4 against a five-glyph font, both comfortably in range, so it cannot
+    /// tell <c>cid &lt; 0 || cid &gt;= glyphCount</c> from its absence.</para>
     ///
     /// <para>Refusing is the right answer rather than clamping or skipping: the caller is the
     /// optimizer deciding which charstrings to blank, and an out-of-range index means its CID set

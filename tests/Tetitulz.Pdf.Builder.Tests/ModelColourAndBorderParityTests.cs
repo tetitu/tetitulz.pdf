@@ -32,8 +32,8 @@ public class ModelColourAndBorderParityTests
 {
     /// <summary>
     /// The one reading of "does this border paint, and how wide" (<see cref="Border.Paints"/>,
-    /// <see cref="Border.PaintedWidth"/>) every exporter and the HTML converter take since
-    /// 2026-10-20 — eleven sites spelled it out before: no border, one marked <c>None</c>, one of
+    /// <see cref="Border.PaintedWidth"/>) every exporter and the HTML converter take, rather than
+    /// spelling it out at each site: no border, one marked <c>None</c>, one of
     /// zero, negative or NaN width paint nothing; a positive width paints that width.
     /// </summary>
     [Theory]

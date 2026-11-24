@@ -22,11 +22,9 @@ namespace Tetitulz.Pdf.Base.Tests
     /// <summary>
     /// <see cref="PdfTaggedDocumentBuilder"/> — the code-first tagged-PDF builder.
     ///
-    /// <para><b>Eight of these tests used to end in <c>Assert.True(ms.Length &gt; 0)</c></b> under
-    /// names like <c>Build_WithHeading_NoException</c>. Any builder that emitted a blank page — or
-    /// a structure tree with nothing in it — satisfied every one of them. They now read the
-    /// produced document back and assert the structure element roles, the alt text, the language
-    /// and the XMP title.</para>
+    /// <para><b>Each test reads the produced document back</b> and asserts the structure element
+    /// roles, the alt text, the language and the XMP title: <c>Assert.True(ms.Length &gt; 0)</c> is
+    /// satisfied by any builder that emits a blank page, or a structure tree with nothing in it.</para>
     /// </summary>
     public class PdfTaggedDocumentBuilderTests
     {

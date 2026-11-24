@@ -482,7 +482,7 @@ public class BarcodeReaderTests
     /// <summary>
     /// An EAN-13 whose edge guard is drawn twice as wide — <c>110011</c>, each element two modules — is
     /// refused at either end. Read as one block it is 98 modules and does not divide; read a piece at a time
-    /// (the foreshortened symbol's route, 2026-10-20) the guard's three elements still divide into three
+    /// (the foreshortened symbol's route) the guard's three elements still divide into three
     /// modules, so only its module, twice its neighbouring digit's, refuses it. The control, unwidened, reads.
     /// </summary>
     [Theory]

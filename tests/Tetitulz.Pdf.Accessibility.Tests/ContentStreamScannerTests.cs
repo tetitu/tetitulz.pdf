@@ -716,7 +716,7 @@ public class ContentStreamScannerTests
     /// <summary>
     /// <c>/AHx</c>'s <c>&gt;</c> (§7.4.2), with no whitespace between it and the <c>EI</c> — a form
     /// the heuristic cannot recognise at all, since it requires whitespace before the terminator.
-    /// The scan used to run to the end of the stream and take the <c>Q</c> with it.
+    /// A scan that missed it would run to the end of the stream and take the <c>Q</c> with it.
     /// </summary>
     [Fact]
     public void ScanDetailed_AsciiHexInlineImage_IsBoundedExactlyWithNoWhitespaceBeforeEi()

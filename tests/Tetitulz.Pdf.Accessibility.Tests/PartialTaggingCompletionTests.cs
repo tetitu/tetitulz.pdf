@@ -254,7 +254,7 @@ public class PartialTaggingCompletionTests
     }
 
     // =====================================================================
-    //  A sequence the producer opened inside a text object (Wave 17, R8.1)
+    //  A sequence the producer opened inside a text object
     // =====================================================================
 
     /// <summary>

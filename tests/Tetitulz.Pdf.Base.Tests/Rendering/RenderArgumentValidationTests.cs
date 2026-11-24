@@ -12,9 +12,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// Wave 17 R13.1–R13.3: the three public render arguments that were not validated. A tile
-/// clip tested <c>clipW &lt;= 0</c> alone, which NaN passes; <c>ExtractInkCoverage</c> never
-/// looked at its <c>dpi</c>; <c>InkAccumulator</c>'s constructor multiplied unchecked. Each
+/// Three public render arguments, validated. A tile clip testing <c>clipW &lt;= 0</c> alone lets
+/// NaN pass; <c>ExtractInkCoverage</c> must look at its <c>dpi</c>; <c>InkAccumulator</c>'s
+/// constructor multiplies in <c>long</c>. Each
 /// refusal is paired with the control that the same call, given a sound argument, answers.
 /// </summary>
 public sealed class RenderArgumentValidationTests

@@ -193,7 +193,7 @@ public class RenderingBatch1DecisionTests
 
     /// <summary>
     /// A form budget's refusal names the ceiling it refused at — its own, not the process-wide
-    /// default it used to quote whatever it had been given.
+    /// default whatever it was given.
     /// </summary>
     [Fact]
     public void RenderBudget_TheRefusalNamesItsOwnCeiling()

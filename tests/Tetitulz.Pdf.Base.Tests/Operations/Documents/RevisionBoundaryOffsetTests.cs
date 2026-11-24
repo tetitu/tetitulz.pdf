@@ -15,10 +15,9 @@ namespace Tetitulz.Pdf.Base.Tests.Operations.Documents;
 /// <b>strictly positive</b> and points <b>strictly backwards</b>.
 /// </summary>
 /// <remarks>
-/// <para><b>Half of that rule had no coverage.</b> A 2026-08-29 liveness sweep found the
-/// <c>offset &gt; 0</c> half defended — two tests redden when it is relaxed — and the
-/// <c>offset &lt; eofPos</c> half defended by nothing at all: dropping it left the whole Base suite
-/// green.</para>
+/// <para><b>Both halves are covered here.</b> The <c>offset &gt; 0</c> half is defended elsewhere
+/// too — two tests redden when it is relaxed — while dropping the <c>offset &lt; eofPos</c> half
+/// would leave the rest of the Base suite green.</para>
 ///
 /// <para><b>Why the backward half matters as much as the positive one.</b> Both exist to stop a
 /// <c>startxref</c> that cannot name a real earlier section from counting as a revision boundary,

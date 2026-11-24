@@ -2177,11 +2177,10 @@ public class RenderingFixesTests
     // ------------------------------------------------------------------
 
     /// <summary>
-    /// Regression test: when rendering a multi-character string with a Type3 bitmap
-    /// font, every glyph after the first used to render at the wrong position because
-    /// PdfRenderContext.PopState() preserves Tm (per PDF §9.3.1) and we had reset Tm
-    /// to identity inside the CharProc context without restoring it afterward.  The
-    /// second glyph onwards rendered off-screen, leaving only the first visible.
+    /// A multi-character string in a Type3 bitmap font draws every glyph in place.
+    /// PdfRenderContext.PopState() preserves Tm (per PDF §9.3.1), so a Tm reset to
+    /// identity inside the CharProc context and not restored afterward would put the
+    /// second glyph onwards off-screen, leaving only the first visible.
     /// </summary>
     [Fact]
     public void Type3Font_MultipleGlyphs_AccumulateTextMatrix()

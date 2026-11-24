@@ -201,7 +201,7 @@ public sealed class RenderingSpecFixTests
 
     /// <summary>
     /// A partial /Extend must leave the non-extended end unpainted. Skia has a single tile mode
-    /// for both ends, so [true false] used to fall back to Clamp and wrongly extended the end.
+    /// for both ends, so [true false] falling back to Clamp would wrongly extend the end.
     /// </summary>
     [Fact]
     public void AxialShading_PartialExtend_DoesNotPaintBeyondTheNonExtendedEnd()

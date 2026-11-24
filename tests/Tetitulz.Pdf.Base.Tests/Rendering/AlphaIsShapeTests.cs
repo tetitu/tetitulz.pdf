@@ -69,8 +69,8 @@ public class AlphaIsShapeTests
 
     /// <summary>
     /// A soft-masked fill in a knockout group under <c>/AIS false</c> knocks out: the mask is
-    /// opacity, so blue at <c>ca 0.5</c> replaces the red. It used to merge over the red through
-    /// the masked layer; the shader route now takes the knockout paint (Src) as well.
+    /// opacity, so blue at <c>ca 0.5</c> replaces the red rather than merging over it through the
+    /// masked layer: the shader route takes the knockout paint (Src) as well.
     /// </summary>
     [Fact]
     public void ASoftMaskedFillInAKnockoutGroup_UnderAlphaAsOpacity_KnocksOut()

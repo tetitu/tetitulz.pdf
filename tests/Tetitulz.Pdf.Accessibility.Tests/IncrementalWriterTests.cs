@@ -24,18 +24,17 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 /// public editing entry point that writes through it.
 ///
 /// <para>
-/// The writer replaced two hand-rolled copies that were each broken in a way a parse-only
-/// assertion cannot see, so the assertions here are deliberately specific rather than
-/// "the output opens":
+/// Each defect below is invisible to a parse-only assertion, so the assertions here are
+/// deliberately specific rather than "the output opens":
 /// </para>
 /// <list type="bullet">
-///   <item>a <see cref="PdfStream"/>-valued object used to serialise as the literal text
-///     <c>null</c> — the file still parsed, it just lost the stream;</item>
-///   <item>generation numbers were hardcoded to 0 in both the object header and the xref entry,
-///     so a strict reader dropped the revision of any gen &gt; 0 object;</item>
-///   <item><c>/ID</c> was omitted, which PDF/UA-1 and PDF/A both require;</item>
-///   <item>one copy encoded strings through code page 28591 (Latin-1), turning every Hebrew and
-///     CJK <c>/TU</c> tooltip, <c>/Alt</c> text and <c>/Title</c> into <c>?</c>.</item>
+///   <item>a <see cref="PdfStream"/>-valued object serialised as the literal text <c>null</c> —
+///     the file still parses, it just loses the stream;</item>
+///   <item>generation numbers hardcoded to 0 in both the object header and the xref entry, so a
+///     strict reader drops the revision of any gen &gt; 0 object;</item>
+///   <item><c>/ID</c> omitted, which PDF/UA-1 and PDF/A both require;</item>
+///   <item>strings encoded through code page 28591 (Latin-1), turning every Hebrew and CJK
+///     <c>/TU</c> tooltip, <c>/Alt</c> text and <c>/Title</c> into <c>?</c>.</item>
 /// </list>
 ///
 /// <para>Every document is built in memory (CLAUDE.md: no test reads a PDF from disk).</para>
@@ -837,7 +836,7 @@ public class IncrementalWriterTests
         const string Template = "שדה: {name}";
         string expected = Template.Replace("{name}", "FullName");
 
-        // Guard: the template really is outside Latin-1, which is what the fixer used to destroy.
+        // Guard: the template really is outside Latin-1, which a Latin-1 writer would destroy.
         bool hasNonLatin1 = false;
         foreach (char c in Template) if (c > 0x00FF) { hasNonLatin1 = true; break; }
         Assert.True(hasNonLatin1, "the fixture must contain characters above U+00FF");

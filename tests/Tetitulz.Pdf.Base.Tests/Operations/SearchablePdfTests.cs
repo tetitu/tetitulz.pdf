@@ -285,8 +285,8 @@ public sealed class SearchablePdfTests : IDisposable
 
     /// <summary>
     /// Hebrew must survive into the layer. <c>PdfContentStreamBuilder.ShowText</c> writes one byte
-    /// per character and substitutes <c>?</c> above U+00FF, so the layer over a Hebrew scan used to
-    /// be a row of question marks — a document that reports a text layer, looks identical, and
+    /// per character and substitutes <c>?</c> above U+00FF, so a layer written through it over a Hebrew
+    /// scan would be a row of question marks — a document that reports a text layer, looks identical, and
     /// cannot be searched in its own language.
     /// </summary>
     [Fact]

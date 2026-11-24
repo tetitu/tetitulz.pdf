@@ -238,8 +238,8 @@ public sealed class PdfImageReplacerTests
     /// <summary>
     /// The plan asks only whether the document is certified and at what <c>/P</c>, which the object
     /// graph answers on its own — so the overload takes no length, and the refusal names the level
-    /// the fixture declares. The overload that took a length used to run the full analysis and
-    /// discard its modification verdict; for a decrypted copy that verdict compared the original's
+    /// the fixture declares. An overload taking a length would run the full analysis and discard its
+    /// modification verdict — for a decrypted copy, a verdict comparing the original's
     /// <c>/ByteRange</c> against another file's bytes.
     /// </summary>
     [Fact]

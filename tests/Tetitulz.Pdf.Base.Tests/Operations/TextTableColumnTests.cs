@@ -41,8 +41,8 @@ public class TextTableColumnTests
     /// </summary>
     /// <remarks>
     /// The spanning row is the <b>middle</b> one. At an edge, a row whose word crosses a separator
-    /// while none of its gaps sits on one reads as a line of prose beside the grid and ends the table
-    /// (GAPS §4a, 2026-10-14); between two of the grid's rows it is the grid's, whatever its shape —
+    /// while none of its gaps sits on one reads as a line of prose beside the grid and ends the table;
+    /// between two of the grid's rows it is the grid's, whatever its shape —
     /// which is what these tests are about.
     /// </remarks>
     private static byte[] SpanningCellTable() => BuildPdf(
@@ -343,7 +343,7 @@ public class TextTableColumnTests
         Assert.Equal(0, Assert.Single(table.Rows[0].Cells).Column);
         Assert.Equal("AA", table.Rows[0].Cells[0].Text);
 
-        // ToGrid is the shape a caller consumes, and it used to lead with a column of nulls.
+        // ToGrid is the shape a caller consumes, and it must not lead with a column of nulls.
         string[][] grid = table.ToGrid();
         Assert.Equal(new[] { "AA" }, grid[0]);
     }

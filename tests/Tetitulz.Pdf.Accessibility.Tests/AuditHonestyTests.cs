@@ -88,7 +88,7 @@ public class AuditHonestyTests
     // =====================================================================
 
     /// <summary>
-    /// The shape a hollow auto-tagging pass produces, and the shape the audit used to bless:
+    /// The shape a hollow auto-tagging pass produces, and one an audit must not bless:
     /// the catalog claims <c>/MarkInfo /Marked true</c>, carries a <c>/Lang</c> and a
     /// <c>/StructTreeRoot</c>, and the tree holds a Document element whose children have no
     /// <c>/K</c> at all. There is no <c>/ParentTree</c>, the page has no <c>/StructParents</c>,

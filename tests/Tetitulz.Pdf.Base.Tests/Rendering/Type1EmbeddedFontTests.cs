@@ -169,8 +169,7 @@ public sealed class Type1EmbeddedFontTests
     /// <summary>
     /// <c>Ts</c> lifts an embedded Type 1 glyph by the rise in text space (ISO 32000-1 §9.3.7): at
     /// 1 px per point a rise of 20 draws it 20 pixels higher, the same size. Like the <c>Tz</c> pair
-    /// above, it is true of either route; the dedup sweep of the glyph path's scratch matrices
-    /// (row O16, 2026-10-21) dropped the rise from <c>DrawGlyphPath</c> and no test failed.
+    /// above, it is true of either route; a <c>DrawGlyphPath</c> that dropped the rise would fail it.
     /// </summary>
     [Fact]
     public void Type1Glyph_UnderTextRise_IsDrawnHigherByTheRise()

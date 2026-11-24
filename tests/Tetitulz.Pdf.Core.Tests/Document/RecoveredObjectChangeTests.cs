@@ -14,7 +14,7 @@ namespace Tetitulz.Pdf.Core.Tests.Document;
 /// An object served from the recovery scan — a cross-reference table rebuilt from the headers, or a
 /// gap filled from one — carries the offset of the header it was read from, and the change analysis
 /// classifies by that offset: a copy appended past a signature's end is a change after the signature,
-/// however the table came to name it (the review of batch 131 asked that this be so).
+/// however the table came to name it.
 /// </summary>
 public class RecoveredObjectChangeTests
 {

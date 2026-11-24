@@ -17,9 +17,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
-/// Wave 17 R14.1–R14.3: a caller's number that reached a file unchecked. NaN passes every
+/// A caller's number must not reach a file unchecked. NaN passes every
 /// comparison, <c>Math.Max(NaN, 1)</c> is NaN, and <c>PdfRealFormat</c> writes <c>0</c> for a
-/// non-finite value — so a NaN option came back as a successful write of a degenerate document.
+/// non-finite value — so a NaN option would come back as a successful write of a degenerate document.
 /// Each entry refuses at its boundary, naming the parameter and (for an options object) the
 /// member; each refusal is paired with the control that the same call, given sound numbers,
 /// answers.
@@ -339,8 +339,8 @@ public sealed class OperationArgumentValidationTests
     }
 
     /// <summary>
-    /// Every single-annotation door refuses a non-finite number by name: it reached the /Rect,
-    /// /QuadPoints, /C or /BS as written zeros, and the write reported success (Wave 22, K10).
+    /// Every single-annotation door refuses a non-finite number by name: let through, it would reach
+    /// the /Rect, /QuadPoints, /C or /BS as written zeros, and the write would report success.
     /// </summary>
     [Fact]
     public void Annotations_NonFiniteNumbers_AreRefusedNamingThem()
@@ -413,8 +413,8 @@ public sealed class OperationArgumentValidationTests
 
 #pragma warning disable CS0618 // the obsolete process-wide factor's own guard is under test
         Assert.Throws<ArgumentOutOfRangeException>(() => PdfColorSpaceConverter.GcrFactor = double.NaN);
-        // A refused set leaves the process-wide factor a number — the setter used to accept NaN
-        // and poison every later conversion on every thread.
+        // A refused set leaves the process-wide factor a number — a setter accepting NaN would
+        // poison every later conversion on every thread.
         Assert.False(double.IsNaN(PdfColorSpaceConverter.GcrFactor));
 #pragma warning restore CS0618
 

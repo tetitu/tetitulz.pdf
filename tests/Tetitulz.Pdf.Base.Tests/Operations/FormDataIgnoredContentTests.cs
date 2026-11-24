@@ -225,13 +225,12 @@ public class FormDataIgnoredContentTests
     /// <b>Only FDF has anything left to report, and the slot says nothing for XFDF.</b>
     /// </summary>
     /// <remarks>
-    /// <para>This replaces <c>BothFormatsReportThroughTheSameSlot</c>, whose claim stopped being
-    /// true: XFDF's four sections — <c>&lt;f&gt;</c>, <c>&lt;ids&gt;</c>, <c>&lt;fields&gt;</c> and
-    /// <c>&lt;annots&gt;</c> — are all read now, so there is nothing left for it to skip. FDF's
-    /// Table 243 still has nine entries this reader does not take.</para>
+    /// <para>XFDF's four sections — <c>&lt;f&gt;</c>, <c>&lt;ids&gt;</c>, <c>&lt;fields&gt;</c> and
+    /// <c>&lt;annots&gt;</c> — are all read, so there is nothing left for it to skip. FDF's Table 243
+    /// has nine entries this reader does not take.</para>
     /// <para><b>The asymmetry is asserted rather than left implicit</b>, because a null from XFDF
-    /// now means "nothing was dropped" and used to mean "nothing was dropped <i>that this reader
-    /// notices</i>". Those are different promises and only the first is worth making.</para>
+    /// means "nothing was dropped", not "nothing was dropped <i>that this reader notices</i>". Those
+    /// are different promises and only the first is worth making.</para>
     /// </remarks>
     [Fact]
     public void OnlyFdfHasContentLeftToReport()

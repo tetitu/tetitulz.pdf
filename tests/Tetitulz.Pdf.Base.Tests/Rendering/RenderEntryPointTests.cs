@@ -336,8 +336,8 @@ public class RenderEntryPointTests
     }
 
     /// <summary>
-    /// An annotation without the Print flag must not print. It used to, because the print path
-    /// applied the screen rule, under which a bare visible annotation is visible.
+    /// An annotation without the Print flag must not print: the print path does not apply the
+    /// screen rule, under which a bare visible annotation is visible.
     /// </summary>
     [Fact]
     public void PrintIntent_OmitsAnnotationWithoutThePrintFlagThatScreenIntentShows()

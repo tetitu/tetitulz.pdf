@@ -32,7 +32,7 @@ public class CatalogNameTreeRewriteTests
 
     /// <summary>
     /// Adding an attachment keeps the document's named destinations and document-level scripts.
-    /// The writer used to build a new <c>/Names</c> holding only <c>/EmbeddedFiles</c>.
+    /// A new <c>/Names</c> holding only <c>/EmbeddedFiles</c> would lose them.
     /// </summary>
     [Fact]
     public void AddingAnAttachment_KeepsTheOtherNameTrees()
@@ -274,7 +274,7 @@ public class CatalogNameTreeRewriteTests
 
     /// <summary>
     /// An <c>/EmbeddedFiles</c> tree deeper than the walk's depth limit is refused, with nothing
-    /// written: the attachment writer used to rewrite the part it had read and delete the rest.
+    /// written, rather than the part read rewritten and the rest deleted.
     /// </summary>
     [Fact]
     public void AnAttachmentTreeTooDeepToReadIsRefused()

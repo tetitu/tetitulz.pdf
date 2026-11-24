@@ -213,30 +213,9 @@ public class HollowSubtreeTests
     }
 
     // =====================================================================
-    //  Fixture 2 — a deep hollow branch beside a healthy one
+    //  The pipeline's skip message names a code the audit reports
     // =====================================================================
 
-    /// <summary>
-    /// A Document with two children: a paragraph that points at MCID 0, and a two-level Sect
-    /// branch that bottoms out in an empty paragraph. Only the branch is broken, so a check that
-    /// reports the Document (too high) or every element in the branch (too noisy) is caught.
-    /// <para>Object numbers: 7 Document, 8 the healthy P, 9/10 the hollow Sects, 11 the empty
-    /// leaf P.</para>
-    /// </summary>
-    /// <summary>
-    /// The remediation pipeline's "already has a structure tree" skip must send the reader to a code
-    /// the audit of the same bytes actually reports.
-    ///
-    /// <para>It used to name UA16/UA17/UA18 only, and <see cref="HollowNestedTreePdf"/> is exactly the
-    /// tree where none of those three fire: every element has an element child, so UA16's per-leaf
-    /// question is satisfied all the way down and only UA30's transitive one fails. A reader following
-    /// that advice found none of the named codes in the report and would reasonably conclude the tree
-    /// was fine — the precise misreading the skip message exists to prevent (plan 11 §5b).</para>
-    ///
-    /// <para>The assertion is deliberately tied to the <b>report</b> rather than to a literal string:
-    /// it checks that the code the message advertises is one this input really produces, so it stays
-    /// honest if the checker's numbering or the message's wording changes.</para>
-    /// </summary>
     /// <summary>
     /// A tree the pipeline <b>keeps</b> whose only complaint is UA30 — the fixture the skip
     /// message's code list has to be honest about.
@@ -273,6 +252,20 @@ public class HollowSubtreeTests
         "<< /Nums [0 [8 0 R]] >>",
     });
 
+    /// <summary>
+    /// The remediation pipeline's "already has a structure tree" skip must send the reader to a code
+    /// the audit of the same bytes actually reports.
+    ///
+    /// <para>Naming UA16/UA17/UA18 alone would not: <see cref="HollowNestedTreePdf"/> is exactly the
+    /// tree where none of those three fire — every element has an element child, so UA16's per-leaf
+    /// question is satisfied all the way down and only UA30's transitive one fails. A reader following
+    /// such advice would find none of the named codes in the report and conclude the tree was fine —
+    /// the precise misreading the skip message exists to prevent.</para>
+    ///
+    /// <para>The assertion is deliberately tied to the <b>report</b> rather than to a literal string:
+    /// it checks that the code the message advertises is one this input really produces, so it stays
+    /// honest if the checker's numbering or the message's wording changes.</para>
+    /// </summary>
     [Fact]
     public void SkippingAnExistingHollowTree_NamesACodeTheAuditActuallyReports()
     {
@@ -312,6 +305,17 @@ public class HollowSubtreeTests
             autoTag.SkipReason);
     }
 
+    // =====================================================================
+    //  Fixture 2 — a deep hollow branch beside a healthy one
+    // =====================================================================
+
+    /// <summary>
+    /// A Document with two children: a paragraph that points at MCID 0, and a two-level Sect
+    /// branch that bottoms out in an empty paragraph. Only the branch is broken, so a check that
+    /// reports the Document (too high) or every element in the branch (too noisy) is caught.
+    /// <para>Object numbers: 7 Document, 8 the healthy P, 9/10 the hollow Sects, 11 the empty
+    /// leaf P.</para>
+    /// </summary>
     private static byte[] DeepHollowBranchPdf() => BuildPdf(new[]
     {
         "<< /Type /Catalog /Pages 2 0 R /StructTreeRoot 6 0 R" + CatalogTail,

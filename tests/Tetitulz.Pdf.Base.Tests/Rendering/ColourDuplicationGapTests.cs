@@ -57,11 +57,11 @@ public sealed class ColourDuplicationGapTests
     [Fact]
     public void AnnotationCmykColour_OutOfRangeOperand_StaysWithinTheRgbGamut()
     {
-        // A /C array is file-supplied and nothing validates its range. The CMYK branch used to
-        // convert the RAW operands and interpolate the result as `int`, so a negative cyan
-        // produced the string "rgb(306,255,255)" — not a valid CSS colour, and not something a
-        // pixel comparison against the raster renderer could ever see, because the raster twin
-        // (PdfPageRenderer.ReadAnnotColor) clamps inside its own byte helper. GAPS.md §2b.
+        // A /C array is file-supplied and nothing validates its range. A CMYK branch converting
+        // the RAW operands and interpolating the result as `int` would turn a negative cyan into
+        // the string "rgb(306,255,255)" — not a valid CSS colour, and not something a pixel
+        // comparison against the raster renderer could ever see, because the raster twin
+        // (PdfPageRenderer.ReadAnnotColor) clamps inside its own byte helper.
         byte[] pdf = AnnotationPdf("/C [-0.2 0 0 0]");
 
         var triples = RgbTriples(RenderSvg(pdf));

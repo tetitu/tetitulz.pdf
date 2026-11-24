@@ -73,9 +73,8 @@ public class RtlTextSharedPipelineTests
     /// <summary>
     /// The named-family variant asks a different question — the candidate face has to cover the
     /// run's Latin too, so nothing is filtered out — but it is the <b>same</b> walk, which is the
-    /// whole point: the exporter used to inline <c>foreach (char c in text) cps.Add(c)</c> one line
-    /// below the call it had just fixed, so a named-family run carrying an astral character still
-    /// demanded coverage of two lone surrogates.
+    /// whole point: an inlined <c>foreach (char c in text) cps.Add(c)</c> beside it would make a
+    /// named-family run carrying an astral character demand coverage of two lone surrogates.
     /// </summary>
     [Fact]
     public void CollectAllCodePoints_KeepsLatin_AndStillPairsSurrogates()

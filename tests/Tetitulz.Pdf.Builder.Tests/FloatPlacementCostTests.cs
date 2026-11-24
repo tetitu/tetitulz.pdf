@@ -12,17 +12,18 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// Placing a float no longer scans every exclusion on the page once per float that reaches it, so a
+/// Placing a float does not scan every exclusion on the page once per float that reaches it, so a
 /// page of many floats is laid out in work bounded by <see cref="PdfLimits.MaxBuilderFloatsPerPage"/>
 /// rather than growing with the square (or, when they step past one another, the cube) of the floats
-/// on the page (Builder-2:0).
+/// on the page.
 /// </summary>
 /// <remarks>
 /// A float does not advance the flow cursor, so near-zero-height floats pile onto one page without
-/// paginating; each placement used to scan every exclusion already registered, which is quadratic in
-/// the floats on a page before counting the step-downs. Past the cap the page stops registering new
+/// paginating; a placement scanning every exclusion already registered would be quadratic in the
+/// floats on a page before counting the step-downs. Past the cap the page stops registering new
 /// exclusions and placing a float stops stepping, so the work grows linearly. A page with no more
-/// floats than the cap is laid out exactly as before — asserted here by byte-identical output.
+/// floats than the cap is laid out as an uncapped one would be — asserted here by byte-identical
+/// output.
 /// </remarks>
 public class FloatPlacementCostTests
 {

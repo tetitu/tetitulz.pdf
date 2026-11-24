@@ -14,18 +14,17 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
 /// Type 4 / type 5 Gouraud meshes (§8.7.4.5.5–6) are rasterised by accumulating their triangles
-/// and issuing <b>one</b> <c>DrawVertices</c> call, the way the Coons/tensor path already did per
-/// patch. Every triangle used to allocate a position array, a colour array, an <c>SKVertices</c>
-/// and an <c>SKPaint</c> of its own.
+/// and issuing <b>one</b> <c>DrawVertices</c> call, as the Coons/tensor path does per patch,
+/// rather than allocating a position array, a colour array, an <c>SKVertices</c> and an
+/// <c>SKPaint</c> for every triangle.
 ///
 /// <para><b>What this file pins, and why the numbers are literal.</b> Batching changes when
 /// triangles are handed to Skia, which is exactly the kind of change that can move pixels without
 /// anyone noticing — draw order, and edge antialiasing between neighbours in one call. The exact
-/// colours below were captured from the <em>pre-batching</em> renderer and are unchanged by it, so
-/// they are a two-sided claim: the Gouraud interpolation is right, and the batching did not
-/// disturb it. (Measured, not assumed: the batching was predicted to remove antialias seams along
-/// shared edges, and it removes none, because Skia's CPU <c>DrawVertices</c> does not antialias
-/// triangle edges whether they are batched or not. There were no seams to remove.)</para>
+/// colours below are those of a triangle-at-a-time render, so they are a two-sided claim: the
+/// Gouraud interpolation is right, and the batching does not disturb it. (Measured: Skia's CPU
+/// <c>DrawVertices</c> does not antialias triangle edges whether they are batched or not, so
+/// batching neither adds nor removes seams along shared edges.)</para>
 /// </summary>
 public class MeshShadingBatchTests
 {

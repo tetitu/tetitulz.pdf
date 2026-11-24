@@ -14,7 +14,7 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Fonts;
 
 /// <summary>
-/// <see cref="CMapCodec"/> at the edges the overnight sweep found no test reaching: degenerate code
+/// <see cref="CMapCodec"/> at its edges: degenerate code
 /// widths, ranges that touch, the word-space code, a predefined CMap's content and the
 /// <c>usecmap</c> of Identity.
 /// </summary>
@@ -56,7 +56,7 @@ public class CMapCodecBoundaryTests
 
     /// <summary>
     /// Two ranges that share one code overlap; the shared code resolves through the range declared
-    /// first, and — since Wave 17 R2.6 — still through the sorted index, which keeps each range's
+    /// first, and through the sorted index, which keeps each range's
     /// declaration order rather than standing down. Touching is the case a strict comparison misses.
     /// The control is the same ranges a code apart, where the two orders cannot disagree.
     /// </summary>

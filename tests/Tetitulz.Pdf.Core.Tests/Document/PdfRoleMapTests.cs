@@ -10,8 +10,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Document;
 
 /// <summary>
-/// The one <c>/RoleMap</c> reader (§14.7.3 / §14.8.4), shared by three of the four readers that
-/// used to exist across the accessibility feature and the Conformance plugin.
+/// The one <c>/RoleMap</c> reader (§14.7.3 / §14.8.4), shared across the accessibility feature
+/// and the Conformance plugin.
 /// </summary>
 public class PdfRoleMapTests
 {

@@ -12,8 +12,8 @@ namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
 /// <see cref="JpxImageDecoder"/>'s in-house sample path and its diagnostic slot. The framing and
-/// JP2-header tests that were here moved to Core's <c>JpxHeaderTests</c> with the reader itself
-/// (Wave 15a); the consumers that see pixels are in <c>JpxConsumerRenderTests</c>.
+/// JP2-header tests are Core's <c>JpxHeaderTests</c>, beside the reader itself; the consumers that
+/// see pixels are in <c>JpxConsumerRenderTests</c>.
 /// </summary>
 public sealed class JpxImageDecoderTests
 {

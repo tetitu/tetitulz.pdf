@@ -13,11 +13,10 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// object … used to transfer the mask values"). It remaps the mask channel <em>after</em> the
 /// luminosity/alpha reduction, so it can invert, flatten or step the mask.
 ///
-/// <para><b>Why this file exists.</b> Nothing in the tree asserted that a non-identity soft-mask
-/// <c>/TR</c> moves a single pixel — the feature was reachable only through the render path and
-/// every existing soft-mask test used no <c>/TR</c> at all. That made the per-pixel evaluator loop
-/// safe to "optimise" into anything, including nothing. These two tests are what the 256-entry LUT
-/// refactor is checked against: the mask input is one byte, so a LUT is exact rather than an
+/// <para><b>Why this file exists.</b> The feature is reachable only through the render path, and a
+/// soft-mask test with no <c>/TR</c> cannot see whether a non-identity one moves a single pixel —
+/// which would leave the evaluator safe to "optimise" into anything, including nothing. These two
+/// tests hold the 256-entry LUT: the mask input is one byte, so a LUT is exact rather than an
 /// approximation, and the pixels below must not move by so much as one level.</para>
 ///
 /// <para>Both fixtures paint three vertical bands of <em>different</em> mask luminosity, so the

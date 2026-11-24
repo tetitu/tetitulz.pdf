@@ -363,7 +363,7 @@ public class ParentTreeMappingTests
     }
 
     // =====================================================================
-    //  3b. A skipped page does not end the check — found by the overnight sweep
+    //  3b. A skipped page does not end the check
     // =====================================================================
 
     /// <summary>
@@ -635,10 +635,10 @@ public class ParentTreeMappingTests
     /// <summary>
     /// <b>The quadratic document.</b> <paramref name="count"/> pages that all share <em>one</em>
     /// <c>/Contents</c> object and <em>one</em> <c>/Resources</c> object; that single content
-    /// stream invokes <paramref name="count"/> small Form XObjects. The file is O(n) bytes and
-    /// the work the audit used to do was O(n²) full re-tokenisations, because the form-visited
-    /// set is per page and the scan result was never cached: the same form was tokenised once per
-    /// page, from scratch, for every page in the document.
+    /// stream invokes <paramref name="count"/> small Form XObjects. The file is O(n) bytes, and
+    /// without a cache of the scan result the audit would do O(n²) full re-tokenisations, because
+    /// the form-visited set is per page: the same form tokenised once per page, from scratch, for
+    /// every page in the document.
     /// </summary>
     private static byte[] SharedFormsPdf(int count)
     {

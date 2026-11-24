@@ -12,18 +12,18 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// <c>PdfPageRenderer.RenderAllPages(Stream)</c> — the sequential overload, which now renders every
+/// <c>PdfPageRenderer.RenderAllPages(Stream)</c> — the sequential overload, which renders every
 /// page from <b>one</b> open <see cref="Tetitulz.Pdf.Core.Document.PdfDocument"/> with one
 /// <see cref="FontCache"/>, one <see cref="ContentOperationCache"/> and one hidden-OCG set.
 ///
-/// <para><b>What sharing can break, and therefore what is asserted here.</b> It used to open and
-/// close a fresh document per page, so every page started from nothing. Sharing state across pages
-/// is exactly the change that produces <i>nearly</i> the same output — a font resolved for page 1
+/// <para><b>What sharing can break, and therefore what is asserted here.</b> A fresh document per
+/// page starts every page from nothing; sharing state across pages is exactly what produces
+/// <i>nearly</i> the same output — a font resolved for page 1
 /// reused for page 2, a parsed operation list handed out twice, a graphics state that outlived its
 /// page — so the load-bearing test is a pixel comparison of each page against the same page
 /// rendered on its own.</para>
 ///
-/// <para>The parallel overloads deliberately keep a document per thread and are unchanged: the
+/// <para>The parallel overloads deliberately keep a document per thread: the
 /// parser's object cache and this shared state are plain dictionaries.</para>
 /// </summary>
 public class RenderAllPagesSharedStateTests

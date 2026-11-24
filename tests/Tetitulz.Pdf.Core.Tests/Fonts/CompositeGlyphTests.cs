@@ -60,7 +60,7 @@ public class CompositeGlyphTests
     /// <summary>
     /// A malformed last record keeps <c>MORE_COMPONENTS</c> set. The walk stops at the glyph's end
     /// instead of taking the next glyph's bytes for records; read without the bound, those bytes name
-    /// glyph 42, which is what the two subsetters used to pull into a subset.
+    /// glyph 42, which a subsetter would then pull into a subset.
     /// </summary>
     [Fact]
     public void TheWalkStopsAtTheGlyphsEnd()

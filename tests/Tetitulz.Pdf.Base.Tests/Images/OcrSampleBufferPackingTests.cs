@@ -10,8 +10,8 @@ namespace Tetitulz.Pdf.Base.Tests.Images;
 
 /// <summary>
 /// How <c>OcrSampleBuffer.TryPack</c> reads a rendered page: through the bitmap's buffer a row at a
-/// time (<c>BitmapPixels.Read</c>), where it used to call <c>GetPixel</c> once per pixel. On a 300
-/// dpi letter page that measured about 120 ms against 35 ms, the same 25 MB output either way.
+/// time (<c>BitmapPixels.Read</c>), not <c>GetPixel</c> once per pixel. On a 300 dpi letter page
+/// that measures about 35 ms against 120 ms, the same 25 MB output either way.
 /// </summary>
 /// <remarks>
 /// The facade tests (<see cref="OcrSampleBufferTests"/>) pin what a plugin is handed; these pin

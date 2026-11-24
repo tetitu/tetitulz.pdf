@@ -128,20 +128,15 @@ public class FacadePasswordCoverageTests
     /// Readers that have no password path today. <b>This list may only shrink.</b>
     /// </summary>
     /// <remarks>
-    /// <para>Captured 2026-08-13 (plan 08 item 50), when this guard was first written. Each entry is
-    /// an entry point that answers <i>empty</i> rather than <i>refused</i> for an encrypted document
-    /// and gives the caller no way to fix that. The census found <b>78</b> readers with no password
-    /// path; four of those are the permanent exclusions above, so this list opened at <b>74</b> and
-    /// stands at <b>39</b> after two conversion batches. The first converted 12 <c>Stream</c> readers
-    /// and cleared 8 file-path siblings for free; the second (2026-08-14, once plan 08 decision
-    /// D-8 was taken) converted 9 more and cleared 6 siblings.</para>
+    /// <para>Each entry is an entry point that answers <i>empty</i> rather than <i>refused</i> for an
+    /// encrypted document and gives the caller no way to fix that. The permanent exclusions above are
+    /// not on it.</para>
     /// <para><b>Only the <c>Stream</c> shapes are real work.</b> A file-path overload comes off this
     /// list for free the moment its <c>Stream</c> sibling is converted — see
     /// <see cref="HasPasswordPath"/> — so the ones listed here with a <c>String</c> first parameter
     /// are either waiting on their sibling or, in the case of <c>GetPageCount</c> and
     /// <c>GetVersion</c>, have no <c>Stream</c> sibling at all and need one.</para>
-    /// <para><b>Four groups in this list need a decision before a sweep, not just typing</b> (plan
-    /// 08 decision D-4, and its coupled sub-decision):</para>
+    /// <para><b>Four groups in this list need a decision before a sweep, not just typing:</b></para>
     /// <list type="bullet">
     ///   <item><c>InspectIncrementalSave</c> and <c>VerifyMdp</c> are <b>hybrids</b> — byte offsets
     ///     <i>and</i> object graph. Decrypting fixes the graph half and invalidates the offsets, so

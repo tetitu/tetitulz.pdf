@@ -170,17 +170,13 @@ public sealed class DeferredBatchTests
     }
 
     /// <summary>
-    /// With no <c>IJavaScriptPlugin</c> registered — which is Base's state on its own since the
-    /// engine moved to <c>Tetitulz.Pdf.Plugins.JavaScript</c> (GAPS.md §15b) — a JavaScript action
+    /// With no <c>IJavaScriptPlugin</c> registered — which is Base's state on its own, the engine
+    /// being <c>Tetitulz.Pdf.Plugins.JavaScript</c>'s — a JavaScript action
     /// must be reported as not run, never silently treated as run.
     /// </summary>
     /// <remarks>
-    /// This test was <c>ActionRunner_JavaScriptAction_ExecutesAndMutatesContext</c> and asserted the
-    /// opposite, back when Base carried the Jint engine. It is renamed rather than weakened,
-    /// because a test whose name and body disagree is how a real defect keeps green coverage; the
-    /// execution case it used to cover now lives in
-    /// <c>Tetitulz.Pdf.Plugins.JavaScript.Tests.JintJavaScriptPluginTests</c>, where the engine can
-    /// actually be registered.
+    /// The execution case lives in <c>Tetitulz.Pdf.Plugins.JavaScript.Tests.JintJavaScriptPluginTests</c>,
+    /// where the engine can actually be registered.
     /// </remarks>
     [Fact]
     public void ActionRunner_JavaScriptAction_WithNoEnginePlugin_IsReportedNotSilentlyDropped()

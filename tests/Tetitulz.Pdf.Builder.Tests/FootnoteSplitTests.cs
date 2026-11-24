@@ -17,8 +17,8 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// <summary>
 /// A footnote that does not fit at the foot of its mark's page splits: as many of its lines as fit stay
 /// there, keeping its orphans and widows, and the rest continues at the foot of the next page, under a
-/// full-width rule, ahead of that page's own notes. It used to move the mark's line to the next page
-/// with it — and a note taller than a page ran below the margin.
+/// full-width rule, ahead of that page's own notes — rather than moving the mark's line to the next
+/// page with it, where a note taller than a page would run below the margin.
 /// </summary>
 public sealed class FootnoteSplitTests
 {

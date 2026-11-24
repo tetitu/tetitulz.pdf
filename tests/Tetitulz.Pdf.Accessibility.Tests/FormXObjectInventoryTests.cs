@@ -121,12 +121,9 @@ public sealed class FormXObjectInventoryTests
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>Renamed from <c>FormInvokedFromTwoPages_IsNotACandidateAndSaysWhy</c>, which asserted a
-    /// verdict this pass no longer reaches.</b> The inventory used to decide, here, that a shared
-    /// form could not be tagged; now it records facts and the duplicator decides, because a shared
-    /// form <i>can</i> be tagged when every page can be given its own copy. The old assertions were
-    /// not weakened — they moved to
-    /// <c>SharedFormTaggingTests</c>, where the decision is now made.
+    /// The inventory records facts and the duplicator decides, because a shared form <i>can</i> be
+    /// tagged when every page can be given its own copy; <c>SharedFormTaggingTests</c> holds the
+    /// decision.
     /// </para>
     /// <para>
     /// <c>DirectFromPage</c> and the recorded names are what make duplication possible at all: a

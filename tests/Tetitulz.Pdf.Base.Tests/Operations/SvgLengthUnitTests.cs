@@ -108,8 +108,8 @@ public class SvgLengthUnitTests
 
     /// <summary>
     /// A percentage letter or word spacing is a share of the element's font size, as Chromium draws it
-    /// (Edge's print, 2026-10-19): at font-size 20, letter-spacing 10% is 2 and word-spacing 100% is 20; at
-    /// the default 12, 50% is 6 — nothing reported. It was read as that many user units, reported.
+    /// (Edge's print): at font-size 20, letter-spacing 10% is 2 and word-spacing 100% is 20; at the
+    /// default 12, 50% is 6 — nothing reported, and not read as that many user units.
     /// </summary>
     [Fact]
     public void APercentageSpacingIsAShareOfTheFontSize()

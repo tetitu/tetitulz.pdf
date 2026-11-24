@@ -112,8 +112,7 @@ public class OverprintSeparationTests
 
     /// <summary>
     /// A DeviceCMYK source under <c>/OPM 0</c> writes every colorant, so it paints plain magenta —
-    /// simulated on the plates, nothing reported. (It was reported as "/OPM is not 1" while the
-    /// per-paint compositor declined it; renamed with the behaviour, 2026-10-04.)
+    /// simulated on the plates, nothing reported.
     /// </summary>
     [Fact]
     public void ADeviceCmykSource_UnderOverprintModeZero_WritesEveryColorant_AndReportsNothing()
@@ -190,9 +189,8 @@ public class OverprintSeparationTests
     /// <summary>
     /// An overprinting spot Separation is simulated on the plates: the spot ink lands on its own
     /// plate and leaves the cyan page alone, so the two inks mix — its red appearance (M+Y) times
-    /// cyan is black — and nothing is reported. (It painted its alternate over the cyan and reported
-    /// the spot colorant while the per-paint compositor had no fifth plate; renamed, 2026-10-04.)
-    /// The control: without simulation the spot covers the cyan, red.
+    /// cyan is black — and nothing is reported. The control: without simulation the spot covers the
+    /// cyan, red.
     /// </summary>
     [Fact]
     public void ASpotSeparation_OverprintsTheBackdrop_AndReportsNothing()

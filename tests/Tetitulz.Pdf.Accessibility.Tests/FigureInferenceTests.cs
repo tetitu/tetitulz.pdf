@@ -131,7 +131,7 @@ public sealed class FigureInferenceTests
     /// A shared form is one decision but several elements, and the two counters say so.
     /// </summary>
     /// <remarks>
-    /// <b>The pair does not sum to "images seen", and the docs used to imply it did.</b> A Form
+    /// <b>The pair does not sum to "images seen".</b> A Form
     /// XObject drawn on two pages is tagged once and its bytes shared by both copies, so the
     /// callback is asked <em>once</em> while <em>two</em> <c>/Figure</c> elements are written.
     /// <c>FiguresTagged</c> counts elements; <c>FiguresDeclined</c> counts decisions. Both numbers
@@ -208,7 +208,7 @@ public sealed class FigureInferenceTests
 
     /// <summary>
     /// An inline image (<c>BI…EI</c>) the caller describes becomes a Figure too, read where it is
-    /// drawn — the owner's decision of 2026-10-18: inline images are offered as image XObjects are.
+    /// drawn: inline images are offered as image XObjects are.
     /// </summary>
     [Fact]
     public void AnInlineImageTheCallerDescribesBecomesAFigure()

@@ -168,8 +168,7 @@ public class TableAlignmentAndShrinkTests
 
     /// <summary>
     /// A column whose only content is a nested table is as wide as that table's content: the
-    /// shrinking table around a one-word table is a word wide, not the band (before 2026-10-19 the
-    /// column was unknown and the table kept the band).
+    /// shrinking table around a one-word table is a word wide, not the band.
     /// </summary>
     [Fact]
     public void ANestedTablesColumnShrinksTheTable()

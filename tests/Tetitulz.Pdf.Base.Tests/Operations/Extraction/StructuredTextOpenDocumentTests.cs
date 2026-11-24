@@ -14,7 +14,7 @@ namespace Tetitulz.Pdf.Base.Tests.Operations.Extraction;
 /// <summary>
 /// One page's structured text from a document the caller holds open answers what the stream door
 /// answers for the page — the door a viewer indexing page by page uses instead of opening the
-/// document once a page (Wave 22, SmallPlugins+Viewer-1:3).
+/// document once a page.
 /// </summary>
 public sealed class StructuredTextOpenDocumentTests
 {

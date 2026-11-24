@@ -17,12 +17,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// The colour deviations left open by the 2026-08-06 rendering audit (GAPS.md §2, group 2
-/// "Still open"), closed here. Every one of them was silent: the file said one thing, the raster
-/// path did another, and no diagnostic and no failing test said so.
+/// Colour rules whose breach is silent: the file says one thing, the raster path does another,
+/// and no diagnostic says so.
 ///
 /// <para>Each test asserts decoded pixels or the computed value, never non-null output — and each
-/// was mutation-checked by breaking the code it covers and confirming it goes red.</para>
+/// is mutation-checked by breaking the code it covers and confirming it goes red.</para>
 /// </summary>
 public sealed class ColourGapClosureTests
 {
@@ -280,10 +279,8 @@ public sealed class ColourGapClosureTests
         Assert.Contains("more samples than an index can address",
                         PdfFunctionEvaluator.LastType0Failure ?? "");
 
-        // A `clock.ElapsedMilliseconds < 2000` assertion used to follow. It was removed rather than
-        // relaxed: it added nothing the two assertions above do not already prove, and it was the
-        // tightest wall-clock ceiling in the suite — three DoS tests flaked in one day because a
-        // full-solution run has 26 assemblies competing for the same cores, so elapsed time
+        // No wall-clock assertion: it would add nothing the two assertions above do not already
+        // prove, and a full-solution run's assemblies compete for the same cores, so elapsed time
         // measures the machine's load rather than the code's work.
     }
 
@@ -484,17 +481,13 @@ public sealed class ColourGapClosureTests
     /// but a stream to be), and <c>/All</c> must still be recognised — in <i>both</i> renderers.
     /// </summary>
     /// <remarks>
-    /// <para><b>It was not.</b> The raster path read <c>csArr[1] as PdfName</c>, which does not
-    /// follow a reference, so an indirect <c>/All</c> read as <i>absent</i> and fell through to the
-    /// tint transform — painting the registration mark <b>lighter than full coverage</b>, which is
-    /// the exact defect the <c>/All</c> branch was added to fix. The SVG exporter used
-    /// <c>PdfResolve.Name</c> and got it right, so the same file rendered pale and exported black.
-    /// Found by a 2026-08-29 liveness sweep of the shared decision points.</para>
+    /// <para>Read as <c>csArr[1] as PdfName</c>, which does not follow a reference, an indirect
+    /// <c>/All</c> would read as <i>absent</i> and fall through to the tint transform — painting the
+    /// registration mark <b>lighter than full coverage</b>, the exact defect the <c>/All</c> branch
+    /// exists to prevent — while the SVG exporter, through <c>PdfResolve.Name</c>, exported it black.</para>
     ///
-    /// <para>This is the failure mode CLAUDE.md names for the whole render path — "<c>PdfDictionary</c>'s
-    /// indexer does not follow an indirect reference, so <c>dict[key] as PdfArray</c> silently
-    /// yields null, indistinguishable from the key being absent" — reaching a site that the 93-call
-    /// conversion missed because it is an <i>array element</i> rather than a dictionary read.</para>
+    /// <para>This is the failure mode CLAUDE.md names for the whole render path — the indexer does not
+    /// follow an indirect reference — at an <i>array element</i> rather than a dictionary read.</para>
     /// </remarks>
     [Fact]
     public void SeparationAll_NamedIndirectly_IsStillFullCoverage()

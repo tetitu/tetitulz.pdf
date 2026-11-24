@@ -254,7 +254,7 @@ public class RenderGeometryParityTests
 
     /// <summary>
     /// The far-edge consequence of the same defect, asserted directly: a square at the top-right of
-    /// a shifted box used to map outside the accumulator and vanish, which reported a page that
+    /// a shifted box must not map outside the accumulator and vanish, which would report a page that
     /// uses a spot ink as one that does not.
     /// </summary>
     [Fact]

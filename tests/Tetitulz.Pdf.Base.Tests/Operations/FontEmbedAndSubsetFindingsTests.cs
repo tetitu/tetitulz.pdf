@@ -121,8 +121,8 @@ public class FontEmbedAndSubsetFindingsTests
     [Fact]
     public void GetFontMetrics_TruncatedFontHeader_ReturnsDefaultsInsteadOfFaulting()
     {
-        // 13 bytes with a non-zero numTables: the directory loop used to index straight past the
-        // end and throw IndexOutOfRangeException out of a public API that documents no such thing.
+        // 13 bytes with a non-zero numTables: a directory loop indexing straight past the end
+        // would throw IndexOutOfRangeException out of a public API that documents no such thing.
         var truncated = new byte[13];
         truncated[4] = 0x00; truncated[5] = 0x64;   // numTables = 100
 
@@ -230,9 +230,9 @@ public class FontEmbedAndSubsetFindingsTests
     [Fact]
     public void Subset_DirectoryDeclaringMoreTablesThanTheFileHolds_IsBoundedAndStillSubsets()
     {
-        // numTables = 1000 in a small file used to die with IndexOutOfRangeException in
-        // ParseOffsetTable, reading 984 records that are not there. The loop now stops at the
-        // buffer's end, so the ten real tables are still found and the subset is produced.
+        // numTables = 1000 in a small file: ParseOffsetTable must not read the 984 records that
+        // are not there. The loop stops at the buffer's end, so the ten real tables are still
+        // found and the subset is produced.
         byte[] font = MinimalTrueType.Build("A");
         byte[] hostile = (byte[])font.Clone();
         hostile[4] = 0x03; hostile[5] = 0xE8;   // numTables = 1000

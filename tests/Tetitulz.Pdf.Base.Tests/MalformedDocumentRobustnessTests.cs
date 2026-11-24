@@ -55,10 +55,9 @@ public class MalformedDocumentRobustnessTests
     /// <para><c>IOException</c> and <c>EndOfStreamException</c> are here because truncation is one
     /// of the mutations: a stream that ends early is a legitimate I/O failure, not a logic
     /// error.</para>
-    /// <para><b><c>PdfFilterException</c> and <c>WorkBudgetExceededException</c> used to need their
-    /// own arms and no longer do</b> — they derive from <c>PdfException</c> now, and the compiler
-    /// said so by calling the arms unreachable. That this list could shrink is the point of the
-    /// change: a caller no longer has to enumerate the library's exception types to catch them.</para>
+    /// <para><b><c>PdfFilterException</c> and <c>WorkBudgetExceededException</c> need no arms of
+    /// their own</b> — they derive from <c>PdfException</c>, so a caller does not have to enumerate
+    /// the library's exception types to catch them.</para>
     /// </remarks>
     private static bool IsDocumentedRefusal(Exception ex) => ex switch
     {

@@ -25,8 +25,8 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 ///
 /// <para>Every test here reads the <b>output</b> document back — the object that was written, or
 /// the decoded content of the appearance stream. A fill that returns a valid PDF while changing
-/// nothing observable is exactly the failure these replace: check boxes used to receive a
-/// <c>/V</c> string and no <c>/AS</c> at all, which no viewer draws.</para>
+/// nothing observable is exactly the failure these catch: a check box given a <c>/V</c> string
+/// and no <c>/AS</c> at all, which no viewer draws.</para>
 /// </summary>
 public class PdfFormFillerTests
 {

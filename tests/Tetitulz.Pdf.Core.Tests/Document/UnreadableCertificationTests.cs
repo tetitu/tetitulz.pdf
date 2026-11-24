@@ -15,8 +15,8 @@ namespace Tetitulz.Pdf.Core.Tests.Document;
 /// damaged document, not an uncertified one.
 /// </summary>
 /// <remarks>
-/// <para><b>This is the shape GAPS.md §23 is about, at the place where it costs most.</b> A failed
-/// resolve and an absent entry both produce <c>PdfNull</c>, so reading one as the other used to make
+/// <para><b>An unreadable object is not an absent one, and here it costs most.</b> A failed
+/// resolve and an absent entry both produce <c>PdfNull</c>, so reading one as the other would make
 /// "the catalog names a certification I could not fetch" and "this document is not certified" the
 /// same answer — and <i>not certified</i> is the answer that permits modification, permits the next
 /// signature, and lets an in-place image replacement proceed.</para>
@@ -24,8 +24,8 @@ namespace Tetitulz.Pdf.Core.Tests.Document;
 /// <para><b>The verdict deliberately does not change.</b> §12.8.2.2 puts the certification in the
 /// signature's own <c>/Reference</c>; <c>/Perms</c> is the catalog's pointer to it, so an unreadable
 /// pointer is not an unreadable certification and falling through to the signature fields stays
-/// right. What changes is that the caller is now told, rather than handed a clean "no certification
-/// found" about a file that says otherwise.</para>
+/// right. What the caller gets is a report, not a clean "no certification found" about a file
+/// that says otherwise.</para>
 /// </remarks>
 public class UnreadableCertificationTests
 {

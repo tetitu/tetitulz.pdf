@@ -44,10 +44,10 @@ public class InkCoverageTests
     /// map.
     /// </summary>
     /// <remarks>
-    /// The deposit used to convert the path's bounds from PDF user space, and the current path is
-    /// already in Y-down page-point space — so it applied the page flip twice and every map came
-    /// back mirrored about the page's horizontal centre line. Both assertions discriminate: the old
-    /// code put ink in the bottom half and none in the top.
+    /// The current path is already in Y-down page-point space, so a deposit converting the path's
+    /// bounds from PDF user space would apply the page flip twice and every map would come back
+    /// mirrored about the page's horizontal centre line. Both assertions discriminate: mirrored, the
+    /// ink lands in the bottom half and none in the top.
     /// </remarks>
     [Fact]
     public void InkLandsInTheHalfOfThePageTheArtworkOccupies()
@@ -239,11 +239,11 @@ public class InkCoverageTests
 
     /// <summary>Spot-coloured text deposits ink.</summary>
     /// <remarks>
-    /// <para>Text used to deposit nothing while still <i>registering</i> its colorant, so a page
-    /// whose only spot content was type reported the channel as present and every pixel of it zero
+    /// <para>Text that deposited nothing while still <i>registering</i> its colorant would make a page
+    /// whose only spot content is type report the channel as present and every pixel of it zero
     /// — which reads as "this ink is selected and never used" rather than as "not measured".</para>
     /// <para><b>Two assertions, because either alone is weak.</b> That some pixel is inked kills
-    /// the old behaviour; that the inked pixels are a small minority of the page kills the obvious
+    /// a deposit of nothing; that the inked pixels are a small minority of the page kills the obvious
     /// wrong fix of depositing the text's bounding box, which for a 36 pt line is a large band.</para>
     /// <para>Host-gated: this needs a font that resolves to real outlines, and a host with no font
     /// manager at all cannot observe the property. The Windows CI job runs the full solution and

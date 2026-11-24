@@ -14,7 +14,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
 /// <see cref="PdfSeparationRenderer"/> against the reference renderer.3's separation output device on the same
-/// files (rendered at 72 dpi, 2026-10-03; separation output stores 255 − ink, read back here as ink). Where
+/// files (rendered at 72 dpi; separation output stores 255 − ink, read back here as ink). Where
 /// the reference renderer cannot answer — it skips a spot ink used only inside a pattern — the expectation is
 /// the specification's and says so.
 /// </summary>

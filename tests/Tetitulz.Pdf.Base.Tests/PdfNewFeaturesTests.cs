@@ -155,14 +155,11 @@ public sealed class PdfNewFeaturesTests
     /// Structured extraction ends a word at a space glyph the content stream drew, as plain
     /// extraction does, so the two APIs agree on "Hello World".
     ///
-    /// <para><b>They used to disagree, and this test pinned it.</b> Blank glyphs were removed
-    /// before words were built, so only the gap was left. At 12 pt a single space is narrower than
-    /// the split threshold, and structured extraction returned the single word
-    /// <c>"HelloWorld"</c> while <c>PdfOperations.ExtractText</c> returned "Hello World".</para>
+    /// <para>With blank glyphs removed before words were built, only the gap would be left: at 12 pt a
+    /// single space is narrower than the split threshold, so structured extraction would return the
+    /// single word <c>"HelloWorld"</c> while <c>PdfOperations.ExtractText</c> returns "Hello World".</para>
     ///
-    /// <para>The predecessor hedged in a comment ("may or may not contain the literal text
-    /// depending on font encoding") and asserted <c>NotNull</c> — which an empty string satisfies.
-    /// The hedge was the tell: nobody had checked which it was.</para>
+    /// <para>The assertion is the text, not <c>NotNull</c> — which an empty string satisfies.</para>
     /// </summary>
     public void ExtractStructuredText_SplitsWordsAtASpaceGlyph_LikePlainExtraction()
     {

@@ -155,7 +155,7 @@ public sealed class DisplayListIndexTests
     }
 
     /// <summary>
-    /// Wave 8.1 Stage E: the rectangle query keeps the band's entries that also overlap the
+    /// The rectangle query keeps the band's entries that also overlap the
     /// half-open column <c>[left, right)</c> — one left of it, one right of it and one touching only
     /// its right edge are out; one straddling its left edge and one touching only its left edge from
     /// inside are in.

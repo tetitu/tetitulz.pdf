@@ -13,8 +13,8 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts;
 /// character codes and maps them to CIDs.
 /// </summary>
 /// <remarks>
-/// The renderer used to derive its code width from <c>/ToUnicode</c> and assume a single fixed
-/// stride. That is wrong three ways, each covered below: <c>/ToUnicode</c> is not the encoding,
+/// Deriving the code width from <c>/ToUnicode</c> and assuming a single fixed stride is wrong
+/// three ways, each covered below: <c>/ToUnicode</c> is not the encoding,
 /// a fixed stride cannot express a mixed-width codespace, and code == CID holds only for
 /// Identity encodings.
 /// </remarks>
@@ -58,8 +58,8 @@ public sealed class CMapCodecTests
 
     /// <summary>
     /// Tw applies to the single-byte code 32 only. Under Identity-H the 2-byte code 0x0020 is
-    /// glyph 32 — rarely a space — yet every draw loop used to test
-    /// <c>bytes[i] == 0 &amp;&amp; bytes[i+1] == 32</c> and apply Tw to it.
+    /// glyph 32 — rarely a space — so a draw loop testing
+    /// <c>bytes[i] == 0 &amp;&amp; bytes[i+1] == 32</c> must not apply Tw to it.
     /// </summary>
     [Fact]
     public void TwoByteCode0020_IsNotAWordSpaceCode()

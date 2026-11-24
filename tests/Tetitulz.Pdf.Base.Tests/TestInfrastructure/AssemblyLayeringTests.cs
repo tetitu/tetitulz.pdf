@@ -19,15 +19,12 @@ namespace Tetitulz.Pdf.Base.Tests.TestInfrastructure;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Why this exists.</b> Every other invariant in this repository that mattered got a
-/// build-failing scanner — <c>NoInlineCmykConversionTests</c>,
-/// <c>NoRedundantPdfNameAllocationTests</c>, <c>NoUnfalsifiableAssertionsTests</c>,
-/// <c>PublicApiSurfaceTests</c> — but the architecture itself was doc-and-review enforced only.
-/// The cost of that showed up in the 2026-08-12 boundary review (GAPS.md §15): a
-/// <c>Plugins.Conformance</c> → <c>Plugins.Maintenance</c> reference had been sitting in the tree
-/// unnoticed, in violation of a rule stated in two places; <c>Base</c> had accumulated a full
-/// JavaScript interpreter; and CLAUDE.md's own rule text had drifted away from what the graph
-/// actually did. All three were mechanically detectable.
+/// <b>Why this exists.</b> The architecture, like every other invariant here that matters, gets a
+/// build-failing scanner — as <c>NoInlineCmykConversionTests</c>,
+/// <c>NoRedundantPdfNameAllocationTests</c>, <c>NoUnfalsifiableAssertionsTests</c> and
+/// <c>PublicApiSurfaceTests</c> are — rather than doc-and-review enforcement alone. A banned
+/// plugin → plugin reference, a JavaScript interpreter in <c>Base</c>, and rule text drifting from
+/// what the graph does are all mechanically detectable.
 /// </para>
 /// <para>
 /// <b>The invariant is acyclicity, not direction.</b> <c>Plugins.Docx</c> →

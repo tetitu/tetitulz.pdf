@@ -49,8 +49,8 @@ public class PdfTransitionTests
     }
 
     /// <summary>
-    /// Wave 17 R1.8: a <c>/Di</c> past <c>int</c> saturates (<see cref="PdfNumber.IntValue"/>) where
-    /// the <c>(int)LongValue</c> cast wrapped 2^32 + 270 to 270 — a legal-looking direction from a
+    /// A <c>/Di</c> past <c>int</c> saturates (<see cref="PdfNumber.IntValue"/>), where an
+    /// <c>(int)LongValue</c> cast would wrap 2^32 + 270 to 270 — a legal-looking direction from a
     /// number that is none.
     /// </summary>
     [Fact]

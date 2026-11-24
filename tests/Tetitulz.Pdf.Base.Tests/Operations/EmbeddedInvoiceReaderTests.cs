@@ -332,7 +332,7 @@ public class EmbeddedInvoiceReaderTests
 
     /// <summary>
     /// A catalog written directly in the trailer is read, not refused: its attachment is found.
-    /// The attachment listing used to demand a reference and throw out of the Try method.
+    /// An attachment listing that demanded a reference would throw out of the Try method.
     /// </summary>
     [Fact]
     public void ACatalogInTheTrailerIsReadNotRefused()

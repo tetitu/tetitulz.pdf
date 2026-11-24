@@ -153,8 +153,8 @@ public class PageLabelWriteAndFormatTests
     }
 
     /// <summary>
-    /// The facade no longer throws on a negative start: it used to reach the letter formatter as a
-    /// negative repeat count.
+    /// The facade does not throw on a negative start, which would otherwise reach the letter
+    /// formatter as a negative repeat count.
     /// </summary>
     [Fact]
     public void ANegativeStartLabelsFromTheDefault_RatherThanFailingTheWholeRead()

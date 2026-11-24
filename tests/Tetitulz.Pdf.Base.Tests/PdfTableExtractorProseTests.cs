@@ -13,10 +13,10 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
-/// The text strategy's edges (GAPS §4a, 2026-10-14): a line of running text above or below a grid
-/// shares no column alignment with it — its words cross the separators and none of its gaps sits on
-/// one — and was taken into the table as a row split at a column boundary. Such a row, and a row
-/// far outside the grid's vertical extent, now ends the table; a row that crosses nothing (a
+/// The text strategy's edges: a line of running text above or below a grid shares no column
+/// alignment with it — its words cross the separators and none of its gaps sits on one — and must
+/// not be taken into the table as a row split at a column boundary. Such a row, and a row far
+/// outside the grid's vertical extent, ends the table; a row that crosses nothing (a
 /// subtotal in one column) or aligns a gap (a header spanning two columns) stays, and so does a
 /// prose line between two of the grid's rows, which only the edges are read for.
 /// </summary>

@@ -26,11 +26,10 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// </summary>
 /// <remarks>
 /// <para><b>Where the turn goes.</b> §12.5.5's algorithm maps the form's <c>/BBox</c> through its
-/// <c>/Matrix</c> and fits the result to <c>/Rect</c>; it has no rotation step, and the annotation
-/// audit removed the second turn both renderers used to apply. So a generated appearance is laid
-/// out upright in a box of the rectangle's swapped dimensions and carries a <c>/Matrix</c> that
-/// turns it onto the rectangle — which any conforming reader then draws turned. Nothing in the tree
-/// read <c>/MK /R</c> before; a producer's rotated field left to this library rendered upright.</para>
+/// <c>/Matrix</c> and fits the result to <c>/Rect</c>; it has no rotation step, so neither renderer
+/// applies a second turn. A generated appearance is laid out upright in a box of the rectangle's
+/// swapped dimensions and carries a <c>/Matrix</c> that turns it onto the rectangle — which any
+/// conforming reader then draws turned.</para>
 ///
 /// <para><b>The fixture is a tall, narrow field</b> — 30 wide, 200 high — with a value the
 /// upright reading cannot fit across it. Turned by 90 the value runs up the field, so its ink is

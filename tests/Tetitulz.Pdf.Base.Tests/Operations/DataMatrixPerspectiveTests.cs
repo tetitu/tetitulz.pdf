@@ -73,7 +73,7 @@ public class DataMatrixPerspectiveTests
     /// <summary>
     /// A mark in the quiet zone a module past the top-right corner, in line with the top clock track, is
     /// counted as the track's twelfth dark module: 24 columns over 22 rows is no ECC-200 size, so the sizes the
-    /// arms fit are sampled instead, as before 2026-10-20, and the symbol still reads. The control, without the
+    /// arms fit are sampled instead, and the symbol still reads. The control, without the
     /// mark, is traced and sampled at its one size.
     /// </summary>
     [Fact]

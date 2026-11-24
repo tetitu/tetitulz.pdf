@@ -133,8 +133,8 @@ public sealed class PdfColorTests
     public void CalRgbToSRgb_AppliesGamma()
     {
         // Gamma 2.2 linearises 0.5 → 0.5^2.2 (≈0.22), which is darker than the
-        // identity (gamma 1.0) transform. This is exactly the difference the SVG
-        // renderer used to discard.
+        // identity (gamma 1.0) transform — the difference an SVG renderer ignoring the
+        // gamma would discard.
         var input = new[] { 0.5f, 0.5f, 0.5f };
         var identity = PdfColor.CalRgbToSRgb(input, null);
         var gamma22  = PdfColor.CalRgbToSRgb(input, MakeCalDict(2.2));

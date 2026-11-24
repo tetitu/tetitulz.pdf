@@ -245,21 +245,20 @@ public class PdfAutoTaggerTests
     /// Adversarial-input guard for the auto-tagger's body-font-size measurement.
     ///
     /// <para>
-    /// <c>ComputeMedianFontSize</c> used to run a full <c>PdfOperations.ExtractStructuredText</c>
-    /// over the whole document — on every AutoTag call — purely to obtain one number, with the
-    /// linear content-stream measurement kept only as a fallback for when the extractor
-    /// <em>threw</em>. Extraction groups glyphs into lines and is superlinear in the amount of
-    /// text sharing a baseline band, so this input — one page, a thousand text-showing operators
-    /// whose baselines alternate between two values a couple of points apart, each drawing a long
-    /// string — took over three minutes to tag, and the fallback never fired because nothing had
-    /// failed. Growing the string length or the operator count pushes it past ten minutes on a
+    /// <c>ComputeMedianFontSize</c> measures the content stream linearly. A full
+    /// <c>PdfOperations.ExtractStructuredText</c> over the whole document, on every AutoTag call,
+    /// purely to obtain one number, is superlinear in the amount of text sharing a baseline band
+    /// (extraction groups glyphs into lines), so this input — one page, a thousand text-showing
+    /// operators whose baselines alternate between two values a couple of points apart, each drawing
+    /// a long string — would take over three minutes to tag, and a fallback that fires only when the
+    /// extractor throws never would. Growing the string length or the operator count pushes it past ten minutes on a
     /// file well under a megabyte, i.e. an unbounded hang reachable from
     /// <c>PdfAccessibility.RemediateWithReport</c>.
     /// </para>
     ///
     /// <para>
-    /// The budget is deliberately enormous relative to the fixed version (which is comfortably
-    /// sub-second here) and far below the ~3.5 minutes the unbounded path took, so it cannot flake
+    /// The budget is deliberately enormous relative to the linear measurement (comfortably
+    /// sub-second here) and far below the ~3.5 minutes the extraction takes, so it cannot flake
     /// on a slow machine yet still fails hard if the extraction ever comes back.
     /// </para>
     /// </summary>

@@ -14,8 +14,7 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// The silent colour deviations found by the 2026-08-06 rendering audit (GAPS.md §2, group 2).
-/// Every one produced wrong pixels with no diagnostic and no failing test.
+/// Colour rules whose breach is silent: wrong pixels, and no diagnostic.
 /// </summary>
 public sealed class RasterColourCorrectnessTests
 {
@@ -138,7 +137,7 @@ public sealed class RasterColourCorrectnessTests
 
     /// <summary>
     /// §14.11.2: every other boundary box is contained in the MediaBox, and one that extends
-    /// outside is intersected with it. A CropBox twice the MediaBox used to size the whole render.
+    /// outside is intersected with it, so a CropBox twice the MediaBox does not size the whole render.
     /// </summary>
     [Fact]
     public void CropBoxLargerThanMediaBox_IsIntersectedWithIt()

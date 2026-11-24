@@ -422,7 +422,7 @@ public class InvoiceLineItemsTests
     /// <summary>
     /// On a ruled page, a header word whose centre lies 2 pt from a vertical line — a box's side,
     /// elsewhere on the page, that the grid takes for a column — is in one cell, so the description
-    /// is read; it used to sit in the sliver beside the line as well, which the reader took. A header
+    /// is read, not also in the sliver beside the line, which the reader would take. A header
     /// clear of the line reads the same, the control.
     /// </summary>
     [Fact]

@@ -12,9 +12,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Document;
 
 /// <summary>
-/// The sanitizer reaches dangerous content in the places the old key-by-key walk did not — a
+/// The sanitizer reaches dangerous content in the places a key-by-key walk misses — a
 /// <c>/Next</c> written as an array, an inline <c>/OpenAction</c> the caller kept, a link
-/// annotation's <c>/PA</c> — and removes the action kinds no option used to cover: remote
+/// annotation's <c>/PA</c> — and removes these action kinds too: remote
 /// <c>/GoToR</c>/<c>/GoToE</c>/<c>/ImportData</c>, a non-web <c>/URI</c>, and <c>/3D</c> annotations.
 /// </summary>
 public class SanitizerActionCoverageTests

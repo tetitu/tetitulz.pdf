@@ -149,7 +149,7 @@ public class AglNameAgreementTests
     }
 
     /// <summary>
-    /// A code point above U+10FFFF is not a code point. The index used to accept
+    /// A code point above U+10FFFF is not a code point: the index does not accept
     /// <c>uFFFFFF</c> and key the map on 16 777 215.
     /// </summary>
     [Theory]

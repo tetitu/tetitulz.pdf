@@ -58,8 +58,8 @@ public class CffFontWriterBuildTests
     }
 
     /// <summary>
-    /// Wave 17 R2.11: an INDEX count is a Card16. Written as two low bytes, 65 536 charstrings
-    /// produced a count of 0 and an INDEX that described none of its offsets; refused now, naming the
+    /// An INDEX count is a Card16. Written as two low bytes, 65 536 charstrings would produce a
+    /// count of 0 and an INDEX that describes none of its offsets; so it is refused, naming the
     /// cap. The two-glyph font above is the control that a legal count still builds.
     /// </summary>
     [Fact]

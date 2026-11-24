@@ -63,7 +63,7 @@ public class RenderBudgetChargeParityTests
 
     /// <summary>
     /// The same for a tiling-pattern cell. Raster reaches the budget through <c>RenderToBitmap</c>;
-    /// the SVG writer builds a <c>&lt;pattern&gt;</c> and used to charge nothing for it.
+    /// the SVG writer builds a <c>&lt;pattern&gt;</c>, and charges it too.
     /// </summary>
     [Fact]
     public void TilingPatternCellBuild_IsChargedByBothRenderers()

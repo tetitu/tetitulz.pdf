@@ -15,9 +15,9 @@ namespace Tetitulz.Pdf.Core.Tests.Document;
 /// <summary>
 /// A node a name or number tree names that cannot be parsed is <see cref="PdfTreeTruncation.UnreadableNode"/>,
 /// not an empty subtree. The parser answers both an undefined object and an unparseable one with
-/// the null object; only <c>PdfParser.LastObjectParseError</c> tells them apart, and the walk used to
-/// read both as absent and call the tree whole — so a lookup's "no such key" stood where the answer
-/// was "the tree could not be read".
+/// the null object; only <c>PdfParser.LastObjectParseError</c> tells them apart, and a walk reading
+/// both as absent would call the tree whole — a lookup's "no such key" standing where the answer is
+/// "the tree could not be read".
 /// </summary>
 public sealed class UnreadableTreeNodeTests
 {

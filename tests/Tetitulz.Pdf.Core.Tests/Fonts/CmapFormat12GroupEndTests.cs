@@ -11,10 +11,10 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Fonts;
 
 /// <summary>
-/// Wave 17 R2.2: a format-12 cmap group ending at <c>0xFFFFFFFF</c>. The loop
-/// <c>for (cp = start; cp &lt;= end; cp++)</c> wrapped <c>cp</c> to 0 after the last code point and
-/// mapped the low code points — U+0000 upward — to the group's glyphs until the entry cap stopped
-/// it, so an ASCII letter the font never mapped resolved to a glyph. The group now ends at its end.
+/// A format-12 cmap group ending at <c>0xFFFFFFFF</c>. The loop
+/// <c>for (cp = start; cp &lt;= end; cp++)</c> would wrap <c>cp</c> to 0 after the last code point
+/// and map the low code points — U+0000 upward — to the group's glyphs until the entry cap stopped
+/// it, so an ASCII letter the font never mapped would resolve to a glyph. The group ends at its end.
 /// </summary>
 public sealed class CmapFormat12GroupEndTests
 {

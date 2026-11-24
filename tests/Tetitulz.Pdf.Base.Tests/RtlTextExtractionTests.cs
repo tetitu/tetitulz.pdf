@@ -179,8 +179,8 @@ CMap currentdict end end";
         var pages = PdfStructuredTextExtractor.Extract(ms);
         Assert.NotEmpty(pages);
 
-        // "Graceful" used to mean `if (rtlLine == null) return;` — a silent pass whenever the
-        // ToUnicode CMap failed to decode, i.e. exactly when this test should have gone red.
+        // Not `if (rtlLine == null) return;` — a silent pass whenever the ToUnicode CMap fails
+        // to decode, i.e. exactly when this test should go red.
         PdfTextLine rtlLine = null;
         foreach (var line in pages[0].Lines)
             if (line.IsRtl) { rtlLine = line; break; }

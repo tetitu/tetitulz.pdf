@@ -61,7 +61,7 @@ public class KerningTests
     }
 
     /// <summary>
-    /// A leader of text (<see cref="TabStop.LeaderText"/>, 2026-10-19) kerned: "oT" repeated kerns T into the next o,
+    /// A leader of text (<see cref="TabStop.LeaderText"/>) kerned: "oT" repeated kerns T into the next o,
     /// 2.2 points a junction, so n repetitions are n widths less n - 1 kerns, and as many fit as that allows — more
     /// than the unit's own width would say. The width of "oT" is measured from where a right-aligned one starts.
     /// </summary>

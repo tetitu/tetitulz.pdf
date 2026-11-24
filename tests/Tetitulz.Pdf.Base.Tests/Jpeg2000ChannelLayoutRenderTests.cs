@@ -16,17 +16,16 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
-/// End-to-end tests for the two JPEG 2000 defects that only show up in rendered pixels:
+/// End-to-end tests for two JPEG 2000 defects that only show up in rendered pixels:
 /// <list type="bullet">
-///   <item><c>/SMaskInData</c> was ignored everywhere, so an opacity channel carried inside the
-///         codestream was dropped (or, on the magic-byte path, written into an Opaque bitmap
-///         whose alpha Skia discards).</item>
-///   <item>A four-channel image was read as CMYK by one decode path and as RGB + alpha by the
-///         other, so the same bytes produced different colours.</item>
+///   <item><c>/SMaskInData</c> ignored, so an opacity channel carried inside the codestream is
+///         dropped (or, on the magic-byte path, written into an Opaque bitmap whose alpha Skia
+///         discards).</item>
+///   <item>A four-channel image read as CMYK by one decode path and as RGB + alpha by the other,
+///         so the same bytes produce different colours.</item>
 /// </list>
-/// The SVG renderer is covered too: it never consulted image-decode plugins, so a registered
-/// JPEG 2000 codec fixed page rendering while PDF→SVG export silently produced no image; the
-/// cat photo now comes from the in-house decoder on both paths (the old external codec's plugin retired 2026-09-26).
+/// The SVG renderer is covered too: the cat photo comes from the in-house decoder on both paths,
+/// so PDF→SVG export cannot silently produce no image while page rendering draws one.
 /// </summary>
 [Collection(TestInfrastructure.PluginHostCollection.Name)]
 public sealed class Jpeg2000ChannelLayoutRenderTests
@@ -158,8 +157,8 @@ public sealed class Jpeg2000ChannelLayoutRenderTests
     public void PluginPathAndMagicBytePathAgreeOnFourChannels()
     {
         // The same image decoded through the declared-filter dispatch and through the
-        // JP2/J2C sniff must produce the same pixel; these two used to disagree, one reading
-        // CMYK and the other RGB + alpha.
+        // JP2/J2C sniff must produce the same pixel, not one reading CMYK and the other
+        // RGB + alpha.
         byte[] samples = { 255, 0, 0, 255 };
         byte[] declared = BuildJpxPdf(1, 1, extraEntries: "/ColorSpace /DeviceRGB /SMaskInData 1");
         byte[] sniffed  = BuildJpxPdf(1, 1, extraEntries: "/ColorSpace /DeviceRGB /SMaskInData 1",
@@ -183,10 +182,8 @@ public sealed class Jpeg2000ChannelLayoutRenderTests
     [Fact]
     public void SvgExport_RendersTheCatPhoto_InHouseWithNoPluginRegistered()
     {
-        // The SVG path used to reach only the native libopenjp2 interop, so with the managed
-        // plugin registered it still emitted nothing for a JPX image. The exported SVG must
-        // carry a PNG data URI that decodes to the photo — from the in-house decoder, the one
-        // codec since the old external codec's plugin retired.
+        // The exported SVG must carry a PNG data URI that decodes to the photo — from the
+        // in-house decoder, the one codec, as the raster path does.
         byte[] pdf = BuildCatPdf();
         PdfPluginHost.Instance.ResetForTesting();
         try

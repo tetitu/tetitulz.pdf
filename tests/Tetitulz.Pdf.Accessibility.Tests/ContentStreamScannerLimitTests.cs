@@ -11,8 +11,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Accessibility.Tests;
 
 /// <summary>
-/// The accessibility content scanner's ceilings, pinned at their values, and its edges, as the
-/// overnight sweep found them. A page this scanner refuses is left untagged rather than edited, so
+/// The accessibility content scanner's ceilings, pinned at their values, and its edges. A page
+/// this scanner refuses is left untagged rather than edited, so
 /// each ceiling decides between "refuse" and "allocate for an attacker".
 /// </summary>
 public class ContentStreamScannerLimitTests

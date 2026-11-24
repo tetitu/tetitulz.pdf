@@ -142,8 +142,8 @@ public sealed class SignatureAppearanceTextTests
 
     /// <summary>
     /// A font covering the Arabic letters but not the forms they are shaped into cannot draw the
-    /// name, so it must not be the font this chooses. Asked about the letters — the question every
-    /// producer here used to ask — the resolver accepted it and the appearance was then refused.
+    /// name, so it must not be the font this chooses. Asked about the letters, the resolver would
+    /// accept it and the appearance would then be refused.
     /// </summary>
     [EmbeddableFontFact(Arabic)]
     public void AFontCoveringTheLettersButNotTheirShapedFormsIsNotTheFontChosen()

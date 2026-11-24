@@ -439,9 +439,9 @@ namespace Tetitulz.Pdf.Base.Tests
 
         [Fact]
         /// <summary>
-        /// A missing file reports itself as a missing file. It used to reach the XML parser and come
-        /// back as <c>XmlException: Data at the root level is invalid</c>, which blames the caller's
-        /// SVG for a file that was never opened.
+        /// A missing file reports itself as a missing file, not as the XML parser's
+        /// <c>XmlException: Data at the root level is invalid</c>, which would blame the caller's SVG for
+        /// a file that was never opened.
         /// </summary>
         public void PdfOperations_ConvertSvgToPdf_MissingFile_ThrowsFileNotFound()
         {
@@ -553,7 +553,7 @@ namespace Tetitulz.Pdf.Base.Tests
 
         [Fact]
         /// <summary>An 8-digit <c>#RRGGBBAA</c> is valid CSS/SVG 2; the alpha is dropped, the
-        /// colour is not. It used to fall through every branch to the black fallback.</summary>
+        /// colour is not, rather than falling through every branch to the black fallback.</summary>
         public void Convert_EightDigitHexColour_KeepsTheRgbAndDropsTheAlpha()
         {
             string content = ContentOf(SvgToPdfConverter.Convert(
@@ -564,10 +564,9 @@ namespace Tetitulz.Pdf.Base.Tests
 
         [Fact]
         /// <summary>
-        /// Text above U+00FF used to reach the file as <c>?</c> with the conversion reporting
-        /// success — at the viewer indistinguishable from a font-substitution problem. The
-        /// substitution still happens (the only font offered is Helvetica); what changed is that
-        /// it is now <b>reported</b>, naming the characters.
+        /// Text above U+00FF reaches the file as <c>?</c> — the only font offered is Helvetica — and the
+        /// substitution is <b>reported</b>, naming the characters; silent, it would be indistinguishable
+        /// at the viewer from a font-substitution problem.
         /// </summary>
         public void Convert_TextOutsideWinAnsi_ReportsTheCharactersItReplaced()
         {
@@ -642,9 +641,8 @@ namespace Tetitulz.Pdf.Base.Tests
         /// <summary>
         /// Without a <c>viewBox</c> nothing maps the SVG coordinate system onto the page — the user
         /// unit is a point and the graphic is drawn at its own size in the bottom-left corner. That
-        /// is right for a page sized to the graphic and wrong-looking otherwise, and it used to
-        /// happen with no warning: the parsed <c>width</c>/<c>height</c> were stored on the context
-        /// and read by nothing.
+        /// is right for a page sized to the graphic and wrong-looking otherwise, so it is reported,
+        /// from the parsed <c>width</c>/<c>height</c>.
         /// </summary>
         public void Convert_OversizedSvgWithNoViewBox_ReportsThatItOverflowsThePage()
         {
