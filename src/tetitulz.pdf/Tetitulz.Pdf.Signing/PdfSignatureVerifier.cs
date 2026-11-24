@@ -174,8 +174,8 @@ namespace Tetitulz.Pdf.Signing
                 // signatures" — indistinguishable from "this document is not signed", which is a
                 // wrong answer to a security question rather than a missing feature.
                 //
-                // The list stays empty (this verifier holds no decryptor and must not guess), but
-                // the reason is now on the diagnostic slot the class already documents.
+                // The list stays empty (this verifier holds no decryptor and must not guess), and
+                // the reason goes on the diagnostic slot the class documents.
                 if (document.IsEncrypted)
                     _lastVerificationError = EncryptedAcroFormUnreadable;
                 return results;

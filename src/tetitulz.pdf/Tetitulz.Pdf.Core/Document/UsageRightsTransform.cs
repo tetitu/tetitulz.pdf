@@ -14,12 +14,11 @@ namespace Tetitulz.Pdf.Core.Document
     /// from them.
     /// </summary>
     /// <remarks>
-    /// <para><b>One table, because it was two.</b> <c>PdfSigner</c> spelled the names into a string
-    /// and <c>PdfUsageRightsReader</c> compared against its own literals, and nothing held the two
-    /// to the same mapping — a right renamed on one side would have written a grant the other could
-    /// not read back.</para>
+    /// <para><b>One table for the writer and the reader</b> (<c>PdfSigner</c> and
+    /// <c>PdfUsageRightsReader</c>): with two, a right renamed on one side would write a grant
+    /// the other could not read back.</para>
     ///
-    /// <para>The mapping is the one this library has always used: <c>/FillIn</c> is form fill-in,
+    /// <para>The mapping: <c>/FillIn</c> is form fill-in,
     /// <c>/Import</c> and <c>/Export</c> are form-data exchange, <c>/SubmitStandalone</c> is the
     /// form-save right, any <c>/Annots</c> array is the annotation right, and <c>/Document
     /// [/FullSave]</c> is document save.</para>

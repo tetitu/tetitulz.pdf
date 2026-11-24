@@ -78,11 +78,10 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// <remarks>
         /// <b>Exists so a caller measuring a string selects the table once rather than per
         /// character.</b> <see cref="GetWidthByUnicode"/> resolves the font with an if-chain of up
-        /// to eleven <see cref="string"/> comparisons, and <c>PdfExporter.AdvanceWidth</c> called it
-        /// inside its per-character loop having already resolved the base font immediately above —
-        /// so measuring an <i>n</i>-character run cost up to 11<i>n</i> string comparisons to reach
-        /// the same table every time. <see cref="GetWidthByUnicode"/> is now a wrapper over this, so
-        /// there is still one implementation of the selection.
+        /// to eleven <see cref="string"/> comparisons, so calling it inside a per-character loop
+        /// would cost an <i>n</i>-character run up to 11<i>n</i> string comparisons to reach the
+        /// same table every time. <see cref="GetWidthByUnicode"/> is a wrapper over this, so there is
+        /// one implementation of the selection.
         /// </remarks>
         public static bool TryGetWidthTable(
             string baseFontName, out IReadOnlyDictionary<char, double> table, out double missingWidth)

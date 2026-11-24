@@ -722,13 +722,11 @@ namespace Tetitulz.Pdf.Core.Constants
         /// <summary>Built-in value of <see cref="MaxInvisibleGlyphCoverCandidates"/>; for a compile-time constant context.</summary>
         public const int DefaultMaxInvisibleGlyphCoverCandidates = 256;
 
-        // MaxColumnDetectionCellMarks lived here until the column detector stopped needing it.
-        // It capped the O(chars x cells) coverage-grid FILL in PdfLayoutAnalyzer.DetectColumns —
-        // 50 000 full-page glyphs cost ~148 s for one page, measured — and it bounded that by
-        // truncating the analysis and reporting the truncation. The fill is now a 2-D difference
-        // array plus one prefix-sum pass, which is O(chars + cells) for the identical coverage, so
-        // there is nothing left to charge and no truncated answer to report. Removed rather than
-        // left in place: an unreachable cap reads as a live bound to the next person tuning one.
+        // No cap on PdfLayoutAnalyzer.DetectColumns' coverage-grid fill: it is a 2-D difference
+        // array plus one prefix-sum pass, O(chars + cells), so there is nothing to charge and no
+        // truncated answer to report. (An O(chars x cells) fill would cost ~148 s for one page of
+        // 50 000 full-page glyphs, measured.) An unreachable cap would read as a live bound to the
+        // next person tuning one.
 
         /// <summary>Maximum depth of a <c>/Resources</c> inheritance chain.</summary>
         public static int MaxResourceDepth { get; set; } = DefaultMaxResourceDepth;

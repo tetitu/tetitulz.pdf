@@ -422,12 +422,12 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// <c>0</c> (the default) means <see cref="System.Environment.ProcessorCount"/>.
         /// </summary>
         /// <remarks>
-        /// <para>The batch paths were capped at four workers regardless of the machine, which
-        /// measured 301 ms against 174 ms unrestricted on a 12-core box for the same 50-page
-        /// document. The cap is now the caller's, and it has two real uses beyond speed.</para>
+        /// <para>The cap is the caller's rather than a fixed four, which measured 301 ms against
+        /// 174 ms unrestricted on a 12-core box for the same 50-page document, and it has two real
+        /// uses beyond speed.</para>
         /// <para><b>Set it to 1</b> to render on the calling thread with a single shared document
-        /// and cache set — the deterministic, thread-affine profile the stream overloads used to
-        /// have. That is what a host wants when it reads <see cref="RenderDiagnostics"/> or a
+        /// and cache set — the deterministic, thread-affine profile. That is what a host wants when
+        /// it reads <see cref="RenderDiagnostics"/> or a
         /// <c>Last*</c> diagnostic slot after the call, since those are <c>[ThreadStatic]</c>.</para>
         /// <para><b>Set it low</b> to bound memory: each worker retains a parsed document, its
         /// resolved typefaces and up to <see cref="ContentOperationCache.MaxBytes"/> of parsed

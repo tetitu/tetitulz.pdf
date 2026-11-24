@@ -10,10 +10,9 @@ namespace Tetitulz.Pdf.Core.Util
     /// Composes the one-line text a diagnostic sink stores in its <c>Last*</c> slot and hands to
     /// its subscribers: <c>[operation] detail — ExceptionType: Message</c>.
     ///
-    /// <para>Four sinks each carried a <c>private static string Compose</c> whose bodies were
-    /// identical apart from one literal — the default operation name — including the em-dash
-    /// separator, the nested <c>string.Concat</c> and the <c>(no detail)</c> fallback. The literal
-    /// is now the first argument.</para>
+    /// <para>One composition for every sink — the em-dash separator, the <c>(no detail)</c>
+    /// fallback — with the one thing that differs between them, the default operation name, as
+    /// the first argument.</para>
     /// </summary>
     /// <remarks>
     /// <b>It sits beside <see cref="DiagnosticFanOut"/> because it is the other half of the same

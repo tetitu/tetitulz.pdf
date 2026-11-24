@@ -363,7 +363,7 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         /// <see cref="RedactIsraeliIdentifiers"/> is separate.</para>
         ///
         /// <para><b>What is deliberately not searched for.</b> Bank account and vehicle numbers are
-        /// named in the same register row and are absent because they have no national check digit
+        /// absent because they have no national check digit
         /// and no single format - a locator for them would be a regular expression over digit runs,
         /// which reports every number on the page. Naming the limit is more useful than shipping a
         /// filter that does not filter.</para>

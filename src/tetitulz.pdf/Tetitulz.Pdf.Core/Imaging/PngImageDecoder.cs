@@ -60,10 +60,10 @@ namespace Tetitulz.Pdf.Core.Imaging
     /// visible signature. Core is below all three, so this is the sanctioned share-downward rather
     /// than a sideways edge.</para>
     ///
-    /// <para><b>Alpha is preserved, never composited.</b> The DocxToPdf copy flattened it over
-    /// white - correct for its own pages and wrong as a decoder's contract, because it throws away
-    /// information the caller cannot recover. Compositing is now the caller's step, and only
-    /// DocxToPdf takes it.</para>
+    /// <para><b>Alpha is preserved, never composited.</b> Flattening over white is right for
+    /// DocxToPdf's pages and wrong as a decoder's contract, because it throws away information
+    /// the caller cannot recover. Compositing is the caller's step, and only DocxToPdf takes
+    /// it.</para>
     /// </remarks>
     public static class PngImageDecoder
     {

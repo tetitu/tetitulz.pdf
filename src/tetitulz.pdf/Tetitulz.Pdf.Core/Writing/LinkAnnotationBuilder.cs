@@ -28,7 +28,7 @@ namespace Tetitulz.Pdf.Core.Writing
     /// <para><b><c>/Border [0 0 0]</c> is deliberate.</b> Table 164 reads it as
     /// <c>[hRadius vRadius width]</c>, so a zero width is an invisible border — the near-universal
     /// choice for a text hyperlink. It is superseded by <c>/BS</c> but not removed, and every reader
-    /// still honours it; if that ever changes, this is now the one place to change.</para>
+    /// still honours it; if that ever changes, this is the one place to change.</para>
     ///
     /// <para>A static class with no fields, so it adds no type initializer.</para>
     /// </remarks>

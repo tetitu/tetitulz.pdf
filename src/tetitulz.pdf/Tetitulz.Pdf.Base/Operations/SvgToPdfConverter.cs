@@ -5225,13 +5225,14 @@ namespace Tetitulz.Pdf.Base.Operations
         /// <c>hsl()</c>/<c>hsla()</c>, and the CSS named colours, which SVG 1.1 §4.4 takes from CSS.
         /// </summary>
         /// <remarks>
-        /// <para><b>This knew sixteen names</b>, no percentages and no <c>hsl()</c>, and drew anything
-        /// else black. For a name it did not know it said nothing, so <c>fill="steelblue"</c> came
-        /// out black with a clean <see cref="LastError"/>. HtmlToPdf's parser had all of them, and
-        /// is now the one both read.</para>
+        /// <para><b>One parser for SVG and HTML</b>, <c>Core.Text.CssColor</c>, with every name, the
+        /// percentages and <c>hsl()</c>. A reader knowing fewer would draw anything else black, and
+        /// saying nothing about a name it did not know would turn <c>fill="steelblue"</c> black with a
+        /// clean <see cref="LastError"/>.</para>
         /// <para>The alpha is not this method's: <see cref="Alphas"/> reads it into the shape's
         /// <c>/ExtGState</c>. A value that is not a colour is reported and drawn black. It is never
-        /// an exception: <c>fill='#gggggg'</c> once escaped one from <c>System.Convert.ToByte</c>.</para>
+        /// an exception: <c>fill='#gggggg'</c> is not parsed through <c>System.Convert.ToByte</c>,
+        /// which would throw.</para>
         /// </remarks>
         private static (float r, float g, float b) ParseColor(string color)
         {
