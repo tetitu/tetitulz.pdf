@@ -731,7 +731,8 @@ most `MaxRenderReportsPerKindPerPage` times a page** (the scope both operator lo
   `InvalidDataException` leaves `FilterPipeline` as a `PdfFilterException`.
 - **Read the doc comments first** — they are usually right and the declarations wrong. **A comment
   holds one `<summary>`**: a member written in under another's comment carries both and leaves that one
-  none (guarded by `OneSummaryPerDocCommentTests`).
+  none. **A partial type is documented on one part**: the compiler publishes every part's comment, so a
+  part's note about its own file is an ordinary `//` comment (both guarded by `OneSummaryPerDocCommentTests`).
 - **A file-supplied number is not a `long` until `PdfNumber.IsInteger` says so** — a `(long)` cast of
   an out-of-range double yields `long.MinValue`. Only a literal with a period reaches that path in a test.
 - **An unreadable object is not an absent one.** `GetObject` and `ResolveObject` answer both with the

@@ -7,15 +7,11 @@ using M = Tetitulz.Pdf.Builder.Model;
 
 namespace Tetitulz.Pdf.HtmlToPdf
 {
-    /// <summary>
-    /// The atoms shared by every construct that becomes a <b>side-by-side band</b> — a flex row, a
-    /// float band, a grid and a multi-column block all map onto a borderless table, the only thing
-    /// in the Builder model that places blocks next to each other.
-    /// </summary>
-    /// <remarks>
-    /// The mapping itself is documented and deliberate, and implemented once: separate copies of
-    /// the direction test drift, and a real <c>&lt;table&gt;</c> reads the same one.
-    /// </remarks>
+    // The atoms shared by every construct that becomes a side-by-side band — a flex row, a
+    // float band, a grid and a multi-column block all map onto a borderless table, the only thing
+    // in the Builder model that places blocks next to each other.
+    // The mapping itself is documented and deliberate, and implemented once: separate copies of
+    // the direction test drift, and a real <table> reads the same one.
     internal sealed partial class HtmlToBuilderMapper
     {
         /// <summary>

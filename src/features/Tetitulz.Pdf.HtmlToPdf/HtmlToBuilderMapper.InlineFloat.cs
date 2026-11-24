@@ -10,33 +10,29 @@ using M = Tetitulz.Pdf.Builder.Model;
 
 namespace Tetitulz.Pdf.HtmlToPdf
 {
-    /// <summary>
-    /// <c>float</c> on an inline element — Bootstrap's <c>.pull-right</c> button, a list-group
-    /// item's <c>.badge</c>, an alert's <c>.close</c>: lifted out of its line into a floated
-    /// paragraph (<c>Paragraph.Float</c>) placed just before it, so the line's text flows beside it.
-    /// </summary>
-    /// <remarks>
-    /// <para><b>Recorded while collecting, lifted after mapping.</b> Whether a paragraph can carry a
-    /// float is known only once it has a place: in a section's flow the exporter floats it, and so
-    /// does a table cell since the cell's layout took floats. So the floated element's
-    /// runs are collected in place, as they always were, and remembered; after the body is mapped,
-    /// each one whose paragraph is in the flow or in a cell is moved into a float before it. The
-    /// others stay inline — the layout they had — and are reported.</para>
-    /// <para><b>Exact on the line it occurs on.</b> CSS puts a float at the top of the line it
-    /// occurs on. A float on a paragraph's first line lifts before the paragraph, which starts
-    /// where the line does; one after a <c>&lt;br&gt;</c> is on a later line, so the paragraph is
-    /// split at the last break before it (<see cref="SplitAtBreak"/>) and the float lifts before the
-    /// tail. A paragraph with a box would draw the box twice if split, so its box moves to a
-    /// <c>BoxStart</c>/<c>BoxEnd</c> round every piece first (<see cref="BoxOf"/>) — its
-    /// borders, padding, shading, background image, corner radius and shadow, its spacing
-    /// the box's margins. A transform has no box to move to, so a float after a break in a transformed
-    /// paragraph stays inline, reported.</para>
-    /// <para><b>Any number per side, per line</b>: the exporter places a float inward
-    /// of the floats already on its line (<c>PdfExporter.FloatBox</c>), so each lifts in document
-    /// order — the first to the edge, the next beside it, never one drawn over another.</para>
-    /// <para><b>A lifted float keeps with its line</b> (<c>KeepWithNext</c>): drawn at the foot of a
-    /// page, it would otherwise stay there while the line it belongs to moved to the next.</para>
-    /// </remarks>
+    // float on an inline element — Bootstrap's .pull-right button, a list-group
+    // item's .badge, an alert's .close: lifted out of its line into a floated
+    // paragraph (Paragraph.Float) placed just before it, so the line's text flows beside it.
+    // Recorded while collecting, lifted after mapping. Whether a paragraph can carry a
+    // float is known only once it has a place: in a section's flow the exporter floats it, and so
+    // does a table cell since the cell's layout took floats. So the floated element's
+    // runs are collected in place, as they always were, and remembered; after the body is mapped,
+    // each one whose paragraph is in the flow or in a cell is moved into a float before it. The
+    // others stay inline — the layout they had — and are reported.
+    // Exact on the line it occurs on. CSS puts a float at the top of the line it
+    // occurs on. A float on a paragraph's first line lifts before the paragraph, which starts
+    // where the line does; one after a <br> is on a later line, so the paragraph is
+    // split at the last break before it (SplitAtBreak) and the float lifts before the
+    // tail. A paragraph with a box would draw the box twice if split, so its box moves to a
+    // BoxStart/BoxEnd round every piece first (BoxOf) — its
+    // borders, padding, shading, background image, corner radius and shadow, its spacing
+    // the box's margins. A transform has no box to move to, so a float after a break in a transformed
+    // paragraph stays inline, reported.
+    // Any number per side, per line: the exporter places a float inward
+    // of the floats already on its line (PdfExporter.FloatBox), so each lifts in document
+    // order — the first to the edge, the next beside it, never one drawn over another.
+    // A lifted float keeps with its line (KeepWithNext): drawn at the foot of a
+    // page, it would otherwise stay there while the line it belongs to moved to the next.
     internal sealed partial class HtmlToBuilderMapper
     {
         /// <summary>A floated inline element's runs, in the paragraph they were collected into.</summary>

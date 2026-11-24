@@ -11,21 +11,19 @@ using M = Tetitulz.Pdf.Builder.Model;
 
 namespace Tetitulz.Pdf.HtmlToPdf
 {
-    /// <summary>
-    /// <c>border-radius</c>, <c>box-shadow</c> and <c>transform</c> on a block.
-    ///
-    /// <para><b>Each needs a per-box graphics state, which the content builder has.</b>
-    /// <c>SaveState</c>, <c>RestoreState</c>, <c>Transform</c>, <c>CurveTo</c> and
-    /// <c>ClipNonzero</c> are all on <c>PdfContentStreamBuilder</c>, and the exporter brackets its
-    /// box fills with save/restore; a model field carries each value and the drawing reads it.</para>
-    ///
-    /// <para><b><c>overflow</c> is the one that genuinely cannot be done.</b> Clipping is
-    /// available; what is missing is something to clip
-    /// <i>against</i>. A block's height in this model comes from its content, so it can never
-    /// exceed its own box and there is no overflow to hide. Honouring <c>overflow</c> would first
-    /// require an explicit block height — a layout change, not a painting one — so it is
-    /// declined with that as its reason.</para>
-    /// </summary>
+    // border-radius, box-shadow and transform on a block.
+    //
+    // Each needs a per-box graphics state, which the content builder has.
+    // SaveState, RestoreState, Transform, CurveTo and
+    // ClipNonzero are all on PdfContentStreamBuilder, and the exporter brackets its
+    // box fills with save/restore; a model field carries each value and the drawing reads it.
+    //
+    // overflow is the one that genuinely cannot be done. Clipping is
+    // available; what is missing is something to clip
+    // against. A block's height in this model comes from its content, so it can never
+    // exceed its own box and there is no overflow to hide. Honouring overflow would first
+    // require an explicit block height — a layout change, not a painting one — so it is
+    // declined with that as its reason.
     internal sealed partial class HtmlToBuilderMapper
     {
         /// <summary>

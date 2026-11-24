@@ -12,35 +12,31 @@ using M = Tetitulz.Pdf.Builder.Model;
 
 namespace Tetitulz.Pdf.HtmlToPdf
 {
-    /// <summary>
-    /// <c>display: flex</c> — mapped onto the document model's table, which is the only construct
-    /// in it that places blocks side by side.
-    /// </summary>
-    /// <remarks>
-    /// <para><b>This is an approximation and is named one.</b> A flex <i>row</i> becomes a
-    /// borderless one-row table with one cell per flex item — one such table per flex line when
-    /// the container wraps — and a flex <i>column</i> is ordinary vertical block flow, which the
-    /// mapper already produced. That covers what business HTML actually uses flex for — a logo
-    /// beside an address, a label beside a value, a toolbar of blocks, a grid of cards that wraps —
-    /// and it composes with everything else, because a cell already holds arbitrary blocks
-    /// including nested tables and nested flex.</para>
-    /// <para><b>What it deliberately does not do:</b> shrinking below content width (a
-    /// <c>flex-shrink</c> share is floored by the table at the longest word). Baseline alignment lines
-    /// up the items' first paragraphs' baselines (<c>AlignBaselines</c>), and <c>align-content</c>
-    /// shares a wrapping container's free height among its lines when the container has a height
-    /// (<c>AlignFlexLines</c>; without one CSS has no free space to share either).
-    /// Wrapping (<c>flex-wrap</c>) breaks the items into lines on their hypothetical main
-    /// sizes (§9.3) — a stated basis or width, else a measured paragraph's width — and an item
-    /// whose size is neither is the one case still laid out on one line. (<c>order</c> and
-    /// <c>justify-content</c> over fixed-width items are applied.) Each is reported
-    /// through <see cref="HtmlToPdfOptions.OnDiagnostic"/> as
-    /// <see cref="BuilderDiagnosticKind.ContentApproximated"/> rather than silently ignored, so a
-    /// caller can tell "laid out as asked" from "laid out approximately".</para>
-    /// <para><b>Why a table rather than a new layout primitive:</b> the exporter already places,
-    /// paginates, RTL-mirrors and <i>tags</i> tables. A new primitive would need all of that again,
-    /// and tagged output is not optional here — an untagged side-by-side block is exactly the
-    /// structure a PDF/UA checker flags.</para>
-    /// </remarks>
+    // display: flex — mapped onto the document model's table, which is the only construct
+    // in it that places blocks side by side.
+    // This is an approximation and is named one. A flex row becomes a
+    // borderless one-row table with one cell per flex item — one such table per flex line when
+    // the container wraps — and a flex column is ordinary vertical block flow, which the
+    // mapper already produced. That covers what business HTML actually uses flex for — a logo
+    // beside an address, a label beside a value, a toolbar of blocks, a grid of cards that wraps —
+    // and it composes with everything else, because a cell already holds arbitrary blocks
+    // including nested tables and nested flex.
+    // What it deliberately does not do: shrinking below content width (a
+    // flex-shrink share is floored by the table at the longest word). Baseline alignment lines
+    // up the items' first paragraphs' baselines (AlignBaselines), and align-content
+    // shares a wrapping container's free height among its lines when the container has a height
+    // (AlignFlexLines; without one CSS has no free space to share either).
+    // Wrapping (flex-wrap) breaks the items into lines on their hypothetical main
+    // sizes (§9.3) — a stated basis or width, else a measured paragraph's width — and an item
+    // whose size is neither is the one case still laid out on one line. (order and
+    // justify-content over fixed-width items are applied.) Each is reported
+    // through HtmlToPdfOptions.OnDiagnostic as
+    // BuilderDiagnosticKind.ContentApproximated rather than silently ignored, so a
+    // caller can tell "laid out as asked" from "laid out approximately".
+    // Why a table rather than a new layout primitive: the exporter already places,
+    // paginates, RTL-mirrors and tags tables. A new primitive would need all of that again,
+    // and tagged output is not optional here — an untagged side-by-side block is exactly the
+    // structure a PDF/UA checker flags.
     internal sealed partial class HtmlToBuilderMapper
     {
         /// <summary>Flex items narrower than this are treated as auto rather than fixed.</summary>

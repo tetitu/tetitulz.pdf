@@ -13,45 +13,43 @@ using M = Tetitulz.Pdf.Builder.Model;
 
 namespace Tetitulz.Pdf.HtmlToPdf
 {
-    /// <summary>
-    /// <c>display: grid</c> — mapped onto the document model's table, the same way
-    /// <c>display: flex</c> is, and for the same reason: a table is the only construct in the model
-    /// that places blocks side by side, and the exporter already places, paginates, RTL-mirrors and
-    /// <b>tags</b> one.
-    ///
-    /// <para><b>This row was declined, and the decline's reasoning is what changed.</b> GAPS said
-    /// grid "genuinely does still need item placement" — true of the whole of CSS grid, and not an
-    /// answer to what its <i>common</i> form needs. A grid with a column template whose items sit
-    /// in source order is a table: take the track count from <c>grid-template-columns</c> and deal
-    /// the items row-major. That was the third time this table recorded a decline whose reasoning
-    /// argued from what the model lacks rather than from where the feature could go.</para>
-    ///
-    /// <para><b>Column spanning is applied</b>, and so, now, is <b>explicit placement</b>: an item
-    /// naming its column line, its row line, or both (<c>grid-column: 2 / 4</c>,
-    /// <c>grid-row: 2</c>, <c>grid-area: 2 / 1 / 3 / 3</c>) is placed there, and the items that
-    /// name nothing fill the cells it leaves — CSS's own placement algorithm (§8.5) run over an
-    /// occupancy grid, in its sparse row flow. A row span becomes a vertical merge, which the table
-    /// has carried for DOCX <c>w:vMerge</c> all along. "Honouring one item's position means
-    /// re-flowing every item after it" was the reason placement stayed reported; it does, and that
-    /// re-flow is a dozen lines.</para>
-    ///
-    /// <para><b><c>grid-template-areas</c> and <c>gap</c> are applied</b>: an item's
-    /// <c>grid-area: name</c>, and the <c>name-start</c> / <c>name-end</c> lines every area implies,
-    /// resolve against the template; a gap is the facing cells' margins over their padding, and a
-    /// row gap the top margin of every cell below the first row.</para>
-    /// <para><b>What it deliberately does not do,</b> each reported through
-    /// <see cref="HtmlToPdfOptions.OnDiagnostic"/> rather than silently ignored: other named lines,
-    /// a negative line on an axis whose explicit grid is not known (a row template this cannot
-    /// read), a row track that is a function other than <c>minmax()</c>, <c>fit-content()</c> and
-    /// <c>min()</c>/<c>max()</c>/<c>clamp()</c> of lengths (a percentage inside one is of a
-    /// height the flow does not know), and <c>grid-auto-flow: column</c> under such a template. A line before the explicit grid adds
-    /// implicit tracks there, columns and rows, as a line beyond the template does, the rows sized
-    /// by <c>grid-auto-rows</c>.
-    /// <c>grid-template-rows</c>' fixed tracks are row heights, each a least height — a row grows
-    /// to its content where CSS lets the content overflow — and its tracks are explicit rows. <c>dense</c> packing is applied (§8.5: the cursor back at
-    /// the start for every item placed automatically). A negative index within the explicit grid —
-    /// <c>grid-column: 1 / -1</c>, the full-width span — counts back from its end edge (§8.3).</para>
-    /// </summary>
+    // display: grid — mapped onto the document model's table, the same way
+    // display: flex is, and for the same reason: a table is the only construct in the model
+    // that places blocks side by side, and the exporter already places, paginates, RTL-mirrors and
+    // tags one.
+    //
+    // This row was declined, and the decline's reasoning is what changed. GAPS said
+    // grid "genuinely does still need item placement" — true of the whole of CSS grid, and not an
+    // answer to what its common form needs. A grid with a column template whose items sit
+    // in source order is a table: take the track count from grid-template-columns and deal
+    // the items row-major. That was the third time this table recorded a decline whose reasoning
+    // argued from what the model lacks rather than from where the feature could go.
+    //
+    // Column spanning is applied, and so, now, is explicit placement: an item
+    // naming its column line, its row line, or both (grid-column: 2 / 4,
+    // grid-row: 2, grid-area: 2 / 1 / 3 / 3) is placed there, and the items that
+    // name nothing fill the cells it leaves — CSS's own placement algorithm (§8.5) run over an
+    // occupancy grid, in its sparse row flow. A row span becomes a vertical merge, which the table
+    // has carried for DOCX w:vMerge all along. "Honouring one item's position means
+    // re-flowing every item after it" was the reason placement stayed reported; it does, and that
+    // re-flow is a dozen lines.
+    //
+    // grid-template-areas and gap are applied: an item's
+    // grid-area: name, and the name-start / name-end lines every area implies,
+    // resolve against the template; a gap is the facing cells' margins over their padding, and a
+    // row gap the top margin of every cell below the first row.
+    // What it deliberately does not do, each reported through
+    // HtmlToPdfOptions.OnDiagnostic rather than silently ignored: other named lines,
+    // a negative line on an axis whose explicit grid is not known (a row template this cannot
+    // read), a row track that is a function other than minmax(), fit-content() and
+    // min()/max()/clamp() of lengths (a percentage inside one is of a
+    // height the flow does not know), and grid-auto-flow: column under such a template. A line before the explicit grid adds
+    // implicit tracks there, columns and rows, as a line beyond the template does, the rows sized
+    // by grid-auto-rows.
+    // grid-template-rows' fixed tracks are row heights, each a least height — a row grows
+    // to its content where CSS lets the content overflow — and its tracks are explicit rows. dense packing is applied (§8.5: the cursor back at
+    // the start for every item placed automatically). A negative index within the explicit grid —
+    // grid-column: 1 / -1, the full-width span — counts back from its end edge (§8.3).
     internal sealed partial class HtmlToBuilderMapper
     {
         /// <summary>Tracks narrower than this are treated as auto rather than fixed.</summary>

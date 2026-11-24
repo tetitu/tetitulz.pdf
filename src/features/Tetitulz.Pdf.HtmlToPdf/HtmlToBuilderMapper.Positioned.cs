@@ -11,37 +11,35 @@ using M = Tetitulz.Pdf.Builder.Model;
 
 namespace Tetitulz.Pdf.HtmlToPdf
 {
-    /// <summary>
-    /// <c>position: absolute</c> / <c>fixed</c> with <c>top</c>/<c>left</c>/<c>right</c>/
-    /// <c>bottom</c> and <c>z-index</c>.
-    ///
-    /// <para><b>The decline said this needs "a containing-block chain and a paint order independent
-    /// of flow".</b> The second half was the real requirement and the exporter already had the
-    /// mechanism: <c>RenderParagraphAt(…, paginate: false)</c> draws at a given point without
-    /// moving or breaking, which is what headers, footers and table cells have always used. What
-    /// was missing was a way for the model to say <i>where</i>, and a moment to draw it —
-    /// <see cref="M.AbsolutePlacement"/> and a held-back pass after the flow.</para>
-    ///
-    /// <para><b>The containing block is the nearest positioned ancestor, not the page.</b> A
-    /// positioned element that is a box of blocks (<c>MapContainer</c> gives one
-    /// with nothing to draw a bare box) is the containing block of the positioned blocks inside it
-    /// (<see cref="M.AbsolutePlacement.ContainingBox"/>): the exporter measures their offsets from
-    /// its padding box and draws them with its fragment, so a badge at <c>top: 5px; right: 10px</c>
-    /// sits in its card's corner. For a stamp, a watermark or a corner label with no positioned
-    /// ancestor the page IS the containing block, exactly, and nothing is reported. Every positioned ancestor this mapper walks as blocks keeps a box — a flex or grid container
-    /// (its positioned children taken out of the items, as CSS takes them), a table, a multi-column
-    /// container, a form or fieldset — and a percentage offset or width inside one is a share of the
-    /// ancestor's padding box, which the exporter resolves (<see cref="M.AbsolutePlacement.LeftFraction"/>
-    /// and its kin). A positioned block inside a list item is placed too, after the list
-    /// (<c>BuildList</c>) — measured from the list when the list is positioned, a bare box round
-    /// it; from a positioned item, its box cut out of the list; and from a positioned sublist or an
-    /// item of one, the sublist taken out of its item. Against the page, <c>right</c> and
-    /// <c>bottom</c> are the block's far edges, the exporter measuring its content width and height.</para>
-    ///
-    /// <para><b><c>fixed</c> repeats on every page</b> (<see cref="M.AbsolutePlacement.EveryPage"/>):
-    /// print media lays a fixed block out on each page, which is what a running stamp or watermark
-    /// written as <c>position: fixed</c> asks for — not once, like <c>absolute</c>.</para>
-    /// </summary>
+    // position: absolute / fixed with top/left/right/
+    // bottom and z-index.
+    //
+    // The decline said this needs "a containing-block chain and a paint order independent
+    // of flow". The second half was the real requirement and the exporter already had the
+    // mechanism: RenderParagraphAt(…, paginate: false) draws at a given point without
+    // moving or breaking, which is what headers, footers and table cells have always used. What
+    // was missing was a way for the model to say where, and a moment to draw it —
+    // M.AbsolutePlacement and a held-back pass after the flow.
+    //
+    // The containing block is the nearest positioned ancestor, not the page. A
+    // positioned element that is a box of blocks (MapContainer gives one
+    // with nothing to draw a bare box) is the containing block of the positioned blocks inside it
+    // (M.AbsolutePlacement.ContainingBox): the exporter measures their offsets from
+    // its padding box and draws them with its fragment, so a badge at top: 5px; right: 10px
+    // sits in its card's corner. For a stamp, a watermark or a corner label with no positioned
+    // ancestor the page IS the containing block, exactly, and nothing is reported. Every positioned ancestor this mapper walks as blocks keeps a box — a flex or grid container
+    // (its positioned children taken out of the items, as CSS takes them), a table, a multi-column
+    // container, a form or fieldset — and a percentage offset or width inside one is a share of the
+    // ancestor's padding box, which the exporter resolves (M.AbsolutePlacement.LeftFraction
+    // and its kin). A positioned block inside a list item is placed too, after the list
+    // (BuildList) — measured from the list when the list is positioned, a bare box round
+    // it; from a positioned item, its box cut out of the list; and from a positioned sublist or an
+    // item of one, the sublist taken out of its item. Against the page, right and
+    // bottom are the block's far edges, the exporter measuring its content width and height.
+    //
+    // fixed repeats on every page (M.AbsolutePlacement.EveryPage):
+    // print media lays a fixed block out on each page, which is what a running stamp or watermark
+    // written as position: fixed asks for — not once, like absolute.
     internal sealed partial class HtmlToBuilderMapper
     {
         /// <summary>True when <paramref name="el"/> is taken out of flow by <c>position</c>.</summary>

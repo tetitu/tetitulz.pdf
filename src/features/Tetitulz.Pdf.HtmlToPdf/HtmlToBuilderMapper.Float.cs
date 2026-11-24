@@ -11,36 +11,32 @@ using M = Tetitulz.Pdf.Builder.Model;
 
 namespace Tetitulz.Pdf.HtmlToPdf
 {
-    /// <summary>
-    /// <c>float</c> / <c>clear</c> — a floated element and the content beside it become one
-    /// side-by-side band, ended by <c>clear</c>.
-    /// </summary>
-    /// <remarks>
-    /// <para><b>What this is, precisely.</b> A run of <c>float:left</c> (or <c>right</c>) siblings
-    /// plus the non-floated siblings that follow become a borderless one-row table: the floats in
-    /// their own cells on the float side, the following content in a cell beside them. That gives
-    /// the correct result for what business HTML floats — a logo beside an address block, an image
-    /// beside a caption, a sidebar beside body copy.</para>
-    /// <para><b>Exact when it can be, a band when it cannot.</b> Builder has real floats —
-    /// <c>Paragraph.Float</c> plus per-line exclusion rectangles in the exporter — so a float whose
-    /// content is one paragraph and whose width is known is emitted as a genuine float: text flows
-    /// down its side and <i>returns to the full measure</i> past its bottom, which is what CSS
-    /// does and what a table cell never could.</para>
-    ///
-    /// <para><b>A float with no declared width shrinks to its content</b>, as CSS says: the mapped
-    /// paragraph is measured by <see cref="PdfExporter.MeasureShrinkToFitWidth(M.Paragraph, double)"/> — the layout that
-    /// will draw it, with the fonts it will draw it with — and that measure becomes its
-    /// <c>Paragraph.FloatWidth</c>. The shrink-to-fit pass this mapper "did not run" is one call.</para>
-    ///
-    /// <para><b>The band survives for what the exact path cannot express.</b> A float whose element
-    /// maps to a table, a list or several paragraphs has nothing to hang <c>Paragraph.Float</c> on,
-    /// and a paragraph with nothing measurable has no width to reserve. Those still become a
-    /// borderless one-row table, still keep the text in a fixed column for its whole length, and
-    /// still report <see cref="BuilderDiagnosticKind.ContentApproximated"/> — which fires only when
-    /// the approximation is real, rather than on every float.</para>
-    /// <para><b><c>clear</c> ends a band</b> and is therefore honoured exactly: the cleared element
-    /// and everything after it resume ordinary full-width flow, which is what <c>clear</c> means.</para>
-    /// </remarks>
+    // float / clear — a floated element and the content beside it become one
+    // side-by-side band, ended by clear.
+    // What this is, precisely. A run of float:left (or right) siblings
+    // plus the non-floated siblings that follow become a borderless one-row table: the floats in
+    // their own cells on the float side, the following content in a cell beside them. That gives
+    // the correct result for what business HTML floats — a logo beside an address block, an image
+    // beside a caption, a sidebar beside body copy.
+    // Exact when it can be, a band when it cannot. Builder has real floats —
+    // Paragraph.Float plus per-line exclusion rectangles in the exporter — so a float whose
+    // content is one paragraph and whose width is known is emitted as a genuine float: text flows
+    // down its side and returns to the full measure past its bottom, which is what CSS
+    // does and what a table cell never could.
+    //
+    // A float with no declared width shrinks to its content, as CSS says: the mapped
+    // paragraph is measured by PdfExporter.MeasureShrinkToFitWidth(M.Paragraph, double) — the layout that
+    // will draw it, with the fonts it will draw it with — and that measure becomes its
+    // Paragraph.FloatWidth. The shrink-to-fit pass this mapper "did not run" is one call.
+    //
+    // The band survives for what the exact path cannot express. A float whose element
+    // maps to a table, a list or several paragraphs has nothing to hang Paragraph.Float on,
+    // and a paragraph with nothing measurable has no width to reserve. Those still become a
+    // borderless one-row table, still keep the text in a fixed column for its whole length, and
+    // still report BuilderDiagnosticKind.ContentApproximated — which fires only when
+    // the approximation is real, rather than on every float.
+    // clear ends a band and is therefore honoured exactly: the cleared element
+    // and everything after it resume ordinary full-width flow, which is what clear means.
     internal sealed partial class HtmlToBuilderMapper
     {
         private enum FloatSide { None, Left, Right }

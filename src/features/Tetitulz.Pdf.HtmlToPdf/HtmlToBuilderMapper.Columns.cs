@@ -12,41 +12,39 @@ using M = Tetitulz.Pdf.Builder.Model;
 
 namespace Tetitulz.Pdf.HtmlToPdf
 {
-    /// <summary>
-    /// CSS multi-column (<c>column-count</c> / the <c>columns</c> shorthand) — mapped onto the
-    /// document model's table, the fourth feature to take that route after <c>flex</c>,
-    /// <c>float</c> and <c>grid</c>.
-    ///
-    /// <para><b>The decline this replaces argued from where the code lived.</b> GAPS said
-    /// "multi-column flow exists only in the legacy DocxToPdf renderer", which is true and is not
-    /// an answer to whether the Builder model can express it. A two-column block is a borderless
-    /// one-row table with two cells and the content divided between them — and a table cell already
-    /// holds arbitrary blocks, paginates, RTL-mirrors and tags.</para>
-    ///
-    /// <para><b>What it is, and what is left.</b> The content is balanced by
-    /// each block's <b>measured height at the column's width</b> (<see cref="PdfExporter.MeasureHeight"/>,
-    /// the layout that will draw it): the columns are as short as the blocks allow (CSS
-    /// Multi-column 1 §8.1's balancing — the least height everything fits under in the count asked),
-    /// reading order kept; and a paragraph of plain text that straddles a column is
-    /// <b>broken between its lines</b> (<see cref="PdfExporter.SplitAtHeight"/>, its orphans and widows
-    /// kept), as CSS breaks it, not at the block boundary. A box of blocks is one unit, and so is a list, a table, a paragraph kept together
-    /// or holding an image, a footnote, a form field or an inline box; where one of those is taller
-    /// than an equal share the columns are uneven, and that is reported through
-    /// <see cref="BuilderDiagnosticKind.ContentApproximated"/> — not when the element declares
-    /// columns that this declines to build. Mid-line breaks there are none, in CSS either.</para>
-    ///
-    /// <para><b><c>column-gap</c> and <c>column-rule</c> are applied, not reported.</b> The gap
-    /// is the distance between two columns' text, which a table expresses as inner padding on the
-    /// sides of adjacent cells; the rule is a border on the edge between them. "A table has no
-    /// inter-cell spacing" is true of spacing, and not an answer to whether the cells have padding
-    /// and borders, which they carry. What is reported is a gap narrower than the two cells' own padding, and a rule
-    /// style other than solid.</para>
-    ///
-    /// <para><b><c>column-span: all</c> is applied</b>: a spanning child splits the
-    /// block into the columns before it, the spanner at the full width, and the columns after it —
-    /// which is what the split-on-block-boundaries model does naturally, since the spanner is a
-    /// block boundary the author drew.</para>
-    /// </summary>
+    // CSS multi-column (column-count / the columns shorthand) — mapped onto the
+    // document model's table, the fourth feature to take that route after flex,
+    // float and grid.
+    //
+    // The decline this replaces argued from where the code lived. GAPS said
+    // "multi-column flow exists only in the legacy DocxToPdf renderer", which is true and is not
+    // an answer to whether the Builder model can express it. A two-column block is a borderless
+    // one-row table with two cells and the content divided between them — and a table cell already
+    // holds arbitrary blocks, paginates, RTL-mirrors and tags.
+    //
+    // What it is, and what is left. The content is balanced by
+    // each block's measured height at the column's width (PdfExporter.MeasureHeight,
+    // the layout that will draw it): the columns are as short as the blocks allow (CSS
+    // Multi-column 1 §8.1's balancing — the least height everything fits under in the count asked),
+    // reading order kept; and a paragraph of plain text that straddles a column is
+    // broken between its lines (PdfExporter.SplitAtHeight, its orphans and widows
+    // kept), as CSS breaks it, not at the block boundary. A box of blocks is one unit, and so is a list, a table, a paragraph kept together
+    // or holding an image, a footnote, a form field or an inline box; where one of those is taller
+    // than an equal share the columns are uneven, and that is reported through
+    // BuilderDiagnosticKind.ContentApproximated — not when the element declares
+    // columns that this declines to build. Mid-line breaks there are none, in CSS either.
+    //
+    // column-gap and column-rule are applied, not reported. The gap
+    // is the distance between two columns' text, which a table expresses as inner padding on the
+    // sides of adjacent cells; the rule is a border on the edge between them. "A table has no
+    // inter-cell spacing" is true of spacing, and not an answer to whether the cells have padding
+    // and borders, which they carry. What is reported is a gap narrower than the two cells' own padding, and a rule
+    // style other than solid.
+    //
+    // column-span: all is applied: a spanning child splits the
+    // block into the columns before it, the spanner at the full width, and the columns after it —
+    // which is what the split-on-block-boundaries model does naturally, since the spanner is a
+    // block boundary the author drew.
     internal sealed partial class HtmlToBuilderMapper
     {
         /// <summary>

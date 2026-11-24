@@ -7,29 +7,27 @@ using Tetitulz.Pdf.Builder.Export;
 
 namespace Tetitulz.Pdf.HtmlToPdf
 {
-    /// <summary>
-    /// Reports the layout constructs the managed engine cannot express, so a caller learns to switch
-    /// engines instead of shipping a wrong-looking PDF.
-    ///
-    /// <para><b>Why this exists at all.</b> The two engines are a deliberate pair, not a migration:
-    /// the managed one is fast and light, the Playwright one is powerful and expensive, and the
-    /// developer picks per call. That makes <i>completeness</i> the wrong goal for the managed engine
-    /// and <i>honesty</i> the right one — but <c>display: grid</c> and <c>position: absolute</c> were
-    /// named as unsupported in four doc comments while no code looked for them, so a document using
-    /// either fell through to ordinary block flow and stacked. The output is a perfectly valid PDF
-    /// with the right elements present and the wrong geometry, and nothing said so.</para>
-    ///
-    /// <para><b>That is the worst failure available under an engine-choice model</b>, because the
-    /// decision it corrupts is the caller's, not ours: silence reads as "the managed engine handled
-    /// it". <c>flex</c> and <c>float</c> already report what they approximate — these are the two
-    /// that did not.</para>
-    ///
-    /// <para><b>Presence is not deviation.</b> Following the rule the render diagnostics already
-    /// follow, only values that actually differ from what the engine does are reported:
-    /// <c>position: static</c> is the default and <c>position: relative</c> with no offsets renders
-    /// identically, so neither fires. A channel that fires on conformant input is one a caller learns
-    /// to ignore.</para>
-    /// </summary>
+    // Reports the layout constructs the managed engine cannot express, so a caller learns to switch
+    // engines instead of shipping a wrong-looking PDF.
+    //
+    // Why this exists at all. The two engines are a deliberate pair, not a migration:
+    // the managed one is fast and light, the Playwright one is powerful and expensive, and the
+    // developer picks per call. That makes completeness the wrong goal for the managed engine
+    // and honesty the right one — but display: grid and position: absolute were
+    // named as unsupported in four doc comments while no code looked for them, so a document using
+    // either fell through to ordinary block flow and stacked. The output is a perfectly valid PDF
+    // with the right elements present and the wrong geometry, and nothing said so.
+    //
+    // That is the worst failure available under an engine-choice model, because the
+    // decision it corrupts is the caller's, not ours: silence reads as "the managed engine handled
+    // it". flex and float already report what they approximate — these are the two
+    // that did not.
+    //
+    // Presence is not deviation. Following the rule the render diagnostics already
+    // follow, only values that actually differ from what the engine does are reported:
+    // position: static is the default and position: relative with no offsets renders
+    // identically, so neither fires. A channel that fires on conformant input is one a caller learns
+    // to ignore.
     internal sealed partial class HtmlToBuilderMapper
     {
         /// <summary>
