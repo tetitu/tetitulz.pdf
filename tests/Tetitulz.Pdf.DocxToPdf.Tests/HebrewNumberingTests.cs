@@ -86,7 +86,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// A PAGE field in the body counts from the section's <c>w:pgNumType/@w:start</c> too. The
-        /// legacy path read no start until 2026-10-21, so this page said 1.
+        /// page would say 1 without it.
         /// </summary>
         [Fact]
         public void PageStart_NumbersABodyPageField_OnBothPaths()

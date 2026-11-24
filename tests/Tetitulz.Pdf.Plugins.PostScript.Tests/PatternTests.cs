@@ -15,8 +15,7 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 /// <c>makepattern</c> and <c>setpattern</c> (PLRM §4.9) as PDF patterns: a tiling pattern's cell drawn
 /// by its <c>PaintProc</c> into a pattern stream, a shading pattern through the shading converter, the
 /// pattern matrix under the CTM at <c>makepattern</c>, and a fill or stroke painted with
-/// <c>/Pattern cs /Pn scn</c>. Both operators used to be arity-table entries: the fill painted in
-/// whatever colour came before.
+/// <c>/Pattern cs /Pn scn</c>, not in whatever colour came before.
 /// </summary>
 public sealed class PatternTests
 {

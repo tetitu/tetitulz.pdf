@@ -63,8 +63,8 @@ public class OfficeConversionBoundaryTests
 
         Table table = Assert.Single(body.Elements<Table>());
         Assert.Equal(3, table.Elements<TableRow>().Count());
-        // The sentence is a paragraph of its own, whole: until 2026-10-14 the detector took it into
-        // the grid as a fourth row split at a column boundary (GAPS §4a).
+        // The sentence is a paragraph of its own, whole — not a fourth row of the grid split at a
+        // column boundary.
         Assert.Contains(paragraphs, p => p.Contains("A closing sentence of prose."));
         string squeezed = string.Concat(body.InnerText.Where(c => !char.IsWhiteSpace(c)));
         Assert.Equal(1, CountOf(squeezed, "Aclosingsentenceofprose."));

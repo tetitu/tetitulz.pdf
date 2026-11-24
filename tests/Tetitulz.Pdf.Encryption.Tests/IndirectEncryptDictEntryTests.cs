@@ -58,7 +58,7 @@ public class IndirectEncryptDictEntryTests
 
     /// <summary>
     /// The control, and the reason the assertion above is not vacuous: a genuinely absent
-    /// <c>/StmF</c> really does report that the streams are not encrypted. If the fix had been
+    /// <c>/StmF</c> really does report that the streams are not encrypted. If the rule were
     /// "never report", this would go red.
     /// </summary>
     [Fact]

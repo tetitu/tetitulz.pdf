@@ -144,7 +144,7 @@ public class PngPredictorTests
     }
 
     /// <summary>
-    /// The counterpart, so the fix cannot be "swap one fixed filter for another": a row that
+    /// The counterpart, so the rule cannot be "swap one fixed filter for another": a row that
     /// repeats the row above must be filtered with <i>Up</i>, which zeroes it. Row 0 has no row
     /// above it and is left to whatever wins on its own merits.
     /// </summary>

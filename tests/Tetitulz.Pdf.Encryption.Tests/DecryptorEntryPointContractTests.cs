@@ -36,7 +36,7 @@ public class DecryptorEntryPointContractTests
 
     /// <summary>
     /// The control: the real owner password, and the (empty) real user password, must still be
-    /// accepted — the fix must reject the wrong candidate, not every candidate.
+    /// accepted — the check must reject the wrong candidate, not every candidate.
     /// </summary>
     [Fact]
     public void TryPassword_StillAcceptsTheRealCredentials()
@@ -154,13 +154,11 @@ public class DecryptorEntryPointContractTests
     /// A V=4 document whose crypt filter names a method the spec does not define.
     /// </summary>
     /// <remarks>
-    /// The bogus name is deliberately <b>not</b> <c>/AESV4</c> — that used to be a safe choice, but
-    /// ISO/TS 32003 later standardized exactly that name for AES-GCM (see
-    /// <c>Tetitulz.Pdf.Encryption.PdfDecryptor._knownCfmNames</c>), which silently turned this
-    /// fixture from "unrecognized CFM" into "a real one with a deliberately wrong password" and
-    /// broke the test's premise without a compile error. <c>BogusCFM</c> is chosen to be
-    /// unambiguously not a real crypt-filter method name, so a future spec extension is unlikely to
-    /// collide with it the way <c>AESV4</c> did.
+    /// The bogus name is deliberately <b>not</b> <c>/AESV4</c>: ISO/TS 32003 standardizes exactly
+    /// that name for AES-GCM (see <c>Tetitulz.Pdf.Encryption.PdfDecryptor._knownCfmNames</c>), which
+    /// would make this fixture "a real one with a deliberately wrong password" instead of
+    /// "unrecognized CFM", without a compile error. <c>BogusCFM</c> is chosen to be unambiguously not
+    /// a real crypt-filter method name, so a future spec extension is unlikely to collide with it.
     /// </remarks>
     private static byte[] MalformedCfmPdf()
     {

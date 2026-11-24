@@ -12,10 +12,10 @@ using Xunit;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
-/// The CSS readers that recurse into parentheses stop at a depth. A selector's specificity recursed once
-/// a nested <c>:not(</c> and the media evaluator once a nested pair, both before any cap looked at the
-/// text: twenty-five kilobytes overflowed a one-megabyte stack, which cannot be caught, so the host died
-/// rather than getting a bad PDF (2026-10-22).
+/// The CSS readers that recurse into parentheses stop at a depth. A selector's specificity recurses once
+/// a nested <c>:not(</c> and the media evaluator once a nested pair, both before any cap looks at the
+/// text: unbounded, twenty-five kilobytes would overflow a one-megabyte stack, which cannot be caught, so
+/// the host would die rather than get a bad PDF.
 /// </summary>
 public class CssNestingDepthTests
 {

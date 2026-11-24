@@ -350,10 +350,10 @@ public class AcroFormFieldWalkTests
         Assert.False(walk.Fields[walk.Fields.Count - 1].IsTerminal);
         Assert.False(walk.BudgetExhausted);
 
-        // And it SAYS SO. The walk used to return silently at the cap, so this result was
-        // byte-for-byte what a fully-walked 51-node tree produces — and a consumer's "no field
-        // needs a tooltip" then meant "none of the ones I reached", indistinguishably. UA08
-        // reports it now, for the same reason it reports the node budget.
+        // And it SAYS SO. Returning silently at the cap, this result would be byte-for-byte what
+        // a fully-walked 51-node tree produces — and a consumer's "no field needs a tooltip" would
+        // mean "none of the ones I reached", indistinguishably. UA08 reports it, for the same
+        // reason it reports the node budget.
         Assert.True(walk.DepthExceeded);
     }
 

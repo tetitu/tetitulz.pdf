@@ -16,11 +16,11 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 
 /// <summary>
 /// The whole-file encryptors carry a source's content, not its layout: an input written with object streams and a
-/// cross-reference stream used to come out with every container and the stale cross-reference stream written back,
-/// encrypted and unreferenced, beside the members the parser had already handed over — one rule with the decryptor,
-/// <see cref="FileLayoutObjects"/>. Since the compressed layout is kept (GAPS §19h item 7), the output holds layout
-/// objects of its <b>own</b> — one object stream and one cross-reference stream, numbered past the source's — and
-/// none of the source's; written classic, it holds none at all.
+/// cross-reference stream does not come out with its containers and stale cross-reference stream written back,
+/// encrypted and unreferenced, beside the members the parser already handed over — one rule with the decryptor,
+/// <see cref="FileLayoutObjects"/>. With the compressed layout kept, the output holds layout objects of its
+/// <b>own</b> — one object stream and one cross-reference stream, numbered past the source's — and none of the
+/// source's; written classic, it holds none at all.
 /// </summary>
 public class EncryptorLayoutObjectTests
 {

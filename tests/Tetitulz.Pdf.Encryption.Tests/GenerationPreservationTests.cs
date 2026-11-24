@@ -20,10 +20,10 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 /// <para>ISO 32000-2 §7.3.10: "Together, the combination of an object number and a generation number shall uniquely
 /// identify an indirect object", and "An indirect reference to an undefined object shall not be considered an error by a
 /// PDF processor; it shall be treated as a reference to the null object." §7.5.4 gives a reused object number a new
-/// generation so that references to the freed object cannot alias the new one. All three writers used to emit every
-/// object as <c>N 0 obj</c> with a generation-0 cross-reference entry while leaving every <c>N G R</c> in the file as
-/// it was — so each such reference named an identifier the output no longer defined, and a conforming reader resolved
-/// it to null. Rewriting the references instead would resurrect the stale ones §7.5.4 exists to retire.</para>
+/// generation so that references to the freed object cannot alias the new one. A writer that emitted every object as
+/// <c>N 0 obj</c> with a generation-0 cross-reference entry while leaving every <c>N G R</c> in the file as it was
+/// would make each such reference name an identifier the output no longer defines, which a conforming reader resolves
+/// to null. Rewriting the references instead would resurrect the stale ones §7.5.4 exists to retire.</para>
 /// <para>Objects stored in an object stream stay at generation 0: §7.5.7, "The generation number of an object stream
 /// and of any compressed object shall be zero."</para>
 /// </remarks>

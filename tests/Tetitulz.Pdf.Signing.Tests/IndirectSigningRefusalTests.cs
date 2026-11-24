@@ -17,18 +17,17 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// caller somewhere other than the actual cause.
 /// </summary>
 /// <remarks>
-/// <para><b>A refusal is the honest failure mode, and that is what makes this worth fixing rather
-/// than tolerable.</b> Nothing wrong is written — the operation stops before writing anything. What
-/// it produces is a wrong <i>explanation</i>: "Page number 1 is out of range" for a document that
-/// plainly has page 1. A caller reading that investigates their own argument.</para>
+/// <para><b>A refusal is the honest failure mode, which makes a wrong one easy to tolerate.</b>
+/// Nothing wrong is written — the operation stops before writing anything. What it produces is a
+/// wrong <i>explanation</i>: "Page number 1 is out of range" for a document that plainly has page 1.
+/// A caller reading that investigates their own argument.</para>
 ///
-/// <para><c>VisualSignatureBuilder</c> resolves <c>/Root</c> and <c>/Pages</c> on the two lines
-/// above and then reads <c>/Kids</c> with <c>GetArray</c>, which does not follow a reference. It is
-/// the same read that made a <c>/Pages</c> node become page 0 in <c>PdfPageTree</c> — the third
-/// place in the tree where <c>/Kids</c> specifically has cost something.</para>
+/// <para><c>VisualSignatureBuilder</c> resolves <c>/Root</c>, <c>/Pages</c> and <c>/Kids</c>:
+/// <c>GetArray</c> does not follow a reference, and the same unresolved read of <c>/Kids</c> would
+/// make a <c>/Pages</c> node page 0 in <c>PdfPageTree</c>.</para>
 ///
 /// <para>Asserted on the widget reaching the page's <c>/Annots</c> — the artefact a <i>visible</i>
-/// signature exists to produce. Catching the exception would pass with the fix reverted and with
+/// signature exists to produce. Catching the exception would pass with the read unresolved and with
 /// the feature deleted alike.</para>
 /// </remarks>
 public sealed class IndirectSigningRefusalTests

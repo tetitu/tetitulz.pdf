@@ -11,11 +11,11 @@ using static Tetitulz.Pdf.HtmlToPdf.Tests.ManagedTestSupport;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
-/// CSS values a page controls, read in time linear in their length (2026-10-20). Each pattern these replaced
-/// was quadratic on a failed match, measured through the converter: <c>\d*\.?\d+</c> on a <c>line-height</c> of a
-/// hundred thousand digits, 22 s; <c>/\*.*?\*/</c> on twenty thousand unclosed <c>/*</c>, 11 s; unanchored
-/// <c>url\(…</c> on a value of unclosed openers. The hostile inputs here are ten times those sizes, so the old
-/// patterns could not finish inside the join; each converts and still draws the page's word.
+/// CSS values a page controls, read in time linear in their length. Quadratic patterns on a failed match,
+/// measured through the converter: <c>\d*\.?\d+</c> on a <c>line-height</c> of a hundred thousand digits, 22 s;
+/// <c>/\*.*?\*/</c> on twenty thousand unclosed <c>/*</c>, 11 s; unanchored <c>url\(…</c> on a value of unclosed
+/// openers. The hostile inputs here are ten times those sizes, so such patterns could not finish inside the
+/// join; each converts and still draws the page's word.
 /// </summary>
 public class HostileCssValueTests
 {

@@ -36,9 +36,9 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         // ------------------------------------------------------------------ nested tables
 
         /// <summary>
-        /// A table inside a cell keeps its structure. It used to be flattened into one run of
-        /// concatenated text by the inline collector, even though the model and the renderer have
-        /// supported nested tables all along.
+        /// A table inside a cell keeps its structure — the model and the renderer support nested
+        /// tables — rather than being flattened into one run of concatenated text by the inline
+        /// collector.
         /// </summary>
         [Fact]
         public void NestedTable_KeepsItsOwnRowsAndCells()

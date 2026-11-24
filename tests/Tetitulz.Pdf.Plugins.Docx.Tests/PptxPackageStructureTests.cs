@@ -16,9 +16,9 @@ namespace Tetitulz.Pdf.Plugins.Docx.Tests;
 /// <summary>
 /// <see cref="PdfToPptxConverter"/>'s OPC package shape.
 ///
-/// <para><b>Why the assertions are what they are.</b> The converter used to emit a presentation
-/// part and slide parts and nothing else — no slide master, no slide layout, and therefore no
-/// <c>p:sldMasterIdList</c> and no slide-to-layout relationship. That package zips, unzips and
+/// <para><b>Why the assertions are what they are.</b> A presentation part and slide parts and
+/// nothing else — no slide master, no slide layout, and therefore no
+/// <c>p:sldMasterIdList</c> and no slide-to-layout relationship — make a package that zips, unzips and
 /// parses as XML, so "bytes came back", "it starts with PK", and even "the slide XML contains the
 /// page's text" all pass while PowerPoint shows the repair prompt and drops every slide. Only a
 /// schema/relationship-level check separates the two, which is why <see cref="OpenXmlValidator"/>

@@ -146,7 +146,7 @@ public class PdfXValidatorColourAndScanTests
     }
 
     /// <summary>
-    /// The soft-mask descent (2026-10-14) spends the same budget: 1 010 soft masks whose groups all
+    /// The soft-mask descent spends the same budget: 1 010 soft masks whose groups all
     /// name one 1 010-entry <c>/ExtGState</c> dictionary exhaust it and report X99, and four do not.
     /// Without the charge the walk would run its million entries and report nothing.
     /// </summary>
@@ -198,7 +198,7 @@ public class PdfXValidatorColourAndScanTests
     }
 
     /// <summary>
-    /// The same shape through soft masks (2026-10-14): <paramref name="count"/> <c>/ExtGState</c>
+    /// The same shape through soft masks: <paramref name="count"/> <c>/ExtGState</c>
     /// entries in one shared dictionary, each naming a soft mask whose group's <c>/Resources</c>
     /// name that same dictionary again — so the groups' descent walks N × N <c>/ExtGState</c> entries
     /// in a file of ~2N objects.

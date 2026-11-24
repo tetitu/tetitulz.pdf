@@ -75,9 +75,9 @@ public class PdfBlockchainVerifierIntegrityTests
         var result = await new PdfBlockchainVerifier()
             .VerifyAsync(doc, LocalParameters(), new CancellationToken(canceled: true));
 
-        // The load-bearing assertion. Before the fix the verifier handed the chain the
-        // /DocumentHash string it read out of the tampered file, i.e. the hash of the ORIGINAL
-        // document — which matches on-chain by construction, so the modified body verified.
+        // The load-bearing assertion. Handed the /DocumentHash string read out of the tampered
+        // file, i.e. the hash of the ORIGINAL document, the chain would match by construction and
+        // the modified body would verify.
         Assert.NotEqual(notarizedHash, result.ComputedHash);
         Assert.Null(result.ComputedHash);
 

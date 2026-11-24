@@ -143,11 +143,10 @@ public class AcroFormTerminalParityTests
     /// <summary>
     /// <b>The consequence of the <c>/FT</c> shape, at the level a user feels it.</b> With the group
     /// terminal, Core reads the merged widget's <c>/FT</c> through
-    /// <c>PdfFormField.ResolveFieldType</c>'s downward step — this said <c>WidgetFieldType()</c>,
-    /// which exists nowhere in the tree — and types the group as a text field, so a tooltip written
-    /// onto the group names something. That
-    /// is what makes "terminal" the useful answer here rather than merely the permissive one, and
-    /// it is the half of the fix no boolean above can express.
+    /// <c>PdfFormField.ResolveFieldType</c>'s downward step and types the group as a text field, so
+    /// a tooltip written onto the group names something. That is what makes "terminal" the useful
+    /// answer here rather than merely the permissive one, and it is the half no boolean above can
+    /// express.
     /// </summary>
     [Fact]
     public void MergedWidgetsFieldType_ReachesTheGroup()

@@ -16,10 +16,10 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 /// Both content scanners walk every annotation appearance a page reaches. Pages, a page's
 /// <c>/Annots</c> array and an annotation's <c>/AP</c> state dictionary can each be one shared object, so
 /// their product — not any one factor — is what bounds the walk. A ~90 KB file (1000 pages × 1000
-/// shared <c>/Annots</c> entries × 1000 shared <c>/AP</c> states, all resolving to one empty stream) made
-/// 10^9 walks, each allocating a cycle set and spending no operation budget on an empty stream, so the
-/// scan ran for minutes. The walk is now charged to <see cref="PdfLimits.MaxAnnotationsPerDocument"/>, and
-/// the font scanner walks a shared stream's glyphs once (2026-10-22).
+/// shared <c>/Annots</c> entries × 1000 shared <c>/AP</c> states, all resolving to one empty stream) would
+/// make 10^9 walks, each allocating a cycle set and spending no operation budget on an empty stream, so the
+/// scan would run for minutes. The walk is charged to <see cref="PdfLimits.MaxAnnotationsPerDocument"/>, and
+/// the font scanner walks a shared stream's glyphs once.
 /// </summary>
 [Collection(PdfLimitsCollection.Name)]
 public sealed class AnnotationAppearanceDosTests

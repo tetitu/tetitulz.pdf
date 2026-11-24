@@ -152,7 +152,7 @@ public class MergeSplitScanFindingsTests
     [Fact]
     public void SplitRange_LinkAnnotationToADroppedPage_LeavesThatPagesContentOutOfTheFile()
     {
-        // Page 1 carries a link whose /Dest names page 2. Extracting page 1 alone used to write
+        // Page 1 carries a link whose /Dest names page 2. Extracting page 1 alone must not write
         // page 2's whole content stream into the output as an orphan object: invisible in a viewer
         // and recoverable with any text extractor.
         byte[] extracted = SplitToBytes(LinkToSecondPagePdf(), 1, 1);

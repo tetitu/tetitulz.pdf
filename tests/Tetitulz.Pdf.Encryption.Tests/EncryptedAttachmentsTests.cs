@@ -76,8 +76,8 @@ public sealed class EncryptedAttachmentsTests
     /// <summary>
     /// "Encrypt only file attachments": <c>/StmF</c> and <c>/StrF</c> are <c>/Identity</c> and
     /// <c>/EFF</c> names the crypt filter. The attachment's name is in the clear and its payload is
-    /// not; decrypted with the password, the payload comes back — the decryptor used to read it under
-    /// <c>/StmF</c>'s <c>/Identity</c> and hand back ciphertext as the file.
+    /// not; decrypted with the password, the payload comes back — read under <c>/StmF</c>'s
+    /// <c>/Identity</c>, it would be ciphertext handed back as the file.
     /// </summary>
     [Theory]
     [InlineData(EncryptionAlgorithm.AES128)]

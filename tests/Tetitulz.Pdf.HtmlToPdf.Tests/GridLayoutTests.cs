@@ -247,11 +247,10 @@ public class GridLayoutTests
     /// allocation — <c>repeat(1000000, 1fr)</c> is three words of CSS.
     ///
     /// <para>Asserted on <b>the guard's own evidence</b> — a reported truncation — rather than on a
-    /// wall clock, and rather than on the layout. The first version of this test did assert the
-    /// layout, expecting both items on one row, and that was wrong twice over: 64 tracks across a
-    /// page are a few points each, so the text does not fit and is not laid out at all. Which is
-    /// exactly why the truncation has to be reported: the cap keeps the conversion safe, and the
-    /// result is not the grid the author wrote.</para>
+    /// wall clock, and rather than on the layout: 64 tracks across a page are a few points each, so
+    /// the text does not fit and is not laid out at all. Which is exactly why the truncation has to
+    /// be reported: the cap keeps the conversion safe, and the result is not the grid the author
+    /// wrote.</para>
     /// </summary>
     [Fact]
     public void AnOversizedRepeat_IsTruncatedAndSaysSo()

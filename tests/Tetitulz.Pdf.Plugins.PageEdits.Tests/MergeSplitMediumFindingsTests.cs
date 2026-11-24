@@ -401,7 +401,7 @@ public class MergeSplitMediumFindingsTests
 
     private static byte[] DirectAcroFormPdf() => Assemble(new List<string>
     {
-        // /AcroForm held DIRECTLY on the catalog — legal, and previously ignored.
+        // /AcroForm held DIRECTLY on the catalog — legal, and read.
         "<< /Type /Catalog /Pages 2 0 R /AcroForm << /Fields [5 0 R] /DA (/Helv 10 Tf 0 g) >> >>",
         "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
         "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R " +

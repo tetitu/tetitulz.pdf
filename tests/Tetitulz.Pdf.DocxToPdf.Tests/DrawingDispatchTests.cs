@@ -21,11 +21,11 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
     /// The <c>a:graphicData/@uri</c> dispatch and the reserve-and-report fallback.
     ///
     /// <para>
-    /// A SmartArt diagram or a chart carries neither an <c>a:blip</c> nor a <c>prstGeom</c>, so
-    /// the renderer used to drop it silently <b>and consume no vertical space</b> — every later
-    /// page then paginated as though the drawing were absent. These tests pin the replacement
-    /// behaviour: the drawing's declared <c>wp:extent</c> box is reserved, and the loss is
-    /// reported. Nothing is painted in its place.
+    /// A SmartArt diagram or a chart carries neither an <c>a:blip</c> nor a <c>prstGeom</c>.
+    /// Dropped silently, it would <b>consume no vertical space</b> — every later page paginating
+    /// as though the drawing were absent. These tests pin what happens instead: the drawing's
+    /// declared <c>wp:extent</c> box is reserved, and the loss is reported. Nothing is painted in
+    /// its place.
     /// </para>
     ///
     /// <para>
@@ -289,15 +289,12 @@ simplePos=""0"" relativeHeight=""1"" behindDoc=""0"" locked=""0"" layoutInCell="
                 DocxDiagnostics.OnEvent -= Good;
             }
 
-            // Good receives it even though Bad threw first. Until 2026-08-19 this asserted
-            // `Assert.Empty(seen)` — it pinned the DEFECT as intended behaviour, with a comment
-            // explaining that Good "is skipped for that event", while the method name promised
-            // "ReceivesEveryReport". The name was the correct spec; the assertion was the bug.
+            // Good receives it even though Bad threw first.
             //
             // `handler(message)` invokes the whole multicast list in one call, so the first
-            // subscriber to throw aborts the walk. The try/catch around it contained the exception
-            // without fixing the delivery, which is why it read as correct. Four sinks had it;
-            // Core.Util.DiagnosticFanOut now owns the rule for all of them.
+            // subscriber to throw would abort the walk; a try/catch around that call contains the
+            // exception without fixing the delivery. Core.Util.DiagnosticFanOut owns the rule for
+            // every sink.
             Assert.NotEmpty(seen);
             Assert.Contains(seen, m => m.Contains("chart"));
             Assert.Contains("chart", DocxDiagnostics.LastError);

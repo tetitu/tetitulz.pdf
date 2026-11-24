@@ -17,25 +17,21 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 /// Two spec rules this assembly implements for itself rather than calling the one body Core owns,
 /// pinned against Core's answer instead of against a sentence.
 ///
-/// <para><b>Why a test rather than the comment that was there.</b> Both non-merges are deliberate
-/// and both were documented — and in each case the documentation asserted <i>agreement</i>, which
-/// CLAUDE.md names as a defect marker rather than documentation ("a doc-comment claiming one
-/// implementation mirrors another is a defect marker … if you write that comment, write the parity
-/// test instead"). <c>PdfOptimizer.ConcatenateContentStreams</c> said of §7.7.3.3's separator "the
-/// separator rule is the same and stays in step by inspection", and the sibling copy of that same
-/// sentence in <c>Accessibility.ContentStreamTagger</c> was, on 2026-08-26, found to be
-/// <b>false</b> — that copy emits <c>A\nB</c> where the shared body emits <c>A\nB\n</c>, and
-/// returns a one-element array's single part with no separator at all. Nothing was wrong here; the
-/// point is that nothing could have told anyone, because the only thing holding the two in step was
-/// the sentence claiming they were.</para>
+/// <para><b>Why a test rather than a comment.</b> Both non-merges are deliberate, and a comment
+/// asserting <i>agreement</i> is what CLAUDE.md names as a defect marker rather than documentation
+/// ("a doc-comment claiming one implementation mirrors another is a defect marker … if you write
+/// that comment, write the parity test instead"). For §7.7.3.3's separator in
+/// <c>PdfOptimizer.ConcatenateContentStreams</c>, "stays in step by inspection" holds only until a
+/// copy emits <c>A\nB</c> where the shared body emits <c>A\nB\n</c>, or returns a one-element
+/// array's single part with no separator at all — and nothing but this test would tell
+/// anyone.</para>
 ///
 /// <para>Same for §7.2.2 Table 1: <c>PdfOptimizer.IsPdfWhitespace</c> / <c>IsPdfDelimiter</c> are
 /// hand copies of <c>Core.PdfConstants</c>, which is <c>internal</c> and whose
 /// <c>InternalsVisibleTo</c> names no plugin, so the copy cannot be deleted from inside this
-/// assembly. Two <i>other</i> copies of that table have already dropped members — Base's
-/// <c>PdfRepair.IsObjWhitespace</c> lost NUL and <c>PdfRevisions</c> lost NUL and form feed — so the
-/// failure mode is demonstrated, not hypothetical. These tests fix the two least-typed members
-/// (NUL, 0x00, and form feed, 0x0C) to observable behaviour.</para>
+/// assembly. A hand copy of that table drops members — NUL and form feed are the usual losses —
+/// so these tests fix the two least-typed members (NUL, 0x00, and form feed, 0x0C) to observable
+/// behaviour.</para>
 /// </summary>
 public class PdfOptimizerSharedRuleTests
 {

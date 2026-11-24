@@ -11,14 +11,14 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
 /// <see cref="HtmlToBuilderMapper.RefuseDeepMarkup"/> counts the depth the HTML tree builder builds, so
-/// the three shapes that used to slip a hundred-thousand-deep document past the cap — and into
-/// AngleSharp's tree builder, which is quadratic in open list items — are refused.
+/// three shapes that would slip a hundred-thousand-deep document past a count of start tags against end
+/// tags — and into AngleSharp's tree builder, which is quadratic in open list items — are refused.
 /// </summary>
 /// <remarks>
-/// The scan counted start tags against end tags: a trailing <c>/&gt;</c> on an HTML element was read as
-/// self-closing though HTML opens the element; an end tag with no matching open decremented anyway; and
-/// a leading <c>&lt;!--&gt;</c> with no later <c>--&gt;</c> stopped the scan. Each let the fuzzer's
-/// <c>&lt;ol&gt;&lt;li&gt;</c> × 100 000 through in disguise (2026-10-22).
+/// A trailing <c>/&gt;</c> on an HTML element is not self-closing (HTML opens the element); an end tag
+/// with no matching open closes nothing; and a leading <c>&lt;!--&gt;</c> is a whole (empty) comment, not
+/// one running to a <c>--&gt;</c> the file never writes. Read otherwise, each lets the fuzzer's
+/// <c>&lt;ol&gt;&lt;li&gt;</c> × 100 000 through in disguise.
 /// </remarks>
 public class RefuseDeepMarkupBypassTests
 {

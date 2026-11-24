@@ -264,7 +264,7 @@ public class ImportedStylesheetTests
         Assert.Contains(reports, r => r.Contains("RemoteResourceLoader", StringComparison.Ordinal));
     }
 
-    // ------------------------------------------------------------------ DoS bounds (2026-10-22)
+    // ------------------------------------------------------------------ DoS bounds
 
     /// <summary>
     /// The same local sheet named a hundred times is read once: the cascade resolves each reference to

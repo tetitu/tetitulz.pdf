@@ -15,8 +15,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// <c>.container</c> / <c>.row</c> pair whose padding and negative margin line a grid up.
     /// </summary>
     /// <remarks>
-    /// All of it used to be dropped: only a paragraph could carry a border or padding, so such an
-    /// element's blocks printed with no frame and at the page's margin.
+    /// Were only a paragraph to carry a border or padding, such an element's blocks would print with
+    /// no frame and at the page's margin.
     /// </remarks>
     public class BlockBoxMappingTests
     {

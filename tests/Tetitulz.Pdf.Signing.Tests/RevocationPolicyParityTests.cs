@@ -30,11 +30,11 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// fallback, which judges them now as the embedder does).
 /// </summary>
 /// <remarks>
-/// <para><b>Three places the two disagreed until 2026-10-20 (GAPS.md §1).</b> A CRL with no
-/// <c>nextUpdate</c> older than the verifier's 365-day cap was embedded and then read as
-/// <c>Unknown</c>; an OCSP response produced in the future was embedded and then refused; and an
-/// OCSP response holding a stale entry about <i>another</i> certificate was refused by the embedder,
-/// which judged every entry, while the verifier, judging the entry about this one, read it as good.
+/// <para><b>Three places two separate rules would disagree.</b> A CRL with no <c>nextUpdate</c>
+/// older than the verifier's 365-day cap, embedded and then read as <c>Unknown</c>; an OCSP response
+/// produced in the future, embedded and then refused; and an OCSP response holding a stale entry
+/// about <i>another</i> certificate, refused by an embedder judging every entry while the verifier,
+/// judging the entry about this one, reads it as good.
 /// Each row below is one fixture judged twice. The embedder may be stricter — an OCSP response with
 /// no <c>nextUpdate</c> is held to seven days, not 365 — never looser.</para>
 /// </remarks>

@@ -22,14 +22,14 @@ public sealed class EthereumSignSharedState
 }
 
 /// <summary>
-/// Two MEDIUM findings on this plugin: a public method that dereferenced an unvalidated parse
-/// result, and a process-wide client cache that could not be bounded or cleared.
+/// A public method that dereferences a parse result only once it is validated, and a
+/// process-wide client cache that can be bounded and cleared.
 /// </summary>
 /// <remarks>
 /// <para><b>Shares a collection with <see cref="EthereumSignPluginTests"/> on purpose.</b> xunit
 /// runs test <i>classes</i> in parallel, and the verification-client cache is process-wide — so
-/// that class's <c>Shutdown_LeavesThePluginReusable</c> (which now clears the cache, because that
-/// is the fix) could empty it between this class's <c>Touch</c> and its assertion. CLAUDE.md
+/// that class's <c>Shutdown_LeavesThePluginReusable</c> (which clears the cache) could empty it
+/// between this class's <c>Touch</c> and its assertion. CLAUDE.md
 /// records exactly this trap: "a negative assertion that reads shared state is asserting something
 /// about the whole process". Serialising the two classes removes the coupling rather than hiding
 /// it behind a retry.</para>
@@ -70,9 +70,8 @@ public class MalformedRootAndClientCacheTests
 
     /// <summary>
     /// An inline <c>/Root &lt;&lt; … &gt;&gt;</c> gives object number 0, which is reserved as the
-    /// head of the cross-reference free list. The update used to write <c>0 0 obj</c> and an xref
-    /// entry for object 0, producing a malformed file whose proof was unreachable — and reporting
-    /// success.
+    /// head of the cross-reference free list. Writing <c>0 0 obj</c> and an xref entry for object 0
+    /// would produce a malformed file whose proof is unreachable — and report success.
     /// </summary>
     [Fact]
     public void ADirectRootDictionary_IsRefusedRatherThanWrittenAsObjectZero()

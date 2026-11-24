@@ -13,7 +13,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// <c>float</c> on an inline element — Bootstrap's <c>.pull-right</c>, a list-group item's
     /// <c>.badge</c>: floated to its edge of the line, with the line's text beside it.
     /// </summary>
-    /// <remarks>It used to be ignored: the floated element printed in the text where it was written.</remarks>
+    /// <remarks>Ignored, the floated element would print in the text where it was written.</remarks>
     public class InlineFloatTests
     {
         private static string Content(string html) => DecodeStreams(ToPdf(html));

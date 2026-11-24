@@ -93,14 +93,14 @@ public class PublicKeyPermissionAndHandlerTests
     // ================================================================
 
     /// <summary>
-    /// <c>WrapForRecipient</c> now disposes the <see cref="X509Certificate2"/> it loads (it held an
-    /// unmanaged certificate context per recipient per call until the finalizer ran). The risk in
-    /// that change is disposing something BouncyCastle still needs, which no "an encrypted file
-    /// came back" assertion would catch — so this decrypts the CMS blob with the recipient's
-    /// private key and checks the seed content it wrapped: a 20-byte seed followed by 4 bytes of
-    /// big-endian permissions (ISO 32000-2 Table 27). This test used to read the permissions from
-    /// the first four bytes, where the encryptor used to put them — the same transcription error on
-    /// both sides, which is what <c>PublicKeyEnvelopeLayoutTests</c> exists to rule out.
+    /// <c>WrapForRecipient</c> disposes the <see cref="X509Certificate2"/> it loads, rather than hold
+    /// an unmanaged certificate context per recipient per call until the finalizer runs. The risk in
+    /// that is disposing something BouncyCastle still needs, which no "an encrypted file came back"
+    /// assertion would catch — so this decrypts the CMS blob with the recipient's private key and
+    /// checks the seed content it wrapped: a 20-byte seed followed by 4 bytes of big-endian
+    /// permissions (ISO 32000-2 Table 27). Reading the permissions from the first four bytes would
+    /// share a transcription error with an encryptor that put them there, which is what
+    /// <c>PublicKeyEnvelopeLayoutTests</c> exists to rule out.
     /// </summary>
     [Fact]
     public void Encrypt_WrapsASeedTheRecipientsPrivateKeyCanRecover()

@@ -18,7 +18,7 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 /// <summary>
 /// Font subsetting is the optimizer step whose failure mode is invisible: a pruned font that drops
 /// a glyph the document draws still produces a structurally valid PDF, and the damage shows up only
-/// as a blank where a character used to be. So these tests assert the <i>structure of the rewritten
+/// as a blank where a character should be. So these tests assert the <i>structure of the rewritten
 /// font program</i> — which glyph keeps its outline, byte for byte, and which becomes a zero-length
 /// <c>loca</c> range — rather than that the file got smaller. A subsetter that deletes the wrong
 /// glyphs also makes the file smaller.
@@ -371,7 +371,7 @@ public class FontSubsettingTests
         // The page draws CID 1; the form draws CID 5 with no Tf of its own.
         Assert.NotEqual(loca[GlyphDrawn], loca[GlyphDrawn + 1]);
         Assert.NotEqual(loca[GlyphUnusedLarge], loca[GlyphUnusedLarge + 1]);
-        // Nothing draws CID 2, so it is still pruned — the fix must not simply retain everything.
+        // Nothing draws CID 2, so it is still pruned — the rule must not simply retain everything.
         Assert.Equal(loca[GlyphUnused], loca[GlyphUnused + 1]);
     }
 
@@ -436,7 +436,7 @@ public class FontSubsettingTests
         // Page 1 draws CID 1; the page behind the untyped node draws CID 5. Both must survive.
         Assert.NotEqual(loca[GlyphDrawn], loca[GlyphDrawn + 1]);
         Assert.NotEqual(loca[GlyphUnusedLarge], loca[GlyphUnusedLarge + 1]);
-        // Nothing draws CID 2, so it still goes — the fix must not degrade into retaining everything.
+        // Nothing draws CID 2, so it still goes — the rule must not degrade into retaining everything.
         Assert.Equal(loca[GlyphUnused], loca[GlyphUnused + 1]);
     }
 

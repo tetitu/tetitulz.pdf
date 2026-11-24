@@ -131,12 +131,10 @@ public sealed class ExcelTableFidelityTests
     /// The control: a prose page produces paragraphs and no table at all.
     /// </summary>
     /// <remarks>
-    /// This is the assertion the first version of the change broke. The extractor used to report
-    /// <c>ColumnCount = 2</c> for two words stacked at the same x — with every cell in column 1 and
-    /// column 0 empty — so a column count alone turned a page of prose into a table and the
-    /// paragraphs disappeared. The phantom column has since been removed and such a page answers
-    /// <c>ColumnCount = 1</c>, but this control keeps its full strength: it asserts the *outcome*
-    /// (paragraphs, no table), which must hold however the count is computed.
+    /// Two words stacked at the same x answer <c>ColumnCount = 1</c>; a phantom empty column 0 would
+    /// make it 2, and a column count alone would turn a page of prose into a table and the
+    /// paragraphs would disappear. This control asserts the *outcome* (paragraphs, no table), which
+    /// must hold however the count is computed.
     /// </remarks>
     [Fact]
     public void AProsePageProducesParagraphsAndNoTable()

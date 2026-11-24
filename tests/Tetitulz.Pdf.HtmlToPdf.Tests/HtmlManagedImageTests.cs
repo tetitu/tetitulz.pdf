@@ -112,9 +112,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         }
 
         /// <summary>
-        /// Adam7 interlaced PNG is decoded, not declined. This test previously asserted the
-        /// opposite — that it was <i>reported</i> as unsupported — which was the honest behaviour
-        /// while there was no Adam7 decoder. The name and the assertion changed together.
+        /// Adam7 interlaced PNG is decoded, not declined.
         /// </summary>
         [Fact]
         public void InterlacedPng_IsEmbedded()
@@ -185,10 +183,10 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// A PNG with an alpha channel gets a real <c>/SMask</c>, and its colour samples stay
         /// <b>untouched</b>.
         ///
-        /// <para>Alpha used to be composited over white. That is only correct when the background
-        /// happens to be white; over a shaded paragraph or a coloured table cell it leaves a white
-        /// halo around every transparent edge — a transparent logo on a coloured header is the
-        /// case people actually hit.</para>
+        /// <para>Alpha composited over white would be right only when the background happens to be
+        /// white; over a shaded paragraph or a coloured table cell it would leave a white halo around
+        /// every transparent edge — a transparent logo on a coloured header is the case people
+        /// actually hit.</para>
         /// </summary>
         [Fact]
         public void PngWithAlpha_EmitsASoftMask_AndKeepsTheOriginalColour()

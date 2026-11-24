@@ -174,8 +174,7 @@ public class BandDirectionTests
 
     /// <summary>
     /// Two <c>float:right</c> elements in a band: the FIRST is the rightmost, and the second lines up
-    /// to its left — they used to be laid in document order after the content, which put the
-    /// first one inward.
+    /// to its left — laid in document order after the content, the first one would sit inward.
     /// </summary>
     [Fact]
     public void AFloatBandPutsTheFirstRightFloatAtTheRightEdge()

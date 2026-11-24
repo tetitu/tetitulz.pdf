@@ -68,8 +68,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         }
 
         /// <summary>
-        /// A list cut round a positioned item — the item and its positioned block in a box of their own
-        /// (2026-10-19) — is still one <c>/L</c> of its three items, the first item's sublist its own
+        /// A list cut round a positioned item — the item and its positioned block in a box of their own —
+        /// is still one <c>/L</c> of its three items, the first item's sublist its own
         /// <c>/L</c> inside that item, not the one the parts after it go on; the control, the same list
         /// with a second list after it, is two.
         /// </summary>
@@ -85,7 +85,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 
         /// <summary>
         /// A sublist taken out of its item because it, or an item of it, is the containing block of a
-        /// positioned block (2026-10-20) is still tagged inside its item: each <c>/L</c> of two
+        /// positioned block is still tagged inside its item: each <c>/L</c> of two
         /// <c>/LI</c>s, each nested <c>/L</c> a child of the item before it — the outer list's first item
         /// holding a label, a body and the sublist — and the outer list's later item in the outer
         /// <c>/L</c>. Shapes: a positioned sublist; a positioned item two levels down; two sublists of one
@@ -319,7 +319,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// <summary>
         /// An ordered list's <c>list-style-type</c> numbers it, and outranks the <c>type</c> attribute
         /// as a browser's cascade does — <c>hebrew</c> by CSS Counter Styles 3 §6.1 (15 is טו).
-        /// Until 2026-10-21 only the attribute was read, so every one of these was decimal.
+        /// Read from the attribute alone, every one of these would be decimal.
         /// </summary>
         [Theory]
         [InlineData("<ol style=\"list-style-type:lower-roman\">", "i. ", "ii. ")]

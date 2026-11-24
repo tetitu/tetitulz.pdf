@@ -47,13 +47,13 @@ public sealed class TimestampTrailerKeyPreservationTests
 
         string appended = LastTrailerDictionary(written);
 
-        // The two carried-forward keys. Before the fix the appended trailer read
-        // "<< /Size 5 /Root 1 0 R /Prev NNN /ID [...] >>" and neither appeared anywhere in it.
+        // The two carried-forward keys. A trailer reading only
+        // "<< /Size 5 /Root 1 0 R /Prev NNN /ID [...] >>" would hold neither.
         Assert.Contains("/Info 4 0 R", appended, StringComparison.Ordinal);
         Assert.Contains("/TetitulzProducerKey (kept)", appended, StringComparison.Ordinal);
 
-        // And the keys the appended revision restates for itself are still right, so the fix did
-        // not buy /Info at the cost of a chain no reader can follow.
+        // And the keys the appended revision restates for itself are still right, so /Info is
+        // not bought at the cost of a chain no reader can follow.
         Assert.Contains("/Root 1 0 R", appended, StringComparison.Ordinal);
         // Five objects in (0..4), so the two the timestamper appends make the highest number 6.
         Assert.Contains("/Size 7", appended, StringComparison.Ordinal);

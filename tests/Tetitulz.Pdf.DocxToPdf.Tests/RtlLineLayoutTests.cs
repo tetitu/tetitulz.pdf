@@ -21,12 +21,12 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
     /// bidi order, each run's own spaces kept — on the legacy path as on the Builder path.
     /// </summary>
     /// <remarks>
-    /// <para>Until 2026-10-22 the legacy renderer shaped (and so reordered) each run on its own and
-    /// then drew the runs left to right in logical order: a Hebrew paragraph whose words fell in
-    /// several runs read backwards, a list marker sat on the left of a right-to-left item, a cell's
-    /// text sat on the cell's left in any alignment, and every wrap dropped the spaces opening a run —
-    /// "Hello" + " World" drew "HelloWorld". The Builder path mirrored every table of a <c>w:bidi</c>
-    /// section, which ECMA-376-1 §17.4.1 and §17.6.1 rule out.</para>
+    /// <para>Shaping (and so reordering) each run on its own and then drawing the runs left to right
+    /// in logical order would read a Hebrew paragraph whose words fall in several runs backwards, put
+    /// a list marker on the left of a right-to-left item and a cell's text on the cell's left in any
+    /// alignment, and drop the spaces opening a run at every wrap — "Hello" + " World" drawn
+    /// "HelloWorld". A table of a <c>w:bidi</c> section is not mirrored: ECMA-376-1 §17.4.1 and
+    /// §17.6.1 rule that out.</para>
     /// <para>Order is read back through the text extractor, which restores a right-to-left line's
     /// logical order from the positions it was drawn at: a line drawn in the wrong order reads back
     /// wrong. Positions are read from the content stream.</para>
@@ -61,13 +61,13 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         }
 
         /// <summary>
-        /// A right-to-left list item's marker is on its right, and reads first: the marker, then the item.
-        /// The legacy path drew the marker on the left of the item, touching it.
+        /// A right-to-left list item's marker is on its right, and reads first: the marker, then the item —
+        /// not on the left of the item, touching it.
         /// </summary>
         /// <remarks>
         /// The Builder draws a marker as its own text object after its item, at the item's right; the plain
-        /// extractor read that correct page back item first until it came to order a right-to-left line's
-        /// strings by where they were drawn (2026-10-22).
+        /// extractor orders a right-to-left line's strings by where they were drawn, so it reads the marker
+        /// first.
         /// </remarks>
         [HebrewCapableDocxFontFact]
         public void ARightToLeftListMarker_IsOnTheRightOfItsItem_OnBothPaths()
@@ -111,8 +111,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// A bracket pair a line break splits is still a pair (UAX #9 N0, resolved over the paragraph):
         /// in a right-to-left paragraph "abc (DEF⏎GHI) עולם", the pair holds Latin and follows Latin,
         /// so the closing bracket is Latin too and is drawn after GHI, as written. Resolved a line at a
-        /// time, as until 2026-10-22, it stood between GHI and the Hebrew, took the paragraph's
-        /// direction, and was drawn mirrored on GHI's left. In a body paragraph and in a cell.
+        /// time, it would stand between GHI and the Hebrew, take the paragraph's direction, and be drawn
+        /// mirrored on GHI's left. In a body paragraph and in a cell.
         /// </summary>
         [Fact]
         public void ABracketPairSplitByALineBreak_IsStillAPair_OnTheLegacyPath()
@@ -130,8 +130,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// A <c>w:br</c> in a cell ends the line, as in a body paragraph: "One⏎Two" draws Two on a line
-        /// below One, and "One⏎⏎Two" a line further down, the empty line taking its height. A cell read
-        /// its <c>w:t</c> elements alone and drew "OneTwo" until 2026-10-22.
+        /// below One, and "One⏎⏎Two" a line further down, the empty line taking its height — not
+        /// "OneTwo", as a cell reading its <c>w:t</c> elements alone would draw.
         /// </summary>
         [Fact]
         public void ALineBreakInACell_EndsTheLine_OnTheLegacyPath()

@@ -403,8 +403,7 @@ public sealed class ContentStreamEmitterTests
 
     /// <summary>
     /// <c>restore</c> rolls back VM (<c>VmRestoreTests</c>): the definition made since the save is
-    /// gone, and the limit it used to report — "rolled back the graphics state but not VM" — is no
-    /// longer said.
+    /// gone, and no "rolled back the graphics state but not VM" limit is reported.
     /// </summary>
     [Fact]
     public void Restore_RollsBackVm_AndReportsNoLimit()
@@ -548,10 +547,9 @@ public sealed class ContentStreamEmitterTests
     }
 
     /// <summary>
-    /// The bomb must not escape as a CLR exception <b>and</b> must actually be bounded. The second
-    /// half used to be missing: this asserted only <c>Assert.Null(ex)</c> under a name claiming a
-    /// depth cap, and the cap it named applied to the emitted <c>q</c> alone — the engine went on
-    /// cloning a graphics state per iteration. <c>GraphicsStateStackDepthTests</c> owns the full
+    /// The bomb must not escape as a CLR exception <b>and</b> must actually be bounded: a cap on the
+    /// emitted <c>q</c> alone would leave the engine cloning a graphics state per iteration.
+    /// <c>GraphicsStateStackDepthTests</c> owns the full
     /// evidence; the emitted-depth bound is asserted here because it is the emitter's half of it.
     /// </summary>
     [Fact]
@@ -666,8 +664,8 @@ public sealed class ContentStreamEmitterTests
     /// is skipped as unchanged when it is not — and draws in the enclosing colour.
     ///
     /// <para>Asserted by counting: the program sets blue twice, either side of the
-    /// <c>initclip</c>, and both fills must actually get it. Before the fix the second
-    /// <c>0 0 1 rg</c> was never emitted and the square came out red.</para>
+    /// <c>initclip</c>, and both fills must actually get it: a stale record would skip the second
+    /// <c>0 0 1 rg</c>, and the square would come out red.</para>
     /// </summary>
     [Fact]
     public void InitClip_RollsBackTheTrackedColour_SoTheNextFillReEmitsIt()

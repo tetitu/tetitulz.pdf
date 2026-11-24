@@ -148,7 +148,7 @@ public sealed class ReviewRegressionTests
     public void InitClip_AfterATopLevelClip_RestoresPastTheClip()
         => AssertClipIsEscapedBeforeTheFill(Text(ClipTo10 + "initclip" + PaintBig));
 
-    /// <summary>The idiom that always worked, kept so the fix cannot regress it.</summary>
+    /// <summary>The ordinary idiom, kept so the rule cannot regress it.</summary>
     [Fact]
     public void Grestore_AfterAClipInsideGsave_RestoresPastTheClip()
         => AssertClipIsEscapedBeforeTheFill(Text("gsave " + ClipTo10 + " grestore" + PaintBig));

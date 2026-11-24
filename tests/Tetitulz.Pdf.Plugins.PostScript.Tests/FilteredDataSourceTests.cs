@@ -13,16 +13,15 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
 /// <c>currentfile … filter</c> as an image data source — the standard way an EPS embeds image
-/// bytes, and the last of the four gaps found on 2026-08-19.
+/// bytes.
 ///
-/// <para>It drew nothing at all before: <c>currentfile</c> and <c>filter</c> pushed a null that
-/// <c>image</c> then reported as a procedure data source, and — worse — the data block was left in
-/// the token stream and scanned as PostScript, producing a storm of garbage names that also
-/// consumed slots in the capped diagnostic list.</para>
+/// <para>The data block is consumed by the filter: left in the token stream, it would be scanned
+/// as PostScript, producing a storm of garbage names that also consume slots in the capped
+/// diagnostic list.</para>
 ///
 /// <para><b>Every assertion reads the decoded bytes back out of the emitted image XObject.</b> That
 /// a <c>Do</c> was emitted proves nothing here: the failure mode being tested is bytes that are
-/// present but wrong, which is exactly what the hex scanner produced for base-85 input.</para>
+/// present but wrong, as a hex scanner would produce for base-85 input.</para>
 /// </summary>
 public sealed class FilteredDataSourceTests
 {
@@ -61,7 +60,7 @@ public sealed class FilteredDataSourceTests
     /// <summary>
     /// <b>The scanner resumes after the block.</b> This is what the whole lazy-execution change
     /// buys, and getting it wrong means the program's remaining operators are read out of the image
-    /// data — the measured symptom before the fix.
+    /// data.
     /// </summary>
     [Fact]
     public void TheProgramContinuesAfterTheDataBlock()
@@ -75,9 +74,9 @@ public sealed class FilteredDataSourceTests
         Assert.True(r.IsClean, r.LastError);
     }
 
-    // A binary innermost filter — Flate, LZW, RunLength, DCT — has no marker in the byte stream and
-    // used to be refused by name. Its block now ends where its own data says, found by Core's
-    // filters in the pass that decodes it: UndelimitedFilterSourcesTests.
+    // A binary innermost filter — Flate, LZW, RunLength, DCT — has no marker in the byte stream.
+    // Its block ends where its own data says, found by Core's filters in the pass that decodes
+    // it: UndelimitedFilterSourcesTests.
 
     /// <summary>
     /// An unterminated block is reported rather than drawn from whatever was scanned. The scanner

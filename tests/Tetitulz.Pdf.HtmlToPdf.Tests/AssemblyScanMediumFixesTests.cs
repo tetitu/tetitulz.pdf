@@ -48,17 +48,15 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// </summary>
         /// <remarks>
         /// <para><b>The defect.</b> CSS defines <c>unicode-bidi</c>'s embedding direction as the
-        /// element's <i>computed</i> <c>direction</c>, which inherits. <c>ResolveBidiOverride</c>
-        /// read only the element's own <c>dir</c> attribute and its own inline <c>direction</c>
-        /// declaration — and the cascade fold copies stylesheet declarations onto matching elements,
-        /// never onto their descendants — so an inherited RTL direction was invisible and the LTR
-        /// control went out instead: U+202A rather than U+202B for <c>embed</c>, U+2066 rather than
-        /// U+2067 for <c>isolate</c>.</para>
-        /// <para><b>The content is MIXED-SCRIPT on purpose, and an earlier draft of this test that
-        /// was not is why the note is here.</b> GAPS.md §4b: pure single-script content cannot detect
-        /// a base-direction bug. Latin inside an RTL embedding still resolves to an even level and so
-        /// still reads left to right — word order within the run is identical under U+202A and
-        /// U+202B, and a Latin-only fixture passes with the fix deleted. What the embedding
+        /// element's <i>computed</i> <c>direction</c>, which inherits. Reading only the element's own
+        /// <c>dir</c> attribute and its own inline <c>direction</c> declaration — the cascade fold
+        /// copies stylesheet declarations onto matching elements, never onto their descendants — would
+        /// leave an inherited RTL direction invisible and send the LTR control instead: U+202A rather
+        /// than U+202B for <c>embed</c>, U+2066 rather than U+2067 for <c>isolate</c>.</para>
+        /// <para><b>The content is MIXED-SCRIPT on purpose.</b> Pure single-script content cannot
+        /// detect a base-direction bug. Latin inside an RTL embedding still resolves to an even level
+        /// and so still reads left to right — word order within the run is identical under U+202A and
+        /// U+202B, and a Latin-only fixture passes with the direction ignored. What the embedding
         /// direction really decides is the order of the two <i>strong</i> runs relative to each
         /// other, so the fixture needs one run of each direction.</para>
         /// </remarks>
@@ -90,7 +88,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// An explicit <c>dir</c> on the element still wins over what it inherits.
         /// </summary>
         /// <remarks>
-        /// Without this the fix could have been "always use the inherited direction", which is the
+        /// Without this the rule could be "always use the inherited direction", which is the
         /// opposite error and would break every element-local override.
         /// </remarks>
         [Fact]
@@ -299,7 +297,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         }
 
         /// <summary>
-        /// The three remaining edges are still drawn: the fix suppresses one side, not the border.
+        /// The three remaining edges are still drawn: the rule suppresses one side, not the border.
         /// </summary>
         [Fact]
         public void BorderTopNone_LeavesTheOtherThreeEdges()

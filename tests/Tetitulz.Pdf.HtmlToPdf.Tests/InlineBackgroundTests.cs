@@ -18,8 +18,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// checklist's tick drawn as the background of an empty, padded <c>&lt;i&gt;</c>.
     /// </summary>
     /// <remarks>
-    /// Both used to draw nothing: an inline element had no background image, and an empty one no
-    /// run to carry a box. Image draws are read back as <c>w 0 0 h x y cm /Im Do</c>.
+    /// Neither rides on a text run: an inline element's background image is a draw of its own, and an
+    /// empty element has no run to carry a box. Image draws are read back as <c>w 0 0 h x y cm /Im Do</c>.
     /// </remarks>
     public class InlineBackgroundTests
     {

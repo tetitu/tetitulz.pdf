@@ -15,7 +15,7 @@ using Tetitulz.Pdf.Plugins.PostScript.Tests.TestInfrastructure;
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
-/// Regressions from the assembly-wide scan (2026-08-13). Four defects in this plugin, three of them
+/// Four defects in this plugin, three of them
 /// hostile-input and all three of the same family: something a <b>file</b> controls — a DSC number,
 /// an operand index, a string length — reaching arithmetic or a budget that was not written for it.
 ///
@@ -175,14 +175,14 @@ public sealed class AssemblyScanRegressionTests
 
         Assert.Contains("rangecheck", result.LastError ?? string.Empty, StringComparison.Ordinal);
 
-        // The marks emitted before the bad operator are still there. Pre-fix `result.Content` was
-        // null, because the escaping CLR exception discarded the whole conversion.
+        // The marks emitted before the bad operator are still there. An escaping CLR exception
+        // would discard the whole conversion and leave `result.Content` null.
         ContentStreamAssert.Contains(result.Content, "0 0 1 rg");
         ContentStreamAssert.Contains(result.Content, "90 90 l");
     }
 
     /// <summary>
-    /// The widened check must not refuse a legal interval — the fix is to the arithmetic, not to the
+    /// The widened check must not refuse a legal interval — the change is to the arithmetic, not to the
     /// rule, and PLRM §3.3.2 requires the view to alias its parent's storage.
     /// </summary>
     [Fact]
@@ -260,19 +260,17 @@ public sealed class AssemblyScanRegressionTests
 
     /// <summary>
     /// <c>show</c>, <c>stringwidth</c> and <c>charpath</c> each do work proportional to the operand's
-    /// length — a byte-array copy plus one metric lookup per byte — and each cost the budget one
-    /// tick, the same as <c>pop</c>. <c>PositionedShow</c> already ticked its byte count, so this was
-    /// an inconsistency rather than a design.
+    /// length — a byte-array copy plus one metric lookup per byte — so each is charged that length,
+    /// as <c>PositionedShow</c> is, not one tick, the same as <c>pop</c>.
     ///
     /// <para>Two assertions, and both are needed. <c>limitcheck</c> alone would also pass for
     /// <c>charpath</c> uncharged, because the path cap eventually stops that one on its own; and
     /// <c>BudgetExhausted</c> alone would also pass for <c>show</c> uncharged, because it eventually
     /// runs out of operations. Only the pair says "the <i>allocation</i> budget saw the work".</para>
     ///
-    /// <para><c>xshow</c> is deliberately <b>not</b> in this set. It was already charged its byte
-    /// count, so only the ordering of that charge changed here — and it was measured to still stop
-    /// on this same evidence with the charge mutated away, because its per-glyph emission reaches
-    /// the allocation budget by another route. A case that passes with the fix removed proves
+    /// <para><c>xshow</c> is deliberately <b>not</b> in this set: it still stops on this same
+    /// evidence with its byte charge mutated away, because its per-glyph emission reaches the
+    /// allocation budget by another route. A case that passes with the charge removed proves
     /// nothing, whatever its name says.</para>
     /// </summary>
     [Theory]

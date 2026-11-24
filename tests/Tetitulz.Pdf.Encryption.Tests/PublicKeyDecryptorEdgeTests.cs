@@ -27,10 +27,9 @@ public class PublicKeyDecryptorEdgeTests
 
     /// <summary>
     /// A document listing more recipients than the reader examines is refused, with the count.
-    /// It used to be truncated: the file key hashes every recipient, so reading the first 1024 of
-    /// 1025 derived a wrong key and turned the document into noise without saying so. The control
-    /// is 1024 recipients, none of them this key's, which reaches the recipient match and is
-    /// refused for that reason instead.
+    /// Truncated, it would decrypt to noise without saying so: the file key hashes every recipient,
+    /// so reading the first 1024 of 1025 derives a wrong key. The control is 1024 recipients, none
+    /// of them this key's, which reaches the recipient match and is refused for that reason instead.
     /// </summary>
     [Fact]
     public void MoreRecipientsThanTheCap_IsRefusedWithTheCount()

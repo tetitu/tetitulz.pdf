@@ -814,7 +814,7 @@ public class LinearizationConformanceTests
     /// The first page's attachment is in the embedded file table (F.4.7: it locates "all byte ranges ... needed
     /// to access its embedded file streams"): the first page's section holds the stream (F.3.7), and the table
     /// names it by an entry of no objects whose one shared reference is the stream's own first-page identifier.
-    /// It used to be left out. A later page's attachment is not named, and stays in that page's section: the
+    /// A later page's attachment is not named, and stays in that page's section: the
     /// table can locate a group only in part 9 or through the shared object table, which lists no later page's
     /// objects, and an independent checker counts the stream in its page's section.
     /// </summary>

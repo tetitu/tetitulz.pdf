@@ -15,11 +15,11 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
 /// A <c>transform</c> argument is read by the function it belongs to, in any CSS length unit, and a
-/// non-finite result drops the transform rather than reaching the Builder model. A length was read only
-/// in px or pt and a percentage as zero, so <c>scale(50%)</c> became a zero matrix that drew the block
-/// nowhere and <c>translateX(1em)</c> did nothing; and <c>scale(1e200) scale(1e200)</c> composed an
-/// infinite matrix that <c>ModelMeasurements</c> refused at export with an exception naming an argument
-/// the caller never passed (2026-10-22).
+/// non-finite result drops the transform rather than reaching the Builder model. Read only in px or pt,
+/// with a percentage as zero, <c>scale(50%)</c> would be a zero matrix that draws the block nowhere and
+/// <c>translateX(1em)</c> would do nothing; and <c>scale(1e200) scale(1e200)</c> composes an infinite
+/// matrix that <c>ModelMeasurements</c> would refuse at export with an exception naming an argument the
+/// caller never passed.
 /// </summary>
 public class TransformArgumentTests
 {

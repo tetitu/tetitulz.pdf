@@ -12,14 +12,14 @@ using Tetitulz.Pdf.Plugins.PostScript.Tests.TestInfrastructure;
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
-/// The Level 2 image forms, closed on 2026-08-19.
+/// The Level 2 image forms.
 ///
-/// <para>Two defects, of the two different kinds this repo distinguishes. The <b>dictionary form</b>
-/// (<c>&lt;&lt; /ImageType 1 … &gt;&gt; image</c>) was consumed and reported, drawing nothing — an
-/// honest refusal. The <b>colour space</b> was the other kind: <c>image</c> never consulted
-/// <c>setcolorspace</c>, so an <c>/Indexed</c> image drew with correct geometry and wrong colours,
-/// and the only diagnostic was <c>setcolorspace</c> in the unimplemented list, which reads as "a
-/// colour operator was skipped" rather than "your image came out greyscale".</para>
+/// <para>Two kinds of defect this repo distinguishes meet here. A <b>dictionary form</b>
+/// (<c>&lt;&lt; /ImageType 1 … &gt;&gt; image</c>) consumed and reported would draw nothing — an
+/// honest refusal. The <b>colour space</b> is the other kind: an <c>image</c> that did not consult
+/// <c>setcolorspace</c> would draw an <c>/Indexed</c> image with correct geometry and wrong colours,
+/// and the only diagnostic, <c>setcolorspace</c> in the unimplemented list, would read as "a colour
+/// operator was skipped" rather than "your image came out greyscale".</para>
 ///
 /// <para>Assertions read the emitted image XObject's own dictionary — <c>/Width</c>,
 /// <c>/BitsPerComponent</c>, <c>/ColorSpace</c>, <c>/Decode</c>, <c>/ImageMask</c> — because "a
@@ -55,7 +55,7 @@ public sealed class ImageFormAndColorSpaceTests
     // ==================================================================
 
     /// <summary>
-    /// <c>&lt;&lt; /ImageType 1 … &gt;&gt; image</c> draws. It used to emit nothing at all.
+    /// <c>&lt;&lt; /ImageType 1 … &gt;&gt; image</c> draws.
     /// </summary>
     [Fact]
     public void ImageDictionary_Draws()
@@ -491,8 +491,8 @@ public sealed class ImageFormAndColorSpaceTests
     /// <summary>
     /// An <c>image</c> inside an ASCII <c>%%BeginData</c> section — the DSC-conformant layout,
     /// where the section begins on the line after the comment and so holds the operator that
-    /// reads the data — draws. The scanner used to skip the whole section by its count, operator
-    /// included, and report only that a binary section was skipped.
+    /// reads the data — draws, rather than the whole section being skipped by its count, operator
+    /// included.
     /// </summary>
     [Fact]
     public void AnImageInsideAnAsciiDataSection_Draws()
@@ -541,7 +541,7 @@ public sealed class ImageFormAndColorSpaceTests
 
     /// <summary>
     /// 16 bits per component is a depth PDF carries (§8.9.5, PDF 1.5), so the samples pass through.
-    /// They used to be "assumed" 8 — half the samples read as twice the pixels, and noise drawn.
+    /// "Assumed" 8, half the samples would read as twice the pixels, and noise be drawn.
     /// </summary>
     [Fact]
     public void Image_SixteenBitsPerComponent_PassesThrough()

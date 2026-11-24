@@ -1302,9 +1302,9 @@ public class PdfOptimizerTests
     }
 
     /// <summary>
-    /// The same missed page, reached through a second consumer of the page walk, so the fix is
-    /// pinned at the walk rather than at one option: the page's two <c>/Contents</c> fragments
-    /// survived a <c>ConcatenateContentStreams = true</c> run that reported success.
+    /// The same page, reached through a second consumer of the page walk, so the rule is pinned at
+    /// the walk rather than at one option: a missed page's two <c>/Contents</c> fragments would
+    /// survive a <c>ConcatenateContentStreams = true</c> run that reported success.
     /// </summary>
     [Fact]
     public void ConcatenateContentStreams_MergesAPageBehindADirectPageTreeRoot()
@@ -2066,9 +2066,9 @@ public class PdfOptimizerTests
     // ------------------------------------------------------------------
     //  Read-back helpers
     //
-    //  These tests used to assert `output.Length > 0` and `doc.Pages.Count > 0`, which hold for
-    //  any parseable PDF — including one where the optimizer did nothing at all. Reading the
-    //  produced image dictionary back out is what makes them able to fail.
+    //  `output.Length > 0` and `doc.Pages.Count > 0` hold for any parseable PDF — including
+    //  one where the optimizer did nothing at all. Reading the produced image dictionary back
+    //  out is what makes these tests able to fail.
     // ------------------------------------------------------------------
 
     /// <summary>The first image XObject on page 0 of a produced document.</summary>

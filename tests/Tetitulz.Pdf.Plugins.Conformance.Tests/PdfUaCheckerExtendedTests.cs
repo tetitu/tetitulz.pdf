@@ -201,11 +201,10 @@ public class PdfUaCheckerExtendedTests
     }
 
     /// <summary>
-    /// Files produced by earlier versions of this library carry the non-standard /TabOrder key.
-    /// It used to be accepted on read, to avoid "reporting twice" a page the fixer was about to
-    /// correct — which made this checker the one component in the stack that called the page
-    /// conformant: /TabOrder is not in ISO 32000-1 Table 30, no reader honours it, an independent checker and
-    /// the published profiles fail the page under ISO 14289-1 §7.18.3, and the library's own
+    /// A page may carry the non-standard /TabOrder key instead of /Tabs. Accepting it on read would
+    /// make this checker the one component in the stack that calls the page conformant: /TabOrder
+    /// is not in ISO 32000-1 Table 30, no reader honours it, an independent checker and the
+    /// published profiles fail the page under ISO 14289-1 §7.18.3, and the library's own
     /// SetStructureTabOrder / FixTabs both treat it as still needing the real key.
     /// </summary>
     [Fact]
@@ -233,8 +232,8 @@ public class PdfUaCheckerExtendedTests
     [Fact]
     public void Validate_IndirectMarkInfoMarkedTrue_NoUA01Violation()
     {
-        // `/MarkInfo 4 0 R` is entirely legal and extremely common. Before the fix the
-        // checker cast without resolving and reported "not a dictionary" for every such file.
+        // `/MarkInfo 4 0 R` is entirely legal and extremely common. Cast without resolving, it
+        // would be reported "not a dictionary" for every such file.
         byte[] pdf = BuildPdf(
             "<< /Type /Catalog /Pages 2 0 R /MarkInfo 4 0 R >>",
             "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
@@ -543,9 +542,9 @@ public class PdfUaCheckerExtendedTests
     /// ISO 14289-1 treats printer's marks as artifacts and exempts them from the /Contents
     /// description requirement (Matterhorn 28-004 names Widget, Link and PrinterMark together).
     /// PdfDeepAccessibilityChecker.EnumerateAnnotations and PdfAutoTagger.BelongsInStructureTree
-    /// both already exempt the subtype; this checker used to be the one component that did not,
-    /// so a press-ready file with registration marks was reported non-conforming here while the
-    /// deep checker passed the very same bytes.
+    /// both exempt the subtype, and so does this checker: otherwise a press-ready file with
+    /// registration marks would be reported non-conforming here while the deep checker passed the
+    /// very same bytes.
     /// </summary>
     [Fact]
     public void Validate_PrinterMarkAnnotationWithoutContents_NoUA27Violation()

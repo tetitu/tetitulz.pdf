@@ -11,11 +11,11 @@ using static Tetitulz.Pdf.HtmlToPdf.Tests.ManagedTestSupport;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests
 {
     /// <summary>
-    /// Renaming controls that share a name is linear, not quadratic. <c>FieldNameFor</c> (and
-    /// <c>RadioSpec</c> for a radio group's values) probed <c>name_2</c>, <c>name_3</c> … from 2 for
-    /// every colliding control, so N controls sharing a name cost ≈ N²/2 string builds and set look-ups
-    /// (~10 minutes for 100 000 inputs). A per-base next-suffix cache makes each O(1); the rename
-    /// sequence is unchanged because names are only ever added (2026-10-23).
+    /// Renaming controls that share a name is linear, not quadratic. Probing <c>name_2</c>,
+    /// <c>name_3</c> … from 2 for every colliding control in <c>FieldNameFor</c> (and <c>RadioSpec</c>
+    /// for a radio group's values) would make N controls sharing a name cost ≈ N²/2 string builds and
+    /// set look-ups (~10 minutes for 100 000 inputs). A per-base next-suffix cache makes each O(1); the
+    /// rename sequence is the probe's, because names are only ever added.
     /// </summary>
     public class FormFieldRenameCostTests
     {
@@ -42,8 +42,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
             long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 
             Assert.Equal(n, result.FormFields.Count);
-            // Pre-fix the suffix probe alone copied ≈ n²/2 strings (~1.5 GB at n=10 000); post-fix it is
-            // linear. The allocation is the work signal — a quadratic probe cannot fit under this bound.
+            // A probe from 2 would copy ≈ n²/2 strings (~1.5 GB at n=10 000); the cache is linear. The
+            // allocation is the work signal — a quadratic probe cannot fit under this bound.
             Assert.True(allocated < 700_000_000,
                 $"renaming {n:N0} same-named controls allocated {allocated:N0} bytes — the suffix probe is quadratic");
         }

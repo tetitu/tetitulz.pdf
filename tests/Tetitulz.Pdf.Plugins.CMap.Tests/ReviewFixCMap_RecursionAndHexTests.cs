@@ -31,7 +31,7 @@ namespace Tetitulz.Pdf.Plugins.CMap.Tests
         {
             // "Adobe-Japan1-UCS2" is the first alias PdfType0Font probes for a Japan1
             // ordering.  It references a helper CMap via usecmap, which references it
-            // back (A → B → A).  Pre-fix, the lazy parse triggered by decoding would
+            // back (A → B → A).  Unguarded, the lazy parse triggered by decoding would
             // recurse forever → StackOverflow.  A unique helper name is used so we do not
             // clobber any embedded plugin CMap.  "Adobe-Japan1-UCS2" also maps CID 0x42
             // → U+4E2D so we can assert the mapping still resolves once the cycle breaks.

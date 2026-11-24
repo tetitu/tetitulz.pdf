@@ -84,8 +84,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// A JPEG whose SOF0 claims 65 535 × 65 535 pixels, with no scan data at all: the legacy
-        /// renderer and the Builder path both skip it and say why, where both used to write the
-        /// frame's size into the output as declared.
+        /// renderer and the Builder path both skip it and say why, rather than write the frame's size
+        /// into the output as declared.
         /// </summary>
         [Fact]
         public void OversizedJpegFrame_IsSkippedAndReported_OnBothPaths()

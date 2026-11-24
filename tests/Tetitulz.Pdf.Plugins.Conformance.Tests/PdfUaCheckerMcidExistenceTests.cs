@@ -14,12 +14,10 @@ namespace Tetitulz.Pdf.Plugins.Conformance.Tests;
 /// UA50 — the structure tree names a marked-content identifier the page's content stream never
 /// defines.
 /// <para>
-/// This is the first content-level check in the plugin. It exists because a consumer of the
-/// Conformance package <b>standalone</b> previously got "zero violations" for a file whose
-/// structure elements pointed at MCIDs that were not in the page at all: UA28/UA29 are
-/// dictionary-level and cannot see it. The documentation used to explain that away as an
-/// architectural impossibility — "the plugin cannot reference a feature" — which does not follow,
-/// since decoding needs only Core, and <c>PdfXValidator</c> in this same assembly already does it.
+/// A content-level check in the plugin, so that a consumer of the Conformance package
+/// <b>standalone</b> does not get "zero violations" for a file whose structure elements point at
+/// MCIDs that are not in the page at all: UA28/UA29 are dictionary-level and cannot see it.
+/// Decoding the content needs only Core, as <c>PdfXValidator</c> in this same assembly does.
 /// </para>
 /// </summary>
 public class PdfUaCheckerMcidExistenceTests

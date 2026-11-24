@@ -11,16 +11,14 @@ using Tetitulz.Pdf.DocxToPdf.Rendering;
 namespace Tetitulz.Pdf.DocxToPdf.Tests
 {
     /// <summary>
-    /// <c>UnicodeText</c> after it stopped carrying its own shape → bidi → glyph-id walk and became
-    /// an adapter onto <c>Core.Text.TextRunComposer</c>.
+    /// <c>UnicodeText</c> as an adapter onto <c>Core.Text.TextRunComposer</c>, carrying no shape →
+    /// bidi → glyph-id walk of its own.
     ///
-    /// <para><b>What these exist to catch.</b> Two copies of that pipeline survived in the tree —
-    /// this one and <c>Builder.Export.RtlText</c> — and each had acquired exactly the fix the other
-    /// lacked: this one the <b>code-point</b> walk, that one the caller-supplied base direction.
-    /// Merging by hand in either direction deletes one of them silently, because both defects
-    /// produce a perfectly valid PDF that simply draws the wrong thing. This file pins the half this
-    /// side owned, plus the auto base direction the DOCX renderer's layout depends on — the merge
-    /// must not quietly force a direction here either.</para>
+    /// <para><b>What these exist to catch.</b> The shared pipeline must keep both the
+    /// <b>code-point</b> walk and the caller-supplied base direction: losing either produces a
+    /// perfectly valid PDF that simply draws the wrong thing. This file pins the code-point walk,
+    /// plus the auto base direction the DOCX renderer's layout depends on — the adapter must not
+    /// quietly force a direction here either.</para>
     ///
     /// <para><b>Why the fixtures are mixed-script.</b> Hebrew alone reads correctly under either
     /// base direction (one run reversing as a unit), so a single-script fixture passes with the
@@ -30,7 +28,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
     {
         private const string Shalom = "שלום";
 
-        // ── the fix THIS side owned: supplementary-plane characters ──────────────────────────
+        // ── supplementary-plane characters ──────────────────────────────────────────────────
 
         /// <summary>
         /// 𝑥 U+1D465 — which Word's equation editor writes straight into <c>m:t</c> — is one

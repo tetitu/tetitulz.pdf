@@ -9,8 +9,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Encryption.Tests;
 
 /// <summary>
-/// What <see cref="PdfEncryptedRoundTrip.TryDeriveParameters"/> answers for the RC4 handlers, from the
-/// review of batch 131 (2026-10-15): every <c>/V 1</c> and <c>/V 2</c> arm, a nonconforming <c>/V 1</c>
+/// What <see cref="PdfEncryptedRoundTrip.TryDeriveParameters"/> answers for the RC4 handlers: every
+/// <c>/V 1</c> and <c>/V 2</c> arm, a nonconforming <c>/V 1</c>
 /// with a longer key refused rather than downgraded, and the Recipients policy refusing what the
 /// public-key writer cannot write instead of throwing out of <c>Run</c>.
 /// </summary>

@@ -297,7 +297,7 @@ public class PdfAColourConsistencyValidatorTests
     private const string RgbShading = "<< /ShadingType 2 /ColorSpace /DeviceRGB /Coords [0 0 5 0] /Function << /FunctionType 2 /Domain [0 1] /C0 [0 0 0] /C1 [1 1 1] /N 1 >> >>";
 
     /// <summary>A shading paints in its colour space — by <c>sh</c>, or as a shading pattern by
-    /// <c>scn</c>; the scan used to read neither.</summary>
+    /// <c>scn</c>; the scan reads both.</summary>
     [Theory]
     [InlineData("/Shading << /Sh0 7 0 R >>", "/Sh0 sh", true)]
     [InlineData("/Shading << /Sh0 7 0 R >>", "BT ET", false)]

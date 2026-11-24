@@ -17,18 +17,14 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 /// and every <c>current<i>X</i></c> has a <c>set<i>X</i></c>.
 /// </summary>
 /// <remarks>
-/// <para><b>This invariant is stated in the source and was, until now, maintained by hand.</b>
-/// <c>PsSystemDict.RegisterKnownUnimplemented</c>'s own comment says it: <i>"Every set*/current*
-/// pair here must be COMPLETE. Five partners were missing until 2026-08-19 —
-/// <c>currentcolorscreen</c>, <c>currentcolortransfer</c>, <c>currentsmoothness</c>,
-/// <c>currentcachelimit</c> and <c>currentvmthreshold</c> — while their set* halves were all
-/// present, which is the one asymmetry that reads as an oversight rather than a decision."</i></para>
+/// <para><b>The invariant is the source's own</b>: <c>PsSystemDict.RegisterKnownUnimplemented</c>
+/// says every set*/current* pair it registers must be complete — a set* half without its current*
+/// is the one asymmetry that reads as an oversight rather than a decision.</para>
 ///
-/// <para><b>Those five were then covered by a hand-written list of names</b> — one
-/// <c>[InlineData]</c> row apiece in <c>MissingSystemNameTests</c>. That pins the five that were
-/// found; it cannot notice a sixth. This test asks the question the comment actually poses, over the
-/// registered names themselves, so a new <c>set*</c> with no readback fails the build the day it is
-/// added rather than the day a real file trips over it.</para>
+/// <para><b>A hand-written list of names</b> — one <c>[InlineData]</c> row apiece in
+/// <c>MissingSystemNameTests</c> — pins the names it lists and cannot notice another. This test asks
+/// the question over the registered names themselves, so a new <c>set*</c> with no readback fails
+/// the build the day it is added rather than the day a real file trips over it.</para>
 ///
 /// <para><b>Why a missing half is expensive out of proportion to its size.</b> A program that sets a
 /// parameter and reads it back is doing the most ordinary thing there is — and an unrecognised name

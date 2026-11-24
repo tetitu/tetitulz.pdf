@@ -20,34 +20,27 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// </summary>
 /// <remarks>
 /// <para><b>Security.</b> The padding lies inside the <c>/ByteRange</c> gap, which is by
-/// construction <b>not covered by the signature</b>. The only bound on that gap today is a coarse
-/// whole-hole comparison in <c>PdfSignatureVerifier</c>, which measures the hole against the
-/// <i>padded</i> length and so says nothing about the bytes after the signature object.</para>
+/// construction <b>not covered by the signature</b>. What the gap holds is read
+/// (<c>SignedByteRanges.GapHoldsOnlyContents</c>), and a non-zero padding is reported
+/// (<c>SignatureVerificationResult.HasNonZeroContentsPadding</c>).</para>
 ///
-/// <para><b>Compatibility — this is what the BouncyCastle 2.7.0 blocker turned out to be.</b> That
-/// upgrade took the Signing suite from 361/0 to 308/53, dominated by
-/// <c>CmsException: Exception reading content</c> across signing, document timestamps,
-/// counter-signatures and LTV refresh. Those four areas are exactly the four consumers of
-/// <c>PdfString.RawBytes</c>, and every one handed the <b>padded</b> array to the CMS parser:
-/// 2.6.2 ignores a trailing region and 2.7.0 refuses it. With
-/// <c>SigningDefaults.TrimToAsn1Object</c> at all four the same run is 365/1, and the one is a
-/// characterisation test elsewhere in this suite.</para>
+/// <para><b>Compatibility.</b> The four consumers of <c>PdfString.RawBytes</c> — signing, document
+/// timestamps, counter-signatures and LTV refresh — hand the CMS parser <c>/Contents</c> through
+/// <c>SigningDefaults.TrimToAsn1Object</c>, never the <b>padded</b> array: BouncyCastle 2.6.2
+/// ignores a trailing region and 2.7.0 refuses it with <c>CmsException: Exception reading
+/// content</c>.</para>
 ///
-/// <para><b>The encoding is DER, and it was BER with an indefinite length until 2026-09-21.</b>
-/// That detail used to carry this whole question: the second byte of <c>/Contents</c> was
-/// <c>0x80</c>, the object's total length was not in its header, and it ended at end-of-contents
-/// octets — <c>00 00</c>, indistinguishable from the padding that followed. ISO 32000-2 §12.8.3.3.1
-/// requires DER, so <c>CmsSignatureGenerator.EncodeForContents</c> now writes it and the length
-/// <i>is</i> in the header.</para>
+/// <para><b>The encoding is DER</b> (ISO 32000-2 §12.8.3.3.1;
+/// <c>CmsSignatureGenerator.EncodeForContents</c>), so the length <i>is</i> in the header. BER with
+/// an indefinite length would put <c>0x80</c> in <c>/Contents</c>' second byte and end the object at
+/// end-of-contents octets — <c>00 00</c>, indistinguishable from the padding that follows.</para>
 ///
-/// <para><b>What did not change is that a trim helper must not scan for zeros.</b> The reasoning
-/// simply moved: the object no longer ends in a terminator, but the signature is an OCTET STRING of
+/// <para><b>A trim helper must not scan for zeros.</b> The signature is an OCTET STRING of
 /// essentially random bytes, so its own last byte is zero about one time in 256 — and nothing
 /// separates those zeros from the reserve's. <c>SigningDefaults.TrimToAsn1Object</c> reads the
-/// object either way. **A trim helper also cannot read a length off the header**, which the first
-/// version of these tests tried; that is now true for a different reason (a DER length is there, but
-/// reading it by hand re-implements an ASN.1 reader badly) and it was caught by asserting
-/// <c>lengthOfLength</c> in 1..4.</para>
+/// object. <b>Nor may it read a length off the header by hand</b>: a DER length is there, but
+/// reading it by hand re-implements an ASN.1 reader badly — which asserting <c>lengthOfLength</c>
+/// in 1..4 catches.</para>
 ///
 /// <para><b>These read raw bytes on purpose.</b> <c>PdfSigner</c> writes the signature dictionary
 /// as raw bytes and the padding is not a modelled value, so a test going through the object reader
@@ -93,13 +86,12 @@ public sealed class SignatureContentsPaddingTests
     /// <i>padded</i> array parses is version-dependent, and that is the whole reason the trim
     /// exists: measured under both, BouncyCastle 2.6.2 ignores the trailing region while 2.7.0
     /// refuses it with <c>CmsException: Exception reading content</c> wrapping
-    /// <c>IOException: extra data found after object</c>. An earlier version of this test asserted
-    /// the 2.6.2 side and so was designed to redden on the upgrade; once the trim landed that had
-    /// become a test pinning the problem rather than the fix.</para>
+    /// <c>IOException: extra data found after object</c>. A test of the padded array would pin one
+    /// version's side of that, not the trim.</para>
     /// <para><b>The security half of the observation stands either way.</b> A parser that ignores
-    /// the tail is precisely why anything parked in it — and it is inside the <c>/ByteRange</c>
-    /// gap, so it is unsigned — was invisible to every verdict this library produced. That is
-    /// now reported: <c>SignatureVerificationResult.HasNonZeroContentsPadding</c> carries the fact
+    /// the tail would leave anything parked in it — inside the <c>/ByteRange</c> gap, so unsigned —
+    /// invisible to every verdict. It is reported:
+    /// <c>SignatureVerificationResult.HasNonZeroContentsPadding</c> carries the fact
     /// unconditionally and <c>SignatureVerificationOptions.RejectNonZeroContentsPadding</c> turns
     /// it into a validation error, with <c>ContentsPaddingPolicyTests</c> holding that behaviour.
     /// These tests stay about the trim itself.</para>

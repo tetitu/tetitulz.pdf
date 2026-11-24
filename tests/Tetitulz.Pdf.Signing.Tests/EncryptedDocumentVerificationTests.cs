@@ -44,7 +44,7 @@ public sealed class EncryptedDocumentVerificationTests
     }
 
     /// <summary>
-    /// The control, and the half that stops the fix from becoming noise: an ordinary unsigned
+    /// The control, and the half that stops the diagnostic from becoming noise: an ordinary unsigned
     /// document must still report <c>null</c>. "No signatures" is the truth there, and a
     /// diagnostic on every unsigned file would train a caller to ignore the slot.
     /// </summary>

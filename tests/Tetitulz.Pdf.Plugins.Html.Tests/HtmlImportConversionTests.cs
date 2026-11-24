@@ -13,16 +13,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.Html.Tests;
 
 /// <summary>
-/// <see cref="HtmlImportPlugin"/>'s <b>conversion</b>, which used to be recorded as deliberately
-/// untestable.
+/// <see cref="HtmlImportPlugin"/>'s <b>conversion</b>.
 ///
-/// <para><b>The reason for that stopped being true.</b> Both this suite's own doc comments and
-/// GAPS.md said import "goes through Playwright's headless browser by design", which resolves one
-/// pinned build — so a skip condition would be unreliable and a test could essentially never turn
-/// green. But <c>HtmlToPdfOptions.RenderEngine</c> defaults to <c>Managed</c>, and this plugin
-/// never sets it: its default path is pure-managed, in-process, needs no browser and no network,
-/// and is perfectly testable. What the note protected was real when it was written; it outlived the
-/// fact it rested on, and left the plugin's actual shipping default with no coverage at all.</para>
+/// <para><b>It is testable in process.</b> <c>HtmlToPdfOptions.RenderEngine</c> defaults to
+/// <c>Managed</c>, and this plugin never sets it: its default path is pure-managed, in-process,
+/// needs no browser and no network.</para>
 ///
 /// <para><b>What is asserted is what the plugin itself contributes</b>, not what
 /// <c>HtmlToPdf.Tests</c> already covers: it decodes the source stream as UTF-8, it hands the

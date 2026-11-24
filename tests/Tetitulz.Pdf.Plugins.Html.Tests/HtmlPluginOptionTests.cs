@@ -152,8 +152,7 @@ public class HtmlPluginOptionTests
     // ────────────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// The important half. A mistyped key used to be indistinguishable from an honoured one, which
-    /// is why silence is not an option here.
+    /// The important half. Silent, a mistyped key would be indistinguishable from an honoured one.
     /// </summary>
     [Fact]
     public void Export_refuses_an_unrecognised_key_and_names_it()

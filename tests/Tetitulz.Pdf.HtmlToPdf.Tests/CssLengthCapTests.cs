@@ -13,12 +13,12 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 /// falls back before the pattern runs.
 /// </summary>
 /// <remarks>
-/// <para>The length pattern used to read its number as <c>\d*\.?\d+</c>. With the dot optional,
-/// the two digit runs split a long digit string every way there is once the unit fails to match,
-/// which is quadratic in the string: a style attribute of a megabyte of digits and a stray letter
-/// would have cost a million-squared steps. The pattern is now one way only, and a value past the
-/// cap is refused by its length alone — the cap is what this test can see, so it is what it
-/// asserts, against the same value one character shorter, which is read.</para>
+/// <para>A number read as <c>\d*\.?\d+</c> would split a long digit string every way there is
+/// once the unit fails to match — with the dot optional, the two digit runs overlap — which is
+/// quadratic in the string: a style attribute of a megabyte of digits and a stray letter would
+/// cost a million-squared steps. The pattern is one way only, and a value past the cap is
+/// refused by its length alone — the cap is what this test can see, so it is what it asserts,
+/// against the same value one character shorter, which is read.</para>
 /// </remarks>
 public class CssLengthCapTests
 {

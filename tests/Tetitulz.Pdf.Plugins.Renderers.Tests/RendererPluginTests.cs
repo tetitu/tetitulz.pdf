@@ -106,43 +106,15 @@ public class RendererPluginTests
     }
 
     /// <summary>
-    /// <b>Regression guard.</b> Every registered <see cref="IRendererPlugin"/> must return PNG,
-    /// because that is the contract of the path it is dispatched from —
-    /// <c>PdfPageRenderer.RenderPage</c> is documented "renders one page to PNG bytes", and
-    /// <c>PdfPluginHost</c>'s own table says an <c>IRendererPlugin</c> "replaces the built-in
-    /// renderer on the PNG paths".
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This exists because a <c>SvgRendererPlugin</c> used to live beside the raster one, returning
-    /// SVG markup from <c>RenderPage</c> with <c>Priority = 5</c> against the raster plugin's
-    /// <c>1</c> and a <c>CanRender</c> that accepted every page. <c>FindRendererPlugin</c> sorts
-    /// descending, so it won — and any host that referenced this package and called
-    /// <c>RegisterFromLoadedAssemblies()</c> silently got <c>&lt;?xml … &lt;svg&gt;</c> back from
-    /// <c>PdfOperations.RenderPageToPng</c>. It was removed on 2026-08-12; SVG is produced through
-    /// the contract that is actually shaped for it, <c>Plugins.Svg.SvgExportPlugin</c>
-    /// (<c>IExportPlugin</c>, <c>FormatKey "svg"</c>), or directly via the public
-    /// <c>Base.Rendering.PdfSvgRenderer</c>.
-    /// </para>
-    /// <para>
-    /// The test that should have caught it asserted <c>raster &lt; svg</c> under the name
-    /// <c>…_WithRasterPreferred</c> — which, given the descending sort, proved the opposite of its
-    /// own name and passed for its whole life. Asserting on the <b>bytes that come back</b> rather
-    /// than on the priority numbers is what makes this one unable to lie.
-    /// </para>
-    /// </remarks>
-    /// <summary>
     /// <b>Regression guard.</b> The plugin must be exercised the way it is actually used —
     /// <i>registered</i>, then reached through the ordinary PNG entry point.
     /// </summary>
     /// <remarks>
-    /// Until 2026-08-12 <see cref="SkiaSharpRendererPlugin"/> delegated to
-    /// <c>PdfPageRenderer.RenderPage</c>, which is the entry point that dispatches to it: registering
-    /// it and rendering recursed until the stack overflowed, killing the process. Every existing
-    /// test called <c>plugin.RenderPage(...)</c> <b>directly</b> with nothing registered, where
-    /// dispatch finds no plugin and the built-in renders normally — so the plugin had never once
-    /// been run the way a host runs it. It now delegates to
-    /// <c>PdfPageRenderer.RenderPageWithoutPlugins</c>. GAPS.md §15e.
+    /// <see cref="SkiaSharpRendererPlugin"/> delegates to <c>PdfPageRenderer.RenderPageWithoutPlugins</c>:
+    /// delegating to <c>PdfPageRenderer.RenderPage</c>, the entry point that dispatches to it, would
+    /// recurse until the stack overflowed once the plugin is registered, killing the process. A test
+    /// that calls <c>plugin.RenderPage(...)</c> <b>directly</b> with nothing registered cannot see
+    /// that, since dispatch then finds no plugin and the built-in renders normally.
     /// </remarks>
     [Fact]
     public void RegisteredPlugin_RendersThroughThePngPath_WithoutRecursing()
@@ -173,6 +145,28 @@ public class RendererPluginTests
         }
     }
 
+    /// <summary>
+    /// <b>Regression guard.</b> The PNG path returns PNG, the contract every registered
+    /// <see cref="IRendererPlugin"/> must keep too — <c>PdfPageRenderer.RenderPage</c> is documented
+    /// "renders one page to PNG bytes", and <c>PdfPluginHost</c>'s own table says an
+    /// <c>IRendererPlugin</c> "replaces the built-in renderer on the PNG paths".
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A renderer plugin returning SVG markup from <c>RenderPage</c> with a higher <c>Priority</c> and
+    /// a <c>CanRender</c> that accepted every page would win <c>FindRendererPlugin</c>'s descending
+    /// sort, and any host that referenced its package and called
+    /// <c>RegisterFromLoadedAssemblies()</c> would silently get <c>&lt;?xml … &lt;svg&gt;</c> back from
+    /// <c>PdfOperations.RenderPageToPng</c>. SVG is produced through the contract shaped for it,
+    /// <c>Plugins.Svg.SvgExportPlugin</c> (<c>IExportPlugin</c>, <c>FormatKey "svg"</c>), or directly
+    /// via the public <c>Base.Rendering.PdfSvgRenderer</c>.
+    /// </para>
+    /// <para>
+    /// Asserting on the <b>bytes that come back</b> rather than on priority numbers is what makes
+    /// these tests unable to lie: given the descending sort, <c>raster &lt; svg</c> under a name
+    /// promising the raster one is preferred proves the opposite of its name.
+    /// </para>
+    /// </remarks>
     [Fact]
     public void ThePngPath_ReturnsPng_WhenNoRendererPluginIsRegistered()
     {

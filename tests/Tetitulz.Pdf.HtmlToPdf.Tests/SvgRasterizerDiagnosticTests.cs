@@ -14,9 +14,9 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 {
     /// <summary>
     /// When the opt-in <see cref="HtmlToPdfOptions.SvgRasterizer"/> throws (a malformed SVG — an unclosed
-    /// tag, a DOCTYPE the hardened reader refuses) or returns nothing, the SVG used to be dropped from the
-    /// PDF with nothing on <c>OnDiagnostic</c> — the <c>catch { data = null; }</c> swallowed it. It is now
-    /// reported as <see cref="BuilderDiagnosticKind.ImageDecodeFailed"/> (2026-10-23).
+    /// tag, a DOCTYPE the hardened reader refuses) or returns nothing, the SVG is dropped from the PDF and
+    /// reported as <see cref="BuilderDiagnosticKind.ImageDecodeFailed"/>, not swallowed with nothing on
+    /// <c>OnDiagnostic</c>.
     /// </summary>
     public class SvgRasterizerDiagnosticTests
     {

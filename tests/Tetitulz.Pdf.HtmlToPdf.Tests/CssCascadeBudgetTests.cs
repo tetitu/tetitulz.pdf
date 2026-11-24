@@ -114,8 +114,8 @@ public class CssCascadeBudgetTests
         var worker = new Thread(() => model = Model(html, reports), 32 * 1024 * 1024) { IsBackground = true };
         worker.Start();
         // Ten minutes, not one: the evidence of the gate is CostReported below, and the join only
-        // tells a hang from a slow run. Under coverage instrumentation beside 27 other assemblies
-        // the gated conversion itself passed 60 s on 2026-10-24; an ungated one never returns.
+        // tells a hang from a slow run. Under coverage instrumentation beside the other assemblies
+        // the gated conversion itself can pass 60 s; an ungated one never returns.
         bool finished = worker.Join(TimeSpan.FromMinutes(10));
 
         Assert.True(finished, "the cascade did not finish within 10 minutes: the selector matched unbounded");

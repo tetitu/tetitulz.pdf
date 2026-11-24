@@ -231,10 +231,9 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// embedded.
         /// </summary>
         /// <remarks>
-        /// <para><b>The claim moved, so the test did.</b> It used to assert that the <c>wOF2</c>
-        /// signature was itself the refusal; now the signature routes the bytes to the decoder,
-        /// which refuses them because they are not a WOFF 2.0 container. What must not change is the
-        /// outcome for the caller: a diagnostic, and no <c>/FontFile2</c>. A malformed web font that
+        /// <para>The <c>wOF2</c> signature routes the bytes to the decoder, which refuses them because
+        /// they are not a WOFF 2.0 container. What the caller sees is a diagnostic, and no
+        /// <c>/FontFile2</c>. A malformed web font that
         /// is silently ignored is indistinguishable from one that loaded — the caller sees a
         /// fallback face with nothing to explain it.</para>
         ///
@@ -271,9 +270,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
             o.BasePath = dir.Path;
 
             // The first entry names a file that does not exist, so it is declined and the
-            // truetype entry after it must still be used. It is spelled .woff2 because that
-            // used to be the reason it was declined; the reason is now the missing file, and
-            // the fall-through this asserts is the same either way.
+            // truetype entry after it must still be used. Its .woff2 spelling does not matter:
+            // the missing file is the reason, and the fall-through is the same either way.
             string raw = Raw(ToPdf(
                 "<style>@font-face{font-family:'MyHebrew';" +
                 "src:url(h.woff2) format('woff2'), url(hebrew.ttf) format('truetype')}" +
@@ -289,8 +287,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// browser passes over a format it does not support.
         /// </summary>
         /// <remarks>
-        /// It used to be returned because it could be <i>read</i>, so the TTF after it was never
-        /// reached and every Bootstrap 3 icon fell back to a host font.
+        /// Taken because it can be <i>read</i>, it would hide the TTF after it, and every Bootstrap 3
+        /// icon would fall back to a host font.
         /// </remarks>
         [Fact]
         public void FontFace_PassesOverASourceThatIsNotAFont()

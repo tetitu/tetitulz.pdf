@@ -18,17 +18,16 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// order the chain arrives in.
 /// </summary>
 /// <remarks>
-/// <para><c>DssBuilder</c> took the chain's list order as the certification path, pairing each
-/// certificate with the next one as its issuer. <c>PdfLtvRefresher</c> hands it the certificates a
-/// signature's CMS carried, and a CMS certificate set is a SET OF — DER sorts it by encoding — so with
-/// an intermediate in the chain the leaf was asked about under the root and the root under the
-/// intermediate. An external signer returning its chain in any other order did the same through
+/// <para>The chain's list order is not the certification path: <c>PdfLtvRefresher</c> hands
+/// <c>DssBuilder</c> the certificates a signature's CMS carried, and a CMS certificate set is a SET
+/// OF — DER sorts it by encoding — so pairing each certificate with the next one as its issuer would,
+/// with an intermediate in the chain, ask about the leaf under the root and the root under the
+/// intermediate. An external signer returning its chain in any other order would do the same through
 /// <c>PdfSigner</c>. A responder answers such a request with "unknown" or nothing.</para>
 ///
 /// <para><b>No network.</b> These certificates name no OCSP responder and no CRL distribution point,
 /// so every link yields a warning naming it and its issuer — which is what makes the walk's pairs
-/// observable. Since 2026-10-21 the synchronous and asynchronous entries run one walk; until then the
-/// asynchronous copy's warnings named the subject only.</para>
+/// observable. The synchronous and asynchronous entries run one walk.</para>
 /// </remarks>
 public sealed class DssChainOrderTests
 {

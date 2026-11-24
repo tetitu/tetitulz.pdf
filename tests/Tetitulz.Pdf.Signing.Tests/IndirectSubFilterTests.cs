@@ -112,7 +112,7 @@ public sealed class IndirectSubFilterTests
     }
 
     /// <summary>
-    /// The floor. A sub-filter that really is unsupported must still be reported as such — the fix
+    /// The floor. A sub-filter that really is unsupported must still be reported as such — the reader
     /// resolves the value, it does not stop checking it. Without this, the assertions above would
     /// be satisfied by deleting the ladder.
     /// </summary>

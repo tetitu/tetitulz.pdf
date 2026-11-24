@@ -23,7 +23,7 @@ public sealed class SignerCatalogAndFieldNameTests
 {
     /// <summary>
     /// Certifying a document that already carries a catalog <c>/Perms</c> — a Reader-extended
-    /// (usage-rights) file, or one certified by another tool — used to emit the key twice.
+    /// (usage-rights) file, or one certified by another tool — emits the key once.
     /// §7.3.7 leaves a duplicate key undefined, so readers differ on which wins and the DocMDP the
     /// signer meant to certify with may be the one discarded.
     /// </summary>

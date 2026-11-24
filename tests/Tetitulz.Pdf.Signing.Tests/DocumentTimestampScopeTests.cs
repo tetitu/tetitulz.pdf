@@ -79,8 +79,8 @@ public sealed class DocumentTimestampScopeTests
     }
 
     /// <summary>
-    /// The control, and the half that stops the fix from degenerating into "ignore every
-    /// timestamp": signature first, timestamp appended over it. The certificate here has since
+    /// The control, and the half that stops the rule from degenerating into "ignore every
+    /// timestamp": signature first, timestamp appended over it. The certificate here has
     /// expired, so only a timestamp that really covers the signature can produce a
     /// <c>Trusted</c> chain.
     /// </summary>

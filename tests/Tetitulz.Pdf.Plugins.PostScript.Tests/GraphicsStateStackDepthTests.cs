@@ -123,14 +123,13 @@ public sealed class GraphicsStateStackDepthTests
         Assert.True(log.Any("graphics-state stack"),
             "the diagnostic should name what overflowed. Reported: " + string.Join(" | ", log.Messages));
 
-        // Exactly one `q` per level the cap allows, and not one more: pre-fix the engine kept
-        // cloning past this and only the emitter's own guard stopped the output at one level
-        // deeper.
+        // Exactly one `q` per level the cap allows, and not one more: an engine that kept cloning
+        // past this would be stopped only by the emitter's own guard, one level deeper.
         Assert.Equal(MaxGSaveLevels, ContentStreamAssert.Count(result.Content, "q"));
 
-        // The diagnostics must not themselves become the attack. Pre-fix this program produced
-        // one emitter report per iteration — hundreds of thousands of composed messages and
-        // OnEvent invocations from a 14-byte program.
+        // The diagnostics must not themselves become the attack. One emitter report per iteration
+        // would be hundreds of thousands of composed messages and OnEvent invocations from a
+        // 14-byte program.
         Assert.InRange(result.DiagnosticCount, 1, 8);
     }
 

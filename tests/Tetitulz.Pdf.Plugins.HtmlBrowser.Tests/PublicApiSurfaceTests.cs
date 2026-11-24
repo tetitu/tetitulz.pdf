@@ -11,15 +11,13 @@ namespace Tetitulz.Pdf.Plugins.HtmlBrowser.Tests;
 /// <summary>
 /// Pins <c>Tetitulz.Pdf.Plugins.HtmlBrowser</c>'s exported surface against <c>tests/ApiSnapshots</c>.
 ///
-/// <para><b>This file exists because the baseline did, and nothing read it.</b> The repo-shape guard
+/// <para><b>A baseline needs a comparison.</b> The repo-shape guard
 /// (<c>ApiBaselineCoverageTests</c>) asserts that every packable project <i>has</i> a baseline file,
 /// which is not the same as asserting that anything <i>compares</i> against it — and the difference
-/// is invisible, because a baseline nothing reads is byte-identical to one that passes. Five
-/// projects had the file and no comparison: the four core-ring assemblies and this one.</para>
+/// is invisible, because a baseline nothing reads is byte-identical to one that passes.</para>
 ///
-/// <para>This plugin is the smallest of the five and the one whose surface matters least on its own
-/// — but it is the reason the coverage guard now demands a comparison rather than a file. A rule
-/// with four exceptions is a rule; a rule with five is a habit.</para>
+/// <para>This plugin's surface matters little on its own, but the coverage guard demands a
+/// comparison for every package rather than a file: a rule with exceptions becomes a habit.</para>
 ///
 /// <para>A failure is not automatically a bug — an intended API change fails here once, and the fix
 /// is to accept the regenerated <c>.actual</c> file <i>in the same commit</i>, which turns the diff

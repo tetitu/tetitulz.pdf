@@ -69,9 +69,9 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// The pattern almost every real Hebrew page uses: a wrapper element carries
         /// <c>dir="rtl"</c> and the paragraphs inside inherit it.
         ///
-        /// <para>Direction used to be read off the paragraph element alone, so this rendered
-        /// left-to-right — the single most impactful RTL defect, because it made the feature look
-        /// broken on markup that is correct.</para>
+        /// <para>Read off the paragraph element alone, the direction would render this left-to-right —
+        /// the single most impactful RTL defect, because it makes the feature look broken on markup
+        /// that is correct.</para>
         /// </summary>
         [Fact]
         public void DirRtl_OnAnAncestorDiv_IsInherited()
@@ -253,7 +253,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         public void InheritedRtl_MirrorsTableColumns()
         {
             // A table inside dir="rtl" mirrors its columns even though the document as a whole is
-            // LTR: RtlColumns used to come from the SECTION alone, so this did nothing.
+            // LTR: taken from the SECTION alone, RtlColumns would do nothing here.
             string rtl = Content(
                 "<div dir=\"rtl\"><table><tr><td>abc</td><td>def</td></tr></table></div>");
             string ltr = Content("<table><tr><td>abc</td><td>def</td></tr></table>");

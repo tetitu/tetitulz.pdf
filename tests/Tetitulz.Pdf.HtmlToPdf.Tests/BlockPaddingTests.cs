@@ -14,10 +14,10 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// text a padding in from it.
     /// </summary>
     /// <remarks>
-    /// <para>The box used to be drawn a fixed 2pt from the text, so the padding — already in the
-    /// text's indent — landed outside it: a <c>padding: 8px</c> notes box had its text against the
-    /// border and its last line on the bottom edge, and the border stood 8px in from its column.</para>
-    /// <para>The geometry is CSS's exactly since the Bootstrap comparison: the border's band lies
+    /// <para>A box drawn a fixed 2pt from the text would put the padding — already in the text's
+    /// indent — outside it: a <c>padding: 8px</c> notes box would have its text against the border
+    /// and its last line on the bottom edge, and the border would stand 8px in from its column.</para>
+    /// <para>The geometry is CSS's exactly: the border's band lies
     /// between the margin and the padding (a 1px border is stroked 0.375pt in from the margin edge,
     /// along its middle), the text starts past border and padding, and no padding is no gap — the
     /// 2pt floor a Word paragraph border keeps is not an HTML box's.</para>

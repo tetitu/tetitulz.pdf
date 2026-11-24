@@ -161,8 +161,8 @@ public class PageBreakTests
     private const string Boxed = "border:1px solid #000;padding:6px;";
 
     /// <summary>
-    /// A bordered block is one box, kept as a box (2026-10-19): <c>break-inside: avoid</c> moves it whole — the
-    /// exporter measuring its content, where a box was judged by its stated least height alone, which it has none of.
+    /// A bordered block is one box, kept as a box: <c>break-inside: avoid</c> moves it whole — the exporter
+    /// measuring its content, since a stated least height, which it has none of, says nothing.
     /// </summary>
     [Fact]
     public void BreakInsideAvoid_OnABox_MovesItWhole()

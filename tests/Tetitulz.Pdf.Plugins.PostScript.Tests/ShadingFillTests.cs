@@ -14,8 +14,8 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 /// <summary>
 /// <c>shfill</c> (PLRM §4.9.3) as PDF's <c>sh</c>: the shading dictionary carried key for key, its
 /// function dictionaries with it, a mesh given as numbers packed, a separation written as one with its
-/// tint transform sampled. <c>shfill</c> used to be an arity-table entry that consumed the dictionary
-/// and painted nothing — every Illustrator gradient came out blank.
+/// tint transform sampled — not consumed and painted as nothing, which would leave every Illustrator
+/// gradient blank.
 /// </summary>
 public sealed class ShadingFillTests
 {

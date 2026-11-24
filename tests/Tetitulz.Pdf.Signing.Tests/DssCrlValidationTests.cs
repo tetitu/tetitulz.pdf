@@ -250,9 +250,8 @@ public class DssCrlValidationTests
     /// <remarks>
     /// This is the control against copying <c>IsOcspResponseCurrent</c>'s seven-day cap onto CRLs:
     /// the <c>thisUpdate</c> here is three hundred days old, which the OCSP rule refuses outright.
-    /// It was 365 days until 2026-10-20 — exactly the verifier's default cap, so the CRL this test
-    /// embedded was one default verification read as unknown (GAPS.md §1); the test after it pins
-    /// the refusal past the cap.
+    /// It is inside the verifier's default 365-day cap, so the CRL this test embeds is one default
+    /// verification reads; the test after it pins the refusal past the cap.
     /// </remarks>
     [Fact]
     public void ACrlWithNoNextUpdateWithinTheVerifiersCapIsEmbeddedWithAWarning()
@@ -350,11 +349,10 @@ public class DssCrlValidationTests
 
     /// <summary>
     /// <c>TryBuildDss</c> and <c>TryBuildDssAsync</c> run one chain walk, <c>WalkRevocationPath</c>,
-    /// and that walk passes a fetched CRL through the filter. Until 2026-10-21 they were two
-    /// <b>copies</b>, and this guard checked each copy's call site separately, because a gate added to one
-    /// and not the other let the async signing path embed what the sync path refused — this repo's
-    /// most-repeated defect class. The guard now checks that the copy does not come back: one walk
-    /// fetches a CRL, it gates what it fetched, and both entries run it.
+    /// and that walk passes a fetched CRL through the filter. Two <b>copies</b> would let a gate added to
+    /// one and not the other make the async signing path embed what the sync path refuses — this repo's
+    /// most-repeated defect class. The guard checks that no copy comes back: one walk fetches a CRL, it
+    /// gates what it fetched, and both entries run it.
     /// </summary>
     /// <remarks>
     /// A source scan, because the walk is unreachable offline: it begins by downloading from a URL

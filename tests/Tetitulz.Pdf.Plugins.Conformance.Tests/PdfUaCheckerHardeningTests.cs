@@ -151,7 +151,7 @@ public class PdfUaCheckerHardeningTests
     /// Every element is visited exactly once (the visited set works), but each visit iterates the
     /// whole N-entry array and resolves twice per entry, so the walk costs N² operations while a
     /// per-node counter moves only N times. At N = 600 that is ~360 000 edges against a 200 000
-    /// ceiling: the guard must fire, and before the fix it could not.
+    /// ceiling: the guard must fire, which a per-node counter cannot.
     /// </summary>
     private static byte[] BuildSharedKidArrayStructTree(int n)
     {
@@ -182,9 +182,9 @@ public class PdfUaCheckerHardeningTests
 
         Assert.NotNull(result);
 
-        // The assertion that fails without the fix: with the budget spent per node the counter
-        // moved 601 times against a 200 000 ceiling, so it never fired and no diagnostic was left
-        // — the checker quietly did 360 000 edge expansions and called the result complete.
+        // The assertion a per-node budget fails: its counter moves 601 times against a 200 000
+        // ceiling, so it never fires and leaves no diagnostic — the checker would quietly do
+        // 360 000 edge expansions and call the result complete.
         Assert.False(string.IsNullOrEmpty(diagnostic),
             "the structure-tree budget never fired on a graph with 360 000 edges.");
         Assert.Contains("structure-tree traversal stopped", diagnostic, StringComparison.Ordinal);
@@ -276,7 +276,7 @@ public class PdfUaCheckerHardeningTests
     /// N pages, each with its own (distinct, so un-deduplicated) <c>/Resources</c>, all naming one
     /// <c>/XObject</c> dictionary of N Form entries. The visited set bounds how many resource
     /// dictionaries are expanded and does nothing about the N entries each expansion probes, so
-    /// this is N² resolves behind a depth cap of 32 and — before the fix — no ceiling whatsoever.
+    /// this is N² resolves behind a depth cap of 32 — bounded only by the budget's ceiling.
     /// </summary>
     private static byte[] BuildSharedXObjectResourceGraph(int n)
     {
@@ -314,8 +314,8 @@ public class PdfUaCheckerHardeningTests
 
         Assert.NotNull(result);
 
-        // 500 × 500 = 250 000 entries against a 200 000 ceiling. Before the fix CollectFonts had
-        // no budget parameter at all, so nothing was ever reported however long it ran.
+        // 500 × 500 = 250 000 entries against a 200 000 ceiling. Without a budget, CollectFonts
+        // would report nothing however long it ran.
         Assert.False(string.IsNullOrEmpty(diagnostic),
             "the resource walk has no traversal ceiling: 250 000 entries were probed silently.");
         Assert.Contains("resource traversal stopped", diagnostic, StringComparison.Ordinal);
@@ -403,7 +403,7 @@ public class PdfUaCheckerHardeningTests
 
     /// <summary>
     /// The defect in one assertion: an encrypted document whose PDF/UA identifier is unreadable
-    /// used to come back with <b>zero</b> violations, because the one check that could have said
+    /// must not come back with <b>zero</b> violations, as it would if the one check that could say
     /// anything about it returned without recording a thing. A file carrying no confirmable
     /// pdfuaid:part must never be reported as conforming.
     /// </summary>
@@ -474,9 +474,9 @@ public class PdfUaCheckerHardeningTests
                 + "/K << /Pg 3 0 R /Obj 4 0 R >> >>");
 
     /// <summary>
-    /// Before the fix this file produced UA29 with the strongest wording the checker owns —
-    /// "no element in this tree is connected to any page content" — against a &lt;P&gt; that owns
-    /// MCID 0 and a &lt;Link&gt; that owns the page's only annotation.
+    /// UA29's strongest wording — "no element in this tree is connected to any page content" — must
+    /// not be reported against a &lt;P&gt; that owns MCID 0 and a &lt;Link&gt; that owns the page's
+    /// only annotation.
     /// </summary>
     [Fact]
     public void Validate_TypelessMarkedContentReference_IsNotReportedAsUnconnected()

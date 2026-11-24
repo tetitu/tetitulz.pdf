@@ -57,9 +57,9 @@ public sealed class ScanReuseTests
 
     /// <summary>
     /// The PDF/UA-1 checker's painted fonts (UA21) and painted codes (UA57) walk every page through
-    /// the same scan; until 2026-10-21 it opened no scope, so each walked and parsed every page
-    /// again (72.5 MB a validation of a thousand-page text document, 57.0 MB with the scope). The
-    /// same evidence as the PDF/A and PDF/X validators', with the same empty-scope control.
+    /// the same scan under one scope; without it each would walk and parse every page again
+    /// (72.5 MB a validation of a thousand-page text document, 57.0 MB with the scope). The same
+    /// evidence as the PDF/A and PDF/X validators', with the same empty-scope control.
     /// </summary>
     [Fact]
     public void The_pdfua_checker_opens_a_scope_of_its_own()
@@ -199,8 +199,8 @@ public sealed class ScanReuseTests
     /// <summary>
     /// PDF/UA's marked-content walk (UA02 on every page, UA50 on a tagged one) parses a page's own
     /// content through <see cref="ScanReuse.ParseAndKeep"/>, and the font walks' scans of the same
-    /// decoded array reuse it — until 2026-10-21 that walk parsed every page again for each of its
-    /// runs. The control is the same document with each <c>/Contents</c> a one-element array, which
+    /// decoded array reuse it rather than parse every page again for each run. The control is the
+    /// same document with each <c>/Contents</c> a one-element array, which
     /// the walk concatenates afresh on every run and so does not keep: the difference is one hit a page.
     /// </summary>
     [Fact]

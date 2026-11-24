@@ -15,8 +15,8 @@ namespace Tetitulz.Pdf.Plugins.Templating.Tests;
 /// Tokens drawn inside a Form XObject.
 ///
 /// <para>Real templates put body content in a form more often than not — design tools emit one, and
-/// so does anything that reuses a letterhead. A token there used to be invisible to the engine and
-/// its key came back in <c>UnmatchedKeys</c>, which reads as "you mistyped the key" and sends the
+/// so does anything that reuses a letterhead. Were a token there invisible to the engine, its key
+/// would come back in <c>UnmatchedKeys</c>, which reads as "you mistyped the key" and sends the
 /// caller looking in exactly the wrong place.</para>
 ///
 /// <para>The interesting asymmetry: <b>erasure happens in whichever stream holds the placeholder,

@@ -12,9 +12,9 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
 /// What <c>gsave</c> keeps and <c>grestore</c> puts back (PLRM §4.2): the current path, its current
-/// point, and the font. All three survived <c>grestore</c> until 2026-10-19 — the reference renderer's
-/// alphabet.ps, which measures a letter at 50 points inside <c>gsave … grestore</c> and shows each
-/// line inside another, drew every line at 50 points, each one starting where the last ended.
+/// point, and the font. Were they to survive <c>grestore</c>, the reference renderer's alphabet.ps,
+/// which measures a letter at 50 points inside <c>gsave … grestore</c> and shows each line inside
+/// another, would draw every line at 50 points, each one starting where the last ended.
 /// </summary>
 public sealed class GraphicsStateScopeTests
 {

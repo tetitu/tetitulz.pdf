@@ -11,24 +11,23 @@ using Xunit;
 namespace Tetitulz.Pdf.Encryption.Tests;
 
 /// <summary>
-/// How often the two readings of the Algorithm 2.B termination predicate part company — the
-/// measurement that made the question worth answering, kept now that it has been answered.
+/// How often the two readings of the Algorithm 2.B termination predicate part company.
 /// </summary>
 /// <remarks>
-/// <para><b>The question is settled, and this file no longer holds it open.</b>
+/// <para><b>Which reading is right is settled elsewhere.</b>
 /// <see cref="HashR6ExternalVectorTests"/> settles it with six R6 files from two independent
-/// producers, and the answer was that this library was wrong: it stopped once the last byte of
-/// <c>E</c> was at most <c>i - 32</c> with <c>i</c> zero-based, where an independent checker, an independent implementation, another reader and another library
-/// stop at <c>i - 31</c> — the same condition read against the <i>round number</i>, which is
-/// <c>i + 1</c>. <c>HashR6TerminationOffset</c> is now 31 and
-/// <c>HashR6SupersededTerminationOffset</c> is what it used to be.</para>
+/// producers: the loop stops once the last byte of <c>E</c> is at most <c>i - 31</c> with
+/// <c>i</c> zero-based, as an independent checker, an independent implementation, another reader
+/// and another library do — the specification's round number minus 32, the round number being
+/// <c>i + 1</c>. <c>HashR6TerminationOffset</c> is 31, and
+/// <c>HashR6SupersededTerminationOffset</c> the other reading's 32.</para>
 ///
-/// <para><b>What is still worth measuring is the rate</b>, because the rate is the whole reason the
-/// defect was severe rather than academic. The two readings agree for roughly thirty-seven passwords
-/// in thirty-eight, which is why every round trip in this suite passed under the wrong constant and
-/// no test in the tree could see it. <see cref="TheTwoReadingsDisagreeOftenEnoughToMatter"/> says how
-/// often; a change that made them agree always, or differ always, would be a second change to
-/// Algorithm 2.B and this is what would notice.</para>
+/// <para><b>What is worth measuring is the rate</b>, because the rate is what makes the wrong
+/// reading severe rather than academic. The two readings agree for roughly thirty-seven passwords
+/// in thirty-eight, so a round trip through our own pair passes under either constant.
+/// <see cref="TheTwoReadingsDisagreeOftenEnoughToMatter"/> says how often; a change that made them
+/// agree always, or differ always, would be a second change to Algorithm 2.B and this is what
+/// would notice.</para>
 ///
 /// <para><b>The comparison runs through the production function</b>, with only the offset supplied,
 /// so the 64-fold <c>K1</c>, the AES-CBC and the mod-3 digest choice are shared by construction. A
@@ -218,8 +217,8 @@ public class HashR6TerminationReadingTests
     /// <see cref="TheTwoReadingsDisagreeOftenEnoughToMatter"/> starts failing for a reason that has
     /// nothing to do with the algorithm.</para>
     /// <para><b>The superseded reading is the STRICTER one</b> — <c>E[^1] &lt;= i - 32</c> is
-    /// harder to satisfy than <c>&lt;= i - 31</c>, so it ran an extra round. That is the direction
-    /// the fix went, and stating it here is what stops the pair being "corrected" back.</para>
+    /// harder to satisfy than <c>&lt;= i - 31</c>, so it can run an extra round. Stating the
+    /// direction here is what stops the pair being "corrected" back.</para>
     /// </remarks>
     [Fact]
     public void TheSupersededReadingIsExactlyOneRoundStricter()

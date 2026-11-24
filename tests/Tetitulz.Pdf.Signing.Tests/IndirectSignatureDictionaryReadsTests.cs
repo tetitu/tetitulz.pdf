@@ -21,16 +21,15 @@ namespace Tetitulz.Pdf.Signing.Tests;
 
 /// <summary>
 /// Everything a signature dictionary declares may be written as an indirect reference (§7.3.10),
-/// and until now the readers of <c>/ByteRange</c>, <c>/FT</c> and <c>/T</c> disagreed about
-/// whether they followed one.
+/// and the readers of <c>/ByteRange</c>, <c>/FT</c> and <c>/T</c> must all follow one.
 /// </summary>
 /// <remarks>
 /// <para><b>On a well-formed file every one of these readers agreed</b> — a directly-written array
 /// of four directly-written integers is what <c>PdfSigner</c> and <c>PdfDocumentTimestamper</c>
 /// emit and what every fixture in this suite carried. The separating input is an indirect value
 /// where a direct one was assumed, so each theory below runs the same assertion over all three
-/// spellings with <c>Direct</c> as the control that always worked. A test that only exercised the
-/// indirect spelling could not tell "the fix works" from "the fixture is wrong".</para>
+/// spellings with <c>Direct</c> as the control. A test that only exercised the indirect spelling
+/// could not tell "the reader works" from "the fixture is wrong".</para>
 ///
 /// <para><b>Why the byte ranges are asserted rather than the verdict.</b> <c>/ByteRange</c> decides
 /// WHICH BYTES a signature covers. Asserting only that verification returned something would pass

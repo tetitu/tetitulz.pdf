@@ -60,7 +60,7 @@ public sealed class StartXrefOperandScanTests
 
     /// <summary>
     /// With no operand at all, the answer is "none" — not the first number appearing in whatever
-    /// trailing junk a producer left after <c>%%EOF</c>, which the unbounded skip used to return.
+    /// trailing junk a producer left after <c>%%EOF</c>, which an unbounded skip would return.
     /// </summary>
     [Fact]
     public void AMissingOperandDoesNotBorrowADigitFromTrailingJunk()

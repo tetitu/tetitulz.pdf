@@ -206,12 +206,12 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// destination that happen to be in the same file.
         /// </summary>
         /// <remarks>
-        /// <para><b>This test used to be three substring checks on the Latin1 bytes</b> —
-        /// <c>/Dests</c>, <c>/target</c>, <c>/GoTo</c> — and the middle one was satisfied by the
-        /// <i>destination dictionary's own key</i>, which is written <c>/target</c> no matter what
-        /// the link points at. So it never looked at the link's <c>/D</c>, and changing that <c>/D</c>
-        /// from a name to a string left all 411 DocxToPdf tests green while making every internal
-        /// link in every converted document dead.</para>
+        /// <para><b>Substring checks on the bytes cannot hold this.</b> Of <c>/Dests</c>,
+        /// <c>/target</c> and <c>/GoTo</c>, the middle one is satisfied by the <i>destination
+        /// dictionary's own key</i>, which is written <c>/target</c> no matter what the link points
+        /// at; they never look at the link's <c>/D</c>, and a <c>/D</c> changed from a name to a
+        /// string would pass them while making every internal link in every converted document
+        /// dead.</para>
         ///
         /// <para><b>The type is the whole point.</b> §12.3.2.3 gives two containers: the catalog
         /// <c>/Dests</c> <i>dictionary</i>, keyed by names, and the <c>/Names /Dests</c> name

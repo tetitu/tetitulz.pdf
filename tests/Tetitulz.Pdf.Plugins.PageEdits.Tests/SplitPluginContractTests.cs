@@ -18,12 +18,12 @@ namespace Tetitulz.Pdf.Plugins.PageEdits.Tests;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Both plugin methods forwarded to <see cref="PdfSplitter.SplitRange(Stream, Stream, int, int)"/>,
-/// whose contract is <b>one-based</b> (<c>Split</c> now goes through <c>PdfSplitter.EachPage</c>,
-/// which numbers the pages itself). Until 2026-08-13 they forwarded the caller's index unchanged,
-/// so <c>Split</c> threw <see cref="ArgumentOutOfRangeException"/> on its very first iteration
-/// (<c>i = 0</c>) and <c>SplitRange(stream, 1, 1)</c> silently returned the document's first page
-/// where the contract promises the second. There were no tests on this type at all.
+/// <see cref="PdfSplitter.SplitRange(Stream, Stream, int, int)"/>'s contract is <b>one-based</b>
+/// (<c>Split</c> goes through <c>PdfSplitter.EachPage</c>, which numbers the pages itself).
+/// Forwarding the caller's index unchanged would make <c>Split</c> throw
+/// <see cref="ArgumentOutOfRangeException"/> on its very first iteration (<c>i = 0</c>) and
+/// <c>SplitRange(stream, 1, 1)</c> silently return the document's first page where the contract
+/// promises the second.
 /// </para>
 /// <para>
 /// These assert <i>which page</i> came back, by its extracted text — not that a non-empty byte array

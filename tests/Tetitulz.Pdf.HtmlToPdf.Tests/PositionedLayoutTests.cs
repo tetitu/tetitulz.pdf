@@ -498,7 +498,7 @@ public class PositionedLayoutTests
 
     /// <summary>
     /// A <c>position: relative</c> list is the containing block of the positioned blocks in its items
-    /// (since 2026-10-19 a bare box round it): a badge at <c>left: 100pt; top: 20pt</c> sits 100 pt in
+    /// (a bare box round it): a badge at <c>left: 100pt; top: 20pt</c> sits 100 pt in
     /// from the list's padding edge and 20 pt below its top — under the paragraphs before it, where its
     /// first item's words are — and nothing is reported. Measured from the page it would sit 20 pt down
     /// the sheet, above them.
@@ -530,10 +530,9 @@ public class PositionedLayoutTests
     }
 
     /// <summary>
-    /// A positioned element inside a positioned one (2026-10-19): the inner is measured from the outer's
-    /// padding box — 50pt in from its left and 30pt below its top — and the outer's own blocks stay placed with
-    /// it, nothing left in the flow, nothing reported. The inner used to be measured from the page, and every
-    /// block of the outer after its first sent to the flow, reported.
+    /// A positioned element inside a positioned one: the inner is measured from the outer's padding box —
+    /// 50pt in from its left and 30pt below its top — not from the page, and the outer's own blocks stay placed
+    /// with it, nothing left in the flow, nothing reported.
     /// </summary>
     [Fact]
     public void APositionedElementInsideAPositionedOne_IsMeasuredFromIt()
@@ -648,8 +647,8 @@ public class PositionedLayoutTests
     /// <summary>
     /// A <c>fixed</c> element inside a positioned one is the page's, drawn on every page, not the outer's
     /// (APositionedElementInsideAPositionedOne_IsMeasuredFromIt has the outer's): placed on its own at its
-    /// point on the page (2026-10-19), and the outer's blocks stay placed together — the block after the
-    /// fixed one under the one before it, nothing left in the flow, nothing reported. They went to the flow.
+    /// point on the page, and the outer's blocks stay placed together — the block after the fixed one under
+    /// the one before it, nothing left in the flow, nothing reported.
     /// </summary>
     [Fact]
     public void APositionedElementHoldingAFixedOne_PlacesTheRestWithIt()

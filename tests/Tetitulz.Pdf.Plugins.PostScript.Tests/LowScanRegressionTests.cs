@@ -13,14 +13,11 @@ using Tetitulz.Pdf.Plugins.PostScript.Tests.TestInfrastructure;
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
-/// The LOW findings of the assembly-wide scan (2026-08-13) that belong to this plugin.
+/// Small defects in this plugin that do not warrant a file of their own.
 ///
-/// <para>Five of the six were confirmed and fixed. The sixth — memoising
-/// <c>PdfResourceCollector.EncodingKey</c> by encoding-instance identity — is an explicitly
-/// unmeasured performance hypothesis, and both this repo's rule ("measure before you rank") and the
-/// finding's own instruction ("if the delta is in the noise beside the interpreter loop, leave it
-/// alone and record the measurement") make guessing the wrong move. It is not fixed here and has no
-/// test.</para>
+/// <para>Memoising <c>PdfResourceCollector.EncodingKey</c> by encoding-instance identity is not
+/// done and has no test: it is an unmeasured performance hypothesis, and this repo's rule is
+/// "measure before you rank".</para>
 /// </summary>
 public sealed class LowScanRegressionTests
 {

@@ -84,7 +84,7 @@ public sealed class DigestAlgorithmAcceptanceTests
     /// string <c>"SHAKE256withRSA"</c> and <see cref="Asn1SignatureFactory"/> rejects it as neither
     /// a known name nor a valid OID.</para>
     /// <para><b>The standards-correct pairing is Ed448</b> (ISO/TS 32002 Table 4: SHAKE256 under the
-    /// fixed-length id-shake256), which signs since 2026-10-18 through a SignerInfo built to that rule
+    /// fixed-length id-shake256), which signs through a SignerInfo built to that rule
     /// (<c>CmsSignatureGenerator.Ed448SignedData</c>, pinned by
     /// <c>EcCurveSignatureRoundTripTests.Sign_ThenVerify_Ed448_IsIntegrityValid</c>). SHAKE256 is
     /// reachable through Ed448 and through no RSA key, which has no SHAKE256 pairing to name.</para>

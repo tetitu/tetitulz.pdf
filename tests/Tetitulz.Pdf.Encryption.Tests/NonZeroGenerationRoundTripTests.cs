@@ -18,21 +18,20 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 /// <remarks>
 /// <para>
 /// ISO 32000-1 §7.6.2 Algorithm 1 mixes two bytes of the object's generation number into the
-/// per-object key. <c>PdfEncryptor.EncryptStream</c> / <c>EncryptDictionary</c> took that generation
+/// per-object key, and the key must use the generation the object is <i>written</i> under. Taken
 /// off the <em>parsed source</em> object (<c>stream.GenerationNumber</c>, which <c>PdfParser</c>
-/// fills from the <c>N G obj</c> header), but the writer emits every object as <c>N 0 obj</c>:
-/// <c>WriteIndirectObject(objNum, 0, …)</c> plus the non-generation <c>WriteXrefTable</c> overload.
-/// So an object arriving as <c>4 3 obj</c> — the ordinary shape for a file incrementally updated
-/// after an object number was freed and reused — was enciphered under generation 3 and written as
-/// generation 0, and every reader (including this library's own <c>PdfDecryptor</c>, which correctly
-/// reads the generation back off the file it is given) derived a different key.
+/// fills from the <c>N G obj</c> header) while the writer emitted <c>N 0 obj</c>, an object arriving
+/// as <c>4 3 obj</c> — the ordinary shape for a file incrementally updated after an object number was
+/// freed and reused — would be enciphered under generation 3 and written as generation 0, and every
+/// reader (including this library's own <c>PdfDecryptor</c>, which reads the generation back off the
+/// file it is given) would derive a different key.
 /// </para>
 /// <para>
 /// <b>Why the assertion is on the recovered bytes.</b> With RC4 the mismatch produces silent
 /// garbage: the decrypt completes, the output is a valid non-empty PDF, and only the payload is
 /// wrong. Asserting that decryption "succeeded" or that the output is non-empty passes with the
-/// defect present. The generation-0 case is asserted alongside as the control — it round-tripped
-/// before the fix and must still, so a fix that simply broke per-object keys cannot pass this pair.
+/// defect present. The generation-0 case is asserted alongside as the control, so a change that
+/// simply broke per-object keys cannot pass this pair.
 /// </para>
 /// <para>
 /// AES-256 is included deliberately even though it is structurally immune (V=5 encrypts with the

@@ -13,9 +13,8 @@ using Tetitulz.Pdf.Plugins.PostScript;
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
-/// Regressions from the second review of this plugin (2026-08-05), covering the operators that
-/// raised <c>undefined</c>, the document writer's lost font programs, the emitter's cap overshoot
-/// and four smaller items. Every test here was observed to fail against the un-fixed code.
+/// Operators that would raise <c>undefined</c>, the document writer's font programs, the
+/// emitter's cap, and four smaller items. Every test here fails without the code it guards.
 /// </summary>
 public sealed class SecondReviewRegressionTests
 {
@@ -402,8 +401,8 @@ public sealed class SecondReviewRegressionTests
     }
 
     /// <summary>
-    /// Truncation used to be able to land between BT and ET, leaving an unterminated text object —
-    /// q/Q balance was asserted, BT/ET was not.
+    /// Truncation must not land between BT and ET, leaving an unterminated text object — BT/ET
+    /// balance is asserted beside q/Q's.
     /// </summary>
     [Theory]
     [InlineData(200)]

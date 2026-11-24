@@ -10,13 +10,14 @@ using Xunit;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
-/// A CSS Grid <c>repeat(n, …)</c> count is clamped so a huge one cannot run away. <c>ExpandRepeats</c>
-/// left the count unclamped on purpose — a lazy consumer stops at its own track cap — but a pattern of
-/// only <c>[name]</c> groups never reaches a track cap, so <c>repeat(2147483647, [a])</c> was pulled 2^31
-/// times (a multi-gigabyte <c>List</c>, minutes of CPU, then <c>OutOfMemoryException</c> out of the public
-/// door), a nested <c>repeat(1, repeat(2147483647, 1px))</c> built a 2^31-entry list, and
-/// <c>repeat(auto-fill, repeat(2147483647, 10px))</c> walked the pattern 2^31 times. The count is now
-/// clamped to one past the largest consumer cap, which also bounds the nested and auto-fill paths (2026-10-23).
+/// A CSS Grid <c>repeat(n, …)</c> count is clamped so a huge one cannot run away. A lazy consumer
+/// stops at its own track cap, but a pattern of only <c>[name]</c> groups never reaches a track cap:
+/// unclamped, <c>repeat(2147483647, [a])</c> would be pulled 2^31 times (a multi-gigabyte <c>List</c>,
+/// minutes of CPU, then <c>OutOfMemoryException</c> out of the public door), a nested
+/// <c>repeat(1, repeat(2147483647, 1px))</c> would build a 2^31-entry list, and
+/// <c>repeat(auto-fill, repeat(2147483647, 10px))</c> would walk the pattern 2^31 times.
+/// <c>ExpandRepeats</c> clamps the count to one past the largest consumer cap, which also bounds the
+/// nested and auto-fill paths.
 /// </summary>
 public class GridRepeatBoundTests
 {
@@ -28,7 +29,7 @@ public class GridRepeatBoundTests
     [InlineData("<div style='display:grid;grid-auto-columns:repeat(2147483647,10px)'><p>x</p></div>")]
     public void AHugeRepeatCount_IsClamped_NotRunAway(string html)
     {
-        // Pre-fix each of these ran for minutes and/or threw OutOfMemoryException out of the public door.
+        // Unclamped, each of these would run for minutes and/or throw OutOfMemoryException out of the public door.
         byte[] pdf = HtmlToPdfConverter.ConvertHtmlToBytes(html);
         Assert.NotEmpty(pdf);
     }

@@ -16,7 +16,7 @@ namespace Tetitulz.Pdf.Plugins.EthereumSign.Tests.Signing;
 /// <summary>
 /// Anchoring on a public chain is the step most likely to fail — an unreachable endpoint, a
 /// transaction that never mines, a revert — and it is the <i>last</i> step, after a PKI signature
-/// has already been computed successfully. Two places used to throw that work away.
+/// has already been computed successfully. A failure there must not throw that work away.
 ///
 /// <para>None of these tests reaches the network: each failure is reached from an argument the
 /// provider validates before it opens a socket.</para>

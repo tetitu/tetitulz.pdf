@@ -19,9 +19,9 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 /// rule: the matrix is concatenated <i>after</i> the rectangle exists and affects the pen alone.
 ///
 /// <para>This engine keeps the path in user space so it can re-emit it after a <c>cm</c>, which is
-/// right while the CTM stands still and was wrong the moment it moved: the ellipse came out as a
-/// unit circle at the origin, a line built before <c>2 2 scale</c> came out twice as long, and a
-/// <c>rectstroke</c> matrix moved the rectangle. The path is now re-expressed in the new user space
+/// right only while the CTM stands still: left as it was when the CTM moved, the ellipse would come
+/// out as a unit circle at the origin, a line built before <c>2 2 scale</c> twice as long, and a
+/// <c>rectstroke</c> matrix would move the rectangle. The path is re-expressed in the new user space
 /// whenever the CTM changes under it, so the emitted coordinates land where the program drew them.
 /// Every assertion below reads the path's emitted operands, which are device coordinates once the
 /// emitted <c>cm</c> operators are composed.</para>

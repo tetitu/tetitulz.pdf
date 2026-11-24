@@ -12,10 +12,10 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// A collapsible space at the start of a line is removed (CSS Text 3 §4.1.2).
     /// </summary>
     /// <remarks>
-    /// Only a whitespace-only node opening a paragraph used to be dropped. Indented source drew a
-    /// space before its first word, and the newline after a closing <c>&lt;br&gt;</c> became a
-    /// space run the layout put on a line of its own — a form whose every label cell reads
-    /// <c>Label&lt;br&gt;</c> had every row two lines tall.
+    /// Dropping only a whitespace-only node opening a paragraph is not enough: indented source would
+    /// draw a space before its first word, and the newline after a closing <c>&lt;br&gt;</c> would
+    /// become a space run the layout puts on a line of its own — a form whose every label cell reads
+    /// <c>Label&lt;br&gt;</c> would have every row two lines tall.
     /// </remarks>
     public class WhiteSpaceCollapseTests
     {

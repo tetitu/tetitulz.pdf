@@ -17,8 +17,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
     /// One image part named by many drawings is decoded once and written once, on both paths: the converter hands
     /// the writer the same bytes for each drawing (the legacy context's <c>DecodedImages</c>, the mapper's part read and
     /// the exporter's <c>DecodeOnce</c>), and the writer draws them from one object
-    /// (<c>Core.Writing.ImageObjectShare</c>). A 3 KB DOCX naming one 1000 × 1000 PNG two hundred times took 20 s and
-    /// wrote 2.6 MB until 2026-10-22.
+    /// (<c>Core.Writing.ImageObjectShare</c>). Decoded and written per drawing, a 3 KB DOCX naming one 1000 × 1000 PNG
+    /// two hundred times would take 20 s and write 2.6 MB.
     /// </summary>
     public class SharedImagePartTests
     {

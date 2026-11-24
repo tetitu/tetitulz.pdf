@@ -33,8 +33,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// </summary>
         /// <remarks>
         /// The managed engine maps HTML onto the Builder model and calls <c>ToPdf()</c>, so it
-        /// inherits <c>Builder.Export.RtlText</c>'s shaping — the fix for recording presentation
-        /// forms instead of base letters landed there. This test exists because "it routes through
+        /// inherits <c>Builder.Export.RtlText</c>'s shaping, which records base letters rather than
+        /// presentation forms. This test exists because "it routes through
         /// Builder, so it is covered" is a claim about code structure, and the mapper sits between:
         /// it decodes entities, collapses whitespace and splits runs, any of which could reach the
         /// exporter with different text. Asserting the extracted string checks the claim end to end

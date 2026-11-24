@@ -11,14 +11,14 @@ using Tetitulz.Pdf.Plugins.PostScript.Tests.TestInfrastructure;
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
-/// The 2026-08-19 gap round: names and operators real PostScript uses <b>unconditionally</b> that
-/// this interpreter did not have, so each raised <c>undefined</c> and cost the program its
-/// top-level object — with <c>UnimplementedOperators</c> staying <b>empty</b>, because that channel
-/// only ever carried the operators <c>PsSystemDict</c> already knew it lacked.
+/// Names and operators real PostScript uses <b>unconditionally</b>. A missing one raises
+/// <c>undefined</c> and costs the program its top-level object — with <c>UnimplementedOperators</c>
+/// staying <b>empty</b>, because that channel carries only the operators <c>PsSystemDict</c> knows
+/// it lacks.
 ///
 /// <para><b>How these assert, and why nothing weaker would do.</b> A top-level object here is one
 /// parsed token, so an <c>undefined</c> abandons only that token and everything after it still
-/// runs. "The drawing still happened" is therefore true <i>with the fix reverted</i> and is worth
+/// runs. "The drawing still happened" is therefore true <i>with the name missing</i> and is worth
 /// nothing as an assertion. Every test below instead reads a value back out of the emitted stream —
 /// the operands of an <c>m</c>, the grey level of a <c>g</c>, the operator that painted, or the
 /// operand-stack depth via <c>count</c> — so it fails when the name is missing.</para>
@@ -915,7 +915,7 @@ public sealed class MissingSystemNameTests
         Assert.Single(r.UnimplementedOperators, n => n == "zzzRepeated");
     }
 
-    /// <summary>The operators fixed by this round no longer appear as gaps at all.</summary>
+    /// <summary>These operators do not appear as gaps at all.</summary>
     [Theory]
     [InlineData("clippath",   "clippath pathbbox pop pop pop pop")]
     [InlineData("strokepath", "newpath 0 0 moveto 10 0 lineto strokepath fill")]

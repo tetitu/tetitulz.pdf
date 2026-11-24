@@ -77,7 +77,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
             // The same 75% text with no box, so the padding is the only difference.
             string plain = Content("<p>Widget <span style='font-size:75%'>NEW</span> ITEM</p>");
 
-            // Painted once, by the box: the run highlight the background used to become is dropped,
+            // Painted once, by the box: no run highlight is made from the background as well,
             // or the text's own tighter fill would be drawn over the box's.
             Assert.Single(Regex.Matches(label, @"\b0 0 1 rg\b"));
             Assert.True(XOf(label, "ITEM") - XOf(plain, "ITEM") > 5, "the label's padding took no room");
