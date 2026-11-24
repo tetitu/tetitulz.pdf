@@ -91,17 +91,28 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// </param>
         internal static (byte[] Glyf, byte[] Loca) Rebuild(byte[] transformed, long maxGlyfBytes)
         {
+            _lastError = null;
             try
             {
-                return RebuildCore(transformed, maxGlyfBytes);
+                var rebuilt = RebuildCore(transformed, maxGlyfBytes);
+                if (rebuilt.Glyf == null)
+                    _lastError = "the transformed glyf table is malformed (a substream's length or a glyph's data), or past " +
+                                 maxGlyfBytes.ToString(System.Globalization.CultureInfo.InvariantCulture) + " bytes rebuilt";
+                return rebuilt;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // Includes the IndexOutOfRange an inconsistent substream length could still reach
-                // past the explicit checks. The contract is a refusal, not an escape.
+                // past the explicit checks. The contract is a refusal, not an escape; what was thrown is said.
+                _lastError = "the transformed glyf table could not be rebuilt: " + ex.GetType().Name + ": " + ex.Message;
                 return (null, null);
             }
         }
+
+        [ThreadStatic] private static string _lastError;
+
+        /// <summary>Why the last <see cref="Rebuild"/> on this thread returned nothing, or null when it rebuilt the table. Reset at the start of every call.</summary>
+        internal static string LastError => _lastError;
 
         private static (byte[] Glyf, byte[] Loca) RebuildCore(byte[] transformed, long maxGlyfBytes)
         {

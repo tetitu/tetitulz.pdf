@@ -77,17 +77,29 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// </summary>
         internal static byte[] Decode(byte[] woff)
         {
+            _lastError = null;
             try
             {
-                return DecodeCore(woff);
+                byte[] sfnt = DecodeCore(woff);
+                if (sfnt == null)
+                    _lastError = "the WOFF 1.0 container is malformed (header, directory or a table's lengths), or past " +
+                                 MaxSfntBytes.ToString(System.Globalization.CultureInfo.InvariantCulture) + " bytes once inflated";
+                return sfnt;
             }
-            catch
+            catch (Exception ex)
             {
                 // Includes the PdfException FlateDecodeFilter throws for a stream that exceeds
-                // its budget — a refusal, and the whole point of setting the budget.
+                // its budget — a refusal, and the whole point of setting the budget — and what the
+                // reader threw past its checks, named here rather than read as "not a font".
+                _lastError = "the WOFF 1.0 container did not unwrap: " + ex.GetType().Name + ": " + ex.Message;
                 return null;
             }
         }
+
+        [ThreadStatic] private static string _lastError;
+
+        /// <summary>Why the last <see cref="Decode"/> on this thread returned null, or null when it returned a font. Reset at the start of every call.</summary>
+        internal static string LastError => _lastError;
 
         private static byte[] DecodeCore(byte[] woff)
         {

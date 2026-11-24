@@ -116,6 +116,7 @@ public class Woff2ReconstructionCeilingTests
         Assert.True(loca <= ceiling);
 
         Assert.Null(Woff2Decoder.Decode(container, ceiling));
+        Assert.Contains("glyf", Woff2Decoder.LastError);   // the rebuild's own reason, passed up
     }
 
     /// <summary>
