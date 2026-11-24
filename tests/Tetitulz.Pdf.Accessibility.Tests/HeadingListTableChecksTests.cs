@@ -261,8 +261,8 @@ public class HeadingListTableChecksTests
 
     /// <summary>
     /// ISO 14289-1 7.4.4: "each node in the structure tree shall contain at most one child H tag" —
-    /// every node, a <c>&lt;Div&gt;</c> included (the published profile's 7.4.4-1). The rule used to be read as
-    /// sectioning containers only, and this test pinned that reading.
+    /// every node, a <c>&lt;Div&gt;</c> included (the published profile's 7.4.4-1), not sectioning
+    /// containers only.
     /// </summary>
     [Fact]
     public void Ua10_TwoStrongHeadingsUnderANonSectioningParent_IsAnError()

@@ -64,7 +64,7 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 /// Measured on a two-page tree costing exactly 200 000 slots: the plugin raised UA99 and audited
 /// <b>one</b> page, the deep checker raised nothing and audited <b>two</b> — and the UA99 says the
 /// walk "stopped", which on a tree that ended exactly on budget it did not. Both fixtures below stay
-/// clear of that point on purpose (637 slots under, 257 over). See the round-16 M7 notes.</para>
+/// clear of that point on purpose (637 slots under, 257 over).</para>
 /// </remarks>
 /// </summary>
 public class PageTreeBudgetParityTests

@@ -125,7 +125,7 @@ public class CompositeFontAdvancePrimitivesTests
     /// <summary>
     /// The control that keeps the assertion above from being about this fixture alone: for a
     /// SIMPLE font <c>SplitCodes</c> sets <c>Cid == Value</c>, so a caller keyed on <c>Cid</c> is
-    /// correct for both kinds and the fix cannot have broken simple fonts.
+    /// correct for both kinds and simple fonts are unaffected.
     /// </summary>
     [Fact]
     public void ASimpleFontsCidIsItsCodeSoKeyingOnCidIsCorrectForBothKinds()
@@ -140,16 +140,14 @@ public class CompositeFontAdvancePrimitivesTests
     }
 
     /// <summary>
-    /// §9.3.3 restricts word spacing to the <b>single-byte</b> code 32. Both editors re-implemented
-    /// that inline as <c>len == 1 &amp;&amp; code == 32</c>; the shared
-    /// <c>CMapCodec.Code.IsWordSpaceCode</c> is the one rule.
+    /// §9.3.3 restricts word spacing to the <b>single-byte</b> code 32; the shared
+    /// <c>CMapCodec.Code.IsWordSpaceCode</c> is the one rule, for both editors.
     ///
-    /// <para>Both halves are asserted now. The malformed one used to be an open defect and is
-    /// recorded here because it is the interesting case: an odd trailing byte with no room for the
-    /// two-byte code it belongs to was emitted with <c>ByteLength == 1</c>, so
-    /// <c>IsWordSpaceCode</c> answered <b>true</b> for it — in a font whose codespace defines no
-    /// single-byte code at all. <c>ByteLength</c> answers "how many bytes were consumed", which a
-    /// fragment satisfies without ever matching a one-byte range.</para>
+    /// <para>Both halves are asserted. The malformed one is the interesting case: an odd trailing
+    /// byte with no room for the two-byte code it belongs to is emitted with <c>ByteLength == 1</c>,
+    /// and must not count as code 32 in a font whose codespace defines no single-byte code at all.
+    /// <c>ByteLength</c> answers "how many bytes were consumed", which a fragment satisfies without
+    /// ever matching a one-byte range.</para>
     /// </summary>
     [Fact]
     public void AWholeTwoByteCodeWhoseLowByteIs32IsNotAWordSpace()

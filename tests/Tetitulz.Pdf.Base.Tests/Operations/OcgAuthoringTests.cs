@@ -16,13 +16,13 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
 /// <see cref="PdfOcgManager.CreateLayer"/> and <see cref="PdfOcgManager.AssignObjectToLayer"/> —
-/// the authoring half of optional content, which the reading half has always been complete without.
+/// the authoring half of optional content.
 /// </summary>
 /// <remarks>
 /// <para><b>The round trip is the point.</b> Asserting that <c>CreateLayer</c> wrote a
 /// <c>/Type /OCG</c> object would restate the writer. What a caller needs is that the layer is
-/// <i>discoverable</i>, so these read it back through <c>ListLayers</c> — the reader that existed
-/// before any of this and knows nothing about how the group got there. A group written into the
+/// <i>discoverable</i>, so these read it back through <c>ListLayers</c> — a reader that knows
+/// nothing about how the group got there. A group written into the
 /// file but not into <c>/OCProperties /OCGs</c> is invisible to a viewer's layer panel, and it is
 /// exactly what <c>ListLayers</c> would fail to find.</para>
 ///

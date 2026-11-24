@@ -15,16 +15,16 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// single-reference spelling must be cut like one written in the array spelling.
 /// </summary>
 /// <remarks>
-/// <para><b>What was wrong.</b> <c>PdfStructureTreeReader</c>'s cycle guard was a
-/// <c>HashSet&lt;int&gt;</c> of object numbers, registered only where <c>/K</c> was an array. The
-/// single-reference spelling reached the parser through <c>doc.ResolveObject(dict[/K])</c>, which
-/// discards the reference before anything can record it, so two elements naming each other recursed
-/// to the depth cap and left the public <c>ReadStructureTree</c> as an
-/// <c>InvalidOperationException</c> — while <c>PdfTaggedTextExtractor</c>, <c>StructTreeWalker</c>
-/// and <c>PdfUaChecker</c>, over the same tree, all stopped at the second visit and returned it.</para>
+/// <para><b>What the guard must see.</b> A cycle guard keyed on object numbers and registered only
+/// where <c>/K</c> is an array misses the single-reference spelling, which reaches the parser
+/// through <c>doc.ResolveObject(dict[/K])</c> — discarding the reference before anything can record
+/// it — so two elements naming each other would recurse to the depth cap and leave the public
+/// <c>ReadStructureTree</c> as an <c>InvalidOperationException</c>, while
+/// <c>PdfTaggedTextExtractor</c>, <c>StructTreeWalker</c> and <c>PdfUaChecker</c>, over the same
+/// tree, stop at the second visit and return it.</para>
 /// <para><b>Why the assertions are the shape of the tree.</b> "It did not throw" would pass with the
-/// reader returning an empty root, which is the failure this guard's crude form (give up on the
-/// whole document) already had. The test asserts the elements <i>before</i> the repeat are present
+/// reader returning an empty root — giving up on the whole document, a guard's crude form. The test
+/// asserts the elements <i>before</i> the repeat are present
 /// and that the repeat itself is absent, so both giving up and following the cycle are red.</para>
 /// </remarks>
 public class StructureTreeKidCycleTests

@@ -297,10 +297,10 @@ public class PdfUaXmpWriterTests
     // ===============================================================
 
     /// <summary>
-    /// The defect this whole file exists for. Pre-fix this produced
+    /// The defect this whole file guards against: producing
     /// <c>xref\n1 1\n… trailer\n&lt;&lt; /Type /XRef /W [1 2 2] /Length 30 /Prev … &gt;&gt;</c>
     /// — a classic table with xref-stream keys in its trailer, chained to an xref stream — and
-    /// returned <c>true</c>.
+    /// returning <c>true</c>.
     /// </summary>
     [Fact]
     public void SetPdfUaIdentifier_OverAnXrefStreamDocument_AppendsAnXrefStreamNotAClassicTable()
@@ -346,7 +346,7 @@ public class PdfUaXmpWriterTests
     [Fact]
     public void SetPdfUaIdentifier_OverAClassicDocument_StillAppendsAClassicTable()
     {
-        // The fix must match the form of the previous section, not swap one hard-coded form for
+        // The writer must match the form of the previous section, not swap one hard-coded form for
         // another: an xref stream appended to a classic-xref file is the mirror-image defect.
         byte[] original = ClassicPdfWithoutMetadata();
         byte[] produced = Apply(original, part: 1, language: "en-US");
@@ -537,18 +537,16 @@ public class PdfUaXmpWriterTests
     //  Adversarial input — packet amplification (DoS guards)
     // ===============================================================
     //
-    // The defect: BuildPdfUaXmpPacket re-serialised the *whole* existing document through an
-    // XmlWriter with Indent = true / IndentChars = "  ". Indented output prefixes both the start
-    // and the end tag of an element at nesting level d with a newline and 2*d spaces, so a packet
-    // nested D levels serialises to Θ(D²) characters however few bytes it took on input — and
-    // "<a>" x N compresses to nothing under /FlateDecode. Neither existing guard helped:
-    // MaxSearchDepth bounds only FindElement/FindAttribute (an attacker puts rdf:RDF at the top so
-    // EnsureDescription succeeds, and hangs the deep subtree off a *sibling*), and
-    // DtdProcessing.Prohibit stops entity expansion, which this needs none of. The oversized
-    // packet was then written into the file as a real revision and SetPdfUaIdentifier returned
-    // true. Measured before the fix: an 861-byte input (depth 20000) produced an 800,263,847-byte
-    // PDF after ~6 s and ~10 GB of allocation; a 1,191-byte input (depth 60000) killed the
-    // operation with OutOfMemoryException — process death in a memory-capped host.
+    // The defect: re-serialising the *whole* existing document through an XmlWriter with
+    // Indent = true / IndentChars = "  ". Indented output prefixes both the start and the end
+    // tag of an element at nesting level d with a newline and 2*d spaces, so a packet nested D
+    // levels serialises to Θ(D²) characters however few bytes it took on input — and "<a>" x N
+    // compresses to nothing under /FlateDecode. MaxSearchDepth bounds only
+    // FindElement/FindAttribute (an attacker puts rdf:RDF at the top so EnsureDescription
+    // succeeds, and hangs the deep subtree off a *sibling*), and DtdProcessing.Prohibit stops
+    // entity expansion, which this needs none of. Unbudgeted, an 861-byte input (depth 20000)
+    // produces an 800,263,847-byte PDF after ~6 s and ~10 GB of allocation, and a 1,191-byte
+    // input (depth 60000) dies with OutOfMemoryException — process death in a memory-capped host.
 
     /// <summary>
     /// A well-formed packet whose <c>rdf:RDF</c> / <c>rdf:Description</c> sit at the top — so
@@ -622,8 +620,8 @@ public class PdfUaXmpWriterTests
     }
 
     /// <summary>
-    /// Adversarial input for the nesting-depth budget. Pre-fix, a ~16,000-character packet came
-    /// back out as ~8,000,000 characters.
+    /// Adversarial input for the nesting-depth budget. Unbudgeted, a ~16,000-character packet
+    /// comes back out as ~8,000,000 characters.
     /// </summary>
     [Fact]
     public void BuildPdfUaXmpPacket_DeepSiblingSubtree_DoesNotAmplifyTheOutput()
@@ -676,7 +674,7 @@ public class PdfUaXmpWriterTests
 
         byte[] produced = Apply(original, part: 1, title: "T", language: "en");
 
-        // Pre-fix: ~128 MB out of a sub-kilobyte input (and 800 MB at depth 20000, OOM at 60000).
+        // Unbudgeted: ~128 MB out of a sub-kilobyte input (and 800 MB at depth 20000, OOM at 60000).
         Assert.True(produced.Length < original.Length + 64 * 1024,
             "a " + original.Length + "-byte input produced a " + produced.Length +
             "-byte document — " + (produced.Length / Math.Max(1, original.Length)) +

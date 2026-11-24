@@ -47,9 +47,7 @@ public class PdfObjectIndexIdentityTests
     /// An object the index did not record answers by the number stamped on it only when the
     /// cross-reference table holds that number: a copy stamped 3 is object 3, one stamped 99 is
     /// nothing the file holds (−1), and so is one with no stamp. Accessibility's
-    /// <c>StagedObject.ObjectNumberOf</c> repeated this fallback until the dedup sweep's row D23
-    /// (2026-10-21) showed the repetition could not change an answer; it now forwards here, so this
-    /// is the one test of the rule.
+    /// <c>StagedObject.ObjectNumberOf</c> forwards here, so this is the one test of the rule.
     /// </summary>
     [Fact]
     public void AnUnrecordedObject_AnswersByItsStampOnlyWhenTheTableHoldsIt()

@@ -421,8 +421,9 @@ public sealed class TextRedactionTests
     /// what <c>ExtractText</c> returns for one.
     /// </summary>
     /// <remarks>
-    /// Structured extraction used to drop every invisible glyph, so on a scanned page the search
-    /// found nothing, <c>Redact</c> removed nothing, and the text anyone could search for survived.
+    /// Were structured extraction to drop every invisible glyph, the search would find nothing on a
+    /// scanned page, <c>Redact</c> would remove nothing, and the text anyone could search for would
+    /// survive.
     /// </remarks>
     [Fact]
     public void Redact_TextInAnInvisibleOcrLayer_IsFoundAndRemoved()
@@ -431,7 +432,7 @@ public sealed class TextRedactionTests
             "BT /F1 12 Tf 3 Tr 1 0 0 1 72 700 Tm (" + Secret + ") Tj\n" +
             "1 0 0 1 72 680 Tm (" + Kept + ") Tj ET\n");
 
-        // The control: plain extraction has always returned the invisible layer.
+        // The control: plain extraction returns the invisible layer.
         Assert.Contains(Secret, Extract(pdf));
 
         using var input = new MemoryStream(pdf, writable: false);

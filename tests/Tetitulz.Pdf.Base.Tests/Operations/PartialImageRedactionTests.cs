@@ -16,10 +16,10 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
-/// Partial image redaction (batch 113): an image XObject a region covers only in part keeps its
+/// Partial image redaction: an image XObject a region covers only in part keeps its
 /// uncovered pixels — the covered ones are painted black in a clone drawn at the invocation, the
 /// original's pixels gone from the file. A wholly covered image, a stencil mask and one whose matrix
-/// cannot be inverted are stripped whole (a masked image keeps its transparency since 2026-10-17), as every overlapping image was before; an image shared
+/// cannot be inverted are stripped whole (a masked image keeps its transparency); an image shared
 /// with a page not redacted keeps its original there, reported.
 /// </summary>
 public class PartialImageRedactionTests
@@ -196,8 +196,8 @@ public class PartialImageRedactionTests
     /// <summary>
     /// An image with a soft mask keeps its transparency: the clone carries a new soft mask from the
     /// decoded alpha, opaque over the region (the box shows, the mask's shape there is gone) and the
-    /// original alpha elsewhere; the original's pixels and its mask leave the file. Until 2026-10-17
-    /// such an image was stripped whole.
+    /// original alpha elsewhere; the original's pixels and its mask leave the file, rather than the
+    /// image being stripped whole.
     /// </summary>
     [Fact]
     public void AMaskedImage_KeepsItsTransparency_OpaqueOverTheRegion()
@@ -239,7 +239,7 @@ public class PartialImageRedactionTests
 
     /// <summary>
     /// A bilevel image comes back at one bit, CCITT Group 4, its kept pixels unchanged: 16 × 2, the
-    /// left half redacted. Until 2026-10-17 it came back as 8-bit grey, eight times the samples.
+    /// left half redacted — not 8-bit grey, eight times the samples.
     /// </summary>
     [Fact]
     public void ABilevelImage_ComesBackAtOneBit_AsGroup4()

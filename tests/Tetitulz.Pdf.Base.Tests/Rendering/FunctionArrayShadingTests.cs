@@ -18,27 +18,22 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <i>n</i> 2-in, 1-out functions</b>". Both spellings must draw the same picture, in both renderers.
 /// </summary>
 /// <remarks>
-/// <para><b>The array form drew nothing at all — in the raster path and the SVG export alike.</b>
-/// Each Type 1 path read the entry as <c>ResolveObject(sh[/Function]) as PdfDictionary</c> and
-/// returned on null, so a perfectly conformant shading vanished. That is <i>not</i> the usual
-/// one-renderer-lags divergence this suite exists to catch: it is one gap both renderers had, which
-/// is why the fix is a helper they share — <c>PdfFunctionEvaluator.EvaluateEntry</c> — rather than
-/// two edits that agree today.</para>
+/// <para><b>One helper both renderers share</b> — <c>PdfFunctionEvaluator.EvaluateEntry</c> — reads
+/// the entry for the Type 1, axial and radial paths alike, so the four sites cannot drift on what a
+/// <c>/Function</c> entry may legally be. Reading it as <c>ResolveObject(sh[/Function]) as
+/// PdfDictionary</c> and returning on null would make a perfectly conformant shading vanish in both
+/// renderers.</para>
 ///
-/// <para><b>The bug was invisible to a raw-read grep,</b> because the value <i>was</i> resolved. It
-/// was resolved and then narrowed, and the narrowing is what dropped the legal form.</para>
+/// <para><b>Such a defect is invisible to a raw-read grep,</b> because the value <i>is</i>
+/// resolved; it is the narrowing that drops the legal form.</para>
 ///
-/// <para>Their axial/radial paths already handled the array, in two hand-written copies of the same
-/// loop. Those call the shared helper too now, so the four sites cannot drift on what a
-/// <c>/Function</c> entry may legally be. Fixing the SVG Type 1 path also closed a real divergence
-/// found on the way: it evaluated with <c>Evaluate(fn, inputs)</c> — <b>no resolve callback</b> —
-/// while the raster path passed one, so a stitching sub-function written indirectly exported as
-/// flat black and rendered correctly.</para>
+/// <para>The helper also evaluates with the resolve callback: without one a stitching
+/// sub-function written indirectly would export as flat black and render correctly.</para>
 ///
 /// <para>The fixture is a genuine 2-D function, <c>rgb(u, v, 0)</c> over a 100x100 page, so the
 /// assertions separate "the shading drew" from "something drew": one corner must come out
-/// red-dominant and the opposite corner green-dominant. A blank page — the pre-fix result — is
-/// white, which fails both.</para>
+/// red-dominant and the opposite corner green-dominant. A blank page is white, which fails
+/// both.</para>
 /// </remarks>
 public class FunctionArrayShadingTests
 {

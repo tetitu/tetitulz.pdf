@@ -11,11 +11,11 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
 /// Data Matrix symbols another tool made — an independent writer, checked in as module rows (one hex
-/// string a row, no quiet zone) — read by this library's reader. Until 2026-10-18 the library's
-/// encoder and reader shared two departures from ISO/IEC 16022 (the right clock edge in the opposite
-/// phase, and Reed–Solomon over roots from α⁰ where the standard's start at α¹), so every round trip
-/// passed and an independent reader could read nothing the library wrote. A symbol from an independent writer is
-/// what a shared mistake cannot pass.
+/// string a row, no quiet zone) — read by this library's reader. An encoder and reader sharing a
+/// departure from ISO/IEC 16022 (the right clock edge in the opposite phase, say, or Reed–Solomon
+/// over roots from α⁰ where the standard's start at α¹) pass every round trip while an independent
+/// reader reads nothing the library writes. A symbol from an independent writer is what a shared
+/// mistake cannot pass.
 /// </summary>
 public class DataMatrixThirdPartySymbolTests
 {

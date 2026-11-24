@@ -102,9 +102,8 @@ public class ActionChainTests
     /// </summary>
     /// <remarks>
     /// A with <c>/Next [B C]</c>, and B and C both with <c>/Next D</c>. D is legitimately reached
-    /// twice by two different paths. "Already seen" is not "a loop", and conflating them made the
-    /// cycle guard accuse conforming input — the same class of mistake as the trust-gated coverage
-    /// predicate reverted in the signing half of this round. D is run once; nothing warns.
+    /// twice by two different paths. "Already seen" is not "a loop", and conflating them would make
+    /// the cycle guard accuse conforming input. D is run once; nothing warns.
     /// </remarks>
     [Fact]
     public void ConvergingNextTree_IsNotReportedAsACycle()

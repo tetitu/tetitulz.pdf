@@ -17,17 +17,14 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// on the appearance's own <c>/Resources</c> and on the form's <c>/DR</c>.
 /// </summary>
 /// <remarks>
-/// <para><b>What this closes.</b> The generated content named a font (<c>/Helv</c> for text,
-/// <c>/ZaDb</c> for a check box) that <b>nothing in the file defined</b>: the appearance carried no
-/// <c>/Resources</c> and a newly created form carried no <c>/DR</c>. It was legal only because the
-/// builder also writes <c>/NeedAppearances true</c>, asking the processor to regenerate — so a
-/// consumer that honours the supplied appearance, or a caller that clears the flag, got an
-/// unresolvable font. GAPS.md §6c carried it, and named the fix: write a <c>/DR</c> with the
-/// standard-14 font the default appearance string names.</para>
+/// <para><b>Why.</b> The generated content names a font (<c>/Helv</c> for text, <c>/ZaDb</c>
+/// for a check box); with no <c>/Resources</c> on the appearance and no <c>/DR</c> on a newly
+/// created form, it would be legal only because the builder also writes
+/// <c>/NeedAppearances true</c>, asking the processor to regenerate — so a consumer that honours
+/// the supplied appearance, or a caller that clears the flag, would get an unresolvable font.</para>
 ///
-/// <para><b>The same dependency hid a missing <c>/AP /N</c> level for as long as it existed</b>
-///, which is why this is asserted
-/// on the written bytes rather than trusted to the flag.</para>
+/// <para><b>The same flag can hide a missing <c>/AP /N</c> level</b>, which is why this is
+/// asserted on the written bytes rather than trusted to the flag.</para>
 /// </remarks>
 public sealed class GeneratedFieldFontResourceTests
 {

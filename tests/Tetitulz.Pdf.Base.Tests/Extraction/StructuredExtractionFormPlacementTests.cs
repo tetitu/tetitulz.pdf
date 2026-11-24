@@ -16,11 +16,10 @@ namespace Tetitulz.Pdf.Base.Tests.Extraction;
 /// <c>/Matrix</c> composed in (ISO 32000 §8.10.1).
 /// </summary>
 /// <remarks>
-/// <b>The state was computed and then dropped.</b> The form path cloned the graphics state at the
-/// <c>Do</c>, composed <c>/Matrix</c> into it, and called the interpreter without it, so every form
-/// started from an identity CTM. Found through templating, whose replacement — drawn in page space —
-/// landed 100 points away from where extraction said the placeholder was, because extraction was the
-/// one that was wrong.
+/// <b>The composed state is the one the form runs under.</b> Cloning the graphics state at the
+/// <c>Do</c>, composing <c>/Matrix</c> into it and calling the interpreter without it would start
+/// every form from an identity CTM — and templating, whose replacement is drawn in page space,
+/// would land 100 points away from where extraction said the placeholder was.
 /// </remarks>
 public class StructuredExtractionFormPlacementTests
 {

@@ -42,11 +42,10 @@ public class EmptiedPageTreeBranchTests
         string[] withOut = AuditCodes(TaggedPdf(withEmptiedBranch: false));
         string[] with    = AuditCodes(TaggedPdf(withEmptiedBranch: true));
 
-        // The messages are in the failure text because this assertion has already caught one
-        // regression that a bare Assert.Equal would have reported only as "two lists differ": the
-        // first version of the fix let an emptied branch fall through to the /Kids loop with no
-        // array, so BOTH walks threw NullReferenceException and reported UA99 "the check could not
-        // be completed" — a checker that silently stops checking.
+        // The messages are in the failure text because a bare Assert.Equal would report only "two
+        // lists differ": an emptied branch falling through to the /Kids loop with no array makes
+        // BOTH walks throw NullReferenceException and report UA99 "the check could not be
+        // completed" — a checker that silently stops checking.
         Assert.True(withOut.SequenceEqual(with),
             "without: " + string.Join(",", withOut) + "\nwith:    " + string.Join(",", with)
             + "\n---\n" + string.Join("\n", Messages(TaggedPdf(withEmptiedBranch: true))));

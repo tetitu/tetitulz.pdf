@@ -80,7 +80,7 @@ public class XfaStaticFillTests
     /// A field the AcroForm has and the datasets packet does not is named in the warning.
     /// </summary>
     /// <remarks>
-    /// This is the case that used to be silent, and it is the common one: a form edited in a
+    /// This is the case easy to leave silent, and it is the common one: a form edited in a
     /// non-XFA tool grows an AcroForm field with no XFA counterpart. The value is still written to
     /// the AcroForm — refusing the whole fill over it would be worse — but the caller is told which
     /// field the two copies now disagree about.

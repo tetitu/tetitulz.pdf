@@ -148,7 +148,7 @@ public class QrGridReaderTests
     [Fact]
     public void AFormatFieldDeclaringAnotherLevel_IsRefusedAtErrorCorrection_NamingThatLevel()
     {
-        // Every level is read since 2026-10-18 (QrThirdPartySymbolTests), so a symbol whose format
+        // Every level is read (QrThirdPartySymbolTests), so a symbol whose format
         // field says L over level-M data is split into L's blocks — and refused where Reed–Solomon
         // cannot repair that wrong split, naming the level it was read at. Version 5, where M has two
         // blocks and L one: at version 1 both are one block of 26 and L's generator divides M's, so

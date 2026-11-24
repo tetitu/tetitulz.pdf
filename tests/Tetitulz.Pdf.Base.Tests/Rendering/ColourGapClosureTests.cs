@@ -315,11 +315,10 @@ public sealed class ColourGapClosureTests
     /// A halftone that actually overrides the device's is reported.
     /// </summary>
     /// <remarks>
-    /// The fixture used to be <c>/HT /Default</c>, which is the one value that must <b>not</b> be
-    /// reported: §10.5.1 defines the name <c>/Default</c> as "revert to the device's halftone", so
-    /// it names the behaviour this renderer already has. The neighbouring stroke-adjustment test
-    /// four lines below had the polarity right (<c>/SA true</c>) the whole time. The negative case
-    /// lives in <c>SvgRasterParityTests.NoOpGraphicsStateValue_IsReportedByNeitherRenderer</c>.
+    /// Not <c>/HT /Default</c>, which is the one value that must <b>not</b> be reported: §10.5.1
+    /// defines the name <c>/Default</c> as "revert to the device's halftone", so it names the
+    /// behaviour this renderer already has. That negative case lives in
+    /// <c>SvgRasterParityTests.NoOpGraphicsStateValue_IsReportedByNeitherRenderer</c>.
     /// </remarks>
     [Fact]
     public void Halftone_IsReportedAsIgnored()
@@ -342,15 +341,10 @@ public sealed class ColourGapClosureTests
     /// An intent that names an ICC table is <b>honoured</b>, so it is not reported as ignored.
     /// </summary>
     /// <remarks>
-    /// <para><b>These two tests used to assert the opposite, and the behaviour changed under
-    /// them.</b> Every intent was reported, on the true-at-the-time claim that colour is converted
-    /// to sRGB by a fixed transform with no stage for an intent to select. A profile carrying
-    /// separate <c>A2B0</c>/<c>A2B1</c>/<c>A2B2</c> tables has exactly such a stage, and both
-    /// renderers now select between them — so the old report was a diagnostic that fired on
-    /// conformant input, which is the noise floor <c>IgnoredParameterReporting.Deviates</c> exists
-    /// to protect.</para>
-    /// <para>They are renamed rather than re-asserted in place, because a test whose name and body
-    /// disagree is the failure mode no guard in this repository can catch.</para>
+    /// <para>A profile carrying separate <c>A2B0</c>/<c>A2B1</c>/<c>A2B2</c> tables has a stage for an
+    /// intent to select, and both renderers select between them — so reporting the intent would be a
+    /// diagnostic firing on conformant input, which is the noise floor
+    /// <c>IgnoredParameterReporting.Deviates</c> exists to protect.</para>
     /// </remarks>
     [Fact]
     public void RenderingIntent_FromExtGState_IsHonouredAndNotReported()
@@ -369,11 +363,10 @@ public sealed class ColourGapClosureTests
     }
 
     /// <summary>
-    /// <c>/AbsoluteColorimetric</c> is honoured too, so no intent is reported now: it is the
-    /// relative table scaled by the profile's media white, checked against the reference colour engine
-    /// (<c>IccAbsoluteColorimetricTests</c>). It used to be the one intent still reported, the
-    /// relative table standing in for it. The potency control beside it: <c>/SA true</c>, ignored,
-    /// is reported through the same render.
+    /// <c>/AbsoluteColorimetric</c> is honoured too, so no intent is reported: it is the relative
+    /// table scaled by the profile's media white, checked against the reference colour engine
+    /// (<c>IccAbsoluteColorimetricTests</c>). The potency control beside it: <c>/SA true</c>,
+    /// ignored, is reported through the same render.
     /// </summary>
     [Fact]
     public void AbsoluteColorimetric_IsHonouredAndNotReported()
@@ -414,16 +407,11 @@ public sealed class ColourGapClosureTests
     }
 
     /// <summary>
-    /// §9.3.8 <c>/TK</c> is <b>honoured</b> by the raster path now
+    /// §9.3.8 <c>/TK</c> is <b>honoured</b> by the raster path
     /// (<c>ContentStreamInterpreter.BeginTextKnockout</c>), so neither value may be reported here.
     ///
-    /// <para>These two cases used to assert the opposite — that <c>/TK true</c> <i>was</i>
-    /// reported as ignored — and they were renamed rather than re-asserted under their old names,
-    /// which is the rule a changed behaviour gets: an assertion edited to match new behaviour
-    /// under a name describing the old one is how a defect keeps green coverage for its whole
-    /// life. The knockout behaviour itself is pinned by decoded pixels in
-    /// <c>TextKnockoutTests</c>, and the surviving SVG report by the case there that names
-    /// it.</para>
+    /// <para>The knockout behaviour itself is pinned by decoded pixels in <c>TextKnockoutTests</c>,
+    /// and the SVG report by the case there that names it.</para>
     /// </summary>
     [Theory]
     [InlineData("/TK true")]

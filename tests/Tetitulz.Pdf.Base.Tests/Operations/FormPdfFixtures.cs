@@ -185,14 +185,13 @@ internal static class FormPdfFixtures
 
     /// <summary>
     /// A text field (object 6) that carries a <b>single appearance stream</b> at
-    /// <c>/AP /N</c> (object 7) — §12.5.5's other shape, and the one no fixture in this suite
-    /// reached until 2026-08-27.
+    /// <c>/AP /N</c> (object 7) — §12.5.5's other shape.
     ///
-    /// <para><b>Why its absence mattered.</b> <see cref="TextField"/> writes no <c>/AP</c> at all,
-    /// so every assertion about appearance states was made against a widget that has none. A
-    /// reader that mistook a single stream for a state sub-dictionary — which is easy, because
-    /// <c>PdfStream</c> derives from <c>PdfDictionary</c> — was therefore invisible to the whole
-    /// suite. This fixture is what makes that distinguishable: the stream's own keys
+    /// <para><b>Why it matters.</b> <see cref="TextField"/> writes no <c>/AP</c> at all, so
+    /// assertions about appearance states made against it are made against a widget that has none.
+    /// A reader that mistook a single stream for a state sub-dictionary — which is easy, because
+    /// <c>PdfStream</c> derives from <c>PdfDictionary</c> — would be invisible to them. This fixture
+    /// is what makes that distinguishable: the stream's own keys
     /// (<c>/Type</c>, <c>/Subtype</c>, <c>/BBox</c>, <c>/Length</c>) are exactly what a
     /// mis-reading reports as "on states".</para>
     /// </summary>

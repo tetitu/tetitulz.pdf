@@ -153,9 +153,9 @@ public class ContentCoverageHonestyTests
     // =====================================================================
 
     /// <summary>
-    /// The defect this file exists for: before the fix the whole audit of this document was
-    /// silent, and <see cref="AccessibilityAuditReport.IsConforming"/> would have been true for a
-    /// page whose entire text is untagged.
+    /// The defect this file guards against: a silent audit of this document, with
+    /// <see cref="AccessibilityAuditReport.IsConforming"/> true for a page whose entire text is
+    /// untagged.
     /// </summary>
     [Fact]
     public void UnscannablePage_IsNamedInTheReportWithTheChecksThatDidNotRun()

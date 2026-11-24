@@ -25,8 +25,7 @@ namespace Tetitulz.Pdf.Base.Tests;
 public sealed class MulticolumnFontDiagnosticTests
 {
     // Resolved via TestCorpus (env var, else <repo>/raw or <repo>/tests/pdf). Null when the
-    // developer-local corpus is absent, in which case [CorpusFact] skips every test here —
-    // previously this fell back to a hardcoded c:\myapp\... path and hard-failed everywhere.
+    // developer-local corpus is absent, in which case [CorpusFact] skips every test here.
     private static readonly string? PdfPath = TestCorpus.Find("multicolumn.pdf");
     private readonly ITestOutputHelper _out;
 

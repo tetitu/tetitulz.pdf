@@ -15,20 +15,16 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
 /// §12.3.2.2 explicit destination array → page index, through the three readers that follow a
-/// destination: link annotations, outline items and the named-destination tree. All three used to
-/// carry their own copy of the walk; <c>Operations.PdfDestinationPage</c> is now the only one.
+/// destination: link annotations, outline items and the named-destination tree, all through
+/// <c>Operations.PdfDestinationPage</c>.
 /// </summary>
 /// <remarks>
-/// <para><b>What the copies actually did before the merge, since this round is strict about not
-/// billing hygiene as a bug fix.</b> On page references and on numeric page indices — in range and
-/// out — the three <i>agreed</i>, and the numeric out-of-range case was the one the named-dest copy
-/// documented as "matching <c>PdfLinkExtractor.PageIndexFromDestArray</c>". There was exactly one
-/// separating input, and it is the last test here: only the named-dest copy required the referenced
-/// object number to be <b>positive</b>. §7.3.10 reserves object 0 permanently for the head of the
-/// free list, so <c>0 0 R</c> designates nothing — but a page dictionary written directly inside
-/// <c>/Kids</c> is a <c>PdfObject</c> whose <c>ObjectNumber</c> is the default <c>0</c>, and the
-/// page tree tolerates that shape. For such a file the link and outline copies matched that page
-/// and reported a confident, wrong page index.</para>
+/// <para><b>The separating input is the last test here:</b> the referenced object number must be
+/// <b>positive</b>. §7.3.10 reserves object 0 permanently for the head of the free list, so
+/// <c>0 0 R</c> designates nothing — but a page dictionary written directly inside <c>/Kids</c> is
+/// a <c>PdfObject</c> whose <c>ObjectNumber</c> is the default <c>0</c>, and the page tree
+/// tolerates that shape. A reader without the clause would match that page and report a
+/// confident, wrong page index.</para>
 ///
 /// <para>Every assertion is an index or a null, never "a list came back": an unresolved destination
 /// yields <c>-1</c> / <c>null</c>, which is also the correct answer for a genuinely broken one, so

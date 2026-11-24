@@ -95,8 +95,8 @@ public class FlattenerEdgeCaseTests
     {
         // §7.7.3.2 makes /Kids an array of indirect references, so a page written inline breaks the
         // rule — and an incremental update cannot replace an object with no number. The widget on it
-        // cannot be stamped; the flattener used to skip the whole page without a word while still
-        // removing /AcroForm, which is the one outcome a caller must be told about.
+        // cannot be stamped, and skipping the whole page without a word while still removing
+        // /AcroForm is the one outcome a caller must be told about.
         int thread = Environment.CurrentManagedThreadId;
         var seen = new List<string>();
         void Handler(string detail)

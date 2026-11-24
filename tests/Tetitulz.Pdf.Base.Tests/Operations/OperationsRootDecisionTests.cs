@@ -319,8 +319,8 @@ public class OperationsRootDecisionTests
     /// <summary>
     /// Under bidi, a line drawn "XY" then gimel, bet, alef — Latin at its left end, Hebrew the more —
     /// reads right to left, the Hebrew first (<c>UnicodeBidi.VisualLineDirection</c>); asked of its
-    /// leftmost strong character, as until 2026-10-22, it read the code first. The control: with Latin
-    /// the more, the same ends read left to right.
+    /// leftmost strong character alone, it would read the code first. The control: with Latin the
+    /// more, the same ends read left to right.
     /// </summary>
     [Fact]
     public void TextDirection_UnderBidi_ALineWithLatinAtItsLeftEnd_ReadsByItsLetters()

@@ -561,8 +561,8 @@ public sealed class PdfImageReplacerAdvancedTests
     /// <summary>
     /// A CMYK JPEG fitted with Contain keeps its inks: the canvas is <c>/DeviceCMYK</c>, with no
     /// <c>/Decode</c> (the inks come back with Adobe's inversion undone), the image centred on it and
-    /// the padding transparent in the <c>/SMask</c>. It used to come back as Skia's naive RGB of the
-    /// inks, the black plate spread over three. Fixture: 32×16, left half 100 % cyan, right
+    /// the padding transparent in the <c>/SMask</c> — not Skia's naive RGB of the inks, the black
+    /// plate spread over three. Fixture: 32×16, left half 100 % cyan, right
     /// 153/128/102/77 (<see cref="Rendering.CmykJpegSamplesTests"/>).
     /// </summary>
     [Fact]

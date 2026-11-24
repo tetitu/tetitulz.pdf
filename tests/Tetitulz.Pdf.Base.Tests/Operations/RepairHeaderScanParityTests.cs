@@ -13,29 +13,29 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
 /// <see cref="PdfRepair"/> and the parser's own recovery scan must recognise the same
-/// <c>N G obj</c> header. They did not, and the repair tool was the <b>stricter</b> of the two.
+/// <c>N G obj</c> header, so the repair tool is not the <b>stricter</b> of the two.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <c>PdfParser.RecoverXrefByScanning</c> had been fixed to accept any §7.2.2 white space before
-/// the keyword, a delimiter after it, and a white-space <i>run</i> between the generation number
-/// and the keyword. The fix landed one level short: <c>PdfRepair.ScanForObjects</c> kept a second
-/// copy that matched a literal <c>(byte)' '</c>, demanded white space (never a delimiter) after the
-/// keyword, and required a generation digit immediately before it. So three legal spellings —
-/// <c>4 0\nobj</c>, <c>4 0 obj&lt;&lt;…</c> and <c>4 0  obj</c> — were recovered by
-/// <see cref="PdfDocument.Open"/> and silently dropped by the tool whose job is rescuing files.
+/// <c>PdfParser.RecoverXrefByScanning</c> accepts any §7.2.2 white space before the keyword, a
+/// delimiter after it, and a white-space <i>run</i> between the generation number and the
+/// keyword. A repair scan matching a literal <c>(byte)' '</c>, demanding white space (never a
+/// delimiter) after the keyword, and requiring a generation digit immediately before it would
+/// drop three legal spellings — <c>4 0\nobj</c>, <c>4 0 obj&lt;&lt;…</c> and <c>4 0  obj</c> —
+/// that <see cref="PdfDocument.Open"/> recovers, silently, in the tool whose job is rescuing
+/// files.
 /// </para>
 /// <para>
-/// <b>Silently is the word.</b> Nothing threw. A file whose every header used one of those
-/// spellings came out of repair as a structurally well-formed but EMPTY document — header, binary
-/// marker, an xref holding only the free-list head, and a trailer whose <c>/Root 1 0 R</c> names an
-/// object that is not in the file — with a <see cref="PdfRepairResult"/> reporting 0 objects and an
-/// <b>empty</b> error list.
+/// <b>Silently is the word.</b> Nothing would throw. A file whose every header used one of those
+/// spellings would come out of repair as a structurally well-formed but EMPTY document — header,
+/// binary marker, an xref holding only the free-list head, and a trailer whose <c>/Root 1 0 R</c>
+/// names an object that is not in the file — with a <see cref="PdfRepairResult"/> reporting 0
+/// objects and an <b>empty</b> error list.
 /// </para>
 /// <para>
 /// Every case here asserts the recovered object <i>count</i> and reads the recovered object's own
 /// payload back out of the repaired bytes. "Repair returned a result" and "the output is non-empty"
-/// are both true of the broken build.
+/// are both true of such a build.
 /// </para>
 /// </remarks>
 public class RepairHeaderScanParityTests

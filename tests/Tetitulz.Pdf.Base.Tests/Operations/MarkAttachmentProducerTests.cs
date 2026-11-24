@@ -26,9 +26,9 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// appearance, the template engine's first line and its reflowed lines, the tagged document builder
 /// and the SVG converter. With <see cref="MarkAttachmentFont"/> a bet with qamats is the qamats raised
 /// by −50/1000 em under a text rise, moved 150 right by a <c>TJ</c> adjustment and back by 150 plus
-/// its 300 advance, then the bet — <c>[-150 &lt;0002&gt; 450] TJ</c>. Each site used to write the
-/// glyphs as one <c>&lt;00020001&gt; Tj</c>, which draws the point at the letter's left edge and moves
-/// the letter 300 units right.
+/// its 300 advance, then the bet — <c>[-150 &lt;0002&gt; 450] TJ</c>. The glyphs written as one
+/// <c>&lt;00020001&gt; Tj</c> would draw the point at the letter's left edge and move the letter 300
+/// units right.
 /// </summary>
 public class MarkAttachmentProducerTests
 {

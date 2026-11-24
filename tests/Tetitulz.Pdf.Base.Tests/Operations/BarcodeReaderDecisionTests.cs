@@ -59,7 +59,7 @@ public class BarcodeReaderDecisionTests
     }
 
     /// <summary>
-    /// Numeric mode (indicator 0001) is read since 2026-10-18 — "123": the count 3 in ten bits, the
+    /// Numeric mode (indicator 0001) is read — "123": the count 3 in ten bits, the
     /// three digits in ten more — and a mode ISO/IEC 18004 does not assign (0110) is refused by name,
     /// not read as bytes.
     /// </summary>
@@ -76,7 +76,7 @@ public class BarcodeReaderDecisionTests
     /// <summary>
     /// Refused by name, each: FNC1 in the second position (indicator 1001), whose application
     /// indicator two implementations read differently; an ECI no assignment names (19, the designator
-    /// 0111 00010011 — 12, ISO-8859-10, the example until 2026-10-20, is read now).
+    /// 0111 00010011 — 12, ISO-8859-10, is read).
     /// </summary>
     [Fact]
     public void Fnc1SecondAndAnUndecodedEci_AreRefusedByName()
@@ -133,9 +133,9 @@ public class BarcodeReaderDecisionTests
 
     /// <summary>
     /// A sheet of twenty labels is read to the last label, for each 2-D symbology and for Data Matrix turned on
-    /// the page. Until 2026-10-20 each locator's bound counted every candidate it offered, read or not, and the
-    /// reader decoded them afterwards: the neighbouring labels' finders made squares of their own, and the sheet
-    /// read one QR symbol and eight Data Matrix ones.
+    /// the page. A locator bound counting every candidate it offered, read or not, with the reader decoding them
+    /// afterwards, would stop early: the neighbouring labels' finders make squares of their own, and the sheet
+    /// would read one QR symbol and eight Data Matrix ones.
     /// </summary>
     [Theory]
     [InlineData(BarcodeType.QrCode, 0)]
@@ -154,8 +154,8 @@ public class BarcodeReaderDecisionTests
     /// outline one reads a square symbol too, so only a locator by itself shows its own bound. QR on a sheet of
     /// 48 smaller labels on an equal pitch, whose neighbours' finders make squares as square as any label's own
     /// (56 candidates fail before the last label is read); square Data Matrix on twenty, whose data makes false Ls
-    /// by the dozen; turned Data Matrix on 48. Until 2026-10-20 the QR locator stopped after sixteen candidates and
-    /// each Data Matrix one after eight, read or not.
+    /// by the dozen; turned Data Matrix on 48. A QR locator stopping after sixteen candidates, or a Data Matrix one
+    /// after eight, read or not, would fail them.
     /// </summary>
     [Theory]
     [InlineData(BarcodeType.QrCode, 0, 6, 8, 60f, 95)]

@@ -14,7 +14,7 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// <summary>
 /// Code 128 and EAN-13 symbols turned on the page — sideways, skewed, upside down. Each is written by the
 /// library's writer, rendered, and the rendered pixels turned by the test (nearest pixel, about the
-/// centre); the reader reads rows and lines every fifteen degrees. Until 2026-10-18 it read rows alone.
+/// centre); the reader reads rows and lines every fifteen degrees, not rows alone.
 /// </summary>
 public class BarcodeLinearOrientationTests
 {

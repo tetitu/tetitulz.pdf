@@ -225,14 +225,6 @@ public sealed class EncryptedExtractionTests
     /// list.
     /// </summary>
     /// <remarks>
-    /// <para><b>This test was called <c>OtherReadOnlyEntryPoints_ReturnNothingForAnEncryptedDocument</c>
-    /// and its body no longer had anything to do with that name.</b> It was written as a survey of
-    /// the entry points that could <i>not</i> read an encrypted file; as they were converted one by
-    /// one the body shrank to a single call on <c>GetMetadata</c> — one of the converted ones —
-    /// asserting the opposite of what the name promised. CLAUDE.md's rule for that state is rename
-    /// or restore, never edit the assertion and leave the name: renamed, because the behaviour it
-    /// described is the defect that was fixed, and refilled so the name covers every method
-    /// again.</para>
     /// <para>The fixture carries a bookmark title and a link URI on purpose. Both are PDF
     /// <i>strings</i>, so both are ciphertext in the file: reading them back proves decryption
     /// happened, where "the list has one entry" would also pass for a reader that merely enumerated

@@ -134,8 +134,8 @@ public class AlphaIsShapeTests
     /// <summary>
     /// A soft-masked image knocks out in a knockout group under <c>/AIS false</c>: it is drawn
     /// through the mask shader, which replaces the group within the image at the mask's opacity
-    /// (0.5 here). The masked layer it used to take merged over the red instead — so this is also
-    /// what shows the shader route is the one taken.
+    /// (0.5 here). A masked layer would merge over the red instead — so this is also what shows the
+    /// shader route is the one taken.
     /// </summary>
     [Fact]
     public void ASoftMaskedImageInAKnockoutGroup_KnocksOut()

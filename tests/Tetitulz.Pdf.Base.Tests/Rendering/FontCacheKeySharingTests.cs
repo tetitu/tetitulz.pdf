@@ -16,9 +16,9 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// per page, every one naming the <b>same</b> indirect font object.
 /// </summary>
 /// <remarks>
-/// <para>The key used to be <c>(identity hash of the resources dictionary, resource name)</c>, so
-/// each page produced a distinct entry and the font program was decoded once per page. It is now
-/// the font's own object number where the resources name it indirectly.</para>
+/// <para>The key is the font's own object number where the resources name it indirectly; keyed
+/// by <c>(identity hash of the resources dictionary, resource name)</c>, each page would produce a
+/// distinct entry and the font program be decoded once per page.</para>
 ///
 /// <para><b>The font has to be embedded for this to be observable.</b> A standard-14 name resolves
 /// through <c>SKTypeface.FromFamilyName</c>, and Skia may hand back the same instance for repeated

@@ -14,7 +14,7 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
 /// A rewrite of one catalog name tree (here the attachments) refuses a <c>/Names</c> dictionary the
-/// parser cannot read. It used to read as none, and the rewrite wrote a <c>/Names</c> holding only
+/// parser cannot read. Read as none, it would make the rewrite write a <c>/Names</c> holding only
 /// the edited tree, dropping the rest: the document JavaScript, the named destinations.
 /// </summary>
 public sealed class CatalogNameTreeUnreadableTests

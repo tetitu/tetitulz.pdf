@@ -878,7 +878,7 @@ public sealed class PdfRendererTests
         // Simulates the ObjStm-with-unknown-filter case: the font resource is an indirect
         // reference to an object that can't be decoded (object 5 is declared in the xref
         // but its offset points to garbage, making LookupFontDict return null).
-        // The fix: LoadTypeface must still mark this key as a system fallback so that
+        // LoadTypeface must still mark this key as a system fallback so that
         // IsSystemFallbackFont returns true and SkiaSharp widths are used for spacing.
         byte[] pdf = BuildPdfWithMissingFontDict();
         using var ms = new System.IO.MemoryStream(pdf);

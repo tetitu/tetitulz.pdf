@@ -99,9 +99,9 @@ public sealed class MiterJoinCurveRenderingTests
         int topRow = TopmostRedRow(png);
         Assert.True(topRow >= 0, "no stroke pixels rendered");
 
-        // Vertex row ≈ 500.  Pre-fix the spike was clamped to a stub (topmost red
-        // near the vertex, row ≳ 470).  The spike must now reach at least ~150
-        // PDF units above the vertex (row ≤ 350).
+        // Vertex row ≈ 500. A spike clamped to a stub would put the topmost red near
+        // the vertex (row ≳ 470). The spike must reach at least ~150 PDF units above
+        // the vertex (row ≤ 350).
         Assert.True(topRow <= 350,
             $"miter spike too short: topmost red row was {topRow}, expected <= 350");
     }
@@ -194,7 +194,7 @@ public sealed class MiterJoinCurveRenderingTests
 
         int topRow = TopmostRedRow(png);
         Assert.True(topRow >= 0, "no stroke pixels rendered");
-        // Pre-fix Skia produced only a stub near the vertex (row ≳ 480). The
+        // Skia's own join produces only a stub near the vertex (row ≳ 480). The
         // manual miter must reach far above it.
         Assert.True(topRow <= 300,
             $"line miter spike too short: topmost red row was {topRow}, expected <= 300");

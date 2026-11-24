@@ -11,12 +11,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// Regression test for the signature/stamp mis-placement bug: a page content stream
-/// that leaves a dirty graphics state (an unbalanced <c>q</c> + top-level <c>cm</c>,
-/// common in real-world PDFs) must NOT leak that CTM into the annotation pass. Before
-/// the fix, a 75×75 signature appearance inherited a ≈0.06× scale + translate and
-/// rendered as a tiny dot in the wrong place (PDF §7.8.2 — content streams must not
-/// leak graphics state into annotations).
+/// A page content stream that leaves a dirty graphics state (an unbalanced <c>q</c> +
+/// top-level <c>cm</c>, common in real-world PDFs) must NOT leak that CTM into the annotation
+/// pass: a 75×75 signature appearance would inherit a ≈0.06× scale + translate and render as a
+/// tiny dot in the wrong place (PDF §7.8.2 — content streams must not leak graphics state into
+/// annotations).
 /// </summary>
 public sealed class AnnotationStateIsolationTests
 {

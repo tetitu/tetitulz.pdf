@@ -94,9 +94,9 @@ public class AssemblyScanMediumFollowUpTests
 
     /// <summary>
     /// An <em>empty</em> <c>/Contents</c> on an encrypted document is not reported as UA22. Under
-    /// RC4 an empty string stays empty on the wire, so before the fix this same file produced the
-    /// finding that its AES-encrypted twin did not — the verdict was about the cipher rather than
-    /// about the document.
+    /// RC4 an empty string stays empty on the wire, so judged on the wire this file would produce
+    /// the finding its AES-encrypted twin does not — a verdict about the cipher rather than about
+    /// the document.
     /// </summary>
     [Fact]
     public void EncryptedLinkWithAnEmptyContents_IsNotReportedAsUa22()
@@ -108,7 +108,7 @@ public class AssemblyScanMediumFollowUpTests
 
     /// <summary>
     /// With no encryption the emptiness rule is unchanged: an empty <c>/Contents</c> is still a
-    /// UA22 Error. Without this the fix above would read as "UA22 was switched off".
+    /// UA22 Error. Without this the test above would also pass with UA22 switched off.
     /// </summary>
     [Fact]
     public void UnencryptedLinkWithAnEmptyContents_IsStillReportedAsUa22()
@@ -121,13 +121,14 @@ public class AssemblyScanMediumFollowUpTests
 
     /// <summary>
     /// Whether the key is <em>there</em> is a dictionary fact, and encryption does not touch it. A
-    /// link with no <c>/Contents</c> at all is still UA22 on an encrypted document — the fix must
-    /// not turn the whole check off.
+    /// link with no <c>/Contents</c> at all is still UA22 on an encrypted document — the check is
+    /// not turned off.
     /// </summary>
     /// <summary>
     /// The deep checker skips a hidden annotation, and reads <c>/F</c> as a flag word to decide.
-    /// Through <c>IntValue</c> both fixtures saturated to every named flag, so an undescribed link a
-    /// reader shows was skipped as hidden. The control — <c>/F 2</c>, really Hidden — is still skipped.
+    /// Through <c>IntValue</c> both fixtures would saturate to every named flag, so an undescribed
+    /// link a reader shows would be skipped as hidden. The control — <c>/F 2</c>, really Hidden — is
+    /// skipped.
     /// </summary>
     [Theory]
     [InlineData("/F 6.5", true)]
@@ -428,8 +429,8 @@ public class AssemblyScanMediumFollowUpTests
 
     /// <summary>
     /// The range only ever widens: a Standard-14 font whose encoding names nothing below 32 still
-    /// gets exactly the array it always got. Without this the fix could have narrowed or shifted
-    /// every ordinary font's widths and this file would not have noticed.
+    /// gets exactly the array it gets without the widening. Without this a widening that narrowed
+    /// or shifted every ordinary font's widths would go unnoticed here.
     /// </summary>
     [Fact]
     public void Standard14WithNoDifferences_KeepsTheUnchangedThirtyTwoToTwoFiftyFiveRange()

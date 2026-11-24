@@ -805,8 +805,8 @@ public class ContentStreamTaggerTests
     }
 
     /// <summary>
-    /// The pre-fix behaviour, kept as an explicit statement of what a caller that lies about the
-    /// geometry gets: with <see cref="PageTagOptions.PageBottom"/> left at its default the band is
+    /// What a caller that lies about the geometry gets, stated explicitly: with
+    /// <see cref="PageTagOptions.PageBottom"/> left at its default the band is
     /// measured from the origin, so the <c>Y = 20</c> line is swallowed. This is why
     /// <c>PdfAutoTagger</c> must set <c>PageBottom</c> from the real page box (or leave both edges
     /// at 0, which disables the bands) rather than passing the upper edge alone.

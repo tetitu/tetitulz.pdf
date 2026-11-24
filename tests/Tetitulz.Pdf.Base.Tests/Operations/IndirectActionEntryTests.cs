@@ -84,7 +84,7 @@ public class IndirectActionEntryTests
     }
 
     /// <summary>
-    /// The acceptance control: a <b>direct</b> entry still works, so the fix is a widening rather
+    /// The acceptance control: a <b>direct</b> entry still works, so resolving is a widening rather
     /// than a swap.
     /// </summary>
     /// <remarks>

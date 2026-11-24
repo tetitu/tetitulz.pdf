@@ -18,24 +18,16 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// returns.
 /// </summary>
 /// <remarks>
-/// <para><b>It did, and the two answers differed by every page separator in the document.</b> The
-/// facade had two loops: with no plugin registered it called
-/// <c>PdfTextExtractor.ExtractText(doc)</c>, which joins pages with a newline; with any plugin
-/// registered it ran its own loop to get each page's text for the hooks and appended them with
-/// <b>no separator at all</b>. So a two-page file extracted as <c>"page1\npage2"</c> or
-/// <c>"page1page2"</c> depending on whether something entirely unrelated — an image decoder, an OCR
-/// engine — was registered at that moment.</para>
+/// <para><b>Two loops would differ by every page separator in the document.</b> One joining pages
+/// with a newline for no plugin, and one running its own loop for the hooks and appending with
+/// <b>no separator at all</b>, would extract a two-page file as <c>"page1\npage2"</c> or
+/// <c>"page1page2"</c> depending on whether something entirely unrelated — an image decoder, an
+/// OCR engine — was registered at that moment. In a parallel test run that surfaces only as an
+/// intermittent failure of any test that extracts the same content twice and compares.</para>
 ///
-/// <para><b>It surfaced as an intermittent test failure, which is the only way it could.</b>
-/// <c>BatesNumberingTests.StampingOneAtATimeMatchesStampingTheBundle</c> extracts the same content
-/// twice and compares; when a test class running in parallel registered or unregistered between
-/// those two extractions, the separators disappeared from one side. Ten consecutive full-suite runs
-/// did not reproduce it, so the cause was found by reading the two paths rather than by catching it
-/// in the act.</para>
-///
-/// <para><b>The fix is one loop, not two matching ones.</b> Core's whole-document overload now takes
-/// a per-page callback, so the join and the first-error aggregation exist once and observing the
-/// pages cannot change the answer.</para>
+/// <para><b>One loop, not two matching ones.</b> Core's whole-document overload takes a per-page
+/// callback, so the join and the first-error aggregation exist once and observing the pages
+/// cannot change the answer.</para>
 /// </remarks>
 [Collection(PluginHostCollection.Name)]
 public sealed class TextExtractionPluginNeutralityTests : IDisposable

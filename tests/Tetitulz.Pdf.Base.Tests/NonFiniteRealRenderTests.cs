@@ -14,12 +14,12 @@ namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
 /// A real the file supplies past ±3.4×10³⁸ is finite as a <c>double</c> and infinite as the
-/// <c>float</c> both renderers draw with. Each renderer now reads it as the rule
+/// <c>float</c> both renderers draw with. Each renderer reads it as the rule
 /// <see cref="MatrixGuard"/> states: an operator with such an operand is skipped, a graphics-state
 /// entry is ignored, and a form, pattern, annotation or page box whose geometry holds one is not
-/// drawn (a page box reads as none). The SVG writer used to write the infinity —
-/// <c>stroke-width="Infinity"</c>, <c>transform="matrix(NaN,…)"</c> — which a viewer drops for
-/// its default, so the two renderers disagreed.
+/// drawn (a page box reads as none). An SVG writer writing the infinity —
+/// <c>stroke-width="Infinity"</c>, <c>transform="matrix(NaN,…)"</c> — would have a viewer drop it
+/// for its default, and the two renderers would disagree.
 /// </summary>
 /// <remarks>
 /// Each case is three pages: the value past float's range must render exactly as the page

@@ -21,11 +21,11 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 ///
 /// <para>
 /// <c>PdfUaChecker</c> (the Conformance plugin) reads the security handler's <c>/P</c> bit 10 and
-/// keeps auditing whatever it finds there. <see cref="PdfDeepAccessibilityChecker"/> used to answer
-/// <em>any</em> encrypted document with a single UA06 Error and stop — without ever looking at the
-/// permission bits. So an encrypted but perfectly accessible file got half an audit, and the
-/// combined report could say "encrypted, cannot check" in one breath and list real findings in the
-/// next. These tests pin down the fixed behaviour:
+/// keeps auditing whatever it finds there, and <see cref="PdfDeepAccessibilityChecker"/> does the
+/// same. Answering <em>any</em> encrypted document with a single UA06 Error and stopping, without
+/// looking at the permission bits, would give an encrypted but perfectly accessible file half an
+/// audit, and a combined report that says "encrypted, cannot check" in one breath and lists real
+/// findings in the next. These tests pin down the behaviour:
 /// </para>
 /// <list type="bullet">
 ///   <item>extraction permitted ⇒ no UA06, and every structural check still runs;</item>
@@ -319,7 +319,7 @@ public class EncryptedDocumentAuditTests
         var issues = DeepCheck(BrokenStructurePdf(EncryptionMode.AccessibilityPermitted));
 
         // Every one of these is derived from dictionary structure alone, which encryption does
-        // not touch. Before the fix the whole list was replaced by a single UA06.
+        // not touch; none is replaced by a single UA06.
         Assert.NotEmpty(WithCode(issues, "UA13"));   // /S /Bogus resolves to no standard type
         Assert.NotEmpty(WithCode(issues, "UA14"));   // no /ParentTree
         Assert.NotEmpty(WithCode(issues, "UA30"));   // the <Document> subtree reaches no content

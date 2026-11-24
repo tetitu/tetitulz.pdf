@@ -149,9 +149,9 @@ public class PartialScanCoverageTests
     // =====================================================================
 
     /// <summary>
-    /// The defect: pre-fix this audit returned an issue list with no mention of page 1 at all, so a
-    /// page that might be a scan, might hold untagged text and might hold unmapped marked content
-    /// was indistinguishable from a clean one.
+    /// The defect: an issue list with no mention of page 1 at all, so a page that might be a scan,
+    /// might hold untagged text and might hold unmapped marked content would be indistinguishable
+    /// from a clean one.
     /// </summary>
     [Fact]
     public void PageWithAnUnreadableFormXObject_IsNamedInTheReport()

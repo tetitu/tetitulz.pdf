@@ -14,14 +14,10 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// What an FDF or XFDF file carries beyond its fields, and the fact that the reader says so.
 /// </summary>
 /// <remarks>
-/// <para><b>Annotations are imported now, so this file is about what is still left behind.</b>
-/// It used to be about annotations too — an export from a comment review is mostly
-/// <c>&lt;annots&gt;</c> with no fields at all, and reading one produced an empty
-/// <see cref="FormData"/> a caller could not tell from an empty file. That was closed by importing
-/// them (<see cref="AnnotationExchangeTests"/>), and the tests asserting they were <i>reported</i>
-/// were rewritten rather than re-pointed: the behaviour genuinely changed.</para>
+/// <para><b>Annotations are imported</b> (<see cref="AnnotationExchangeTests"/>), so this file is
+/// about what is left behind.</para>
 ///
-/// <para><b>What is still reported and not imported</b> is FDF's <c>/JavaScript</c>,
+/// <para><b>What is reported and not imported</b> is FDF's <c>/JavaScript</c>,
 /// <c>/Pages</c>, <c>/Differences</c> and <c>/EmbeddedFDFs</c>. Each is named individually, because
 /// dropped document-level JavaScript and a dropped page-differences dictionary are different
 /// losses, and "something was ignored" cannot be acted on.</para>
@@ -104,14 +100,12 @@ public class FormDataIgnoredContentTests
     }
 
     /// <summary>
-    /// <b>The case the whole thing was for: an annotations-only export.</b>
+    /// <b>An annotations-only export.</b>
     /// </summary>
     /// <remarks>
-    /// No fields at all, which is what a comment review looks like. It used to come back as an
-    /// empty <see cref="FormData"/> with a diagnostic saying what had been dropped; now the
-    /// annotations are simply there, and the two files differ in their content rather than in a
-    /// side channel. That is the better answer, and this test asserts it in the same place the
-    /// weaker one used to.
+    /// No fields at all, which is what a comment review looks like. The annotations are simply
+    /// there, and the two files differ in their content rather than in a side channel saying what
+    /// had been dropped.
     /// </remarks>
     [Fact]
     public void AnAnnotationsOnlyXfdfIsDistinguishableFromAnEmptyOne()

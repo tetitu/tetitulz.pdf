@@ -23,20 +23,20 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 /// <b>The defect these pin.</b> Two of the pipeline's writes are conformance <i>claims</i> rather
 /// than repairs — <c>/MarkInfo &lt;&lt;/Marked true&gt;&gt;</c> (ISO 32000-1 §14.7.1: "this
 /// document follows the Tagged PDF conventions") and the <c>pdfuaid:part</c> XMP declaration
-/// (a self-asserted PDF/UA-1 conformance claim). Both were gated on nothing but the
-/// <i>presence</i> of a <c>/StructTreeRoot</c>. A hollow tree — elements with no <c>/K</c>, no
-/// <c>/ParentTree</c>, no marked content — passes that gate while being untagged in every sense
-/// assistive technology cares about, and the pipeline knew it: the same run's audit reports
-/// UA14/UA16/UA30 against the tree. The emitted file therefore carried a PDF/UA-1 conformance
-/// claim baked into a document the very same call audited as non-conformant, and any consumer
-/// that triages on the XMP identifier read the broken file as conformant.
+/// (a self-asserted PDF/UA-1 conformance claim). Gating them on nothing but the
+/// <i>presence</i> of a <c>/StructTreeRoot</c> would let a hollow tree — elements with no
+/// <c>/K</c>, no <c>/ParentTree</c>, no marked content — pass while being untagged in every sense
+/// assistive technology cares about, though the same run's audit reports UA14/UA16/UA30 against
+/// the tree. The emitted file would carry a PDF/UA-1 conformance claim baked into a document the
+/// very same call audited as non-conformant, and any consumer that triages on the XMP
+/// identifier would read the broken file as conformant.
 /// </para>
 ///
 /// <para>
-/// The third defect is the AutoTag skip reason, which told the caller "AutoTag never replaces"
-/// an existing tree. That is false of the public <c>PdfAccessibility.AutoTag</c> API — it
-/// supersedes an existing tree and warns that it did — and it was printed on exactly the input
-/// class (a hollow tree) where that API is the fix. The round trip below asserts both halves.
+/// The third is the AutoTag skip reason, which must not tell the caller "AutoTag never
+/// replaces" an existing tree. That is false of the public <c>PdfAccessibility.AutoTag</c> API —
+/// it supersedes an existing tree and warns that it did — and a hollow tree is exactly the input
+/// class where that API is the remedy. The round trip below asserts both halves.
 /// </para>
 ///
 /// <para>Every fixture is built in memory; every assertion re-opens the produced document.</para>

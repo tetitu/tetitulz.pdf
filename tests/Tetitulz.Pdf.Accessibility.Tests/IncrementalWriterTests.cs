@@ -588,8 +588,8 @@ public class IncrementalWriterTests
 
         string appended = AppendedText(original, produced);
 
-        // The exact pre-fix output: the stream fell through PdfWriter's type ladder and was
-        // written as the literal token `null`, so the file still parsed but the page was blank.
+        // The output of a stream falling through PdfWriter's type ladder: the literal token
+        // `null`, so the file still parses but the page is blank.
         Assert.DoesNotMatch(new Regex(@"4\s+0\s+obj\s+null"), appended);
         Assert.Contains("endstream", appended, StringComparison.Ordinal);
 
@@ -722,8 +722,8 @@ public class IncrementalWriterTests
         byte[] produced = output.ToArray();
         AssertStrictAppend(original, produced);
 
-        // The pre-fix writer encoded through code page 28591, so every character above U+00FF
-        // came back as '?'. Equality — not "is non-empty" — is the assertion that catches it.
+        // A writer encoding through code page 28591 would turn every character above U+00FF
+        // into '?'. Equality — not "is non-empty" — is the assertion that catches it.
         Assert.Equal(title, TitleOf(produced));
     }
 

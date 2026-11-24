@@ -47,14 +47,13 @@ public class PdfWhitespaceTableTests
 
     /// <summary>
     /// The floor: a byte that is <b>not</b> Table 1 white space must still disqualify the header, or
-    /// the fix would be "accept anything" and the scan would start finding object headers inside
+    /// the rule would be "accept anything" and the scan would start finding object headers inside
     /// strings and streams.
     /// </summary>
     /// <remarks>
     /// <b>A digit is deliberately not among these.</b> Padding with <c>"9"</c> makes the header read
     /// <c>94 0 obj</c>, so the object is still recovered — as object 94. That is the scan working
-    /// correctly, not the guard failing, and asserting non-recovery for it was simply wrong: the
-    /// first version of this theory included <c>"9"</c> and failed for that reason.
+    /// correctly, not the guard failing, and asserting non-recovery for it would be wrong.
     /// </remarks>
     [Theory]
     [InlineData("x")]

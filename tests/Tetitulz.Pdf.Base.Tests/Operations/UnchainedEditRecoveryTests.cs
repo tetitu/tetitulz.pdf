@@ -58,7 +58,7 @@ public sealed class UnchainedEditRecoveryTests
     }
 
     /// <summary>
-    /// An edit that does <b>not</b> rewrite the catalog. Red before the fix with
+    /// An edit that does <b>not</b> rewrite the catalog. Without recovery it fails with
     /// <c>PdfParseException("Cannot find document catalog.")</c> — the loud half.
     /// </summary>
     [Fact]

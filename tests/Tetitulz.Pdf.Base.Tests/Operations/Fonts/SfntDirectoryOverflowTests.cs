@@ -15,24 +15,21 @@ namespace Tetitulz.Pdf.Base.Tests.Operations.Fonts;
 /// length must be bounds-checked in arithmetic that cannot <b>wrap</b>.
 /// </summary>
 /// <remarks>
-/// <para><c>CffParser.ExtractCffTableFromSfnt</c> tested <c>offset + length &gt; (uint)d.Length</c>
-/// with both operands <c>uint</c>. An entry declaring offset <c>0xFFFFFFF0</c> and length
-/// <c>0x20</c> sums to <c>0x10</c>, which is smaller than any real font, so the guard passed —
-/// and then <c>(int)offset</c> is <c>-16</c> and <c>Array.Copy</c> threw
-/// <see cref="ArgumentOutOfRangeException"/>.</para>
+/// <para>A test of <c>offset + length &gt; (uint)d.Length</c> with both operands <c>uint</c>
+/// wraps: an entry declaring offset <c>0xFFFFFFF0</c> and length <c>0x20</c> sums to <c>0x10</c>,
+/// which is smaller than any real font, so the guard would pass — and then <c>(int)offset</c> is
+/// <c>-16</c> and <c>Array.Copy</c> throws <see cref="ArgumentOutOfRangeException"/>.</para>
 ///
-/// <para><b>Why it escaped.</b> The sfnt branch runs <i>before</i> the <c>try</c> that wraps the
-/// rest of <c>CffParser.Parse</c>, so the exception left a documented <c>bool</c>-plus-<c>reason</c>
-/// API. <see cref="PdfFontSubsetter.TryMapCodePointsToCffGlyphs"/> declares only
-/// <see cref="ArgumentNullException"/> and its callers test the return value and read
-/// <c>LastFailureReason</c> — none of them catch.</para>
+/// <para><b>Why that would escape.</b> The sfnt branch runs <i>before</i> the <c>try</c> that
+/// wraps the rest of <c>CffParser.Parse</c>, so the exception would leave a documented
+/// <c>bool</c>-plus-<c>reason</c> API. <see cref="PdfFontSubsetter.TryMapCodePointsToCffGlyphs"/>
+/// declares only <see cref="ArgumentNullException"/> and its callers test the return value and
+/// read <c>LastFailureReason</c> — none of them catch.</para>
 ///
-/// <para><b>The fix had already landed three times.</b> <c>SfntTablePruner</c> and
-/// <c>CffSubsetter</c> both did the same test in <c>long</c> and returned a clean refusal; only this
-/// fourth reader kept the wrapping one. That is this repository's recurring shape — one copy of a
-/// rule left behind — and it is why the assertion below is on the <b>refusal</b>, not on the
-/// absence of a crash: returning <c>false</c> with a reason is the contract, and a test that only
-/// caught the throw would pass if the method started returning garbage instead.</para>
+/// <para><b>The assertion is on the refusal</b>, as <c>SfntTablePruner</c> and
+/// <c>CffSubsetter</c> refuse (both test in <c>long</c>), not on the absence of a crash:
+/// returning <c>false</c> with a reason is the contract, and a test that only caught the throw
+/// would pass if the method started returning garbage instead.</para>
 /// </remarks>
 public class SfntDirectoryOverflowTests
 {

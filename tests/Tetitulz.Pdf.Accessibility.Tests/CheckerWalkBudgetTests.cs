@@ -236,10 +236,10 @@ public class CheckerWalkBudgetTests
     /// derives from a truncated <c>/ParentTree</c> would otherwise be an accusation about coverage
     /// the walk never reached.
     ///
-    /// <para><b>Pre-fix behaviour:</b> the walk ran all 410 240 slot resolves to completion and
-    /// returned <c>error == null</c>, so no Info issue was emitted and the audit silently presented
-    /// a fully-walked result. At <i>n</i> = 64 000 the same file — a few hundred kilobytes inside an
-    /// object stream — is roughly 4·10⁹ resolves.</para>
+    /// <para><b>Unguarded,</b> the walk would run all 410 240 slot resolves to completion and
+    /// return <c>error == null</c>, so no Info issue would be emitted and the audit would silently
+    /// present a fully-walked result. At <i>n</i> = 64 000 the same file — a few hundred kilobytes
+    /// inside an object stream — is roughly 4·10⁹ resolves.</para>
     /// </summary>
     [Fact]
     public void ParentTreeSharingOneKidsArray_IsTruncatedAndSaidSo()
@@ -285,8 +285,8 @@ public class CheckerWalkBudgetTests
     /// <summary>
     /// A <c>/ParentTree</c> node that cannot be parsed is a tree read in part, and UA14 says so — with
     /// the reason. The parser answers an unparseable object with the null object, as it does an
-    /// undefined one, so the walk used to read the node as an empty subtree and the map as whole;
-    /// every "no element claims this MCID" it then derived was an accusation about a tree it had
+    /// undefined one, so a walk reading it as an empty subtree would call the map whole, and every
+    /// "no element claims this MCID" it then derived would be an accusation about a tree it had
     /// not read. The body is a stray array close, the one shape the tolerant parser refuses.
     /// </summary>
     [Fact]
@@ -374,11 +374,10 @@ public class CheckerWalkBudgetTests
     /// The walk must charge per <c>/Kids</c> slot and stop when the ceiling is reached, saying so
     /// through <see cref="AccessibilityDiagnostics"/>.
     ///
-    /// <para><b>Pre-fix behaviour:</b> the budget was spent once per node expanded, so this file
-    /// touched it 901 times out of 200 000 while performing 202 951 resolves; no diagnostic was
-    /// raised and nothing bounded the walk. The message is asserted on the word "slots" precisely
-    /// because the old exhaustion message said "nodes" — it could not be produced by the old
-    /// code at any <i>n</i> this test could build.</para>
+    /// <para><b>Charged once per node expanded instead,</b> the budget would be touched 901 times
+    /// out of 200 000 while this file performs 202 951 resolves; no diagnostic would be raised and
+    /// nothing would bound the walk. The message is asserted on the word "slots" because a
+    /// per-node budget's exhaustion message says "nodes".</para>
     /// </summary>
     [Fact]
     public void PageTreeSharingOneKidsArray_StopsAtTheSlotCeilingAndReportsIt()

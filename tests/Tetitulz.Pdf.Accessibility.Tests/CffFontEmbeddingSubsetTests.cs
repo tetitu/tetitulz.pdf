@@ -229,8 +229,8 @@ public class CffFontEmbeddingSubsetTests
 
     /// <summary>
     /// A bare CFF (<c>/FontFile3 /Type1C</c>) has no cmap, so the obvious
-    /// <c>TrueTypeFontProgram.TryGetGlyph</c> answers nothing for it — which is why this whole font
-    /// shape declined for the first half of this round. It resolves through the font's own glyph
+    /// <c>TrueTypeFontProgram.TryGetGlyph</c> answers nothing for it, and through it this whole
+    /// font shape would decline. It resolves through the font's own glyph
     /// <b>names</b> instead, which is a fact the font states rather than a guess about it.
     /// </summary>
     [Fact]

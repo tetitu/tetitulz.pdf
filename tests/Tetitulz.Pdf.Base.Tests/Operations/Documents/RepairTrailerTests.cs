@@ -17,9 +17,9 @@ namespace Tetitulz.Pdf.Base.Tests.Operations.Documents;
 /// newest of the file's trailers that has each.
 /// </summary>
 /// <remarks>
-/// Only the last <c>trailer</c> keyword used to be read, and the parser's recovery reads only that
-/// one too, so a file whose last trailer names nothing but <c>/Size</c> came out of repair without
-/// its document information or identifier. None of these fixtures has a <c>startxref</c>, so the
+/// The parser's recovery reads only the last <c>trailer</c> keyword, so reading that one alone
+/// would bring a file whose last trailer names nothing but <c>/Size</c> out of repair without its
+/// document information or identifier. None of these fixtures has a <c>startxref</c>, so the
 /// parser recovers by scanning as well.
 /// </remarks>
 public sealed class RepairTrailerTests

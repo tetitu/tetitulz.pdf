@@ -182,7 +182,7 @@ public class FormFieldAppearanceStreamTests
     /// <summary>
     /// A default value the appearance font cannot encode is left for the viewer to draw — on a form
     /// that already existed without <c>/NeedAppearances</c>, the case where nothing else asks it to.
-    /// It used to be Latin-1 encoded into question marks and drawn as those.
+    /// Latin-1 encoded, it would be drawn as question marks.
     /// </summary>
     [Fact]
     public void ADefaultValueTheAppearanceFontCannotEncodeIsLeftToTheViewer()

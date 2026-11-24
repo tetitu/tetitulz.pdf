@@ -319,8 +319,8 @@ public class ColorSpaceConverterReachAndKeyTests
     }
 
     /// <summary>
-    /// The resource dictionary used to be reported by its keys: "CS0" in a list whose names promise
-    /// "DeviceRGB", "ICCBased". A space is reported by its family.
+    /// A space is reported by its family, not by the resource dictionary's key: "CS0" in a list
+    /// whose names promise "DeviceRGB", "ICCBased" would say nothing.
     /// </summary>
     [Fact]
     public void AResourceColourSpaceIsReportedByItsFamilyNotItsResourceName()

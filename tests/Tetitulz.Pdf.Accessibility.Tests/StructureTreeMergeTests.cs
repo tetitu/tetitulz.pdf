@@ -27,7 +27,7 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 /// that did not check <i>which</i> root came back would pass under both.</para>
 ///
 /// <para><b>The interesting document is the half-tagged one</b> — a tree that reaches page 1 and
-/// not page 2 — because that is the case the pipeline previously refused outright. Page 1 must come
+/// not page 2 — because that is the case a superseding pipeline would refuse outright. Page 1 must come
 /// back untouched and page 2 must come back tagged, and the parent tree must define both their
 /// keys: one entry it inherited and one it wrote.</para>
 /// </remarks>

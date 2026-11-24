@@ -15,29 +15,22 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// <remarks>
 /// <para><b>A characterisation test: it proves nothing about correctness, and that is not its
 /// job.</b> The layout rules — function patterns, the reserved map, the mask functions, the zigzag
-/// data order, the format code — were moved out of the encoder so a reader could share them, and
-/// the value of that move rested on the encoder still producing exactly what it produced before.
-/// Nothing else in the tree could have told a faithful extraction from a subtly different one,
-/// because every other QR assertion in this suite goes through the encoder itself.</para>
+/// data order, the format code — live outside the encoder so a reader can share them, and nothing
+/// else in the tree can tell a faithful layout from a subtly different one, because every other QR
+/// assertion in this suite goes through the encoder itself.</para>
 ///
-/// <para><b>It earned its place on the first run.</b> The hashes below are <i>not</i> the ones the
-/// encoder produced before the extraction — and chasing that difference is what surfaced a defect
-/// that had shipped: <c>PlaceData</c> marked each data module as <i>reserved</i> as it wrote it, and
-/// masking skips reserved modules, so by the time the mask ran there was nothing left to apply it
-/// to. Every QR code this library produced went out <b>unmasked, with a format field announcing a
-/// mask</b> — which any conforming reader would then undo, turning the payload into noise.
-/// <c>QrGridReaderTests.AnUnmaskedGridDoesNotDecode</c> is the standing regression test, and its
-/// evidence is Reed–Solomon rather than this library's own opinion.</para>
+/// <para><b>What a moved hash can mean.</b> A data module marked <i>reserved</i> as it is written
+/// would be skipped by masking, sending every QR code out <b>unmasked, with a format field
+/// announcing a mask</b> — which any conforming reader then undoes, turning the payload into
+/// noise; <c>QrGridReaderTests.AnUnmaskedGridDoesNotDecode</c> holds that, on Reed–Solomon's
+/// evidence rather than this library's own opinion. And a format field written at the transpose
+/// of the standard's positions, read there by this library's reader, passes every round trip
+/// while an independent reader finds no symbol; the positions are the standard's
+/// (<c>QrLayout.FormatPositionA</c>), and the reader is held to symbols an independent encoder
+/// made (<c>QrThirdPartySymbolTests</c>).</para>
 ///
 /// <para><b>So these hashes move only alongside a stated reason</b>, and the reason is the point.
 /// A pin updated to make a run go green is worse than no pin at all.</para>
-///
-/// <para><b>They moved on 2026-10-18, for the second shipped defect of this kind.</b> Both copies of
-/// the format field were written at the transpose of the standard's positions, and the reader read
-/// them there, so every round trip passed while an independent reader found no symbol in this library's QR
-/// codes. With the positions the standard's (<c>QrLayout.FormatPositionA</c>), an independent reader decodes
-/// these payloads and versions 8 and 10 alike; the reader is now held to symbols an independent
-/// encoder made (<c>QrThirdPartySymbolTests</c>), which is what would have caught it.</para>
 /// </remarks>
 public class QrCodeEncoderPinTests
 {

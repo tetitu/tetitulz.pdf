@@ -9,13 +9,13 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
-/// Adversarial regression from remediation round 37: the <c>/Length</c> clamp lived in
-/// <c>PdfDecryptor.Decrypt</c> and inside <c>ComputeEncryptionKey</c>, but the public fast
-/// brute-force API (<see cref="PdfDecryptor.GetEncryptionInfo"/> + <see cref="PdfDecryptor.TryPassword"/>)
-/// never ran that validation, and <c>RecoverUserPasswordFromOwner</c> used an unclamped
-/// <c>keyLenBytes = KeyLengthBits / 8</c> as a <c>Buffer.BlockCopy</c> count against the fixed
-/// 16-byte MD5 digest. A standard-handler dict with <c>/Length 136</c> (or larger/negative)
-/// produced an uncaught <c>ArgumentException</c> (or OOM). The fix clamps keyLenBytes to 5..16.
+/// Adversarial input for the <c>/Length</c> clamp on the public fast brute-force API
+/// (<see cref="PdfDecryptor.GetEncryptionInfo"/> + <see cref="PdfDecryptor.TryPassword"/>), as
+/// well as <c>PdfDecryptor.Decrypt</c> and <c>ComputeEncryptionKey</c>. An unclamped
+/// <c>keyLenBytes = KeyLengthBits / 8</c> used as a <c>Buffer.BlockCopy</c> count against the
+/// fixed 16-byte MD5 digest would let a standard-handler dict with <c>/Length 136</c> (or
+/// larger/negative) raise an uncaught <c>ArgumentException</c> (or OOM). keyLenBytes is clamped
+/// to 5..16.
 /// </summary>
 public class EncryptionKeyLengthDosTests
 {

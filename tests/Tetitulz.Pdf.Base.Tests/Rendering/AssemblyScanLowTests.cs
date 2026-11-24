@@ -107,7 +107,7 @@ public sealed class AssemblyScanLowTests : IDisposable
 
     /// <summary>
     /// The control: when nothing runs the script the throwing plugin's reason is still what the
-    /// caller is told, so the fix did not make the failure path silent.
+    /// caller is told, so the failure path is not silent.
     /// </summary>
     [Fact]
     public void AThrowingPluginsReasonSurvivesWhenNothingRunsTheScript()

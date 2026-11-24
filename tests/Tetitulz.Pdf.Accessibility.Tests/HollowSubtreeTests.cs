@@ -691,8 +691,8 @@ public class HollowSubtreeTests
     // =====================================================================
 
     /// <summary>
-    /// A Document with one healthy paragraph and one empty one. This is the case UA16 has always
-    /// caught, and it must keep behaving exactly as before: one UA16 against the empty leaf, and
+    /// A Document with one healthy paragraph and one empty one. This is UA16's own case: one UA16
+    /// against the empty leaf, and
     /// <b>no</b> UA30, because the Document itself reaches content and an empty leaf is not a
     /// subtree.
     /// </summary>

@@ -273,8 +273,8 @@ public class AssemblyScanMediumRenderingTests
     }
 
     /// <summary>
-    /// The direct spelling of the same dictionary must be unchanged, so the fix is a superset of
-    /// the old behaviour rather than a different reading.
+    /// The direct spelling of the same dictionary reads the same, so resolving is a superset of
+    /// the direct reading rather than a different one.
     /// </summary>
     [Theory]
     [InlineData("/JBIG2Decode", "JBIG2Decode")]

@@ -25,8 +25,7 @@ public sealed class PdfRealFileRenderTests
     private readonly ITestOutputHelper _out;
 
     // Resolved via TestCorpus; null when the (gitignored) corpus is absent, in which case
-    // [CorpusFact] skips. Previously this fell back to a hardcoded c:\myapp\... path and
-    // then hard-asserted on it, so the test failed outright on any clean checkout.
+    // [CorpusFact] skips.
     private static string? PdfFolder => TestCorpus.Root;
 
     public PdfRealFileRenderTests(ITestOutputHelper output) => _out = output;

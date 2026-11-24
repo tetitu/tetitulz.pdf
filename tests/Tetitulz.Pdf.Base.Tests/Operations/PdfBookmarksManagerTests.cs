@@ -30,10 +30,9 @@ public sealed class PdfBookmarksManagerTests
     }
 
     /// <summary>
-    /// Regression: bookmark /Dest that is a named destination string (PdfString key into
-    /// the /Names /Dests name tree) previously returned null page number because
-    /// ResolvePageNumber only handled PdfArray, not named-dest strings. Bookmark click
-    /// did nothing (tag = -1, guard pageIndex >= 0 failed).
+    /// A bookmark /Dest that is a named destination string (PdfString key into the /Names /Dests
+    /// name tree) resolves to its page. Handling PdfArray alone would return a null page number,
+    /// and a bookmark click would do nothing (tag = -1, guard pageIndex >= 0 failed).
     /// </summary>
     [Fact]
     public void GetBookmarks_NamedDest_ViaNameTree_ResolvesPage()

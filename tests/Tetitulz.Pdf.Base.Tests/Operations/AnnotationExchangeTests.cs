@@ -49,9 +49,9 @@ public class AnnotationExchangeTests
     /// An FDF carrying only annotations reads back as annotations, not as an empty file.
     /// </summary>
     /// <remarks>
-    /// This is the case the gap row was about: an FDF exported from a comment review has no fields
-    /// at all, and used to come back as an empty <c>FormData</c> with nothing to distinguish it from
-    /// a file that really was empty.
+    /// An FDF exported from a comment review has no fields at all; read as fields alone, it would
+    /// come back as an empty <c>FormData</c> with nothing to distinguish it from a file that really
+    /// was empty.
     /// </remarks>
     [Fact]
     public void AnFdfCarryingOnlyAnnotationsReadsThemRatherThanNothing()

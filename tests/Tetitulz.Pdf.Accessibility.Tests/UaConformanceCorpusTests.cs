@@ -20,10 +20,9 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 /// <remarks>
 /// <para>The plugin's own corpus test runs <c>PdfUaChecker</c> alone; the structure rules — 7.2's
 /// parent and child elements, 7.4's headings, 7.5's tables — are the deep checker's, so only the audit
-/// can be held to those files. Its first run (2026-10-19) found the deep checker failing four files
-/// the published profiles passes: UA11 required an LBody in a list item, UA18 counted a form's own content items
-/// against its page, UA20 refused Identity-H over Adobe-Japan1, and UA14 is the deliberate strictness
-/// the plugin's UA50 shares.</para>
+/// can be held to those files: an LBody is not required in a list item (UA11), a form's own content
+/// items are not counted against its page (UA18), Identity-H over Adobe-Japan1 is accepted (UA20),
+/// and UA14 is the deliberate strictness the plugin's UA50 shares.</para>
 /// <para>Every file's verdict — no error-severity issue, or some — must match its name unless
 /// <c>verapdf-audit-disagreements.tsv</c> beside this file lists it, with its reason; the list only
 /// shrinks, as the plugin's does.</para>

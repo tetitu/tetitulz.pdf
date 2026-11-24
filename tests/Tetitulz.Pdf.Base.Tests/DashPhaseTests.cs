@@ -74,8 +74,8 @@ public sealed class DashPhaseTests
     [Fact]
     public void OddLengthArray_NegativePhase_DoesNotUseSingleSumPeriod()
     {
-        // The pre-fix bug reduced -1 modulo the single sum (40) → phase 39, which
-        // is half a period off and renders a visibly different (inverted) dash.
+        // Reducing -1 modulo the single sum (40) would give phase 39, which is half
+        // a period off and renders a visibly different (inverted) dash.
         using var negative   = RenderDashedLine("[ 20 0 0 10 10 ] -1");
         using var buggyPhase = RenderDashedLine("[ 20 0 0 10 10 ] 39");
 

@@ -119,9 +119,9 @@ public class LowSeverityScanFindingTests
     // ==================================================================
 
     /// <summary>
-    /// The sibling position used to come from <c>siblings.IndexOf(i)</c> — a linear scan per item.
-    /// It is now recorded during the grouping pass, so this pins that /Prev, /Next, /First and
-    /// /Last still chain in document order.
+    /// The sibling position is recorded during the grouping pass, not found by
+    /// <c>siblings.IndexOf(i)</c> — a linear scan per item — so this pins that /Prev, /Next, /First
+    /// and /Last chain in document order.
     /// </summary>
     [Fact]
     public void WriteBookmarks_LinksSiblingsInOrderWithPrevAndNext()

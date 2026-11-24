@@ -87,13 +87,13 @@ public class IccLutProfileTests
 
     /// <summary>
     /// An RGB profile carrying <b>only</b> an <c>A2B0</c> lut and no <c>rXYZ</c>/<c>gXYZ</c>/
-    /// <c>bXYZ</c> matrix. It used to report "missing one of the rXYZ/gXYZ/bXYZ tags" and stop;
-    /// the matrix form is still preferred when present, and this is the fall-through.
+    /// <c>bXYZ</c> matrix is evaluated through the lut, not refused as "missing one of the
+    /// rXYZ/gXYZ/bXYZ tags"; the matrix form is preferred when present, and this is the fall-through.
     /// </summary>
     /// <remarks>
     /// Asserted on the profile at absolute colorimetric, which reads the same table uncompensated.
     /// The fixture's lut is one colour everywhere, so its darkest colorant — its black point — is
-    /// that colour, and black-point compensation (on by default since 2026-10-03, as the reference renderer and
+    /// that colour, and black-point compensation (on by default, as the reference renderer and
     /// a common viewer have it) would take it to black: right for the profile, useless for this claim.
     /// </remarks>
     [Fact]

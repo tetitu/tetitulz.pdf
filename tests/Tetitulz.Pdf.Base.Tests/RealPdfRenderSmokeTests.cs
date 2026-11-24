@@ -18,11 +18,10 @@ namespace Tetitulz.Pdf.Base.Tests;
 /// Smoke-tests that render the first 5 pages of every PDF in the developer-local
 /// corpus (see <see cref="TestCorpus"/>).
 ///
-/// These used to be unable to fail: a per-page exception was logged and skipped with
-/// <c>continue</c>, and a file that yielded zero pages logged "SKIPPED" instead of
-/// asserting — so ~40 results were reported green no matter what the renderer did.
-/// Now every page-level error is collected and reported as a failure at the end, and
-/// a file the parser cannot get a single page out of fails too.
+/// Every page-level error is collected and reported as a failure at the end, and a file the
+/// parser cannot get a single page out of fails too — a per-page exception logged and skipped
+/// with <c>continue</c>, or a file yielding zero pages logged as "SKIPPED", would report green
+/// no matter what the renderer did.
 ///
 /// When the corpus is absent the tests report as *skipped*, not passed.
 /// Set TETITULZ_PDF_DUMP_RENDERS to also dump output to
@@ -142,8 +141,8 @@ public sealed class RealPdfRenderSmokeTests
 
     /// <summary>
     /// Fails the test if any page errored, or if not a single page could be produced.
-    /// A corpus file the parser cannot get one page out of is a real regression signal —
-    /// it used to be logged as "SKIPPED" and reported green.
+    /// A corpus file the parser cannot get one page out of is a real regression signal, not a
+    /// "SKIPPED" reported green.
     /// </summary>
     private static void AssertNoFailures(string name, int rendered, List<string> failures, string unit)
     {

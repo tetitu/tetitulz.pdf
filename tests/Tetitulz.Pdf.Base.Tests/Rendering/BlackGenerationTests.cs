@@ -18,12 +18,11 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// </summary>
 /// <remarks>
 /// <para>Held to the reference renderer's separation output under <c>-dUseFastColor=true</c>, the path on which it
-/// reads them (2026-10-22): <c>0.2 0.4 0.6 rg</c> under BG(k) = k/2, UCR(k) = 0 inks 204, 153, 102, 51;
+/// reads them: <c>0.2 0.4 0.6 rg</c> under BG(k) = k/2, UCR(k) = 0 inks 204, 153, 102, 51;
 /// under BG(k) = k, UCR(k) = k, 102, 51, 0, 102. Its own default is no black generation; this renderer's
-/// is the exact inverse of <c>CmykToRgb</c>, kept where the file sets neither. The reference renderer carried a
+/// is the exact inverse of <c>CmykToRgb</c>, kept where the file sets neither. The reference renderer carries a
 /// <c>gs</c>'s functions past the <c>Q</c> that closed it; they are graphics-state parameters (Table 52),
-/// which <c>Q</c> restores, and here they are restored. Until 2026-10-22 all four keys were parsed,
-/// ignored and reported.</para>
+/// which <c>Q</c> restores, and here they are restored.</para>
 /// </remarks>
 public class BlackGenerationTests
 {

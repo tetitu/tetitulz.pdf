@@ -44,12 +44,12 @@ public class SharedFormTaggingTests
     /// text inside the form it draws marked.
     /// </summary>
     /// <remarks>
-    /// The tagger used to read the page's <i>own</i> <c>/Resources</c> key when collecting the
-    /// names a page invokes. An inheriting page has no such key, so the lookup yielded null, the
-    /// form was never inventoried, and the page was reported partially tagged with
-    /// "an XObject was invoked but no /XObject resource dictionary resolves" — a message about the
-    /// file, describing a limitation of the reader. Form tagging did nothing at all for any
-    /// document laying its resources out this way, which is a common and entirely valid layout.
+    /// An inheriting page has no <i>own</i> <c>/Resources</c> key, so reading that key when
+    /// collecting the names a page invokes would yield null, the form would never be inventoried,
+    /// and the page would be reported partially tagged with "an XObject was invoked but no
+    /// /XObject resource dictionary resolves" — a message about the file, describing a limitation
+    /// of the reader. Form tagging would do nothing for any document laying its resources out this
+    /// way, which is a common and entirely valid layout.
     /// </remarks>
     [Fact]
     public void AutoTag_PageInheritingItsResources_TagsTheFormItDraws()
@@ -73,19 +73,20 @@ public class SharedFormTaggingTests
     /// <remarks>
     /// <para>
     /// Page 2 here carries marked content the tagger cannot read exactly — one sequence nested
-    /// inside another — so it declines the page, and the names it invokes used to be recorded only
-    /// <i>after</i> that decline returned, so the form looked as though a single page drew it.
-    /// (Merely <i>having</i> marked content is no longer a refusal: a page whose sequences can be
-    /// read is completed instead, which is what
+    /// inside another — so it declines the page. Were the names it invokes recorded only
+    /// <i>after</i> that decline returned, the form would look as though a single page drew it.
+    /// (Merely <i>having</i> marked content is not a refusal: a page whose sequences can be read is
+    /// completed instead, which is what
     /// <see cref="AutoTag_FormAlsoDrawnByACompletedPage_IsDuplicatedSoBothPagesAreTagged"/>
-    /// covers. Nesting is one of the shapes that still cannot be reasoned about.) It was tagged in place, and page 2 ended up drawing content
-    /// whose owning structure element names page 1 as its <c>/Pg</c>. A wrong tree that validates,
-    /// which is the same failure class <c>/Stm</c> exists to prevent.
+    /// covers. Nesting is one of the shapes that cannot be reasoned about.) Tagged in place, page 2
+    /// would end up drawing content whose owning structure element names page 1 as its
+    /// <c>/Pg</c>: a wrong tree that validates, the same failure class <c>/Stm</c> exists to
+    /// prevent.
     /// </para>
     /// <para>
     /// <b>The assertion is on the object page 2 actually draws</b>, not on the tagger's report, so
-    /// it holds both before duplication existed (nothing is tagged) and after (page 1 draws a
-    /// clone, page 2 keeps the pristine original). A skipped page is never given a copy: it has no
+    /// it holds whether the form is left untagged or page 1 draws a clone while page 2 keeps the
+    /// pristine original. A skipped page is never given a copy: it has no
     /// page-level <c>/StructParents</c>, so structural marked content inside a form it draws would
     /// manufacture a UA18 finding.
     /// </para>

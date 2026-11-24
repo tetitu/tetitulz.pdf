@@ -15,9 +15,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
-/// <c>/Subtype</c> is the single most-repeated instance of this defect class in the tree: it was
-/// read without following an indirect reference at <b>fourteen</b> sites across ten files, and at
-/// every one of them the null <c>continue</c>s or returns, so the object is dropped.
+/// <c>/Subtype</c> is the most-read gate of this defect class: it is read at <b>fourteen</b> sites
+/// across ten files, and at every one of them a read that does not follow an indirect reference
+/// yields null, which <c>continue</c>s or returns, so the object is dropped.
 /// </summary>
 /// <remarks>
 /// <para><b>Why it concentrates on this key.</b> <c>/Subtype</c> is a gate — it is read to decide
@@ -30,28 +30,26 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// whole class expensive: a caller cannot tell "this PDF has no attachments" from "I could not read
 /// the annotation that says so".</para>
 ///
-/// <para>The register named ten of the fourteen. The other four were siblings in the same files —
-/// <c>PdfRichMediaExtractor</c> reads it twice, <c>PdfColorSpaceConverter</c> twice,
-/// <c>PdfImageReplacer</c> twice and <c>PdfAttachmentManager</c> three times. <b>Fix the family,
-/// not the row.</b></para>
+/// <para>Several of the fourteen are siblings in one file — <c>PdfRichMediaExtractor</c> reads it
+/// twice, <c>PdfColorSpaceConverter</c> twice, <c>PdfImageReplacer</c> twice and
+/// <c>PdfAttachmentManager</c> three times. <b>The family, not one row.</b></para>
 ///
 /// <para>Each case here asserts on the object the code produced. "The call returned a list" is
 /// satisfied by the empty list every one of these defects produces.</para>
 ///
-/// <para><b>Coverage is 4 sites of the 14, and saying so is the point.</b> Mutation-verified here:
+/// <para><b>Coverage is 4 sites of the 14, and saying so is the point.</b> Mutation-verified:
 /// <c>PdfTextExtractor</c> (form text), <c>PdfImageReplacer</c> (image discovery),
 /// <c>PdfOperations.FacadeCompleteness</c> (font subtype) and <c>PdfAttachmentManager</c>
-/// (attachment annotation). <b>Not covered</b>, and therefore fixed on the strength of the shared
+/// (attachment annotation). <b>Not covered</b>, and resolved on the strength of the shared
 /// shape alone: <c>PdfTemplateEngine</c>, <c>PdfRichMediaExtractor</c> (×2),
 /// <c>PdfStructuredTextExtractor</c>, <c>PdfImageExporter</c>, <c>PdfImageReplacer</c>'s second
 /// site, <c>PdfColorSpaceConverter</c> (×2), <c>PdfAttachmentManager</c>'s two MIME reads, and
 /// <c>Core.Fonts.PdfFont</c>.</para>
 ///
-/// <para>That list is written down rather than left implicit because a family fixed together
-/// otherwise gets <i>believed</i> together — the trap this suite hit two commits earlier, where a
-/// mutation of an uncovered family member survived and only then revealed that its fixture had
-/// never contained the indirect spelling. Adding a case per site is the fix; until then this
-/// paragraph is the honest statement of what is proven.</para>
+/// <para>That list is written down rather than left implicit because a family handled together
+/// otherwise gets <i>believed</i> together: a mutation of an uncovered member survives, and its
+/// fixture may never contain the indirect spelling. Adding a case per site closes it; until then
+/// this paragraph is the honest statement of what is proven.</para>
 /// </remarks>
 public class IndirectSubtypeReadTests
 {

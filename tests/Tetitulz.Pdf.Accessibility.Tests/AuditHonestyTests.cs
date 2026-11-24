@@ -420,7 +420,7 @@ public class AuditHonestyTests
     public void Audit_MissingMarkInfo_StillReportsUa01()
     {
         // The other direction: UA01 must still fire when the entry really is absent, otherwise
-        // the fix above would just be a check that stopped working.
+        // the test above would also pass for a check that stopped working.
         AccessibilityAuditReport report = Audit(SinglePageTaggedPdf(string.Empty));
 
         AccessibilityIssue ua01 = Assert.Single(WithCode(report, "UA01"));

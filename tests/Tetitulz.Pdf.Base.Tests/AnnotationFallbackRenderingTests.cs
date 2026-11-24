@@ -19,10 +19,9 @@ namespace Tetitulz.Pdf.Base.Tests;
 /// </summary>
 /// <remarks>
 /// These assert on <b>decoded pixels</b>: that the fallback painted, that it painted inside the
-/// annotation's /Rect, and that it used the declared colour. They previously asserted only
-/// <c>NotNull</c>/<c>NotEmpty</c> on the PNG, which every one of them would still have done with
-/// annotation fallback rendering deleted outright — the page content stream here is <c>q Q</c>,
-/// so a blank page encodes to a perfectly valid non-empty PNG.
+/// annotation's /Rect, and that it used the declared colour. <c>NotNull</c>/<c>NotEmpty</c> on
+/// the PNG would pass with annotation fallback rendering deleted outright — the page content
+/// stream here is <c>q Q</c>, so a blank page encodes to a perfectly valid non-empty PNG.
 /// </remarks>
 public sealed class AnnotationFallbackRenderingTests
 {
@@ -504,14 +503,12 @@ public sealed class AnnotationFallbackRenderingTests
     /// <c>/Rect</c> in the SVG exporter too.
     /// </summary>
     /// <remarks>
-    /// <para>§12.5.6.10 makes <c>/QuadPoints</c> optional. The raster path has always filled the
-    /// <c>/Rect</c> when a Highlight declares none; the SVG path read the quads with
-    /// <c>out _</c>, discarding the very flag the shared reader exposes for this, so its
-    /// <c>&lt;g data-annot-subtype="Highlight"&gt;</c> closed <b>empty</b> — the annotation drew
-    /// when rendered and vanished when exported.</para>
-    /// <para>It survived the consolidation of the other three divergences in this pair because
-    /// there were no SVG annotation tests at all when that consolidation was written. Asserted on
-    /// the parsed geometry rather than "some element was emitted": the fallback's whole claim is
+    /// <para>§12.5.6.10 makes <c>/QuadPoints</c> optional, and both paths fill the <c>/Rect</c> when
+    /// a Highlight declares none. Reading the quads with <c>out _</c>, discarding the very flag the
+    /// shared reader exposes for this, would close the SVG's
+    /// <c>&lt;g data-annot-subtype="Highlight"&gt;</c> <b>empty</b> — the annotation drawing when
+    /// rendered and vanishing when exported.</para>
+    /// <para>Asserted on the parsed geometry rather than "some element was emitted": the fallback's whole claim is
     /// that it covers the <i>/Rect</i>, so a shape of any other size would satisfy a presence
     /// check while still being the wrong picture.</para>
     /// </remarks>
@@ -573,9 +570,8 @@ public sealed class AnnotationFallbackRenderingTests
     }
 
     /// <summary>
-    /// Regression: before the fix, annotations without /AP were silently skipped
-    /// (the code did <c>if (apObj == null) continue;</c> at the top of the loop
-    /// rather than routing to the fallback renderer).  A visible annotation must
+    /// An annotation without /AP is routed to the fallback renderer, not skipped by an
+    /// <c>if (apObj == null) continue;</c> at the top of the loop. A visible annotation must
     /// produce a PNG that differs from an identical but hidden (F=2) one.
     /// </summary>
     [Fact]
@@ -750,8 +746,8 @@ public sealed class AnnotationFallbackRenderingTests
         //   • The Widget AP stream uses /ZaDb font but carries no /Resources itself.
         //   • The AcroForm /DR dict defines /ZaDb → ZapfDingbats.
         //   • The page /Resources do NOT define /ZaDb.
-        // Before the fix, the renderer fell back to page.Resources, where /ZaDb was
-        // absent, causing a font-not-found diagnostic.  After the fix it uses /DR.
+        // Falling back to page.Resources, where /ZaDb is absent, would raise a
+        // font-not-found diagnostic; the renderer uses /DR.
         byte[] pdf = BuildPdfWithAcroFormDrWidget();
 
         using var bmp = PixelAssert.Render(pdf);

@@ -287,8 +287,8 @@ public class DataMatrixReaderTests
     /// an independent reader's Version 15, <c>ECBlocks(42, ECB(2, 102))</c>): block <i>b</i> is data codewords
     /// <i>b</i>, <i>b</i>+2, … and error-correction codewords 204 + <i>b</i>, 204 + <i>b</i> + 2, …,
     /// and each block's 42 error-correction codewords are that block's own code. De-interleaved here
-    /// by that rule, not by the library's helper; the control is the single-block code the encoder
-    /// used to write, which these codewords are not.
+    /// by that rule, not by the library's helper; the control is a single-block code, which these
+    /// codewords are not.
     /// </summary>
     [Fact]
     public void ALargestSquareSymbol_IsTwoInterleavedBlocks_EachItsOwnCode()

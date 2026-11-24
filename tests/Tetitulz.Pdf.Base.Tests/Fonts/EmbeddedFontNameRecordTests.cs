@@ -21,17 +21,15 @@ namespace Tetitulz.Pdf.Base.Tests.Fonts;
 /// <remarks>
 /// <para><b>The defect.</b> A <c>name</c> table carries one record per language, and the
 /// conventional sort is platform, then encoding, then language — which puts <b>Macintosh records
-/// first</b>. <c>PdfFontEmbedder</c> took the first usable record and accepted any Macintosh
-/// language, so a font whose Mac records are localised and whose English name lives on the Windows
-/// platform was embedded under its localised name. It also read <i>any</i> Macintosh encoding as
-/// ASCII, where Core rejects every one but Roman because the rest are legacy CJK code pages that
-/// decode to mojibake — and a mojibake <c>/BaseFont</c> is a PDF name object full of bytes needing
-/// <c>#xx</c> escaping, which is what readers match on when substituting a missing font.</para>
+/// first</b>. Taking the first usable record and accepting any Macintosh language would embed a
+/// font whose Mac records are localised and whose English name lives on the Windows platform under
+/// its localised name. Reading <i>any</i> Macintosh encoding as ASCII would be wrong too: Core
+/// rejects every one but Roman because the rest are legacy CJK code pages that decode to mojibake
+/// — and a mojibake <c>/BaseFont</c> is a PDF name object full of bytes needing <c>#xx</c>
+/// escaping, which is what readers match on when substituting a missing font.</para>
 ///
-/// <para><b>Core had already fixed this and had a whole test class for it</b>
-/// (<c>TrueTypeNameRecordSelectionTests</c>, with the same fixture). The Base copy had none, and
-/// the fix never reached it — the third instance of the "landed one level short" pattern found in
-/// this file's neighbourhood alone.</para>
+/// <para>Core's own reading has <c>TrueTypeNameRecordSelectionTests</c>, with the same fixture;
+/// this is the embedder's.</para>
 ///
 /// <para>These assert on the <b>PDF that comes out</b>, not on the metrics object, because
 /// <c>/BaseFont</c> is what a reader acts on and the metrics are an intermediate.</para>

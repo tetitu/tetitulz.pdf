@@ -19,25 +19,24 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// stays exact on re-parse.
 /// </summary>
 /// <remarks>
-/// <para><b>The template engine dropped <c>/Length</c> and the redaction engine kept it</b>, so the
-/// same page came out of the two rewriters as two different byte streams with two different
-/// re-parse boundaries. The skip was justified in a comment reading "the parser does not add one" —
-/// true only in the sense that it does not <i>invent</i> one. It stores every key the file wrote
+/// <para><b>Both rewriters keep <c>/Length</c></b>; were one to drop it, the same page would come
+/// out of the two as two different byte streams with two different re-parse boundaries. "The
+/// parser does not add one" is true only in the sense that it does not <i>invent</i> one. It
+/// stores every key the file wrote
 /// verbatim and copies the lot onto the <c>PdfStream</c>, and
 /// <c>InlineImageLength.GetDeclared</c> reads <c>/L ?? /Length</c> and is consulted <b>first</b>,
 /// ahead of the whitespace-<c>EI</c> scan whose own comment calls it "provably wrong on real
 /// files".</para>
 ///
-/// <para><b>What is demonstrated, and what is not.</b> The divergence is real and is asserted: the
-/// two rewriters emitted different bytes for one page, and the mutant that restores the skip
-/// reddens the case below. The <i>downstream truncation</i> the register predicted could <b>not</b>
-/// be reproduced against this parser, and that is a finding about the parser rather than a gap in
-/// the test. Its fallback <c>EI</c> scan validates the candidate — it requires the byte after
+/// <para><b>What is demonstrated, and what is not.</b> The divergence is asserted: a rewriter
+/// skipping <c>/Length</c> emits different bytes for one page, and the mutant that skips it
+/// reddens the case below. A <i>downstream truncation</i> does <b>not</b> follow against this
+/// parser, and that is a fact about the parser rather than a gap in the test. Its fallback
+/// <c>EI</c> scan validates the candidate — it requires the byte after
 /// <c>EI</c> to end a token — so a decoy followed by a sample byte is rejected. The hazard its own
 /// comment describes ("a dark grayscale image has no byte above 0x7F anywhere") needs a payload
-/// whose <i>whole tail</i> looks like operators, not merely one embedded <c>EI</c>. The claim's
-/// severity is therefore lower than stated, and the fix is still right: the declared length is the
-/// authoritative answer and the skip threw it away.</para>
+/// whose <i>whole tail</i> looks like operators, not merely one embedded <c>EI</c>. Keeping the
+/// length is still right: the declared length is the authoritative answer.</para>
 /// </remarks>
 public sealed class InlineImageLengthRoundTripTests
 {

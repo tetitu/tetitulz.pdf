@@ -331,8 +331,8 @@ public class StructureTreeWalkTests
 
     /// <summary>
     /// The reader refuses the element <i>at</i> <see cref="PdfLimits.MaxStructTreeDepth"/> and reads a
-    /// chain one shorter — the threshold it has always had, which the shared walk's "deeper than"
-    /// cap meets by being set one below the limit.
+    /// chain one shorter — the reader's threshold, which the shared walk's "deeper than" cap meets by
+    /// being set one below the limit.
     /// </summary>
     [Fact]
     public void TheReader_RefusesTheElementAtTheDepthLimit_AndReadsAChainOneShorter()

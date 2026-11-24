@@ -18,8 +18,7 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// rasterised here by the test's own geometry — a rotation by cos and sin, a homography inverted by its
 /// adjugate — never through the <c>PerspectiveTransform</c> the locator samples with, so the two cannot
 /// share a mistake. The symbols are this library's encoder's (version 3, with an alignment pattern) and
-/// an independent encoder's (version 15, from <see cref="QrThirdPartySymbolTests"/>). Until 2026-10-18 the locator read
-/// axis-aligned symbols only.
+/// an independent encoder's (version 15, from <see cref="QrThirdPartySymbolTests"/>).
 /// </summary>
 public class QrGeometryTests
 {

@@ -13,11 +13,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
-/// <see cref="PdfFormFieldBuilder"/> refuses a form it cannot read. An unreadable <c>/AcroForm</c>
-/// or <c>/Fields</c> used to read as none, and the new revision's form held only the added fields;
-/// an unreadable page <c>/Annots</c> left the page holding only the new widget, and an unreadable
-/// <c>/DR</c> or <c>/DR /Font</c> only the new field's font, so the fonts the other fields' <c>/DA</c>
-/// name stopped resolving.
+/// <see cref="PdfFormFieldBuilder"/> refuses a form it cannot read. Read as none, an unreadable
+/// <c>/AcroForm</c> or <c>/Fields</c> would leave the new revision's form holding only the added
+/// fields; an unreadable page <c>/Annots</c> the page holding only the new widget, and an
+/// unreadable <c>/DR</c> or <c>/DR /Font</c> only the new field's font, so the fonts the other
+/// fields' <c>/DA</c> name would stop resolving.
 /// </summary>
 public sealed class FormFieldBuilderUnreadableFormTests
 {

@@ -57,7 +57,7 @@ public sealed class FontGapClosureTests
     /// <summary>
     /// The fixture font carries <b>both</b> a <c>(3,0)</c> symbol subtable (code 0x41 → the wide
     /// glyph) and a <c>(3,1)</c> Unicode one (U+0041 → the narrow glyph). Every platform's font
-    /// engine prefers the Unicode table, so the pre-fix Unicode round-trip
+    /// engine prefers the Unicode table, so a Unicode round-trip
     /// (<c>Decode</c> → <c>SKTypeface.GetGlyph</c>) draws the narrow glyph and §9.6.6.4's rule
     /// draws the wide one. There is no host on which both answers coincide, and no system font
     /// is involved in either.
@@ -178,7 +178,7 @@ public sealed class FontGapClosureTests
     /// §9.6.6.4's other half: with no <c>/Encoding</c> the implicit base encoding of a
     /// nonsymbolic font is <b>StandardEncoding</b>. The two tables differ at 0xA4 —
     /// <c>fraction</c> (U+2044) in StandardEncoding, <c>currency</c> (U+00A4) in WinAnsi — which
-    /// is what the tree used to answer for every font.
+    /// is what a WinAnsi default would answer for every font.
     /// </summary>
     [Fact]
     public void NonSymbolicTrueType_NoEncoding_DecodesWithStandardEncodingNotWinAnsi()
@@ -198,9 +198,10 @@ public sealed class FontGapClosureTests
 
     /// <summary>
     /// <c>/Differences [65 /boxwide]</c> where "boxwide" is a name only the embedded font's
-    /// <c>post</c> table knows. Pre-fix, the name resolved through neither the Adobe glyph list
-    /// nor any encoding, so byte 0x41 silently fell back to the base encoding's 'A' — the
-    /// narrow glyph. §9.6.6.4 consults the <c>post</c> table first, which names the wide one.
+    /// <c>post</c> table knows. The name resolves through neither the Adobe glyph list nor any
+    /// encoding, so without the <c>post</c> table byte 0x41 would silently fall back to the base
+    /// encoding's 'A' — the narrow glyph. §9.6.6.4 consults the <c>post</c> table first, which
+    /// names the wide one.
     /// </summary>
     [Fact]
     public void Differences_SubsetName_ResolvesThroughThePostTable()
@@ -466,7 +467,7 @@ public sealed class FontGapClosureTests
     /// <summary>
     /// The range form is <c>cfirst clast w1y v1x v1y</c> — five numbers. Both the vector and the
     /// five-number stride are asserted here: the SECOND range only reads correctly if the first
-    /// was stepped over by 5, which is the fix GAPS.md records and must not be undone.
+    /// was stepped over by 5.
     /// </summary>
     [Fact]
     public void VerticalMetrics_W2RangeForm_CarriesTheVectorAndKeepsTheFiveNumberStride()

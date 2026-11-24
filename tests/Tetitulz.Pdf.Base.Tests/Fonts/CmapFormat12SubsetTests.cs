@@ -11,19 +11,18 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Fonts;
 
 /// <summary>
-/// A font whose only Unicode cmap is <b>format 12</b> can be subsetted. Until 2026-08-15 it could
-/// not: the subsetter read only format 4, so such a font produced a structurally valid subset
-/// containing nothing but <c>.notdef</c> and every glyph in the document rendered as a blank box.
+/// A font whose only Unicode cmap is <b>format 12</b> can be subsetted. A subsetter reading only
+/// format 4 would produce a structurally valid subset containing nothing but <c>.notdef</c>, and
+/// every glyph in the document would render as a blank box.
 /// </summary>
 /// <remarks>
 /// <para>Format 12 is not exotic — it is what any font with astral coverage uses (Noto CJK, emoji
 /// and symbol faces), and it is also where a font puts its Unicode mapping when it has more than
 /// 65 536 mappable code points.</para>
-/// <para><b>Two defects, and the second was invisible behind the first.</b> The subtable chooser
-/// scored platform 3 / encoding 10 — Windows UCS-4, where format 12 lives — at <c>-1</c>, so a font
-/// carrying <i>only</i> (3,10) matched nothing and reported "no Windows or Unicode subtable"
-/// instead of reaching the format check at all. Fixing the reader without fixing the chooser would
-/// have left those fonts exactly as broken.</para>
+/// <para><b>Two conditions, the second invisible behind the first.</b> The subtable chooser must
+/// score platform 3 / encoding 10 — Windows UCS-4, where format 12 lives — or a font carrying
+/// <i>only</i> (3,10) matches nothing and reports "no Windows or Unicode subtable" before reaching
+/// the format check at all.</para>
 /// <para>The fixtures are built here, and carry <b>no format-4 subtable</b> — a font with both
 /// would fall back to format 4 and prove nothing.</para>
 /// </remarks>

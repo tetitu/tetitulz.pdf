@@ -291,10 +291,10 @@ public class PdfAutoTaggerTests
     /// <summary>
     /// <c>DocumentRevisionWriter.Write</c> never throws: it catches every writer failure,
     /// records it on <c>AccessibilityDiagnostics</c> and leaves the output holding just the
-    /// original bytes. <c>AutoTag</c> used to return its plan's counters unconditionally
-    /// afterwards, so a caller was told "3 elements, 2 MCIDs, ContentMarked = true" about a file
-    /// that is byte-for-byte the untagged input — and the remediation pipeline then skipped the
-    /// artifact and reading-order steps as superseded and stamped <c>pdfuaid:part=1</c> onto it.
+    /// original bytes. Returning the plan's counters unconditionally afterwards would tell a
+    /// caller "3 elements, 2 MCIDs, ContentMarked = true" about a file that is byte-for-byte the
+    /// untagged input — and the remediation pipeline would then skip the artifact and
+    /// reading-order steps as superseded and stamp <c>pdfuaid:part=1</c> onto it.
     /// </summary>
     [Fact]
     public void AutoTag_WhenTheRevisionNeverReachesTheOutput_ReportsFailureNotTaggedContent()

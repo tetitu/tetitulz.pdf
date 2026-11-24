@@ -104,7 +104,7 @@ public class AssemblyScanFixesTests
     /// <summary>
     /// The same chain written as a <b>direct</b> <c>/A</c> dictionary on the annotation. Nothing
     /// enumerates it as an object, so the only visit it can get is the recursion from the
-    /// annotation — which <c>/AA</c> has always done and <c>/A</c> did not.
+    /// annotation, as for <c>/AA</c>.
     /// </summary>
     [Fact]
     public void Sanitize_SeversANextChainReachedThroughADirectActionDictionary()

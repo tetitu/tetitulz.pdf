@@ -13,12 +13,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
-/// Adversarial regression for the round-37 charstring "billion-laughs" guard. A malicious embedded CFF
+/// Adversarial input for the charstring "billion-laughs" guard. A malicious embedded CFF
 /// font whose Local Subrs each invoke the next one K times explodes to K^depth path operations —
 /// the recursion-depth cap (10) bounds depth but not the multiplicative width, so a per-glyph
 /// operator budget (<c>Type2CharstringEvaluator.MaxSteps</c>) is what actually stops it. This test
-/// builds such a font directly (the "synthetic-CFF builder" GAPS.md §9 noted was missing) and
-/// asserts evaluation terminates instead of hanging.
+/// builds such a font directly and asserts evaluation terminates instead of hanging.
 /// </summary>
 public class CharstringStepBudgetTests
 {
@@ -142,12 +141,11 @@ public class CharstringStepBudgetTests
     /// does not return. The timeout is a hang-guard for the test host, not the assertion, and it is
     /// far larger than the ~320 ms the guarded evaluator actually takes.</para>
     ///
-    /// <para><b>It used to be <c>Task.Run(…)</c> plus <c>task.Wait(15 s)</c>, and that flaked.</b>
-    /// This class passes in 323 ms alone and one case failed at exactly 15 s in a full-solution run
-    /// — a queued work item is not scheduled promptly when 26 test assemblies are saturating the
-    /// thread pool, so the clock measured the pool's backlog rather than the evaluator. A dedicated
-    /// thread removes the dependency instead of padding the number, which would leave the same race
-    /// with a longer fuse. Same fix, same reason, as <c>Jbig2HuffmanTableDosTests</c>.</para>
+    /// <para><b>A dedicated thread, not <c>Task.Run(…)</c> plus <c>task.Wait(15 s)</c>.</b> A queued
+    /// work item is not scheduled promptly when the test assemblies are saturating the thread pool,
+    /// so such a clock measures the pool's backlog rather than the evaluator; padding the number
+    /// would leave the same race with a longer fuse. Same reason as
+    /// <c>Jbig2HuffmanTableDosTests</c>.</para>
     ///
     /// <para>Potency is not established by this timeout and cannot be: it comes from the fixture's
     /// own arithmetic — ~2.8e14 subr calls without the budget — recorded where the fixture is built.</para>

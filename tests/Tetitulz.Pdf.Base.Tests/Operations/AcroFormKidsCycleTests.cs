@@ -19,14 +19,14 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// tree walkable — in <b>both</b> Base walks over that tree.
 /// </summary>
 /// <remarks>
-/// <para><b>What was wrong.</b> <c>PdfActionRunner.FindFieldIn</c> and
-/// <c>PdfActionDispatcher.CollectFieldActions</c> each carried only
-/// <c>depth &gt;= PdfLimits.MaxTreeDepth</c>. A depth cap bounds one branch, never the number of
-/// branches: with each of two fields naming the other twice, every level doubles the work, so the
-/// cap of 100 permits 2<sup>100</sup> nodes. <c>FindFieldIn</c> <i>returns</i> at the cap, so it
-/// backtracked and kept exploring — the public <c>RunFieldAction</c> never returned.
-/// <c>CollectFieldActions</c> <i>threw</i> at the cap, which terminates but discards every action
-/// in the document, including the fields listed after the cycle.</para>
+/// <para><b>What a depth cap alone does.</b> <c>PdfActionRunner.FindFieldIn</c> and
+/// <c>PdfActionDispatcher.CollectFieldActions</c> both walk this tree. A depth cap
+/// (<c>depth &gt;= PdfLimits.MaxTreeDepth</c>) bounds one branch, never the number of branches:
+/// with each of two fields naming the other twice, every level doubles the work, so the cap of
+/// 100 permits 2<sup>100</sup> nodes. A walk that <i>returns</i> at the cap backtracks and keeps
+/// exploring — the public <c>RunFieldAction</c> would never return; one that <i>throws</i> at the
+/// cap terminates but discards every action in the document, including the fields listed after
+/// the cycle.</para>
 /// <para><b>Why the assertions are what they are.</b> Termination alone is not evidence — a walk
 /// that gave up entirely also terminates — so each test asserts the action belonging to the field
 /// that sits <i>after</i> the cycle in <c>/Fields</c>. That separates "the guard cut the repeat and
