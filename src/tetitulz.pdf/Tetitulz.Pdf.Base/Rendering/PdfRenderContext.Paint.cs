@@ -11,12 +11,6 @@ using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Base.Rendering
 {
-    /// <summary>
-    /// Wraps an <see cref="SKCanvas"/> and manages the PDF graphics-state stack.
-    /// Coordinate-system note: PDF origin is bottom-left (Y-up); SkiaSharp origin
-    /// is top-left (Y-down).  The initial canvas transform flips Y so that all
-    /// subsequent drawing uses PDF point coordinates directly.
-    /// </summary>
     internal sealed partial class PdfRenderContext : IDisposable
     {
         private SKPaint BuildFillPaint(bool evenOdd)
