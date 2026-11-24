@@ -228,9 +228,9 @@ public class PdfAConverterTests
     // ------------------------------------------------------------------
 
     /// <summary>
-    /// The validator used to have no A08 at all, so the converter could emit an intent with no
-    /// profile and the validator would call the result conformant — two components in the same
-    /// assembly disagreeing about ISO 19005-1 §6.2.2.
+    /// Without A08, the converter could emit an intent with no profile and the validator would call
+    /// the result conformant — two components in the same assembly disagreeing about ISO 19005-1
+    /// §6.2.2.
     /// </summary>
     [Fact]
     public void Validate_OutputIntentWithoutProfile_ReportsA08()

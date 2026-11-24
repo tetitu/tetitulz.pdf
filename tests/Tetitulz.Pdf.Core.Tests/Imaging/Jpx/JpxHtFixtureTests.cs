@@ -18,7 +18,7 @@ public sealed class JpxHtFixtureTests
 {
     private static string Fixture => Path.Combine(AppContext.BaseDirectory, "Fixtures", "Htj2k", "simple_enc_rev53_tall_narrow.j2c");
 
-    /// <summary>The reference decoder's decode (an independent tool, 2026-10-03): SHA-256 of the samples interleaved R, G, B in raster order.</summary>
+    /// <summary>The reference decoder's decode (an independent tool): SHA-256 of the samples interleaved R, G, B in raster order.</summary>
     private const string ReferenceSha256 = "d2d8c21e6f5dae52faa7fd1dfbf82005341aa9bc179c11d7ef73634e0685fc69";
 
     [Fact]

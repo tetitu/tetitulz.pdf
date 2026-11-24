@@ -40,7 +40,7 @@ public class SplitPluginContractTests
     }
 
     /// <summary>
-    /// The loop starts at index 0, which is what the one-based splitter used to reject outright.
+    /// The loop starts at index 0, which the one-based splitter would reject outright.
     /// </summary>
     [Fact]
     public void Split_ReturnsOnePdfPerPage_InDocumentOrderStartingAtTheFirstPage()

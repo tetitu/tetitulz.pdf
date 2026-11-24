@@ -359,8 +359,8 @@ private static byte[] MinimalPdf()
     // ------------------------------------------------------------------
 
     /// <summary>
-    /// A /Kids graph that loops back on itself used to cost branching^depth visits because
-    /// only the depth was capped. The visited set makes it terminate immediately.
+    /// A /Kids graph that loops back on itself would cost branching^depth visits with only the
+    /// depth capped. The visited set makes it terminate immediately.
     /// </summary>
     [Fact]
     public void Fix_CyclicFieldTree_Terminates()
@@ -682,9 +682,9 @@ private static byte[] MinimalPdf()
     // ==================================================================
 
     /// <summary>
-    /// The fixer used to test <c>field[/FT] != null</c> — a <b>direct</b> /FT. A terminal field
-    /// that inherits /FT through /Parent therefore matched nothing and was never fixed, while the
-    /// checker (which resolves the chain) reported it as a UA08 violation.
+    /// Testing <c>field[/FT] != null</c> — a <b>direct</b> /FT — a terminal field that inherits /FT
+    /// through /Parent would match nothing and never be fixed, while the checker (which resolves the
+    /// chain) reports it as a UA08 violation.
     /// </summary>
     [Fact]
     public void Fix_TerminalFieldInheritingFieldTypeThroughParent_GetsTooltip()

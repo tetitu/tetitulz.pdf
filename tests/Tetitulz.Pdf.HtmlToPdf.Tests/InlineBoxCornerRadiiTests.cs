@@ -96,7 +96,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 
         /// <summary>
         /// An image is clipped to its own corners: <c>border-radius: 8px 0 0 0</c> clips the top-left
-        /// corner alone, one curve of 6pt, where the clip used to round all four.
+        /// corner alone, one curve of 6pt, not all four.
         /// </summary>
         [Fact]
         public void AnImage_IsClippedToItsOwnCorners()

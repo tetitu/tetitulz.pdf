@@ -92,8 +92,7 @@ public class MqDecoderTests
     /// An all-zero stream is not what an encoder writes, but the decoder must not wander into an
     /// invalid state or overrun it — and what it decodes past its end is fixed by BYTEIN's rule:
     /// the same bits as the same bytes followed by 0xFF padding written out. Pinned against that
-    /// longer stream, with an all-ones stream as the potency control, where the test once asserted
-    /// only that a bit is a bit (the review of 2026-09-26, row 23).
+    /// longer stream, with an all-ones stream as the potency control — not merely that a bit is a bit.
     /// </summary>
     [Fact]
     public void Decode_OnAnAllZeroStream_ReadsPastTheEndAsIfPaddedWith0xFF()

@@ -14,8 +14,8 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// <see cref="DrawingColorResolver"/> read directly, at the places the overnight sweep found no
-/// test: the HSL transforms on a colour that is not grey, the hue wrap, the theme placeholder
+/// <see cref="DrawingColorResolver"/> read directly: the HSL transforms on a colour that is not grey,
+/// the hue wrap, the theme placeholder
 /// <c>phClr</c>, the background fill list, presets, and the opacity threshold.
 /// </summary>
 public class DrawingColorResolverTests

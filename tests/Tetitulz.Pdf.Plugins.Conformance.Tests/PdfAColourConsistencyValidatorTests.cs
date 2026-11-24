@@ -66,7 +66,7 @@ public class PdfAColourConsistencyValidatorTests
     /// <summary>
     /// An uncoloured tiling pattern paints in its base space (ISO 32000-1 §8.7.3.3), so
     /// <c>[/Pattern /DeviceRGB]</c> is DeviceRGB used; a coloured pattern, bare <c>/Pattern</c>,
-    /// names no device family. PdfXValidator's X08 classifier descends the same way (Wave 17, R9.1).
+    /// names no device family. PdfXValidator's X08 classifier descends the same way.
     /// </summary>
     [Theory]
     [InlineData("[/Pattern /DeviceRGB]", true)]

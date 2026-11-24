@@ -14,8 +14,8 @@ namespace Tetitulz.Pdf.Plugins.HtmlScript.Tests;
 /// <summary>
 /// The settle window waits for every <c>setTimeout</c> due inside it to have run
 /// (<see cref="TimerSettleLog"/>), instead of sleeping its length and racing the thread pool that
-/// queues AngleSharp's timer callbacks — the race that, under a whole-solution coverage run on
-/// 2026-10-21, laid a page out without its 30 ms timer.
+/// queues AngleSharp's timer callbacks — a race that, under a whole-solution coverage run, can lay a
+/// page out without its 30 ms timer.
 /// </summary>
 /// <remarks>
 /// The race itself is the thread pool's and no test can schedule it; these assert what can be

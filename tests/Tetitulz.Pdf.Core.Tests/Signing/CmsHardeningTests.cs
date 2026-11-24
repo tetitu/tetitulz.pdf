@@ -79,17 +79,13 @@ public class CmsHardeningTests
     /// check</b>, not by the PSS parameter inspection.
     /// </summary>
     /// <remarks>
-    /// <para><b>RENAMED from <c>RsaPssOverSha1_IsFlaggedAsWeak</c>, because that name claimed
-    /// something the body does not test.</b> The fixture passes <c>DigestSha1</c>, so
-    /// <c>DetectWeakAlgorithm</c> returns at its digest check one line above the switch and
-    /// <c>DetectWeakPssHash</c> is never entered. Measured: replacing the entire PSS arm with
-    /// <c>return null</c> left this file at 17/17.</para>
-    /// <para>The claim the old name made — that PSS parameters naming a broken hash are detected —
-    /// is covered by <c>WeakSignatureAlgorithmOidTests</c>, which needs ASN.1 surgery to build the
-    /// fixture because <c>CmsSignedDataGenerator</c> derives the PSS parameters from the digest and
-    /// so cannot produce the combination on its own. The assertion here was left alone and the name
-    /// corrected, per CLAUDE.md: rename the test or restore the behaviour, never edit the assertion
-    /// and leave the name.</para>
+    /// <para>The fixture passes <c>DigestSha1</c>, so <c>DetectWeakAlgorithm</c> returns at its digest
+    /// check one line above the switch and <c>DetectWeakPssHash</c> is never entered — this test says
+    /// nothing about the PSS arm.</para>
+    /// <para>That PSS parameters naming a broken hash are detected is
+    /// <c>WeakSignatureAlgorithmOidTests</c>'s claim, which needs ASN.1 surgery to build the fixture
+    /// because <c>CmsSignedDataGenerator</c> derives the PSS parameters from the digest and so cannot
+    /// produce the combination on its own.</para>
     /// </remarks>
     [Fact]
     public void RsaPssWithASha1Digest_IsFlaggedByTheDigestCheck()
@@ -306,9 +302,9 @@ public class CmsHardeningTests
     // ---------------------------------------------------------------- nested signature fields
 
     /// <summary>
-    /// AcroForm fields form a tree. The validator used to iterate only the top level of /Fields,
-    /// so a signature nested under a parent field node reported "No signature field found" on a
-    /// perfectly valid document. It now shares the recursive lookup the verifier always used.
+    /// AcroForm fields form a tree. Iterating only the top level of /Fields, the validator would
+    /// report "No signature field found" for a signature nested under a parent field node on a
+    /// perfectly valid document; it shares the verifier's recursive lookup.
     /// </summary>
     [Fact]
     public void SignatureNestedUnderAParentField_IsFound()

@@ -8,8 +8,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Signing.Tests;
 
 /// <summary>
-/// The defaults of <see cref="SignatureParameters"/> a caller gets without setting anything. The
-/// 2026-10-11 overnight sweep found two of them unpinned: no PAdES baseline is requested, and a
+/// The defaults of <see cref="SignatureParameters"/> a caller gets without setting anything: no
+/// PAdES baseline is requested, and a
 /// certified document's signature does not invalidate its certification unless asked to.
 /// </summary>
 public class SignatureParametersDefaultsTests

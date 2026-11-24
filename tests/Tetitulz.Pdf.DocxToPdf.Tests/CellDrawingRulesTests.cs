@@ -15,8 +15,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
 /// A table cell paints the drawings its text walk reads, by the same rules: a picture inside a tracked deletion
-/// or a move's source is not shown, and one inside an insertion is. The cell found every drawing below the
-/// paragraph, deleted ones included (Wave 22, DocxToPdf-4:4).
+/// or a move's source is not shown, and one inside an insertion is — not every drawing below the paragraph,
+/// deleted ones included.
 /// </summary>
 public sealed class CellDrawingRulesTests
 {

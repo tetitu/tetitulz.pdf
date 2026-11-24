@@ -25,8 +25,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
             Directory.CreateDirectory(dir);
             try
             {
-                // 500 KB that is not a font: TrueTypeFontProgram.Parse rejects it, which is the path that
-                // used to re-read the file on every one of the src entries below.
+                // 500 KB that is not a font: TrueTypeFontProgram.Parse rejects it, the path that would
+                // re-read the file on every one of the src entries below without the cache.
                 File.WriteAllBytes(Path.Combine(dir, "notafont.ttf"), new byte[500_000]);
 
                 string src = string.Join(",", Enumerable.Repeat("url(notafont.ttf)", 500));

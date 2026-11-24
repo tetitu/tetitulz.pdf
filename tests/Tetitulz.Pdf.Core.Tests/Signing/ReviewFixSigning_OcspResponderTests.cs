@@ -104,9 +104,9 @@ public class ReviewFixSigning_OcspResponderTests
     }
 
     /// <summary>
-    /// Wave 17 R6.2's verifier half: a delegated responder — issued by the CA, carrying the EKU —
+    /// The verifier half: a delegated responder — issued by the CA, carrying the EKU —
     /// whose certificate is outside its validity period at the assessment time cannot sign (RFC 6960
-    /// §4.2.2.2 by way of RFC 5280 §6.1.3's validity period): Unknown, where its "good" was trusted.
+    /// §4.2.2.2 by way of RFC 5280 §6.1.3's validity period): Unknown, rather than its "good" trusted.
     /// The same kind of responder inside its period is the control; the embedder asks the one helper.
     /// </summary>
     [Theory]

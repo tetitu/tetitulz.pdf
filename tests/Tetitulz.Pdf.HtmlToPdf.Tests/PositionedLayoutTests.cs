@@ -340,7 +340,7 @@ public class PositionedLayoutTests
 
     /// <summary>
     /// A <c>position: relative</c> list item is the containing block of the positioned blocks in it
-    /// (2026-10-19; it stayed in the item's text, reported): a badge at <c>left: 100pt; top: 10pt</c>
+    /// rather than staying in the item's text: a badge at <c>left: 100pt; top: 10pt</c>
     /// sits 100 pt in from the item's padding edge — where its text starts — and 10 pt below its top,
     /// nothing reported, and one at <c>bottom: 0</c> on the item's last line — its box ends where the
     /// item does, its gap after it outside; and the list is laid out as it is with the item
@@ -417,7 +417,7 @@ public class PositionedLayoutTests
 
     /// <summary>
     /// A positioned block whose containing block is a positioned list nested in an item, or a
-    /// positioned item of one (2026-10-20; it stayed in the item's text, reported): a badge at
+    /// positioned item of one, rather than staying in the item's text: a badge at
     /// <c>left: 100pt; top: 10pt</c> is measured from that item's padding edge — where its text starts —
     /// or that sublist's — where its item's text starts — and its top, nothing reported; and the list is
     /// laid out as it is unpositioned — every item, every number and the paragraphs round it where they

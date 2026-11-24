@@ -11,8 +11,8 @@ namespace Tetitulz.Pdf.Core.Tests.Imaging;
 /// The 32-bit <c>BI_BITFIELDS</c> path of <see cref="BmpImageDecoder"/>, which assembles four
 /// bytes into one 32-bit sample before masking channels out of it. The interesting inputs are the
 /// ones where the <b>top</b> byte has its high bit set: that is the only operand that can reach
-/// bit 31, and the byte-assembly expression used to mix a signed and an unsigned operand there
-/// (CS0675). Every assertion names the exact RGB byte expected at a position — "it decoded
+/// bit 31, and a byte-assembly expression mixing a signed and an unsigned operand there (CS0675)
+/// sign-extends it. Every assertion names the exact RGB byte expected at a position — "it decoded
 /// something" would pass with the mask extraction deleted.
 /// </summary>
 public class BmpBitfieldChannelTests

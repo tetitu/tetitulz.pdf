@@ -57,9 +57,9 @@ public class ObjectStreamMemberBoundsTests
 
     /// <summary>
     /// Fourteen objects packed four to a stream (four streams), read in order under an index cache
-    /// of two streams' worth: each stream's index is read once — four reads. The cache used to stop
-    /// admitting readers once full, so the third and fourth streams' indexes were read again for
-    /// every member: eight reads here, and one per member of a large stream in a hostile file.
+    /// of two streams' worth: each stream's index is read once — four reads. A cache that stopped
+    /// admitting readers once full would read the third and fourth streams' indexes again for every
+    /// member: eight reads here, and one per member of a large stream in a hostile file.
     /// </summary>
     [Fact]
     public void AStreamPastAFullIndexCache_HasItsIndexReadOnceForAllItsMembers()

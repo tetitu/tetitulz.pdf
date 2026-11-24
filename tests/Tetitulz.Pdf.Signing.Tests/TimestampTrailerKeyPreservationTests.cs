@@ -96,7 +96,7 @@ public sealed class TimestampTrailerKeyPreservationTests
     /// <summary>
     /// A minimal one-page document whose trailer carries an indirect <c>/Info</c> and one
     /// producer-specific key, alongside the <c>/Size</c> / <c>/Root</c> / <c>/ID</c> the timestamper
-    /// used to restate by hand.
+    /// restates.
     /// </summary>
     private static byte[] PdfWithInfoAndProducerKey()
     {

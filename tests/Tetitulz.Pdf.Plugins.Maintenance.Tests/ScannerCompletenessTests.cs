@@ -102,7 +102,7 @@ public class ScannerCompletenessTests
         var graph = new Graph();
         var group = graph.AddStream(Bytes("BT /F1 12 Tf <0009> Tj ET"));
         group.Set(PdfName.Resources, graph.FontResources());
-        // No /Subtype at all — malformed, and the shape that used to disappear.
+        // No /Subtype at all — malformed, and the shape most easily lost.
 
         graph.SetPageContent("/GS0 gs", graph.ResourcesWithSoftMask("GS0", group.Number));
 
@@ -281,9 +281,9 @@ public class ScannerCompletenessTests
     /// <summary>
     /// Under Identity-H every code is two bytes (§9.7.5.2), so an odd-length string is malformed and
     /// its last byte is a code this scanner cannot read. Readers that zero-pad the remnant draw a
-    /// glyph for it; the loop stepped past it in silence, left <c>Reason</c> null, and the
-    /// surrounding glyph set was still used to prune — so that glyph was deleted and the character
-    /// rendered blank.
+    /// glyph for it; a loop stepping past it in silence, leaving <c>Reason</c> null, would still let
+    /// the surrounding glyph set prune — so that glyph would be deleted and the character render
+    /// blank.
     /// </summary>
     [Fact]
     public void FontScan_ReportsAReasonWhenAnIdentityHStringHasAnOddByteLength()
@@ -501,7 +501,7 @@ public class ScannerCompletenessTests
     }
 
     // ------------------------------------------------------------------
-    //  ImagePlacementScanner — boundaries the 2026-10-10 sweep found unpinned
+    //  ImagePlacementScanner — boundaries
     // ------------------------------------------------------------------
 
     /// <summary>A content stream exactly at the byte ceiling is walked; the image at its end is recorded.</summary>
@@ -888,7 +888,7 @@ public class ScannerCompletenessTests
     }
 
     // ------------------------------------------------------------------
-    //  A font an ExtGState selects (§8.4.5 Table 58) — Wave 22, Maintenance-1:7 and 3:2
+    //  A font an ExtGState selects (§8.4.5 Table 58)
     // ------------------------------------------------------------------
 
     /// <summary>
@@ -992,7 +992,7 @@ public class ScannerCompletenessTests
     }
 
     // ------------------------------------------------------------------
-    //  The interactive form blocker fails closed — Wave 22, Maintenance-1:8
+    //  The interactive form blocker fails closed
     // ------------------------------------------------------------------
 
     /// <summary>

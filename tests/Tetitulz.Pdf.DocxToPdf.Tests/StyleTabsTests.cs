@@ -12,10 +12,10 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// A paragraph's tab stops, through its style chain (<see cref="StyleResolver.ResolveTabs"/>). Every paragraph of
-/// a style collected the chain's stops again, and each stop was compared with every earlier one — quadratic in a
-/// style's stops, once a paragraph (Wave 22, DocxToPdf-3:5). A paragraph with no tabs of its own now shares its
-/// style's resolved stops, and positions are compared as the twips the file states.
+/// A paragraph's tab stops, through its style chain (<see cref="StyleResolver.ResolveTabs"/>). A paragraph with
+/// no tabs of its own shares its style's resolved stops, rather than collecting the chain's stops again and
+/// comparing each with every earlier one — quadratic in a style's stops, once a paragraph — and positions are
+/// compared as the twips the file states.
 /// </summary>
 public sealed class StyleTabsTests
 {

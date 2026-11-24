@@ -13,16 +13,16 @@ using Xunit;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
-/// The managed engine against the structure fuzzer's HTML corpus (GAPS.md §9, 2026-10-16): the four
-/// families that broke it, each with the guard that now answers and the control that keeps the guard
+/// The managed engine against the structure fuzzer's HTML corpus: four families of hostile markup,
+/// each with the guard that answers and the control that keeps the guard
 /// from refusing a page a person wrote.
 /// </summary>
 /// <remarks>
-/// <para>The findings, by the harness's own words: a <c>colspan</c> of two billion built two billion
-/// columns and ran out of memory on a table of four hundred cells; a million-cell table ran out of memory; a
-/// selector of a thousand descendant combinators sent AngleSharp's matcher into exponential recursion
-/// for the whole window; a hundred thousand open list items sent its tree builder into a quadratic
-/// scope walk for the whole window. The first two are the mapper's to bound (the Standard's own clamps,
+/// <para>Unguarded, a <c>colspan</c> of two billion builds two billion columns and runs out of memory
+/// on a table of four hundred cells; a million-cell table runs out of memory; a selector of a thousand
+/// descendant combinators sends AngleSharp's matcher into exponential recursion for the whole window;
+/// a hundred thousand open list items send its tree builder into a quadratic scope walk for the whole
+/// window. The first two are the mapper's to bound (the Standard's own clamps,
 /// a cell budget); the last two are the parser's and the matcher's, which the mapper cannot interrupt,
 /// so the document and the rule are refused before they are handed over.</para>
 /// </remarks>
@@ -63,8 +63,8 @@ public class HostileMarkupTests
         => Assert.Equal(expected, HtmlToBuilderMapper.ParseSpan(attribute, max));
 
     /// <summary>
-    /// The fuzzer's table: twenty rows of twenty cells whose spans run past <c>int</c>. It used to run
-    /// out of memory building columns; under the clamp it is laid out on the columns its cells start in,
+    /// The fuzzer's table: twenty rows of twenty cells whose spans run past <c>int</c>. Under the clamp
+    /// it is laid out on the columns its cells start in, rather than running out of memory building columns,
     /// as a browser lays it out — the spans' empty columns are no width (TableGridBoundsTests). The
     /// claim that can be asserted here is that it converts and opens (the theory above pins what the
     /// clamp reads).

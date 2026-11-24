@@ -108,7 +108,7 @@ public sealed partial class JpxEncoderJp2Tests
         return -1;
     }
 
-    /// <summary>T.800 Tables I.10 and I.16 describe unsigned channels; a signed codestream is refused the container and stays a raw codestream (the review's row 22, 2026-09-26).</summary>
+    /// <summary>T.800 Tables I.10 and I.16 describe unsigned channels; a signed codestream is refused the container and stays a raw codestream.</summary>
     [Fact]
     public void WrapAsJp2_RefusesSignedComponents_WithTheReason()
     {

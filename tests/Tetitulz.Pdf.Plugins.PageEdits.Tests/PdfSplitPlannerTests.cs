@@ -218,11 +218,11 @@ public class PdfSplitPlannerTests
     }
 
     /// <summary>
-    /// <b>Each chunk's end is found by doubling and bisection, not one page at a time</b> (Wave 17
-    /// R11.1). The plan cannot show this — both searches find the same chunks — so the evidence is
-    /// the trial count: forty pages under a generous ceiling are one chunk after the doubling probes
-    /// 1, 2, 4, 8, 16, 32 and 40 pages, seven extracts, where growing the run a page at a time made
-    /// forty extracts of 1, 2, … 40 pages. The bound leaves room for a bisection that never runs
+    /// <b>Each chunk's end is found by doubling and bisection, not one page at a time.</b> The plan
+    /// cannot show this — both searches find the same chunks — so the evidence is the trial count:
+    /// forty pages under a generous ceiling are one chunk after the doubling probes 1, 2, 4, 8, 16, 32
+    /// and 40 pages, seven extracts, where growing the run a page at a time would make forty extracts
+    /// of 1, 2, … 40 pages. The bound leaves room for a bisection that never runs
     /// here; the one-page-at-a-time search cannot get under it.
     /// </summary>
     [Fact]

@@ -15,8 +15,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 {
     /// <summary>
     /// A Word list numbered in Hebrew — <c>hebrew1</c>, letters by gematria, and <c>hebrew2</c>, the
-    /// alphabet (ECMA-376 §17.18.59) — is numbered in Hebrew on both conversion paths. Until
-    /// 2026-10-21 both fell to decimal. Read back as the page's text, which is what a reader sees.
+    /// alphabet (ECMA-376 §17.18.59) — is numbered in Hebrew on both conversion paths, not in
+    /// decimal. Read back as the page's text, which is what a reader sees.
     /// </summary>
     public class HebrewNumberingTests
     {

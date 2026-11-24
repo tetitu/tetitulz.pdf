@@ -192,7 +192,7 @@ public sealed class ThirdReviewRegressionTests
             $"'{op}' over a large dictionary must exhaust a budget, not copy it for free");
     }
 
-    /// <summary><c>cvn</c> retained ~600 MB against a 64 MiB budget that never saw a byte of it.</summary>
+    /// <summary><c>cvn</c> is charged its string: uncharged, it would retain ~600 MB against a 64 MiB budget that never saw a byte of it.</summary>
     /// <remarks>
     /// <b>Two assertions, and the pair is the point.</b> <c>cvn</c> charges through
     /// <c>LatinFromOperand</c>, which calls <c>ChargeAllocation</c> and never <c>Tick</c>s — so
@@ -201,7 +201,7 @@ public sealed class ThirdReviewRegressionTests
     /// Both set <c>BudgetExhausted</c>; only the pair says the allocation budget saw the string.
     /// The idiom is <c>AssemblyScanRegressionTests.TextOperatorWork_IsChargedByTheStringLength</c>'s.
     /// Both budgets are squeezed so the uncharged case fails in about a second rather than in hours
-    /// — which is what replaces the 6 s stopwatch this row used to carry.
+    /// — rather than a stopwatch.
     /// </remarks>
     [Fact]
     public void CvnIsChargedForTheStringItConverts()

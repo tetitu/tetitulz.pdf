@@ -253,7 +253,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         public void Noscript_BodyText_IsNotEmittedWhenScriptingIsEnabled()
         {
             // JavaScriptEnabled defaults to true, matching a browser with scripting on — where
-            // <noscript> content is not rendered. It used to leak into every document.
+            // <noscript> content is not rendered, and must not leak into the document.
             string dec = DecodeStreams(ToPdf("<p>Visible</p><noscript><p>NOSCRIPTTEXT</p></noscript>"));
 
             Assert.Contains("Visible", dec);

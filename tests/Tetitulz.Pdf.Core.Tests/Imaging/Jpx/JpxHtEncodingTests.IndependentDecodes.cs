@@ -162,7 +162,7 @@ public sealed partial class JpxHtEncodingTests
 
     /// <summary>
     /// The first layer's quality on <see cref="EachLayer_ImprovesThePicture"/>'s image, pinned between what
-    /// the error-per-byte order gives (27.8 dB, measured 2026-10-07) and what the reverse order does (13.2).
+    /// the error-per-byte order gives (27.8 dB, measured) and what the reverse order does (13.2).
     /// </summary>
     private const double FirstLayerFloor = 20;
 

@@ -16,10 +16,10 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 /// <summary>
 /// <see cref="OptimizationOptions.NeverGrow"/> promises that when the optimized form is not smaller
 /// the caller gets the input back <i>unchanged</i>, and every preset turns it on. The copy it hands
-/// back is sized from <c>Stream.Length</c> and filled by a read loop that used to break on a short
-/// read without checking the count, so any stream whose <c>Length</c> over-reports left the
-/// shortfall as the zero bytes <c>new byte[]</c> supplied — and the fallback then wrote a NUL-padded
-/// file while reporting <c>FellBackToInput</c> and a byte-identical size.
+/// back is sized from <c>Stream.Length</c> and filled by a read loop that checks the count: a loop
+/// breaking on a short read without checking would leave a stream whose <c>Length</c> over-reports
+/// with the shortfall as the zero bytes <c>new byte[]</c> supplied — and the fallback would write a
+/// NUL-padded file while reporting <c>FellBackToInput</c> and a byte-identical size.
 /// </summary>
 public class NeverGrowFallbackTests
 {

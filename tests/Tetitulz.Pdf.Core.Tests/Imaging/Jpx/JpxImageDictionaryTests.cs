@@ -11,11 +11,10 @@ using H = Tetitulz.Pdf.TestHelpers.Jp2Headers;
 namespace Tetitulz.Pdf.Core.Tests.Imaging.Jpx;
 
 /// <summary>
-/// The dictionary a JPEG 2000 file embedded as it is wants (ISO 32000-2 §7.4.9, Table 87) — the
-/// rows of the 2026-09-26 review that concern it: the <c>/SMaskInData</c> value the file's
-/// opacity declaration maps to (row 6), the colour box a reader prefers deciding <c>/ColorSpace</c>
-/// (row 16), the five depths <c>/BitsPerComponent</c> may state (row 31) — and an Indexed
-/// dictionary space reading a codestream's samples as its indices, verbatim (row 4).
+/// The dictionary a JPEG 2000 file embedded as it is wants (ISO 32000-2 §7.4.9, Table 87): the
+/// <c>/SMaskInData</c> value the file's opacity declaration maps to, the colour box a reader
+/// prefers deciding <c>/ColorSpace</c>, the five depths <c>/BitsPerComponent</c> may state — and an
+/// Indexed dictionary space reading a codestream's samples as its indices, verbatim.
 /// </summary>
 public sealed class JpxImageDictionaryTests
 {

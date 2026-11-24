@@ -162,7 +162,7 @@ public class HtmlImageEmbeddingTests
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    //  The render that used to happen anyway
+    //  No render where none is needed
     // ────────────────────────────────────────────────────────────────────────
 
     /// <summary>

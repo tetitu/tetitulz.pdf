@@ -12,9 +12,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.IO.Filters;
 
 /// <summary>
-/// <see cref="FlateDecodeFilter.LastTruncationReason"/> (GAPS §7, 2026-10-14): a zlib stream whose
-/// Adler-32 trailer is missing, or disagrees with the bytes produced, is reported as truncated or
-/// corrupt — where <c>DeflateStream</c> returned the prefix it had as if it were the whole — and a
+/// <see cref="FlateDecodeFilter.LastTruncationReason"/>: a zlib stream whose Adler-32 trailer is
+/// missing, or disagrees with the bytes produced, is reported as truncated or corrupt —
+/// <c>DeflateStream</c> alone returns the prefix it has as if it were the whole — and a
 /// stream decoded whole, trailing bytes after its trailer included, is not.
 /// </summary>
 /// <remarks>

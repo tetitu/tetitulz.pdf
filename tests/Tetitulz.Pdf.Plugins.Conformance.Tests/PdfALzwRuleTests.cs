@@ -93,8 +93,8 @@ public class PdfALzwRuleTests
     }
 
     /// <summary>
-    /// A filter the library decodes is not thereby one PDF/A permits: <c>/BrotliDecode</c>, read since
-    /// 2026-10-17, is outside ISO 32000's table and stays an A31 at every part that has the rule. Guards
+    /// A filter the library decodes is not thereby one PDF/A permits: <c>/BrotliDecode</c>, which it
+    /// reads, is outside ISO 32000's table and stays an A31 at every part that has the rule. Guards
     /// the permitted list against being taken from the decoder's registry.
     /// </summary>
     [Theory]

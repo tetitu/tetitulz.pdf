@@ -20,13 +20,12 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <c>InjectCounterSignature</c> built the merged certificate list under the comment "Also add the
-/// counter-signer's certificate to the CertStore" and then never used it:
-/// <c>CmsSignedData.ReplaceSigners</c> carries the ORIGINAL certificates field across unchanged.
-/// The emitted CMS therefore held the <c>id-countersignature</c> unsigned attribute but not the
-/// certificate needed to check it, so Adobe, an independent implementation, BouncyCastle and this library's own
-/// <c>CmsSignatureVerifier</c> ("No matching certificate found for signer.") all failed on it. The
-/// feature produced output that could not be validated — by construction, for every input.
+/// <c>CmsSignedData.ReplaceSigners</c> carries the ORIGINAL certificates field across unchanged, so
+/// <c>InjectCounterSignature</c> must put the counter-signer's certificate into the CMS itself.
+/// Without it the emitted CMS would hold the <c>id-countersignature</c> unsigned attribute but not
+/// the certificate needed to check it, and Adobe, an independent implementation, BouncyCastle and this
+/// library's own <c>CmsSignatureVerifier</c> ("No matching certificate found for signer.") would all
+/// fail on it — output that could not be validated, by construction, for every input.
 /// </para>
 /// <para>
 /// The assertions resolve the certificate exactly the way a verifier does —
@@ -35,11 +34,10 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// missing.
 /// </para>
 /// <para>
-/// <b>The second defect, now closed and asserted below.</b> BouncyCastle used to refuse to
-/// <c>Verify</c> the resulting counter-signature at all — "[For counter signatures,] the
-/// signedAttributes field MUST NOT contain a content-type attribute" (RFC 5652 §11.4) — because
-/// <c>InjectCounterSignature</c> built it with an ordinary <c>CmsSignedDataGenerator</c>, which
-/// always adds one. It now uses <c>GenerateCounterSigners</c>/<c>AddCounterSigners</c>, which omit
+/// <b>The second rule, asserted below.</b> "[For counter signatures,] the signedAttributes field
+/// MUST NOT contain a content-type attribute" (RFC 5652 §11.4), and an ordinary
+/// <c>CmsSignedDataGenerator</c> always adds one, so BouncyCastle would refuse to <c>Verify</c> a
+/// counter-signature built with it. <c>GenerateCounterSigners</c>/<c>AddCounterSigners</c> omit
 /// it, so <see cref="CounterSignedDocument_CounterSignatureVerifiesAgainstItsOwnCertificate"/>
 /// checks the whole promise rather than just the certificate's presence.
 /// </para>

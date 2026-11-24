@@ -12,9 +12,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.IO;
 
 /// <summary>
-/// A number token's integer accessors saturate — to <see cref="int"/> and to <see cref="long"/> alike
-/// (the review of 2026-10-16, R1.3). Both rested on one <c>long.TryParse</c>, so a twenty-digit
-/// integer read as 0 through both while the comment above them promised saturation.
+/// A number token's integer accessors saturate — to <see cref="int"/> and to <see cref="long"/>
+/// alike. Resting on one <c>long.TryParse</c>, a twenty-digit integer would read as 0 through both.
 /// </summary>
 public sealed class PdfTokenNumericTests
 {

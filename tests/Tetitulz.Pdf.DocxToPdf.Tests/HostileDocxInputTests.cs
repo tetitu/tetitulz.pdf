@@ -20,11 +20,11 @@ using BuilderExport = Tetitulz.Pdf.Builder.Export;
 namespace Tetitulz.Pdf.DocxToPdf.Tests
 {
     /// <summary>
-    /// Wave 17 R16.1–R16.3: what the converter does with input built to hurt it. A package part
-    /// declaring gigabytes is refused before the Open XML SDK reads it (R16.2); an image whose
-    /// frame header claims a size past the authored-image rule is skipped and reported on both
-    /// render paths instead of being written as declared (R16.1); a NaN option is refused naming
-    /// the member (R16.3); and a page too small for its own margins still converts to a document
+    /// What the converter does with input built to hurt it. A package part declaring gigabytes is
+    /// refused before the Open XML SDK reads it; an image whose frame header claims a size past the
+    /// authored-image rule is skipped and reported on both render paths instead of being written as
+    /// declared; a NaN option is refused naming the member; and a page too small for its own margins
+    /// still converts to a document
     /// that opens — the layout has no loop a degenerate geometry holds open.
     /// </summary>
     public class HostileDocxInputTests

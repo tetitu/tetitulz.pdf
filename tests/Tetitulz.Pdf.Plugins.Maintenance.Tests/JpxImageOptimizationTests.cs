@@ -18,10 +18,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 
 /// <summary>
-/// The image pass over a <c>JPXDecode</c> image (Wave 15g): decoded through Core's public JPEG
-/// 2000 facade and re-encoded like a JPEG. Before the in-house decoder, <c>DecodeImageToBitmap</c>
-/// refused every JPEG 2000 image, so the JPX-to-JPEG mapping in <c>DetectOriginalFormat</c> was
-/// unreachable.
+/// The image pass over a <c>JPXDecode</c> image: decoded through Core's public JPEG 2000 facade and
+/// re-encoded like a JPEG, which keeps the JPX-to-JPEG mapping in <c>DetectOriginalFormat</c>
+/// reachable.
 /// </summary>
 public sealed class JpxImageOptimizationTests
 {
@@ -48,7 +47,7 @@ public sealed class JpxImageOptimizationTests
     /// image is DCTDecode, its geometry the codestream's, and its bytes exactly what Skia encodes
     /// from the fixture's own samples at the same quality — so any sample the decoder got wrong,
     /// in any channel, changes the bytes. (Under <see cref="ImageFormat.Original"/> a JPEG 2000
-    /// image stays JPEG 2000 since Wave 15j; <c>Jpeg2000RecompressionTests</c> holds that.)
+    /// image stays JPEG 2000; <c>Jpeg2000RecompressionTests</c> holds that.)
     /// </summary>
     [Fact]
     public void ImagePass_ReEncodesAJpxImageAsJpeg_WhenAsked_FromTheDecodedSamples()
@@ -109,8 +108,8 @@ public sealed class JpxImageOptimizationTests
     }
 
     /// <summary>
-    /// Three the pass leaves alone by what the dictionary says, before a sample is decoded (the
-    /// review of 2026-09-26, row 8): a stencil mask, an Indexed image (its samples are palette
+    /// Three the pass leaves alone by what the dictionary says, before a sample is decoded: a
+    /// stencil mask, an Indexed image (its samples are palette
     /// indices), and one with a /Decode array (the re-encoded samples would lose the mapping).
     /// The control, the same image with the entry removed, is re-encoded.
     /// </summary>

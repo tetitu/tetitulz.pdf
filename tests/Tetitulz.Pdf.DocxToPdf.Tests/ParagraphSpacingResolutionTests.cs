@@ -13,9 +13,9 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
 /// A paragraph's spacing and indentation resolved per attribute (<see cref="StyleResolver.ResolveParagraphSpacing"/>,
-/// <see cref="StyleResolver.ResolveIndentation"/>). The element was taken whole from the first level that had one,
-/// so a direct w:spacing stating only w:before set the space after to zero, and a direct w:ind stating only
-/// w:firstLine set the left indent to zero (Wave 22, DocxToPdf-3:7).
+/// <see cref="StyleResolver.ResolveIndentation"/>). Taken whole from the first level that has one, a direct
+/// w:spacing stating only w:before would set the space after to zero, and a direct w:ind stating only
+/// w:firstLine the left indent.
 /// </summary>
 public sealed class ParagraphSpacingResolutionTests
 {

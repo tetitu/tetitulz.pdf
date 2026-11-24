@@ -27,7 +27,7 @@ namespace Tetitulz.Pdf.Core.Tests.Forms;
 /// file the arrival chain and the <c>/Parent</c> key are two directions of one edge, and only a
 /// malformed file can separate them.</para>
 ///
-/// <para><b>The decision, taken 2026-09-19: keep them split.</b> Core climbs the chain a field was
+/// <para><b>The decision: keep them split.</b> Core climbs the chain a field was
 /// actually <b>descended</b> through; the Conformance walk and both renderers climb the
 /// <c>/Parent</c> key. Two reasons. They are different jobs — a checker reporting on the document and
 /// a model describing the structure a caller walked — and reconciling them changes verdicts. And

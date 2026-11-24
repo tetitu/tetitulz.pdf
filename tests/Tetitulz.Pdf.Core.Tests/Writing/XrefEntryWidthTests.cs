@@ -20,14 +20,12 @@ namespace Tetitulz.Pdf.Core.Tests.Writing;
 /// </summary>
 /// <remarks>
 /// <para>A reader is entitled to seek an entry by <c>first + 20 × i</c> rather than parsing forward,
-/// so <b>one byte wrong shifts every subsequent entry's meaning</b>. That has already happened here
-/// twice: <c>PdfXrefFormat</c>'s own remarks record two copies built with
-/// <c>StringBuilder.AppendLine</c>, which appends <c>Environment.NewLine</c> — 19 visible characters
-/// plus a two-byte CRLF is <b>21</b> bytes on Windows and 20 on Linux, so the emitted PDF was
-/// malformed, and differently malformed per platform.</para>
+/// so <b>one byte wrong shifts every subsequent entry's meaning</b>. A copy built with
+/// <c>StringBuilder.AppendLine</c>, which appends <c>Environment.NewLine</c>, writes 19 visible
+/// characters plus a two-byte CRLF — <b>21</b> bytes on Windows and 20 on Linux — so the emitted PDF
+/// would be malformed, and differently malformed per platform.</para>
 ///
-/// <para><b>The row is spelled once now.</b> Seven files hand-wrote it; the last five were routed
-/// through <see cref="PdfXrefFormat.Entry"/> in 2026-08-23. These tests assert the width from the
+/// <para><b>The row is spelled once</b>, by <see cref="PdfXrefFormat.Entry"/>. These tests assert the width from the
 /// <b>written bytes</b> rather than from the helper, because "the helper is 20 bytes" is not the
 /// claim — "what the writers emit is 20 bytes" is.</para>
 /// </remarks>

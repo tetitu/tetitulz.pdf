@@ -15,12 +15,12 @@ namespace Tetitulz.Pdf.Plugins.EthereumSign.Tests.Signing;
 
 /// <summary>
 /// <see cref="PdfBlockchainSigner.EmbedBlockchainProof"/> is a public static that takes an
-/// arbitrary <c>byte[]</c>, so every trailer shape a file can carry reaches it. It used to
-/// dereference the parse result unchecked: a dangling <c>/Root</c> escaped as a
+/// arbitrary <c>byte[]</c>, so every trailer shape a file can carry reaches it. Dereferencing the
+/// parse result unchecked, a dangling <c>/Root</c> would escape as a
 /// <see cref="NullReferenceException"/> out of an API whose every other failure is a
-/// <see cref="PdfSigningException"/>, and a <i>direct</i> <c>/Root</c> produced object number 0 —
-/// reserved as the head of the free list — so the catalog was written unreferenced and the proof
-/// ended up in a malformed file that reported success.
+/// <see cref="PdfSigningException"/>, and a <i>direct</i> <c>/Root</c> would give object number 0 —
+/// reserved as the head of the free list — so the catalog would be written unreferenced and the
+/// proof end up in a malformed file that reported success.
 ///
 /// <para>These assert the guard's own evidence: a typed exception naming the condition. None of
 /// them measures time, and none reaches the network.</para>

@@ -53,7 +53,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         // Inline drawing of the given kind. The payload deliberately contains no a:blip and no
         // a:prstGeom — that is exactly what makes a diagram / chart invisible to the structural
-        // heuristics, and what used to make it vanish.
+        // heuristics, and what could make it vanish.
         private static string InlineGraphic(string uri, string payload, long cy)
             => $@"<w:drawing {Ns}><wp:inline><wp:extent cx=""2743200"" cy=""{cy}""/>
 <wp:docPr id=""1"" name=""G1""/><a:graphic><a:graphicData uri=""{uri}"">{payload}

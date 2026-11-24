@@ -94,9 +94,9 @@ public class MarkToLigatureTests
 
     /// <summary>
     /// Segoe UI itself: its required rules draw lam-alef as two pieces with mark-to-base anchors, and
-    /// the glyph its <c>cmap</c> maps U+FEFB to has none — so the fatha is placed now, on glyphs the
-    /// font's rules chose, where it used to stay at its pen position. Skipped where the font is not
-    /// installed; the fixture above is the shape, this is the font the register named.
+    /// the glyph its <c>cmap</c> maps U+FEFB to has none — so the fatha is placed on glyphs the font's
+    /// rules chose, not left at its pen position. Skipped where the font is not installed; the fixture
+    /// above is the shape, this is the font itself.
     /// </summary>
     [TestInfrastructure.SegoeUiFact]
     public void SegoeUi_PlacesTheFathaOnTheLamAlefItsOwnRulesDraw()

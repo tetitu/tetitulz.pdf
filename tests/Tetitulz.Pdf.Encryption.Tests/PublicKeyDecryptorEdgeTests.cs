@@ -15,8 +15,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Encryption.Tests;
 
 /// <summary>
-/// The edges of <see cref="PdfPublicKeyDecryptor"/> the overnight sweep found unguarded: the
-/// recipient cap, the defaults of <c>/V</c>, <c>/R</c> and <c>/EncryptMetadata</c>, and a stream that
+/// The edges of <see cref="PdfPublicKeyDecryptor"/>: the recipient cap, the defaults of <c>/V</c>,
+/// <c>/R</c> and <c>/EncryptMetadata</c>, and a stream that
 /// cannot seek.
 /// </summary>
 public class PublicKeyDecryptorEdgeTests

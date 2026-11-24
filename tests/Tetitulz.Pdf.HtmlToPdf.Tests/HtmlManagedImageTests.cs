@@ -16,11 +16,11 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// <summary>
     /// What the managed engine does with an image it cannot embed.
     ///
-    /// <para>It used to size the image from its header and then drop it at draw time, leaving a
-    /// correctly-sized blank rectangle — the most confusing possible failure, because the gap
-    /// looks like a deliberate layout choice. The format opinion is now shared
-    /// (<c>Core.Imaging.RasterImageInspector</c>), the decision is made where the <c>src</c> is
-    /// still known, and the reason is reported.</para>
+    /// <para>Sizing the image from its header and then dropping it at draw time would leave a
+    /// correctly-sized blank rectangle — the most confusing possible failure, because the gap looks
+    /// like a deliberate layout choice. The format opinion is shared
+    /// (<c>Core.Imaging.RasterImageInspector</c>), the decision is made where the <c>src</c> is still
+    /// known, and the reason is reported.</para>
     /// </summary>
     public class HtmlManagedImageTests
     {
@@ -56,7 +56,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         public void UndecodableFormat_ReservesNoSpaceAndIsReported()
         {
             // TIFF: recognised by the inspector (so its identity is known and reportable) but not
-            // decodable. GIF used to serve this role and no longer can — it is embedded now.
+            // decodable (a GIF is embedded, so it cannot serve this role).
             string tiff = "data:image/tiff;base64," + System.Convert.ToBase64String(MakeTiff());
 
             var withImage = Convert($"<p>ABOVE</p><img src=\"{tiff}\" width=\"40\" height=\"40\"><p>BELOW</p>");
@@ -282,9 +282,9 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         }
 
         /// <summary>
-        /// An SVG data URI decodes perfectly and is then not a raster image at all. It used to
-        /// reach the image decoder, be refused, and leave a sized blank hole — the same defect as
-        /// an undecodable GIF, arriving by a different route.
+        /// An SVG data URI decodes perfectly and is then not a raster image at all. Handed to the image
+        /// decoder, it would be refused and leave a sized blank hole — the same defect as an
+        /// undecodable GIF, arriving by a different route.
         /// </summary>
         [Fact]
         public void SvgDataUri_ReachesTheRasterizer()

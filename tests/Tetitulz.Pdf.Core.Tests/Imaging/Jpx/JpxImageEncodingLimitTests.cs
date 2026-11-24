@@ -10,7 +10,7 @@ using Tetitulz.Pdf.Core.Util;
 namespace Tetitulz.Pdf.Core.Tests.Imaging.Jpx;
 
 /// <summary>
-/// The encoder's ceilings (the review of 2026-09-26, row 32): its own work limit, named by the
+/// The encoder's ceilings: its own work limit, named by the
 /// message; the pixel area refused at the facade before a sample is widened; and Quality read
 /// only where it matters. Joins <see cref="PdfLimitsCollection"/>: every limit is process-global.
 /// </summary>

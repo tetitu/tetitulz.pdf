@@ -216,8 +216,8 @@ public class RevokedCertificateChainStatusTests
     /// <summary>
     /// A leaf whose own CRL says Good under an intermediate nothing vouches for is <c>Unknown</c> as a
     /// chain — the chain as a whole has not been shown unrevoked. The control adds the root's CRL for
-    /// the intermediate, and the same document reads <c>Good</c>. This was the one branch of the chain
-    /// walk no test reached: Wave 17 R6.1's sweep removed the degradation and nothing reddened.
+    /// the intermediate, and the same document reads <c>Good</c>. No other test reaches this branch of
+    /// the chain walk: removing the degradation reddens nothing else.
     /// </summary>
     [Fact]
     public void AnUnresolvedIntermediate_DegradesTheLeafsGoodToUnknown()

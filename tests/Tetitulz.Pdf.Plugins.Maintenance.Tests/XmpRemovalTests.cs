@@ -15,11 +15,11 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 /// <see cref="OptimizationOptions.RemoveXmpMetadata"/>.
 ///
 /// <para>§14.3.2 lets <b>any</b> object carry a <c>/Metadata</c> stream, and Adobe's tools attach
-/// one per placed asset. The option used to remove the catalog's and stop; on a 22 MB corpus
-/// document that was 3 439 bytes of the 9 679 007 present. The fixture here mirrors that shape —
-/// a small catalog packet and a large one hanging off an image — so a test that only checked "the
-/// catalog no longer has /Metadata" would pass against the old behaviour and against the new one
-/// alike. What separates them is the <b>image's</b> packet and the byte count.</para>
+/// one per placed asset. Removing the catalog's alone would, on a 22 MB corpus document, remove
+/// 3 439 bytes of the 9 679 007 present. The fixture here mirrors that shape — a small catalog
+/// packet and a large one hanging off an image — so a test that only checked "the catalog no longer
+/// has /Metadata" would pass either way. What separates them is the <b>image's</b> packet and the
+/// byte count.</para>
 /// </summary>
 public class XmpRemovalTests
 {

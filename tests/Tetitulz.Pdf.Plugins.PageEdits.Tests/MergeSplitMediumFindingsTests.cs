@@ -115,7 +115,7 @@ public class MergeSplitMediumFindingsTests
     public void SplitRange_DirectAcroFormDictionary_IsCarriedIntoTheExtract()
     {
         // §12.7.2 requires indirection for the FIELD dictionaries, not for the form, so a catalog
-        // holding /AcroForm inline is legal — and used to make the whole carry-over vanish.
+        // holding /AcroForm inline is legal — and must not make the whole carry-over vanish.
         using var extracted = Split(DirectAcroFormPdf(), 1, 1);
 
         var form = extracted.ResolveObject(extracted.Catalog.Dictionary[PdfName.AcroForm]) as PdfDictionary;

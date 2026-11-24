@@ -17,11 +17,11 @@ namespace Tetitulz.Pdf.Plugins.EthereumSign.Tests.Signing;
 /// <summary>
 /// The tamper check in <see cref="PdfBlockchainVerifier"/> must not be switchable off by the
 /// document it is checking. <c>/HashedLength</c> — the length of the notarized prefix — lives in
-/// the same attacker-controlled <c>/BlockchainProof</c> dictionary as everything else, and the
-/// verifier used to fall back to hashing the <c>/DocumentHash</c> <i>string read from that same
-/// file</i> when the key was absent. That compares the chain against itself: it matches by
-/// construction, so a modified document produced <c>TransactionFound &amp;&amp; HashMatches &amp;&amp;
-/// SignerMatches</c> and therefore <c>IsValid == true</c>, with the only signal on
+/// the same attacker-controlled <c>/BlockchainProof</c> dictionary as everything else. Falling back
+/// to hashing the <c>/DocumentHash</c> <i>string read from that same file</i> when the key is absent
+/// would compare the chain against itself: it matches by construction, so a modified document would
+/// produce <c>TransactionFound &amp;&amp; HashMatches &amp;&amp; SignerMatches</c> and therefore
+/// <c>IsValid == true</c>, with the only signal on
 /// <see cref="BlockchainVerificationResult.Warning"/>, which <c>IsValid</c> does not read.
 ///
 /// <para>These tests never reach the network. They pass an already-cancelled token, which

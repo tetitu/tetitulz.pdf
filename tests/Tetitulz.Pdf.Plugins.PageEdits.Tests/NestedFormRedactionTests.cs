@@ -60,14 +60,9 @@ public class NestedFormRedactionTests
         Stream(string.Empty, "/Wrap Do"));    // 9: page 2 content
 
     /// <summary>
-    /// A form reached from two places is no longer refused: the invocation on the redacted page
-    /// gets a scrubbed <b>clone</b>, and the other place keeps the original.
+    /// A form reached from two places is not refused: the invocation on the redacted page gets a
+    /// scrubbed <b>clone</b>, and the other place keeps the original.
     /// </summary>
-    /// <remarks>
-    /// Renamed from <c>RedactingAFormAlsoDrawnFromAnotherForm_IsRefused</c> — the behaviour it
-    /// named changed (plan 08 item 46), so the name changed with it rather than the assertions
-    /// being quietly inverted underneath it.
-    /// </remarks>
     [Fact]
     public void RedactingAFormAlsoDrawnFromAnotherForm_ClonesItForTheRedactedPage()
     {

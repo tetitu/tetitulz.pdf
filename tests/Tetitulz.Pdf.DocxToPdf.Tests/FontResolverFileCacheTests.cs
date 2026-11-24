@@ -11,9 +11,9 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// <see cref="FontResolver"/>'s file cache is live and charges what it holds, exactly. The
-/// overnight sweep removed the cache write, the charge, and added a byte to the charge, and no
-/// test noticed: a cache whose hits and misses return equal programs is invisible to every
+/// <see cref="FontResolver"/>'s file cache is live and charges what it holds, exactly. Removing the
+/// cache write or the charge, or adding a byte to the charge, is invisible to an answer-only test: a
+/// cache whose hits and misses return equal programs is invisible to every
 /// assertion about the answer (CLAUDE.md's second blind spot), so the evidence asserted here is
 /// identity and the byte count.
 /// </summary>

@@ -62,8 +62,8 @@ public class SecurityHardeningTests
         Assert.Equal(int.MaxValue, t.IntValue);
         Assert.Equal(99999999999L, t.LongValue);
 
-        // Past long too: saturated, not 0 — a /Length of 21 digits read as 0 and bypassed every
-        // "too large" check downstream (the review of 2026-10-16, R1.3). PdfTokenNumericTests has the ranges.
+        // Past long too: saturated, not 0 — a /Length of 21 digits read as 0 would bypass every
+        // "too large" check downstream. PdfTokenNumericTests has the ranges.
         var huge = new PdfToken(PdfTokenType.Number, "999999999999999999999", 0); // > long
         Assert.Equal(int.MaxValue, huge.IntValue);
         Assert.Equal(long.MaxValue, huge.LongValue);

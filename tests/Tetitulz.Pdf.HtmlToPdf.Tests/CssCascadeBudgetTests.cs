@@ -92,8 +92,8 @@ public class CssCascadeBudgetTests
     }
 
     /// <summary>
-    /// At real scale: a 32-compound descendant selector over a document nesting 25 000 deep used to
-    /// backtrack for tens of billions of steps and hang the whole conversion (the compound cap let a
+    /// At real scale: a 32-compound descendant selector over a document nesting 25 000 deep would
+    /// backtrack for tens of billions of steps and hang the whole conversion (the compound cap lets a
     /// 32-compound selector through). The match-cost gate skips it before the DOM query, so the
     /// conversion finishes. Run on a dedicated thread: a regression that dropped the gate fails the
     /// join in a minute rather than hanging the test host indefinitely.

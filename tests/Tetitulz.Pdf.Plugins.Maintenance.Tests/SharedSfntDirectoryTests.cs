@@ -27,8 +27,8 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 public class SharedSfntDirectoryTests
 {
     /// <summary>
-    /// Two records naming one table are refused. This copy used to keep the first and prune on,
-    /// which drops a table the input had and reports success — the same class of damage as the
+    /// Two records naming one table are refused. Keeping the first and pruning on would drop a
+    /// table the input had and report success — the same class of damage as the
     /// silent rename, and not a guess this layer is entitled to make.
     /// </summary>
     [Fact]

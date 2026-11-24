@@ -28,10 +28,9 @@ namespace Tetitulz.Pdf.Core.Tests.Writing;
 /// reads a misplaced section through a byte-0 fallback and reports nothing. The parser is then used
 /// too, with <see cref="PdfParser.SectionsReadFromByteZero"/> asserted at zero: that is what says
 /// the chain was read <i>as written</i> rather than rescued.</para>
-/// <para>Both overloads used to record output positions and probe the original at the bare offset,
-/// so a prefixed original was never chained: its section sat one prefix-length away from where the
-/// probe looked, the whole document was re-declared, and the offsets that were written were wrong by
-/// the same amount.</para>
+/// <para>Recording output positions and probing the original at the bare offset would never chain a
+/// prefixed original: its section sits one prefix-length away from where the probe looks, the whole
+/// document would be re-declared, and the offsets written would be wrong by the same amount.</para>
 /// </remarks>
 public class PrefixedOriginalUpdateTests
 {

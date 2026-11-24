@@ -9,9 +9,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.JavaScript.Tests;
 
 /// <summary>
-/// The sandbox limits a document script runs under, pinned at their values. The overnight sweep
-/// changed each one and no test noticed: the recursion and memory limits are what stand between a
-/// hostile script and the host process. The time limit is not here, because it can only be
+/// The sandbox limits a document script runs under, pinned at their values, since a changed limit
+/// is otherwise invisible: the recursion and memory limits are what stand between a hostile script
+/// and the host process. The time limit is not here, because it can only be
 /// observed by a clock, which a DoS-guard test must not assert.
 /// </summary>
 public class SandboxLimitTests

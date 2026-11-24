@@ -132,7 +132,7 @@ public sealed class SeedValueConstraintTests
     /// <c>/Ff</c> is a flag word: its low 32 bits, as <c>/P</c> and an annotation's <c>/F</c> are read.
     /// 2^32 has no low bit set, so nothing is required and the foreign handler is merely recommended;
     /// 2^32 + 1 has bit 1 set and refuses. A saturating read would have made both refuse (every bit
-    /// set), an unchecked cast made both accept on .NET Framework (Wave 17, R6.4).
+    /// set), an unchecked cast would make both accept on .NET Framework.
     /// </summary>
     [Fact]
     public void AFlagWordAboveThirtyTwoBits_IsReadByItsLowBits()

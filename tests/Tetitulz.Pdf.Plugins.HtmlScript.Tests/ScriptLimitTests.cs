@@ -303,7 +303,7 @@ public sealed class ScriptLimitTests
     /// <remarks>
     /// <b>The quietest of three windows, not one.</b> Process CPU time is shared state: a garbage
     /// collection or the JIT's background tier can burn a burst in any one window, and under a
-    /// whole-solution run one did (a single 1500 ms window read over its 750 ms bound, the suite
+    /// whole-solution run one can (a single 1500 ms window read over its 750 ms bound, the suite
     /// green alone). A timer left running burns in every window — its busy loop keeps a core full —
     /// so the least of three consecutive windows still sees it, while a burst lands in one.
     /// <para><b>The potency half: the timer did run</b> — its tick marks the page, and the page
@@ -311,8 +311,8 @@ public sealed class ScriptLimitTests
     /// <para><b>Whose property this is.</b> AngleSharp runs a page's timers only while its event
     /// loop is awaited, so nothing fires once <c>RunAsync</c> returns: removing every disposal in
     /// the plugin — the context, the document, the page deadline and its cancel — leaves this test
-    /// green (measured 2026-09-29). The plugin's disposals are defence in depth
-    /// (sweep-html-script-limits.ps1, L7); this test is what would notice AngleSharp changing.</para>
+    /// green (measured). The plugin's disposals are defence in depth; this test is what would notice
+    /// AngleSharp changing.</para>
     /// </remarks>
     [Fact]
     public void ATimerThePageLeavesRunningDoesNotOutliveTheCall()

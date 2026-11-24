@@ -68,10 +68,10 @@ public class AnchoringFailureIsNotDestructiveTests
     }
 
     /// <summary>
-    /// The plugin hook used to let <see cref="PdfSigningException"/> escape, which fails the whole
-    /// <c>PdfOperations.Sign</c> call — so an endpoint that was merely misconfigured discarded a
-    /// PKI signature that had already succeeded. It now degrades to "signed but not notarized" and
-    /// says why.
+    /// The plugin hook does not let <see cref="PdfSigningException"/> escape, which would fail the
+    /// whole <c>PdfOperations.Sign</c> call — so an endpoint that is merely misconfigured would discard
+    /// a PKI signature that had already succeeded. It degrades to "signed but not notarized" and says
+    /// why.
     /// </summary>
     [Fact]
     public void An_anchoring_failure_passes_the_signed_bytes_through_and_reports_the_reason()
@@ -121,9 +121,9 @@ public class AnchoringFailureIsNotDestructiveTests
     }
 
     /// <summary>
-    /// The cancellation token used to reach nothing but <c>Task.Delay</c> inside the receipt-poll
-    /// loop, so the very first RPC — <c>SendTransaction</c> against a black-holing endpoint — ran
-    /// to Nethereum's 100-second HttpClient timeout before the token was consulted once.
+    /// The cancellation token is consulted before the first RPC: reaching nothing but
+    /// <c>Task.Delay</c> inside the receipt-poll loop, it would let <c>SendTransaction</c> against a
+    /// black-holing endpoint run to Nethereum's 100-second HttpClient timeout first.
     ///
     /// <para>The private key here is deliberately <b>not</b> a valid key: constructing the
     /// <c>Account</c> is the step immediately after the cancellation check, so if the check moved

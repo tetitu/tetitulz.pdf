@@ -105,8 +105,7 @@ public class FlexListTableTests
     /// <summary>
     /// A table whose only column holds a nested table is as wide as the nested table (CSS 2.1
     /// §17.5.2.2: a cell's content, a table included, sizes its column): the item fits beside the
-    /// first half, the third wraps, nothing is reported. Before 2026-10-19 the column was unknown —
-    /// one line, reported.
+    /// first half, the third wraps, nothing is reported.
     /// </summary>
     [Fact]
     public void AnItemWithANestedTable_IsMeasured_AndTheLineBreaksAfterIt()

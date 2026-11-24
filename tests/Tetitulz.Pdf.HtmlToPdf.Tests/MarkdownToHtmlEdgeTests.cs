@@ -11,8 +11,8 @@ using Xunit;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
-/// <see cref="MarkdownToHtml"/> where the overnight sweep found the tests too narrow: the text
-/// around an element, the lines after a table, the closing tag of an ordered list, a delimiter row
+/// <see cref="MarkdownToHtml"/> at its edges: the text around an element, the lines after a table,
+/// the closing tag of an ordered list, a delimiter row
 /// without a leading pipe, an empty title, and the line cap.
 /// </summary>
 public class MarkdownToHtmlEdgeTests

@@ -78,8 +78,8 @@ public class PdfUaCheckerExtendedTests
     }
 
     /// <summary>
-    /// ISO 32000-1 Table 30 names the page tab-order key <c>/Tabs</c>. (<c>/TabOrder</c>,
-    /// which this checker used to demand, is not a PDF key at all.)
+    /// ISO 32000-1 Table 30 names the page tab-order key <c>/Tabs</c>. (<c>/TabOrder</c> is not a
+    /// PDF key at all.)
     /// </summary>
     private static byte[] BuildPdfWithAnnotatedPageAndTabs(string tabKey = "/Tabs")
     {
@@ -511,8 +511,8 @@ public class PdfUaCheckerExtendedTests
 
     /// <summary>
     /// <c>/F</c> is read as a flag word (<c>PdfAnnotationFlags.FromNumber</c>), not through
-    /// <c>IntValue</c>. That used to saturate both fixtures to every named flag — Hidden among them —
-    /// so an undescribed annotation a reader shows was skipped as hidden. <c>6.5</c> is not a flag
+    /// <c>IntValue</c>, which would saturate both fixtures to every named flag — Hidden among them —
+    /// and skip an undescribed annotation a reader shows as hidden. <c>6.5</c> is not a flag
     /// word and reads as 0; <c>2147483652</c> is Print plus bit 32 in the unsigned spelling.
     /// </summary>
     [Theory]

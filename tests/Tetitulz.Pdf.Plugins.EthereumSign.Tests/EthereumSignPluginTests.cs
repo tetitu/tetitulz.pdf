@@ -150,9 +150,9 @@ public sealed class EthereumSignPluginTests
     /// An invalid <c>PrivateKey</c> — non-whitespace, so <c>Initialize</c> passes, but not valid hex —
     /// makes <c>new Account(…)</c> throw a <c>FormatException</c> deep in the anchoring chain, outside
     /// <c>RecordHashAsync</c>'s own try. That is neither a <c>PdfSigningException</c> nor an
-    /// <c>OperationCanceledException</c>, so it used to escape the hook and fault the whole
-    /// <c>PdfOperations.Sign</c> — destroying the PKI signature already produced. The hook now records
-    /// it and passes the document through unchanged (<c>null</c>), honouring its documented contract.
+    /// <c>OperationCanceledException</c>; escaping the hook, it would fault the whole
+    /// <c>PdfOperations.Sign</c> — destroying the PKI signature already produced. The hook records it
+    /// and passes the document through unchanged (<c>null</c>), honouring its documented contract.
     /// </summary>
     [Fact]
     public void OnAfterSign_InvalidPrivateKey_RecordsError_DoesNotDestroyTheSignature()

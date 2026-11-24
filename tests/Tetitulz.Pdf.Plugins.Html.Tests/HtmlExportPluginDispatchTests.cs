@@ -18,8 +18,7 @@ namespace Tetitulz.Pdf.Plugins.Html.Tests;
 /// </summary>
 /// <remarks>
 /// Only the PDF→HTML <i>export</i> direction is covered here; the import direction has its own
-/// facade-dispatch case in <c>HtmlImportConversionTests</c>. This note used to say import went
-/// through Playwright's headless browser and so could not be tested — it does not, and it can:
+/// facade-dispatch case in <c>HtmlImportConversionTests</c>, testable in process because
 /// <c>HtmlToPdfOptions.RenderEngine</c> defaults to <c>Managed</c>.
 /// </remarks>
 [Collection(PluginHostCollection.Name)]

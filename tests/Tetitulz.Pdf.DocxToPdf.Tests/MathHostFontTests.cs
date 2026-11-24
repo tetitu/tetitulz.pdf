@@ -13,9 +13,9 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// An equation's symbols outside WinAnsi are drawn from the host's fonts when the DOCX embeds none: the
-/// equation path asked only for an embedded font, unlike body runs and list marks, and reserved the space
-/// instead (Wave 22, DocxToPdf-3:8). The host's font list is replaced with one synthetic face for the test, so
+/// An equation's symbols outside WinAnsi are drawn from the host's fonts when the DOCX embeds none, as body
+/// runs and list marks are, rather than space reserved for them. The host's font list is replaced with one
+/// synthetic face for the test, so
 /// the machine's own fonts cannot answer instead of the code.
 /// </summary>
 [Collection(DiagnosticsCollection.Name)]

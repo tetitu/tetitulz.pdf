@@ -114,8 +114,7 @@ public class OfficeConversionBoundaryTests
     /// <summary>
     /// The coverage rule with no page lines to place: a line is covered when it is a whole emitted
     /// row, whitespace aside, and not when it is merely part of one — a part of a row is covered
-    /// only by standing inside it (<see cref="TableCoverageTests"/>). Until Wave 22 (1:5) any part
-    /// was, wherever it stood.
+    /// only by standing inside it (<see cref="TableCoverageTests"/>), not wherever it stands.
     /// </summary>
     [Theory]
     [InlineData("North  12 340", true)]     // a whole row, spaced differently

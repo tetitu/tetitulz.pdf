@@ -24,9 +24,9 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// returns it; a broken digest, which verification refuses under every policy, it refuses itself.
 /// </summary>
 /// <remarks>
-/// Before 2026-10-20 (GAPS.md §1) only the verifier applied the weak-algorithm policy, so a SHA-1
-/// token was embedded without a word and default verification of the signed document then rejected
-/// its timestamp. Each weak case is asserted on both sides in one test: the client's slot and the
+/// With the weak-algorithm policy applied by the verifier alone, a SHA-1 token would be embedded
+/// without a word and default verification of the signed document would then reject its timestamp.
+/// Each weak case is asserted on both sides in one test: the client's slot and the
 /// verifier's refusal of the same bytes, with a SHA-256 control that neither flags.
 /// </remarks>
 public class TsaClientWeakTokenTests

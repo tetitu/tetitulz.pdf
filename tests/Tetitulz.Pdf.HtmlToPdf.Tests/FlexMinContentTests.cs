@@ -9,12 +9,12 @@ using Xunit;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
-/// A flex item's minimum main size (CSS Flexbox §4.5, batch 107): with <c>min-width: auto</c> an
-/// item is never narrower than its min-content width — its longest word — so a line breaks before a
-/// <c>flex: 1</c> item whose longest word does not fit, as CSS breaks, where before batch 107 a zero
-/// basis counted 0 and every <c>flex: 1</c> item joined the line. A stated <c>min-width</c> is the
-/// floor instead. And an item of several blocks is measured as its widest block, where it used to
-/// have no size to break on. The widths are words of one letter repeated, in a 200px (150pt) line.
+/// A flex item's minimum main size (CSS Flexbox §4.5): with <c>min-width: auto</c> an item is never
+/// narrower than its min-content width — its longest word — so a line breaks before a <c>flex: 1</c>
+/// item whose longest word does not fit, as CSS breaks, rather than a zero basis counting 0 and
+/// every <c>flex: 1</c> item joining the line. A stated <c>min-width</c> is the floor instead. And
+/// an item of several blocks is measured as its widest block, so it has a size to break on. The
+/// widths are words of one letter repeated, in a 200px (150pt) line.
 /// </summary>
 public class FlexMinContentTests
 {

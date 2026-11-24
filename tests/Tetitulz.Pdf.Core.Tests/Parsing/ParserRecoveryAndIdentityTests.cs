@@ -236,9 +236,9 @@ public class ParserRecoveryAndIdentityTests
 
     /// <summary>
     /// The xref says object 3 sits at index 1 of the stream, whose own index says index 1 is
-    /// object 2. §7.5.7 stores that number precisely so the disagreement is checkable; it used to
-    /// be parsed and discarded, so the caller received object 2's dictionary stamped with object
-    /// 3's number and nothing said otherwise.
+    /// object 2. §7.5.7 stores that number precisely so the disagreement is checkable; parsed and
+    /// discarded, it would hand the caller object 2's dictionary stamped with object 3's number and
+    /// nothing saying otherwise.
     /// </summary>
     [Fact]
     public void GetObject_ObjStmIndexNamingADifferentObject_IsRefusedAndReported()
@@ -271,9 +271,9 @@ public class ParserRecoveryAndIdentityTests
     /// <summary>
     /// Object 3's cross-reference offset points at object 2's header — the shape a web server
     /// prefixing bytes, a naive concatenation or a deliberately aimed offset produces. Asking for
-    /// 3 returned 2's dictionary, cached it under 3, and left the diagnostic slot null; then it
-    /// refused with the reason. Since GAPS §19h item 5 the file's own <c>3 0 obj</c> header is found
-    /// and the object read from there — never object 2's body — with nothing to report, as a
+    /// 3 must not return 2's dictionary, cache it under 3, and leave the diagnostic slot null: the
+    /// file's own <c>3 0 obj</c> header is found and the object read from there — never object 2's
+    /// body — with nothing to report, as a
     /// shifted table loses nothing a scan can still find (another reader issue7229 was saved one page short).
     /// </summary>
     [Fact]

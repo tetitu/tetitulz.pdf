@@ -333,12 +333,12 @@ public sealed class AssemblyScanRegressionTests
     // ==================================================================
 
     /// <summary>
-    /// <c>ContentStreamEmitter.Save</c> reported once per refused <c>q</c>, so anything that kept
-    /// asking at the cap was a diagnostic amplifier — the same defect the scanner had.
+    /// <c>ContentStreamEmitter.Save</c> reporting once per refused <c>q</c> would make anything that
+    /// kept asking at the cap a diagnostic amplifier.
     ///
-    /// <para><c>PsGraphicsEngine</c> now raises <c>limitcheck</c> one level below this, so the
-    /// program that used to reach it (<c>{ gsave } loop</c>) no longer can, which is why this is
-    /// asserted on the emitter directly rather than through a conversion. A guard that is currently
+    /// <para><c>PsGraphicsEngine</c> raises <c>limitcheck</c> one level below this, so a program such
+    /// as <c>{ gsave } loop</c> cannot reach it, which is why this is asserted on the emitter directly
+    /// rather than through a conversion. A guard that is currently
     /// unreachable is exactly the one that quietly becomes reachable again.</para>
     /// </summary>
     [Fact]

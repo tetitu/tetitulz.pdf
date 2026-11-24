@@ -77,7 +77,7 @@ public class SigningNetworkTimeoutTests
 
     /// <summary>
     /// The per-URL budget of an OCSP or CRL fetch is the configured timeout — not the built-in
-    /// figure the fixed cancellation used to apply over the top of it.
+    /// figure of a fixed cancellation applied over the top of it.
     /// </summary>
     [Fact]
     public void TheRevocationBudgetIsTheConfiguredTimeoutNotTheBuiltInCap()

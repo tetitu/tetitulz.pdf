@@ -113,9 +113,9 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         }
 
         /// <summary>
-        /// A percentage among several values, or in a longhand, is applied at its corner since batch
-        /// 108 (<c>PerCornerPercentTests</c>) and nothing is reported — the report every such value
-        /// used to raise, since it read as 0, is gone; the corners are drawn (the potency).
+        /// A percentage among several values, or in a longhand, is applied at its corner
+        /// (<c>PerCornerPercentTests</c>) and nothing is reported — it is not read as 0 — and the corners
+        /// are drawn (the potency).
         /// </summary>
         [Fact]
         public void APerCornerPercent_IsNotReported()

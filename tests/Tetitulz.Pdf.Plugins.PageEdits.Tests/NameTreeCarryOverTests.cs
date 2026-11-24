@@ -232,7 +232,7 @@ public class NameTreeCarryOverTests
         Assert.Equal(new[] { "B2" }, titles);
 
         // The survivor's chain must be rebuilt around the dropped siblings, not left dangling at
-        // the object numbers they used to occupy.
+        // the object numbers they occupied.
         var item = extracted.ResolveObject(outlines[PdfName.First]) as PdfDictionary;
         Assert.Null(item[PdfName.Prev]);
         Assert.Null(item[PdfName.Next]);

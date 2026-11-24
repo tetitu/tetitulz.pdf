@@ -15,10 +15,10 @@ namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
 /// A trailer whose <c>/Root</c> is missing or names an object that is not there, over a
-/// cross-reference table that reads cleanly (GAPS §7c, 2026-10-15): the catalog is found by the
+/// cross-reference table that reads cleanly: the catalog is found by the
 /// scan recovery a broken table takes — the file re-indexed from its objects' headers, the last
-/// <c>/Type /Catalog</c> object taken — and <see cref="PdfParser.LastRootRecovery"/> says so. Six
-/// of the eight public-corpus files that would not open stopped here. A file with no catalog
+/// <c>/Type /Catalog</c> object taken — and <see cref="PdfParser.LastRootRecovery"/> says so, as
+/// public-corpus files need. A file with no catalog
 /// anywhere still refuses, and an ordinary file never takes the path.
 /// </summary>
 /// <remarks>

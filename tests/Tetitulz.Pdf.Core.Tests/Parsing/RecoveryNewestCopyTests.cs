@@ -155,7 +155,7 @@ public class RecoveryNewestCopyTests
     /// Two catalogs under two object numbers — a "save as" that renumbered — and no trailer anywhere
     /// names a <c>/Root</c>: revision 1's catalog is top-level object 1, revision 2's is object 9
     /// inside an object stream written later. The one written last is the document's, whatever kind
-    /// of entry holds it; a top-level candidate used to outrank every member regardless.
+    /// of entry holds it; a top-level candidate does not outrank every member regardless.
     /// </summary>
     [Fact]
     public void Recovery_names_the_latest_catalog_as_root_whichever_kind_of_entry_holds_it()
@@ -288,8 +288,8 @@ public class RecoveryNewestCopyTests
     /// the charge has to stay on the collection.
     /// </summary>
     /// <remarks>
-    /// The scan charges the four top-level headers it takes first (objects 20, 21, 40 and 41; the
-    /// review of 2026-10-16, R1.10), so a budget of six leaves two for the members.
+    /// The scan charges the four top-level headers it takes first (objects 20, 21, 40 and 41), so a
+    /// budget of six leaves two for the members.
     /// </remarks>
     [Fact]
     public void Adversarial_object_stream_members_recovered_by_scanning_are_charged_against_the_entry_budget()

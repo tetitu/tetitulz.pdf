@@ -17,13 +17,13 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 /// the one key-derivation site each, and to a revision 2–4 password on <b>neither</b>.
 /// </summary>
 /// <remarks>
-/// <para>Two mirror-image defects hid behind ASCII passwords, which the normalisation leaves
-/// unchanged (Wave 17, R5.3). <c>PdfEncryptor.ComputeAes256Keys</c> hashed the raw string while
-/// every decrypt door normalised, so an AES-256 password holding a no-break space, a soft hyphen or
-/// a zero-width space produced a document its own password could not open — here or in a common viewer,
-/// which normalises too. And the decrypt doors normalised <i>unconditionally</i>, so an RC4 or
-/// AES-128 password with the same character — which §7.6.3.3 Algorithm 2 hashes as raw Latin-1
-/// bytes — was turned into a space before <c>PadPassword</c> and refused.</para>
+/// <para>Two mirror-image defects hide behind ASCII passwords, which the normalisation leaves
+/// unchanged. An encryptor hashing the raw string while every decrypt door normalises would make
+/// an AES-256 password holding a no-break space, a soft hyphen or a zero-width space produce a
+/// document its own password cannot open — here or in a common viewer, which normalises too. And
+/// decrypt doors normalising <i>unconditionally</i> would turn an RC4 or AES-128 password with the
+/// same character — which §7.6.3.3 Algorithm 2 hashes as raw Latin-1 bytes — into a space before
+/// <c>PadPassword</c>, and refuse it.</para>
 /// <para>The mapped characters are from RFC 4013 §2.1 (non-ASCII space → U+0020) and the
 /// soft-ignored set (dropped). Each theory row is one of them, so a fix that handled one mapping
 /// class and not the other shows up as a row.</para>
@@ -35,7 +35,7 @@ public class PasswordNormalizationRoundTripTests
 
     /// <summary>
     /// An AES-256 document encrypted under a password with a mapped code point opens with that same
-    /// password. The encryptor used to hash the raw string and the decryptor the normalised one.
+    /// password: encryptor and decryptor both hash the normalised one.
     /// </summary>
     [Theory]
     [MemberData(nameof(MappedCodePoints))]
@@ -51,7 +51,7 @@ public class PasswordNormalizationRoundTripTests
 
     /// <summary>
     /// A revision 2–4 document under the same password opens too: those take the raw Latin-1 bytes,
-    /// and the decrypt doors used to normalise the candidate before <c>PadPassword</c>.
+    /// and the decrypt doors do not normalise the candidate before <c>PadPassword</c>.
     /// </summary>
     [Theory]
     [InlineData(EncryptionAlgorithm.RC4_128, " ")]
@@ -85,8 +85,8 @@ public class PasswordNormalizationRoundTripTests
 
     /// <summary>
     /// A revision 2–4 password is <b>not</b> normalised, so a no-break space and a space are two
-    /// different passwords — as every other reader of such a file treats them. The decrypt doors
-    /// used to map the candidate, which made these two one.
+    /// different passwords — as every other reader of such a file treats them. Mapping the candidate
+    /// would make these two one.
     /// </summary>
     [Fact]
     public void ARevision2To4PasswordIsTakenAsItsRawBytes()

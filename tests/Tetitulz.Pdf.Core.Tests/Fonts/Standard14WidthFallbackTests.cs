@@ -101,8 +101,8 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts
         }
 
         /// <summary>
-        /// The alias half. These are the names real producers write, and the exact-name gate that
-        /// used to guard this tier missed every one of them — on <i>both</i> subtypes.
+        /// The alias half. These are the names real producers write, and an exact-name gate on this tier
+        /// would miss every one of them — on <i>both</i> subtypes.
         /// </summary>
         [Theory]
         [InlineData("Type1", "ArialMT")]

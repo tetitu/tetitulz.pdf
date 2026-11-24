@@ -13,10 +13,10 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Fonts;
 
 /// <summary>
-/// The AFM metrics of Symbol and ZapfDingbats (Wave 17 R10.3). Before 2026-10-16 neither font had a
-/// width anywhere in Core — <c>GetWidthByUnicode</c> answered 0 for every character — so a
-/// <c>/Symbol</c> font with no <c>/Widths</c> measured <c>/MissingWidth</c> and every glyph landed on
-/// one point, and the PostScript plugin advanced its pen by nothing for <c>(abg) show</c>.
+/// The AFM metrics of Symbol and ZapfDingbats. Without them — <c>GetWidthByUnicode</c> answering 0
+/// for every character — a <c>/Symbol</c> font with no <c>/Widths</c> would measure
+/// <c>/MissingWidth</c> and every glyph land on one point, and the PostScript plugin would advance
+/// its pen by nothing for <c>(abg) show</c>.
 ///
 /// <para>The values are the published AFMs' (read back through the reference renderer's metric-compatible URW
 /// clones): Symbol <c>alpha</c> 631, <c>Omega</c> 768, <c>universal</c> 713, <c>space</c> 250;

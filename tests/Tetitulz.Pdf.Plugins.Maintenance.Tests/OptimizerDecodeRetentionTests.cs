@@ -14,9 +14,9 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 /// <summary>
 /// The optimizer's bounded decode keeps nothing on the stream it decoded. It holds the whole document
 /// and decodes each image, font program and content stream once a pass, so a memo on every stream it
-/// decoded but did not rewrite held the sum of the decodes — each up to
+/// decoded but did not rewrite would hold the sum of the decodes — each up to
 /// <see cref="OptimizationOptions.MaxStreamDecodeBytes"/> — until the run ended: a page of small Flate
-/// bombs whose geometry no pass accepts multiplied the ceiling by their count (Wave 22, Maintenance-2:0).
+/// bombs whose geometry no pass accepts would multiply the ceiling by their count.
 /// </summary>
 public sealed class OptimizerDecodeRetentionTests
 {

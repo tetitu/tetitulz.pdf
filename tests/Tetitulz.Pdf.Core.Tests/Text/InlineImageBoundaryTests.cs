@@ -14,8 +14,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Text;
 
 /// <summary>
-/// Where <see cref="ContentStreamParser"/> ends an inline image, at the edges the overnight sweep
-/// found no test reaching: a declared <c>/L</c>, the heuristic's four-byte look-ahead, and an image
+/// Where <see cref="ContentStreamParser"/> ends an inline image, at its edges: a declared
+/// <c>/L</c>, the heuristic's four-byte look-ahead, and an image
 /// with no <c>EI</c> at all.
 /// </summary>
 public class InlineImageBoundaryTests

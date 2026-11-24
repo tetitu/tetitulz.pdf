@@ -157,7 +157,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         }
 
         /// <summary>
-        /// A page or a column break in a cell is passed over, as Word 16 draws it (printed 2026-10-22):
+        /// A page or a column break in a cell is passed over, as Word 16 draws it (printed):
         /// "One", the break, "Two" draw "OneTwo" on one line — only a text-wrapping break ends a cell's line.
         /// </summary>
         [Theory]
@@ -172,8 +172,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         }
 
         /// <summary>
-        /// A line break adds nothing to the paragraph's bidi text, as Word 16 draws it (printed
-        /// 2026-10-22): in a right-to-left paragraph "1," then a <c>w:br</c> then "2 שלום", the comma
+        /// A line break adds nothing to the paragraph's bidi text, as Word 16 draws it (printed): in a
+        /// right-to-left paragraph "1," then a <c>w:br</c> then "2 שלום", the comma
         /// keeps with its number and is drawn to the right of the 1 — "1,2" read through the break, its
         /// comma a separator between digits (W4). Taken as a separator of its own, the break would leave
         /// the comma a neutral in the paragraph's direction, drawn on the 1's left. In the body and in a cell.
@@ -289,8 +289,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// <c>w:bidiVisual</c> is an on/off element: present with no <c>w:val</c> it mirrors the table's columns,
-        /// and <c>w:val="0"</c> leaves them left to right, as no element does. The legacy renderer read its
-        /// presence alone, so a table explicitly set left to right was mirrored (Wave 22, DocxToPdf-4:6).
+        /// and <c>w:val="0"</c> leaves them left to right, as no element does — read by its presence alone, a
+        /// table explicitly set left to right would be mirrored.
         /// </summary>
         [Theory]
         [InlineData("none", false)]
@@ -427,8 +427,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         }
 
         /// <summary>
-        /// A right-to-left paragraph's tab stops, as Word 16 places them (measured from its own output,
-        /// 2026-10-22): each the mirror image of a left-to-right stop, measured from the right margin
+        /// A right-to-left paragraph's tab stops, as Word 16 places them (measured from its own output):
+        /// each the mirror image of a left-to-right stop, measured from the right margin
         /// (540 pt here), the stop 2 in in (396). "AAA⇥BBB" draws BBB left of the stop for a left stop, from
         /// it for a right one, centred on it for a centre one; "AAA⇥12.5" puts the period at it for a
         /// decimal one. With no stop, the default half inch: BBB ends at 504.

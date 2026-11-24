@@ -13,11 +13,10 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests
 {
     /// <summary>
-    /// The elements that only mark the content they hold (Rendering.MarkupWrappers), on both paths: until
-    /// 2026-10-20 text inside a smart tag, inline or block custom XML, a moved run or a bidi wrapper, a table row or
-    /// cell inside a content control or custom XML, and — on the legacy path — anything but a cell paragraph's own
-    /// runs was absent from the output. And a hyperlink's target (Rendering.HyperlinkTargets): the Builder path
-    /// wrote no link for an external one.
+    /// The elements that only mark the content they hold (Rendering.MarkupWrappers), on both paths: text inside a
+    /// smart tag, inline or block custom XML, a moved run or a bidi wrapper, a table row or cell inside a content
+    /// control or custom XML, and — on the legacy path — more than a cell paragraph's own runs reach the output.
+    /// And a hyperlink's target (Rendering.HyperlinkTargets): the Builder path writes a link for an external one.
     /// </summary>
     public class MarkupWrapperTests
     {
@@ -90,8 +89,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         }
 
         /// <summary>
-        /// Two hundred nested smart tags around a run cost what one does, on both paths: each level was serialised
-        /// and parsed again on its own, the subtree's size times its depth (Wave 22, DocxToPdf-3:2). The run is
+        /// Two hundred nested smart tags around a run cost what one does, on both paths — not each level serialised
+        /// and parsed again on its own, the subtree's size times its depth. The run is
         /// drawn either way; the conversion's allocation on this thread is compared with one level's.
         /// </summary>
         [Theory]

@@ -458,13 +458,12 @@ public sealed class ImageFormAndColorSpaceTests
     }
 
     // ==================================================================
-    //  Wave 17 R10.2 / R10.4
+    //  ASCII data sections and approximated colour spaces
     // ==================================================================
 
     /// <summary>
-    /// A CalRGB image is carried as DeviceRGB <b>and says so</b>, once: the classifier's comment
-    /// promised the approximation would be "reported at the image", and nothing did until
-    /// 2026-10-16. The control: a DeviceRGB image reports nothing.
+    /// A CalRGB image is carried as DeviceRGB <b>and says so</b>, once, at the image — a comment
+    /// promising the report is not the report. The control: a DeviceRGB image reports nothing.
     /// </summary>
     [Fact]
     public void ACieDeviceAnalogue_ReportsTheApproximationOncePerConversion()

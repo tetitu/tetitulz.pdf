@@ -21,13 +21,12 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// so the tagged output carries <c>/L</c> → <c>/LI</c> → <c>/Lbl</c> + <c>/LBody</c>.
     /// </summary>
     /// <remarks>
-    /// <para><b>It used to flatten.</b> Every <c>&lt;li&gt;</c> went into the section as a sibling
-    /// carrying an <c>int Level</c>, and a nested list's items followed as more siblings one level
-    /// deeper — so nothing in the model recorded where a sublist began or ended. Tagged output was
-    /// a run of <c>/P</c> elements with the bullet drawn as literal text: it looked like a list on
-    /// the page and was not one to a screen reader, and a copy picked the markers up as
-    /// characters. PDF/UA-1 §7.6 is exactly this shape, and this repository's own deep checker
-    /// validates it.</para>
+    /// <para><b>Not flattened.</b> Every <c>&lt;li&gt;</c> as a section sibling carrying an
+    /// <c>int Level</c>, a nested list's items as more siblings one level deeper, would record nowhere
+    /// in the model where a sublist begins or ends. Tagged output would be a run of <c>/P</c> elements
+    /// with the bullet drawn as literal text: a list on the page and not one to a screen reader, and a
+    /// copy would pick the markers up as characters. PDF/UA-1 §7.6 is exactly this shape, and this
+    /// repository's own deep checker validates it.</para>
     ///
     /// <para><b>The structure tree is the right place to assert.</b> The mapper's entry point
     /// returns bytes, not a model, so there is no seam to inspect the container through — and the

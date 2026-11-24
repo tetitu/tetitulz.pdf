@@ -109,9 +109,9 @@ public class DssInventoryTests
     /// <summary>
     /// A CRL with no <c>nextUpdate</c> is not held to OCSP's seven days — RFC 5280 §5.1.2.5 makes it
     /// optional, and such a cap would refuse valid revocation data — but to the verifier's default
-    /// cap of 365 days, past which default verification reads absence from it as unknown. Until
-    /// 2026-10-20 the inventory called a five-year-old one current (GAPS.md §1). The OCSP rule is
-    /// the stricter one, which is why the reader asks a different predicate for each.
+    /// cap of 365 days, past which default verification reads absence from it as unknown — so a
+    /// five-year-old one is not current. The OCSP rule is the stricter one, which is why the reader
+    /// asks a different predicate for each.
     /// </summary>
     [Fact]
     public void ACrlWithNoNextUpdateIsAgedOutAtTheVerifiersCapNotOcspsWeek()
@@ -233,8 +233,8 @@ public class DssInventoryTests
 
     /// <summary>
     /// The same response, its <c>producedAt</c> a day ahead of the clock: the verifier refuses one
-    /// produced in the future, so the inventory, asking the verifier's rule, does not call it current
-    /// (GAPS.md §1, closed 2026-10-20). The response above, produced now, is the control.
+    /// produced in the future, so the inventory, asking the verifier's rule, does not call it current.
+    /// The response above, produced now, is the control.
     /// </summary>
     [Fact]
     public void AnOcspResponseProducedInTheFutureIsNotCurrent()

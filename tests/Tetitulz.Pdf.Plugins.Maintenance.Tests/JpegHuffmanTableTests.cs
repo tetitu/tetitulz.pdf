@@ -10,7 +10,7 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 
 /// <summary>
-/// <see cref="JpegHuffmanTable"/> where the overnight sweep found no test: the §K.2 length limit,
+/// <see cref="JpegHuffmanTable"/> at its edges: the §K.2 length limit,
 /// the tie-break that makes a fitted table reproducible, and the over-full check at its boundary.
 /// </summary>
 public class JpegHuffmanTableTests

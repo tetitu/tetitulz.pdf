@@ -228,7 +228,7 @@ public class BuilderPathContentLossTests
         byte[] pdf = DocxToPdfConverter.ConvertToBytes(docx, Builder());
         string text = TextOf(pdf);
 
-        // Emitted — the doc used to deny both of these.
+        // Emitted, as the doc says.
         Assert.True(XObjectCount(pdf) > 0, "the inline image was not emitted");
         Assert.Contains("HEADERTEXT", text);
         Assert.Contains("FOOTERTEXT", text);

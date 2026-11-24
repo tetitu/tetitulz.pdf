@@ -41,11 +41,11 @@ public class ReportBucketsAndEmptyFormTests
         "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");
 
     /// <summary>
-    /// <c>HasAcroForm</c>'s summary says "with at least one field"; its body used to say
-    /// <c>doc.AcroForm != null</c>. A field-less template therefore took the form-fill branch,
-    /// matched nothing, and still had an incremental update appended to it — so the caller's
-    /// document grew a revision that changed no content at all, on a path a maintainer reading the
-    /// summary would have believed unreachable.
+    /// <c>HasAcroForm</c>'s summary says "with at least one field", and its body must agree: tested by
+    /// <c>doc.AcroForm != null</c>, a field-less template would take the form-fill branch, match
+    /// nothing, and still have an incremental update appended to it — so the caller's document would
+    /// grow a revision that changed no content at all, on a path a maintainer reading the summary
+    /// would believe unreachable.
     ///
     /// <para>Asserting on the <b>bytes</b> rather than on the report is what makes this able to
     /// fail: the report says "unmatched" either way.</para>

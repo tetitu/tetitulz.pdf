@@ -12,10 +12,9 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// An inline equation in a table cell is drawn where it stands in the paragraph, and inside its line. Every
-/// equation was moved after all the paragraph's text, and the line holding one put its baseline at its foot, so
-/// the equation's depth (a fraction's denominator) hung below the line and over the row's bottom border (Wave 22,
-/// DocxToPdf-4:5).
+/// An inline equation in a table cell is drawn where it stands in the paragraph, and inside its line — not
+/// moved after all the paragraph's text, and not with the line's baseline at its foot, which would hang the
+/// equation's depth (a fraction's denominator) below the line and over the row's bottom border.
 /// </summary>
 public sealed class CellEquationTests
 {

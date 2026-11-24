@@ -1026,7 +1026,7 @@ public class Pdf20DeprecationCheckerTests
     }
 
     // ==================================================================
-    //  AssistiveTechnologyDrmRestriction — /P is a flag word (Wave 17, R9.2)
+    //  AssistiveTechnologyDrmRestriction — /P is a flag word
     // ==================================================================
 
     /// <summary>

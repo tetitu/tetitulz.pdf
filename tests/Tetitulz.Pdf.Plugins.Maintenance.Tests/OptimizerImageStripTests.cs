@@ -143,9 +143,9 @@ public class OptimizerImageStripTests
     /// <summary>
     /// A run whose merged image would pass the re-encode ceiling (64 million samples) is refused from
     /// the strips' dictionaries, before a strip is decoded. Five 4000 × 4000 grey strips, each 16 MB of
-    /// samples and under the ceiling alone, were decoded and held — 80 MB of samples, 161 MB allocated —
-    /// before the merge compared
-    /// their total with it (Wave 22, Maintenance-2:4). The merge is synchronous on the calling thread,
+    /// samples and under the ceiling alone, would otherwise be decoded and held — 80 MB of samples,
+    /// 161 MB allocated — before the merge compared
+    /// their total with it. The merge is synchronous on the calling thread,
     /// so its allocation is this thread's.
     /// </summary>
     [Fact]
@@ -211,9 +211,9 @@ public class OptimizerImageStripTests
     }
 
     /// <summary>
-    /// Pages sharing one <c>/XObject</c> dictionary each add their runs to it, and every search started
-    /// at <c>MergedStrips1</c>: quadratic in the runs (Wave 22, Maintenance-2:1). Two thousand names in
-    /// one dictionary made two million candidates — some 200 MB of names — and now make two thousand.
+    /// Pages sharing one <c>/XObject</c> dictionary each add their runs to it, and a search starting at
+    /// <c>MergedStrips1</c> every time would be quadratic in the runs: two thousand names in one dictionary
+    /// would make two million candidates — some 200 MB of names — where they make two thousand.
     /// </summary>
     [Fact]
     public void TwoThousandMergedNamesInOneDictionary_AreFoundInLinearWork()

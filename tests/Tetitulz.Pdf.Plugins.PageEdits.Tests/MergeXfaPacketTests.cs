@@ -24,11 +24,11 @@ namespace Tetitulz.Pdf.Plugins.PageEdits.Tests;
 /// one either. The merged form's fields are the union of every source's, and no source's packet
 /// describes that union.</para>
 ///
-/// <para><b>It used to travel.</b> The merged form is a deep clone of the first source's
+/// <para><b>It would travel unasked.</b> The merged form is a deep clone of the first source's
 /// <c>/AcroForm</c> dictionary — cloned for <c>/DA</c>, <c>/DR</c> and <c>/NeedAppearances</c> — and
-/// <c>/XFA</c> came along with them. A viewer that honours XFA was handed a form covering only the
-/// first input's pages, laid over a document containing all of them: it renders the first source's
-/// form and reports its values, for the whole merged file.</para>
+/// <c>/XFA</c> would come along with them, handing a viewer that honours XFA a form covering only the
+/// first input's pages, laid over a document containing all of them: it would render the first
+/// source's form and report its values, for the whole merged file.</para>
 /// </remarks>
 public class MergeXfaPacketTests
 {

@@ -1126,18 +1126,16 @@ public class LinearizationConformanceTests
     // ================================================================== the whole-file rewrite
 
     /// <summary>
-    /// The trailer's <c>/Info</c> is renumbered with everything else, and it used to point at a page.
+    /// The trailer's <c>/Info</c> is renumbered with everything else, so it does not point at a page.
     /// </summary>
     /// <remarks>
-    /// <para><b>Found by an independent checker, not by this suite, and worth the retelling.</b> The trailer was copied
-    /// entry by entry and only <c>/Root</c> was replaced, so <c>/Info</c> kept the source document's
-    /// object number. In a linearized file the low numbers belong to the <i>later pages</i>, so the
-    /// stale reference did not dangle — it resolved, to a page object, and every reader would have
-    /// shown that page's dictionary as the document's metadata.</para>
-    /// <para>Nothing in the file is malformed as a result, which is why it survived: a parser reads
-    /// it, a renderer draws it, and the only symptom is a wrong answer to a question no test was
-    /// asking. An independent checker found it by re-deriving the object graph and noticing a page object that was not
-    /// private to its page.</para>
+    /// <para>A trailer copied entry by entry with only <c>/Root</c> replaced would keep the source
+    /// document's object number for <c>/Info</c>. In a linearized file the low numbers belong to the
+    /// <i>later pages</i>, so the stale reference would not dangle — it would resolve, to a page object,
+    /// and every reader would show that page's dictionary as the document's metadata.</para>
+    /// <para>Nothing in the file would be malformed as a result: a parser reads it, a renderer draws it,
+    /// and the only symptom is a wrong answer to a question no other test asks. An independent checker
+    /// re-deriving the object graph notices a page object that is not private to its page.</para>
     /// </remarks>
     [Fact]
     public void TheTrailerInfoReferenceIsRenumberedWithEverythingElse()
@@ -1361,18 +1359,15 @@ public class LinearizationConformanceTests
     /// The hint tables, through the library's own decoder.
     /// </summary>
     /// <remarks>
-    /// <para><b>This suite used to carry a second decoder of its own</b>, written from Tables F.3–F.6
-    /// and F.9 so that it could not share a mistake with the encoder. That reasoning is intact —
-    /// <c>PdfLinearizationHintReader</c> is spec-derived too, and shares no code with
-    /// <c>LinearizationHintTables</c> — and the independence that mattered was from the <i>encoder</i>,
-    /// never from the library. Keeping two decoders meant a second place for the same bit-level rules
-    /// to drift, so the test copy is gone.</para>
+    /// <para><b>No second decoder of the suite's own.</b> <c>PdfLinearizationHintReader</c> is written
+    /// from Tables F.3–F.6 and F.9 and shares no code with <c>LinearizationHintTables</c>, so it cannot
+    /// share a mistake with the <i>encoder</i> — the independence that matters. A test copy would be a
+    /// second place for the same bit-level rules to drift.</para>
     ///
-    /// <para><b>The assertions did not weaken.</b> Everything here still relates the tables to facts
-    /// measured in the bytes — where each object starts, how long each run is, which object body
-    /// carries <c>/Type /Font</c>. What moved into the reader is the layout self-check (a table must
-    /// end exactly where the next one's offset says), which every consumer needs and which now makes
-    /// a misread loud rather than plausible.</para>
+    /// <para><b>The assertions relate the tables to facts measured in the bytes</b> — where each object
+    /// starts, how long each run is, which object body carries <c>/Type /Font</c>. The layout self-check
+    /// (a table must end exactly where the next one's offset says) is the reader's, which every consumer
+    /// needs and which makes a misread loud rather than plausible.</para>
     /// </remarks>
     private static PdfLinearizationHints Hints(byte[] pdf)
     {

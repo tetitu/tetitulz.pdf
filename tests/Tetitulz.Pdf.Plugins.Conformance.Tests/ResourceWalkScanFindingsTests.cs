@@ -30,9 +30,9 @@ public class ResourceWalkScanFindingsTests
     public void A06_NonEmbeddedFontInsideAFormXObject_IsReported()
     {
         // The page names no /Font at all; the text is drawn inside a form whose OWN /Resources
-        // names a non-embedded Helvetica. The walk used to recurse with the form STREAM as the
-        // resource dictionary, so it read xobj[/Font] — a key Table 95 puts under /Resources — and
-        // found nothing, every time.
+        // names a non-embedded Helvetica. Recursing with the form STREAM as the resource
+        // dictionary, a walk would read xobj[/Font] — a key Table 95 puts under /Resources — and
+        // find nothing, every time.
         var result = ValidateA(FormXObjectFontPdf(embedded: false));
 
         var a06 = Assert.Single(result.Violations.Where(v => v.Code == "A06"));
@@ -79,8 +79,7 @@ public class ResourceWalkScanFindingsTests
 
         // The A06 claim is asserted on the A99 entry, not on the slot. The slot holds ONE message
         // and the transparency walk, which runs after this one, spends the same budget on the same
-        // dictionary — so what it holds last is that walk's. It used to contain "A06" anyway,
-        // because that walk's message said "the A06 font-embedding check is partial" about itself.
+        // dictionary — so what it holds last is that walk's, which names its own check, not A06.
         Assert.Contains(result.Informational, i => i.Code == "A99"
             && i.Message.Contains("A06 font-embedding check did not run in full", StringComparison.Ordinal));
     }

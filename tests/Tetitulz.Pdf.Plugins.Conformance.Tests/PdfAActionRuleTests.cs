@@ -19,14 +19,13 @@ namespace Tetitulz.Pdf.Plugins.Conformance.Tests;
 /// <remarks>
 /// <para><b>The source.</b> ISO 19005 is not freely available, and the repository holds only its
 /// Technical Corrigendum 1. The rules below come from the published profile's profiles (the PDF Association's
-/// reference validator), as published on
-/// 2026-09-24. Each test names the ISO clause and the published profile's rule id.</para>
-/// <para><b>What the validator did.</b> A02 looked only for a <c>/Names /JavaScript</c> entry, A05
-/// only at the head of <c>/OpenAction</c>, and A04 only at the catalog's and the pages' <c>/AA</c>,
-/// the same for every part. So a link's <c>/Launch</c> passed PDF/A validation, a JavaScript action
-/// anywhere but those two places passed, and nothing looked at named actions or at a widget's
-/// actions. In the other direction, PDF/A-4 permits JavaScript actions (6.6.1-1) and PDF/A-1 has no
-/// rule about a page's <c>/AA</c>, and both were reported.</para>
+/// reference validator). Each test names the ISO clause and the published profile's rule id.</para>
+/// <para><b>What a narrower reading misses.</b> A02 looking only for a <c>/Names /JavaScript</c>
+/// entry, A05 only at the head of <c>/OpenAction</c>, and A04 only at the catalog's and the pages'
+/// <c>/AA</c>, the same for every part, would pass a link's <c>/Launch</c>, a JavaScript action
+/// anywhere but those two places, named actions and a widget's actions. In the other direction,
+/// PDF/A-4 permits JavaScript actions (6.6.1-1) and PDF/A-1 has no rule about a page's <c>/AA</c>,
+/// so neither is reported there.</para>
 /// </remarks>
 public class PdfAActionRuleTests
 {

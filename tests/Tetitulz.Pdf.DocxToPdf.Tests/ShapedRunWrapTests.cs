@@ -99,8 +99,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// Repeated spaces are kept as written where the line goes on, and are one break opportunity
-        /// — taken whole, leaving no empty piece — where it breaks. They were collapsed to one until
-        /// 2026-10-22; Word draws every one.
+        /// — taken whole, leaving no empty piece — where it breaks. They are not collapsed to one;
+        /// Word draws every one.
         /// </summary>
         [Fact]
         public void RepeatedSpacesAreKeptAndAreOneBreakOpportunity()
@@ -246,8 +246,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void AScaledHebrewParagraphWrapsAtItsDrawnWidth()
         {
             // At w:w 200 every line is drawn twice as wide, so it must hold about half the words.
-            // The loop used to add each line's bare shaped width, so both came out with the same line
-            // count — and the scaled one ran a full column past the margin.
+            // A loop adding each line's bare shaped width would give both the same line count — and
+            // run the scaled one a full column past the margin.
             string text = string.Join(" ", Enumerable.Repeat("אבג דהוז חטיכל", 30));
 
             int unscaled = GlyphLines(ConvertParagraph(text, scale: 100, spacingTwips: 0)).Count;
@@ -274,8 +274,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void ATrackedRightToLeftLineStillEndsAtTheRightMargin()
         {
             // w:spacing 40 twips is 2 pt after every character. A right-aligned line starts that much
-            // further left per character, or its end overshoots the margin — the piece used to carry
-            // no text, so its width left the tracking out and the line did not move.
+            // further left per character, or its end overshoots the margin — a piece carrying no text
+            // would leave the tracking out of its width, and the line would not move.
             const string text = "שלום עולם";
             double plain = GlyphLines(ConvertParagraph(text, scale: 100, spacingTwips: 0)).Single().X;
             double tracked = GlyphLines(ConvertParagraph(text, scale: 100, spacingTwips: 40)).Single().X;

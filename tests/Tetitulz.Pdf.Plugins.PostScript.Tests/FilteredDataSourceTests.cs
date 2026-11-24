@@ -114,7 +114,7 @@ public sealed class FilteredDataSourceTests
     }
 
     /// <summary>
-    /// <c>currentfile</c> is a real file object now, not the null the arity table used to push —
+    /// <c>currentfile</c> is a real file object, not a pushed null —
     /// <c>type</c> answers <c>filetype</c>.
     /// </summary>
     [Fact]

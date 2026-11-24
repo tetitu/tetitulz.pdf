@@ -12,9 +12,8 @@ using Tetitulz.Pdf.Plugins.PostScript.Tests.TestInfrastructure;
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
-/// Regressions for nine defects found in a 2026-08-05 review of this plugin. Every one of them was
-/// live in code that already had tests: each test here was written against the broken build first
-/// and observed to fail, which is the only way to know it asserts the behaviour its name claims.
+/// Nine rules of this plugin, each tested against a build that broke it and seen to fail there,
+/// which is the only way to know a test asserts the behaviour its name claims.
 /// </summary>
 public sealed class ReviewRegressionTests
 {
@@ -328,8 +327,7 @@ public sealed class ReviewRegressionTests
         // Four popped, the 1 and 2 left. This is the honest limit of the fallback: with the count
         // unknown it cannot tell a component from an operand that merely looks like one, so a
         // program keeping bare numbers under a setcolor in an ICCBased space would lose them.
-        // Popping nothing — what this operator used to do — desynchronises every such program
-        // instead of only that one.
+        // Popping nothing would desynchronise every such program instead of only that one.
         Assert.Contains("\n2 0 l\n", content);
     }
 

@@ -56,7 +56,7 @@ public class OwnerKeyAlgorithm3Tests
     /// <summary>
     /// The decryptor carries the revision a <c>/V 1</c> file declares: revision 3 resolves to
     /// <see cref="EncryptionAlgorithm.RC4_40R3"/>, revision 2 to <see cref="EncryptionAlgorithm.RC4_40"/>
-    /// — every <c>/V 1</c> was revision 2 to it, so the member had no reader (the review of batch 131).
+    /// — not every <c>/V 1</c> revision 2, which would leave the member no reader.
     /// </summary>
     [Theory]
     [InlineData(EncryptionAlgorithm.RC4_40R3)]

@@ -106,9 +106,9 @@ public sealed class GraphicsStateStackDepthTests
     // ==================================================================
 
     /// <summary>
-    /// <c>{ gsave } loop</c> is the bomb. It used to retain one cloned state per iteration until
-    /// <c>MaxTotalOps</c> ran out — millions of them, none charged to the allocation budget — while
-    /// the emitter reported "gsave nesting reached" once per iteration on top, undeduplicated.
+    /// <c>{ gsave } loop</c> is the bomb. Unbounded, it would retain one cloned state per iteration
+    /// until <c>MaxTotalOps</c> ran out — millions of them, none charged to the allocation budget —
+    /// while the emitter reported "gsave nesting reached" once per iteration on top, undeduplicated.
     /// </summary>
     [Fact]
     public void GSaveBomb_IsRefusedAtTheDepthCapAndReportedOnce()

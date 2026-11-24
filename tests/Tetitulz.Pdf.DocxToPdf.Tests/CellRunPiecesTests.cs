@@ -12,11 +12,10 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// A table cell's run read into pieces at its line breaks (<c>TableRenderer.WrapParagraph</c>). Each piece was
-/// built by appending w:t elements to a string, and the run's font was resolved again for every piece — and
-/// resolving asks the run for its w:rPr, which the SDK finds by searching the run's children — so a run of many
-/// w:t and w:br was quadratic in its children (Wave 22, DocxToPdf-4:0). A w:tab in a cell was dropped and the
-/// words on either side joined (4:8).
+/// A table cell's run read into pieces at its line breaks (<c>TableRenderer.WrapParagraph</c>). Building each
+/// piece by appending w:t elements to a string, and resolving the run's font again for every piece — resolving
+/// asks the run for its w:rPr, which the SDK finds by searching the run's children — would make a run of many
+/// w:t and w:br quadratic in its children. A w:tab in a cell keeps the words on either side apart.
 /// </summary>
 public sealed class CellRunPiecesTests
 {

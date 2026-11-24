@@ -114,7 +114,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 
         /// <summary>
         /// A compact table's row is as tall as its content — a 10pt line with no padding is 10pt,
-        /// where the renderer's 16pt floor used to hold it.
+        /// not held to a 16pt floor.
         /// </summary>
         [Fact]
         public void ACompactRowIsOnlyAsTallAsItsContent()

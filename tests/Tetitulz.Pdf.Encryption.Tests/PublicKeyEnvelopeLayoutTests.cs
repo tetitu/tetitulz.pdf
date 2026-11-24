@@ -19,11 +19,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Encryption.Tests;
 
 /// <summary>
-/// Wave 17, R5.4 and R5.6: the <c>/Adobe.PubSec</c> handler against ISO 32000-2 §7.6.5 rather than
-/// against itself. The round-trip suites prove the encryptor and the decryptor agree; they proved
-/// it while both put the permissions <i>before</i> the seed in the CMS content (Table 27 says
-/// after) and both left out the four <c>0xFF</c> bytes §7.6.5.3 step c) adds to the file-key digest
-/// when the metadata stays in plaintext. So every assertion here is made by a second
+/// The <c>/Adobe.PubSec</c> handler against ISO 32000-2 §7.6.5 rather than against itself. The
+/// round-trip suites prove the encryptor and the decryptor agree — which they would also do with
+/// both putting the permissions <i>before</i> the seed in the CMS content (Table 27 says after), or
+/// both leaving out the four <c>0xFF</c> bytes §7.6.5.3 step c) adds to the file-key digest when the
+/// metadata stays in plaintext. So every assertion here is made by a second
 /// implementation: the test opens the envelope itself and derives the key from the standard's
 /// text, or builds the whole document from the standard's text and asks the decryptor to open it.
 /// </summary>

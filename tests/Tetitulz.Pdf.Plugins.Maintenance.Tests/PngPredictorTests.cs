@@ -274,9 +274,9 @@ public class PngPredictorTests
     }
 
     /// <summary>
-    /// A 4-bit image is ordinary, spec-conformant input (§7.4.4.4 names the depth explicitly) and
-    /// the pass used to require <c>/BitsPerComponent 8</c>, so every 1-, 2-, 4- and 16-bit image in
-    /// a document was skipped in silence.
+    /// A 4-bit image is ordinary, spec-conformant input (§7.4.4.4 names the depth explicitly); a pass
+    /// requiring <c>/BitsPerComponent 8</c> would skip every 1-, 2-, 4- and 16-bit image in a document
+    /// in silence.
     /// </summary>
     [Theory]
     [InlineData(1)]
@@ -301,8 +301,8 @@ public class PngPredictorTests
 
     /// <summary>
     /// §8.9.6.2: a stencil mask has one bit per sample and <b>no colour space at all</b>. Asking it
-    /// for a component count is the wrong question, and the pass used to treat the missing
-    /// <c>/ColorSpace</c> as an unreadable one — reporting a tolerated failure, which is the
+    /// for a component count is the wrong question, and treating the missing <c>/ColorSpace</c> as an
+    /// unreadable one would report a tolerated failure, which is the
     /// diagnostic a caller reads as "part of your document was left unoptimized because something
     /// went wrong". Nothing went wrong; a mask simply has no colour space.
     /// </summary>

@@ -158,13 +158,9 @@ public sealed class LowScanRegressionTests
     }
 
     /// <summary>
-    /// <c>filter</c> over a <b>file</b> is implemented as of 2026-08-19 — it is how an EPS embeds
-    /// image data — so it is no longer reported. The operand-balance contract this test was written
-    /// for still holds and is what it now asserts: one file object comes back, whatever the filter.
-    ///
-    /// <para>Renamed rather than edited in place. The old name said "is still reported as
-    /// unimplemented", and leaving that name on an assertion about something else is the exact
-    /// name/body disagreement CLAUDE.md records as the failure no guard can catch.</para>
+    /// <c>filter</c> over a <b>file</b> is implemented — it is how an EPS embeds image data — so it is
+    /// not reported. The operand-balance contract holds and is what this asserts: one file object comes
+    /// back, whatever the filter.
     /// </summary>
     [Fact]
     public void Filter_OverAFile_YieldsOneFileObject()

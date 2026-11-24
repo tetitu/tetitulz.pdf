@@ -16,12 +16,12 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 
 /// <summary>
-/// What the linearizer's closure walks cost is the references of every object they reach, and each walk
-/// read them again. Pages sharing an array of fifty thousand references to one object examined fifty
-/// thousand a page and collected one (2 000 pages: 24 s); pages sharing an array naming every page
-/// examined pages² and collected nothing (4 000 pages: 4.7 s). Each object's references are now read once
+/// What the linearizer's closure walks cost is the references of every object they reach. Read again by
+/// each walk, pages sharing an array of fifty thousand references to one object would examine fifty
+/// thousand a page and collect one (2 000 pages: 24 s), and pages sharing an array naming every page
+/// would examine pages² and collect nothing (4 000 pages: 4.7 s). Each object's references are read once
 /// and de-duplicated (0.24 s and 0.26 s), and the references examined are charged to
-/// <see cref="PdfLimits.MaxLinearizationEdges"/> (Wave 22, Maintenance-1:3).
+/// <see cref="PdfLimits.MaxLinearizationEdges"/>.
 /// </summary>
 [Collection(PdfLimitsCollection.Name)]
 public sealed class LinearizerEdgeCostTests

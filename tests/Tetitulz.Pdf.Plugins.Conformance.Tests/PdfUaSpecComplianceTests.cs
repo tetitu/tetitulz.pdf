@@ -527,8 +527,8 @@ public class PdfUaSpecComplianceTests
     }
 
     /// <summary>
-    /// An indirect /AcroForm used to make the whole form invisible to the audit, which
-    /// reported a clean bill of health for a file full of unlabelled fields.
+    /// An indirect /AcroForm must not make the whole form invisible to the audit, which would
+    /// report a clean bill of health for a file full of unlabelled fields.
     /// </summary>
     [Fact]
     public void Validate_IndirectAcroForm_StillFindsTheUnlabelledField()
@@ -952,7 +952,7 @@ public class PdfUaSpecComplianceTests
     }
 
     // ==================================================================
-    //  4. Unicode safety — the fixer's writer used to go through Latin-1
+    //  4. Unicode safety — the fixer's writer does not go through Latin-1
     // ==================================================================
 
     // Written as escapes rather than literals so the assertions cannot be weakened by

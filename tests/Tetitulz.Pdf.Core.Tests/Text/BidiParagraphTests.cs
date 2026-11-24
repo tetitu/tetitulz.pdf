@@ -193,9 +193,9 @@ public class BidiParagraphTests
     }
 
     /// <summary>
-    /// The classification fix the test above depends on: a supplementary-plane right-to-left
-    /// script must resolve right-to-left. Both surrogates used to fall through to strong <c>L</c>
-    /// independently, so an all-Adlam paragraph auto-detected as left-to-right.
+    /// The classification the test above depends on: a supplementary-plane right-to-left script must
+    /// resolve right-to-left. Read surrogate by surrogate, both would fall through to strong <c>L</c>
+    /// independently, so an all-Adlam paragraph would auto-detect as left-to-right.
     /// </summary>
     [Fact]
     public void AstralRtlScript_ResolvesRightToLeft()

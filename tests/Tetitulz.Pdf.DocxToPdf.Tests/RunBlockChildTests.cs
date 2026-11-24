@@ -14,8 +14,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
 /// A body run holding a page or column break, a drawing or a note reference beside its text keeps the text on
-/// both sides. Each of those took its own path and returned, and the run's text before or after it was lost
-/// (Wave 22, DocxToPdf-3:6). The run is now taken a part at a time, in order.
+/// both sides: the run is taken a part at a time, in order, rather than each of those taking its own path and
+/// returning, losing the run's text before or after it.
 /// </summary>
 public sealed class RunBlockChildTests
 {

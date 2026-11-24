@@ -303,9 +303,9 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 
         /// <summary>
         /// A control inside a float the exact-float path tries and abandons keeps its declared name
-        /// (HtmlToPdf-2:6). The scratch map claimed the name through <c>FieldNameFor</c> and used to
-        /// keep it on Abandon, so the band's re-map of the same control saw it taken and got the
-        /// suffixed "f_2". The allocation is now rolled back with the rest of the scratch state. The
+        /// rather than "f_2": the scratch map claims the name through <c>FieldNameFor</c>, and the
+        /// allocation is rolled back with the rest of the scratch state on Abandon, so the band's re-map of
+        /// the same control does not see it taken. The
         /// empty second float is what makes the exact path abandon mid-run, after the first was
         /// mapped.
         /// </summary>

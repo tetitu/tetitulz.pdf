@@ -93,13 +93,8 @@ public class RedactorPluginContractTests
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Renamed from <c>Redact_WhenRemovalCannotBeProvenSafe_ThrowsRatherThanLeaking</c>, which
-    /// asserted a refusal. Plan 08 item 46 replaced that refusal with cloning, so the name changed
-    /// with the behaviour instead of the assertion being inverted underneath it.
-    /// </para>
-    /// <para>
-    /// <b>The engine still fails closed elsewhere</b> — an encrypted document, or a form nested
-    /// deeper than the depth cap — so this is a narrowing of the refusal, not its removal.
+    /// <b>The engine fails closed elsewhere</b> — an encrypted document, or a form nested
+    /// deeper than the depth cap — so cloning narrows the refusal rather than removing it.
     /// </para>
     /// </remarks>
     [Fact]

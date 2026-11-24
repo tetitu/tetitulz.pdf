@@ -12,9 +12,9 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// An equation's glyphs are drawn in the face, colour and encoding they were measured in (Wave 22,
-/// DocxToPdf-3:9). A glyph box measured in the standard-14 face its family maps to was drawn by registering
-/// the family's raw name; a stretched fence was written apart from its box, as WinAnsi text with no colour.
+/// An equation's glyphs are drawn in the face, colour and encoding they were measured in — not a glyph box
+/// measured in the standard-14 face its family maps to drawn by registering the family's raw name, nor a
+/// stretched fence written apart from its box, as WinAnsi text with no colour.
 /// </summary>
 public sealed class MathDrawMatchesMeasureTests
 {

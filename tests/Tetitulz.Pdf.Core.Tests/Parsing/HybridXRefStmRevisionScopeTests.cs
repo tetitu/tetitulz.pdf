@@ -25,9 +25,9 @@ namespace Tetitulz.Pdf.Core.Tests.Parsing;
 /// The free entry it may look past is one its own revision wrote (the same section, which is how
 /// single-section hybrid producers write it, or an older one); a free entry a later revision wrote is
 /// a deletion.</para>
-/// <para>The merge used to let an <c>/XRefStm</c> entry displace <b>any</b> installed free entry, and
-/// the walk installs the newest revision's entries first — so an object a later classic update deleted
-/// came back through the older revision's cross-reference stream.
+/// <para>The walk installs the newest revision's entries first, so a merge letting an <c>/XRefStm</c>
+/// entry displace <b>any</b> installed free entry would bring an object a later classic update
+/// deleted back through the older revision's cross-reference stream.
 /// <c>HybridXrefAndSectionRecoveryTests</c> and <c>HybridXrefAndOffsetTests</c> hold the same-section
 /// cases; these two hold the revision boundary, one on each side of it.</para>
 /// </remarks>

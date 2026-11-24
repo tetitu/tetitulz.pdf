@@ -8,22 +8,22 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Fonts;
 
 /// <summary>
-/// The §9.6.4 subset-tag rule, and the three inputs on which the copies that used to exist
-/// disagreed with it.
+/// The §9.6.4 subset-tag rule, and three inputs on which a weaker hand-written strip disagrees
+/// with it.
 /// </summary>
 /// <remarks>
-/// <para>A subset tag is <b>six uppercase letters then <c>'+'</c> then the name</b>. Three separate
-/// hand-written strips checked weaker conditions, and each weakening had a visible consequence:</para>
+/// <para>A subset tag is <b>six uppercase letters then <c>'+'</c> then the name</b>. Each weaker
+/// hand-written check has a visible consequence:</para>
 /// <list type="bullet">
-/// <item><c>FontCache</c> tested <c>Length &gt;= 7 &amp;&amp; [6] == '+'</c>, so a bare
-/// <c>"ABCDEF+"</c> became the <b>empty string</b>, reached
-/// <c>SKTypeface.FromFamilyName("")</c> and silently resolved to the platform default face with no
-/// diagnostic. Its own comment stated the uppercase rule it did not check.</item>
-/// <item><c>PsFontMapper</c> tested position and length but not case, so <c>"abcdef+Arial"</c> —
-/// which is <b>not</b> a subset tag — was mapped to the Arial family.</item>
-/// <item><c>PdfUaChecker</c> tested neither position nor case, so any <c>'+'</c> anywhere split the
-/// name. That feeds the Symbol/ZapfDingbats prefix test deciding <c>IsSymbolic</c>, which gates a
-/// real <b>UA26</b> verdict.</item>
+/// <item><c>Length &gt;= 7 &amp;&amp; [6] == '+'</c> alone (<c>FontCache</c>'s question) turns a bare
+/// <c>"ABCDEF+"</c> into the <b>empty string</b>, which reaches
+/// <c>SKTypeface.FromFamilyName("")</c> and silently resolves to the platform default face with no
+/// diagnostic.</item>
+/// <item>Position and length without case (<c>PsFontMapper</c>'s) maps <c>"abcdef+Arial"</c> —
+/// which is <b>not</b> a subset tag — to the Arial family.</item>
+/// <item>Neither position nor case (<c>PdfUaChecker</c>'s) splits the name at any <c>'+'</c>
+/// anywhere. That feeds the Symbol/ZapfDingbats prefix test deciding <c>IsSymbolic</c>, which gates
+/// a real <b>UA26</b> verdict.</item>
 /// </list>
 /// <para><b>These assert the rule, not the call sites.</b> Two of the three sites are in plugins and
 /// one needs a live typeface resolver, so a test driving them would be a host-dependent integration

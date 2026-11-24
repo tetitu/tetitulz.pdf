@@ -159,10 +159,10 @@ public class DssBuilderOcspValidationTests
     }
 
     /// <summary>
-    /// Wave 17 R6.2: a response is evidence for the certificate its <c>SingleResponse</c> names. A
-    /// responder answering about another certificate under the same CA — well signed, current — used
-    /// to be embedded, and <c>TryBuildDss</c> reported revocation data obtained for a certificate the
-    /// document then held no evidence about. The control is the same response judged for the
+    /// A response is evidence for the certificate its <c>SingleResponse</c> names. Embedded, a
+    /// responder's answer about another certificate under the same CA — well signed, current — would
+    /// have <c>TryBuildDss</c> report revocation data obtained for a certificate the document then
+    /// held no evidence about. The control is the same response judged for the
     /// certificate it is about.
     /// </summary>
     [Fact]

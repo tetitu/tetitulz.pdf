@@ -9,8 +9,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Fonts;
 
 /// <summary>
-/// <see cref="PdfTrueTypeFont.FontProgramTables"/>'s cmap reading at the edges the overnight sweep
-/// found no test reaching: the <c>(1,0)</c> Macintosh table, format 6, format 0's last code, and
+/// <see cref="PdfTrueTypeFont.FontProgramTables"/>'s cmap reading at its edges: the <c>(1,0)</c>
+/// Macintosh table, format 6, format 0's last code, and
 /// the zero counts that make a table unreadable.
 /// </summary>
 public class FontProgramTablesCmapTests

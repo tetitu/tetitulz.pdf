@@ -62,8 +62,8 @@ public class CcittFaxDecodeFilterTests
         + "000000000001";               // EOL (second half of EOFB)
 
     /// <summary>
-    /// Wave 17 R1.9: <c>/Columns</c> 2^32 + 8 read through <c>(int)LongValue</c> wrapped to 8 and the
-    /// stream decoded as an eight-column image; saturated (<c>IntValue</c>) it meets the column cap
+    /// <c>/Columns</c> 2^32 + 8 read through <c>(int)LongValue</c> would wrap to 8 and the stream
+    /// decode as an eight-column image; saturated (<c>IntValue</c>) it meets the column cap
     /// and the filter falls back by name. The eight-column control is the test above.
     /// </summary>
     [Fact]

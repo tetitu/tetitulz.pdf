@@ -104,9 +104,9 @@ public sealed class DocumentTimestampScopeTests
 
         SignatureVerificationResult result = VerifyApproval(timestamped, root.Cert);
 
-        // The CMS claims TokenTime, inside the certificate's period. It used to claim the moment of
-        // signing whatever SigningTime said, BouncyCastle refused the expired certificate at it, and
-        // every assertion below passed on a signature that did not verify.
+        // The CMS claims TokenTime, inside the certificate's period. Claiming the moment of signing
+        // whatever SigningTime said, BouncyCastle would refuse the expired certificate at it, and
+        // every assertion below would pass on a signature that did not verify.
         Assert.True(result.IsIntegrityValid,
             "The fixture's signature does not verify cryptographically, so the assertions below " +
             "would pass for the wrong reason.");

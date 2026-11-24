@@ -81,7 +81,7 @@ public sealed class SyntaxStreamDecodeBudgetTests
     /// <summary>
     /// A page's content is syntax too: three JBIG2-filtered parts of one page's /Contents, under a
     /// document ceiling of one and a half decodes, are refused by the document's budget as itself.
-    /// Each used to spend a whole JBIG2 stream budget, uncounted above it.
+    /// Each spends from the document's budget, not a whole JBIG2 stream budget uncounted above it.
     /// </summary>
     [Fact]
     public void Adversarial_jbig2_page_content_is_refused_by_the_documents_budget()

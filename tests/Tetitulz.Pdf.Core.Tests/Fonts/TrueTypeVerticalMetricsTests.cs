@@ -75,7 +75,7 @@ public class TrueTypeVerticalMetricsTests
     }
 
     /// <summary>
-    /// Wave 17 R13.4: every element is read through the caller's resolver — the displacement of
+    /// Every element is read through the caller's resolver — the displacement of
     /// each form sits behind a reference here. Without one, the reference is not a number and the
     /// triplet falls to the default; the range form (five numbers, then a reference where <c>w1y</c>
     /// should be) is still found by its CIDs and falls to the default too.
@@ -107,8 +107,8 @@ public class TrueTypeVerticalMetricsTests
     }
 
     /// <summary>
-    /// Wave 17 R2.10: a CID past <c>int</c> saturates (<c>IntValue</c>) where the <c>(int)LongValue</c>
-    /// cast wrapped 2^32 + 10 onto 10 and handed CID 10 the metrics of a range that does not cover it;
+    /// A CID past <c>int</c> saturates (<c>IntValue</c>), where an <c>(int)LongValue</c> cast would wrap
+    /// 2^32 + 10 onto 10 and hand CID 10 the metrics of a range that does not cover it;
     /// a genuine 10 still finds them.
     /// </summary>
     [Fact]
@@ -127,10 +127,10 @@ public class TrueTypeVerticalMetricsTests
     }
 
     /// <summary>
-    /// Wave 17 R2.10, the other half: the triplet offset <c>(cid − c1) × 3</c> is formed in
+    /// The other half: the triplet offset <c>(cid − c1) × 3</c> is formed in
     /// <c>long</c>. In <c>int</c>, CID 0x55555556 against a start of 0 is 0x100000002 — wrapped to 2,
-    /// which is a real offset into a six-number array, so a CID a billion past the entry's range took
-    /// the entry's second triplet. The control is the CID that second triplet belongs to.
+    /// which is a real offset into a six-number array, so a CID a billion past the entry's range would
+    /// take the entry's second triplet. The control is the CID that second triplet belongs to.
     /// </summary>
     [Fact]
     public void W2Lookup_AWideGapDoesNotWrapTheTripletOffsetOntoARealOne()

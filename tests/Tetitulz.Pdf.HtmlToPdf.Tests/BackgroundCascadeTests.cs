@@ -14,9 +14,9 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// cascade order decides, and <c>!important</c> beats a normal declaration.
     /// </summary>
     /// <remarks>
-    /// The longhand used to win whenever both were present. Bootstrap 3's print stylesheet is a
+    /// The longhand does not win just because both are present. Bootstrap 3's print stylesheet is a
     /// shorthand over longhands — <c>* { background: transparent !important }</c> — so a browser
-    /// prints its alerts, panels and progress bars without fills, and this engine painted them.
+    /// prints its alerts, panels and progress bars without fills, and so must this engine.
     /// Pure primaries make the fill operator name the colour: <c>1 0 0 rg</c> is red and nothing
     /// else in these fixtures.
     /// </remarks>

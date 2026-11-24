@@ -15,10 +15,10 @@ namespace Tetitulz.Pdf.Core.Tests.Objects;
 /// <see cref="PdfDictionary.CloneShallow"/> and <see cref="PdfDictionary.DeepClone"/> applied to a
 /// <see cref="PdfStream"/>.
 ///
-/// <para><c>PdfStream</c> derives from <c>PdfDictionary</c>, so passing one compiles and used to
-/// return a plain dictionary carrying the stream's keys — a now-lying <c>/Length</c> included — and
-/// no data. <c>CloneValue</c> has guarded the case where a stream is a nested <i>value</i> since it
-/// was written; the entry points had no guard, which matters because ~20 <c>CloneDictionary</c>
+/// <para><c>PdfStream</c> derives from <c>PdfDictionary</c>, so passing one compiles, and unguarded
+/// would return a plain dictionary carrying the stream's keys — a lying <c>/Length</c> included —
+/// and no data. <c>CloneValue</c> guards the case where a stream is a nested <i>value</i>; the entry
+/// points guard it too, which matters because ~20 <c>CloneDictionary</c>
 /// shims across Base, Signing, Accessibility and the Conformance plugin forward to them and are
 /// routinely handed a resolved object that turns out to be an appearance stream or a Form
 /// XObject.</para>

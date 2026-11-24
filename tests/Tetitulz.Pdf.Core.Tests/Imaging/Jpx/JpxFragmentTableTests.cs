@@ -17,7 +17,7 @@ namespace Tetitulz.Pdf.Core.Tests.Imaging.Jpx;
 /// A JPX whose codestream is a Fragment Table (T.801 M.11.3: an <c>ftbl</c> holding an <c>flst</c>
 /// of byte ranges) decodes as the contiguous file does; a fragment in another file or outside
 /// this one is refused with the reason, and a list asking for more than the decompressed-bytes
-/// ceiling stops at the ceiling — the review of 2026-09-26, row 24.
+/// ceiling stops at the ceiling.
 /// </summary>
 [Collection(PdfLimitsCollection.Name)]
 public sealed class JpxFragmentTableTests

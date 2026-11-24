@@ -24,7 +24,7 @@ namespace Tetitulz.Pdf.Core.Tests.Util;
 public sealed class PdfDateParseTests
 {
     /// <summary>
-    /// The full form, with the offset. This is the case the truncating parser turned into
+    /// The full form, with the offset. This is the case a truncating parser turns into
     /// <c>2026-08-19T00:00Z</c>.
     /// </summary>
     [Fact]

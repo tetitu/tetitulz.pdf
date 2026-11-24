@@ -13,10 +13,10 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// A table style's conditional entries are read once a style, not once a cell: each cell rebuilt
-/// the style chain and scanned every <c>tblStylePr</c> for each conditional type it took, in the
-/// shading and the border resolver both — 100 000 entries under a 100 x 100 table was some 4x10^9
-/// visits (Wave 22, DocxToPdf-3:5). The header row's shading still comes from its entry.
+/// A table style's conditional entries are read once a style, not once a cell: rebuilding the
+/// style chain and scanning every <c>tblStylePr</c> for each conditional type a cell takes, in the
+/// shading and the border resolver both, would make 100 000 entries under a 100 x 100 table some
+/// 4x10^9 visits. The header row's shading still comes from its entry.
 /// </summary>
 public sealed class TableStyleConditionalsTests
 {

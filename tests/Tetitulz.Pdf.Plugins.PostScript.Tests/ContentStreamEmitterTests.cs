@@ -612,10 +612,10 @@ public sealed class ContentStreamEmitterTests
     /// A <c>gsave</c> reached <b>after</b> the byte cap tripped must not produce a lone <c>Q</c>.
     ///
     /// <para>The sibling test above puts the <c>gsave</c> <i>before</i> the cap, where the <c>q</c>
-    /// is really in the stream and its <c>Q</c> has a partner. This is the other order, and it is
-    /// the one that used to break: the <c>q</c> was suppressed as over-cap while the save depth
-    /// advanced anyway, so the end-of-stream close wrote a <c>Q</c> for a <c>q</c> that was never
-    /// written. That matters well beyond this stream — the renderer runs it on the page's own
+    /// is really in the stream and its <c>Q</c> has a partner. This is the other order: a <c>q</c>
+    /// suppressed as over-cap while the save depth advanced anyway would make the end-of-stream close
+    /// write a <c>Q</c> for a <c>q</c> that was never written. That matters well beyond this stream —
+    /// the renderer runs it on the page's own
     /// graphics-state stack, so the surplus <c>Q</c> pops the calling page's state and every mark
     /// after the XObject inherits the wrong colour, transform and clip.</para>
     /// </summary>

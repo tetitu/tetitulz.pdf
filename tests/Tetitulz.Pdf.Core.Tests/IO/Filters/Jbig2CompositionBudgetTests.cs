@@ -37,8 +37,8 @@ public class Jbig2CompositionBudgetTests
     public void DrawAt_SourceEntirelyOffTheDestination_ChargesOnlyTheCallItself()
     {
         // The amplification the halftone grid exploits: a cell whose pattern lands entirely
-        // off-page used to cost its full source area anyway, because the loop bounds-checked
-        // each destination pixel instead of clipping the source rectangle first.
+        // off-page would cost its full source area anyway if the loop bounds-checked each
+        // destination pixel instead of clipping the source rectangle first.
         var page = new Jbig2Decoder.Jbig2Bitmap(64, 64);
         var pattern = new Jbig2Decoder.Jbig2Bitmap(1000, 1000);
         var budget = new WorkBudget(1_000_000, "test");

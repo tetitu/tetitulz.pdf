@@ -12,9 +12,9 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// A table that flows into the next column of a multi-column section draws those rows in that column. The table
-/// was laid out once, against the column it starts in, and the rows past the column's foot were drawn at the
-/// first column's x, over its content, leaving the second column empty (Wave 22, DocxToPdf-4:3).
+/// A table that flows into the next column of a multi-column section draws those rows in that column — not
+/// laid out once, against the column it starts in, with the rows past the column's foot drawn at the first
+/// column's x, over its content, leaving the second column empty.
 /// </summary>
 public sealed class TableColumnFlowTests
 {

@@ -69,11 +69,11 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
             var areas = frame.Items.OfType<PolylineItem>().Where(p => p.FillHex != null).ToList();
             Assert.Equal(2, areas.Count);
 
-            // Each filled subpath is baseline → data → data → baseline. The closing point used to
-            // be appended once, after the whole loop, for whichever PolylineItem happened to be
-            // current at the end — so the FIRST subpath kept its opening baseline point and never
-            // got its closing one, and ChartPainter's `h f` filled the triangle from (x1,y1)
-            // straight back to (x0,baseline) instead of the region under the data.
+            // Each filled subpath is baseline → data → data → baseline. A closing point appended
+            // once, after the whole loop, for whichever PolylineItem happened to be current at the
+            // end would leave the FIRST subpath without its closing one, and ChartPainter's `h f`
+            // would fill the triangle from (x1,y1) straight back to (x0,baseline) instead of the
+            // region under the data.
             double baseline = areas[0].Points[0].y;
             foreach (var a in areas)
             {

@@ -99,21 +99,18 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         }
 
         /// <summary>
-        /// A declared <c>format('woff2')</c> is no longer a reason to decline anything.
+        /// A declared <c>format('woff2')</c> is not a reason to decline anything.
         /// </summary>
         /// <remarks>
         /// <para><b>The engine reads the container's signature, not the stylesheet's claim.</b>
-        /// WOFF 2.0 is now unwrapped by <c>Core.Fonts.Woff2Decoder</c> at
-        /// <c>TrueTypeFontProgram.Parse</c>, so the <c>format()</c> test that used to gate it is
-        /// gone — and it was always the weaker test, since <c>format()</c> is optional in CSS and
-        /// stylesheets routinely omit it.</para>
+        /// WOFF 2.0 is unwrapped by <c>Core.Fonts.Woff2Decoder</c> at <c>TrueTypeFontProgram.Parse</c>,
+        /// so no <c>format()</c> test gates it — the weaker test, since <c>format()</c> is optional in CSS
+        /// and stylesheets routinely omit it.</para>
         ///
         /// <para><b>The fixture is a TrueType file behind a <c>format('woff2')</c> declaration</b>,
-        /// which is a stylesheet lying about its own asset. That is the case that isolates the
-        /// removed decline: nothing but the declared format could have refused it, so the font
-        /// loading is the assertion. This replaces
-        /// <c>FontFace_DeclaringWoff2_IsRejectedWithADiagnostic</c>, whose claim the engine no
-        /// longer makes.</para>
+        /// which is a stylesheet lying about its own asset. That is the case that isolates a decline
+        /// by declared format: nothing but the declared format could refuse it, so the font loading
+        /// is the assertion.</para>
         /// </remarks>
         [Fact]
         public void FontFace_DeclaringWoff2_NoLongerDeclinesOnTheDeclaredFormatAlone()
@@ -465,8 +462,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         [Fact]
         public void OptionsFontProvider_ReceivesTheRequestedFamilyName()
         {
-            // font-family used to collapse to a sans/serif/mono bucket, so the name a document
-            // asked for never reached anything that could act on it.
+            // font-family does not collapse to a sans/serif/mono bucket: the name a document asks
+            // for reaches something that can act on it.
             var families = new List<string>();
             var o = NoHostFonts();
             o.FontProvider = req => { families.Add(req.FamilyName); return MinimalTrueType.Build(Shalom); };

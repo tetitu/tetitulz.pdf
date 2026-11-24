@@ -275,9 +275,9 @@ public class JpegLosslessOptimizerTests
 
     /// <summary>
     /// Only the first scan is re-coded and everything after it copied, so a file with more is refused
-    /// for the reason it has more (Wave 22, Maintenance-1:6): a later scan was left coded under the
-    /// original tables and read under the fitted ones, and the verification, which reads the first scan,
-    /// passed it. Three shapes, each refused by its own check — the reasons are asserted, because each
+    /// for the reason it has more: a later scan would be left coded under the original tables and read
+    /// under the fitted ones, and the verification, which reads the first scan, would pass it. Three
+    /// shapes, each refused by its own check — the reasons are asserted, because each
     /// file would also trip one of the others.
     /// </summary>
     [Fact]
@@ -482,9 +482,9 @@ public class JpegLosslessOptimizerTests
     }
 
     /// <summary>
-    /// The verification holds no list of the scan's symbols: it held eight bytes a symbol, and a
-    /// symbol can be one bit (Wave 22, Maintenance-1:5). What a run allocates is the rebuilt file and
-    /// the transcoder's own buffers — a few times the JPEG — and the list was several times that again.
+    /// The verification holds no list of the scan's symbols, which would cost eight bytes a symbol,
+    /// and a symbol can be one bit. What a run allocates is the rebuilt file and the transcoder's own
+    /// buffers — a few times the JPEG — and such a list would be several times that again.
     /// The transcoder is synchronous on the calling thread, so its allocation is this thread's.
     /// </summary>
     [Fact]

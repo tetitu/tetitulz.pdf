@@ -39,8 +39,8 @@ namespace Tetitulz.Pdf.Plugins.Conformance.Tests;
 public class PluginPageTreeSlotBudgetTests
 {
     /// <summary>
-    /// <b>The defect.</b> A flat tree of more than half the budget must be walked completely — it
-    /// used to stop at the halfway mark and report UA99.
+    /// <b>The defect.</b> A flat tree of more than half the budget must be walked completely, not
+    /// stopped at the halfway mark with a UA99.
     /// </summary>
     [Fact]
     public void AFlatTreeLargerThanHalfTheBudgetIsWalkedCompletely()

@@ -78,7 +78,7 @@ public class PdfXValidatorColourAndScanTests
     /// operands are DeviceRGB components when the base is <c>/DeviceRGB</c>, so
     /// <c>[/Pattern /DeviceRGB]</c> is RGB on a PDF/X-1a page and X08 reaches it through the base.
     /// A CMYK base is allowed, and a coloured pattern — bare <c>/Pattern</c> — names no space at
-    /// all. Not descended until Wave 17 R9.1: the RGB case validated clean.
+    /// all. Not descended, the RGB case would validate clean.
     /// </summary>
     [Theory]
     [InlineData("[/Pattern /DeviceRGB]", true)]

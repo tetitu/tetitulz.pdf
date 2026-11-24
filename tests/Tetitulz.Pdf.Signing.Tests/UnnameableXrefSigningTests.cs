@@ -20,7 +20,7 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// reaches the caller's stream.
 /// </summary>
 /// <remarks>
-/// <para><b>What it used to do, and why it is the worst of the three possible outcomes.</b> The
+/// <para><b>What signing would do, and why it is the worst of the three possible outcomes.</b> The
 /// appended revision declares only the three objects a signature writes — the signature dictionary,
 /// the signature field and a cloned catalog — and with no nameable previous section it writes no
 /// <c>/Prev</c>, so nothing re-declares the rest. On reopening, <c>/Root</c> resolves (it is one of
@@ -31,8 +31,8 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// <para><b>And the signature verified.</b> <c>PdfSignatureVerifier</c> reaches signatures through
 /// <c>AcroForm.GetSignatureFields()</c> and never consults the page tree, so every object it needs
 /// is among the three the revision declared. The digest is over bytes nobody touched, so the result
-/// was a cryptographically valid attestation over a document whose content the signer's own write
-/// had made unreachable. A relying party had no way to tell.</para>
+/// would be a cryptographically valid attestation over a document whose content the signer's own
+/// write had made unreachable. A relying party would have no way to tell.</para>
 ///
 /// <para><b>Why refusal rather than recovery, when the edit path recovers.</b> The asymmetry is the
 /// argument: a broken edit is loudly broken and retryable; a broken signature is quietly

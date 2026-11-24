@@ -11,8 +11,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
-/// The another reader corpus files the optimizer comparison of 2026-10-15 read short or wrong (GAPS §19h
-/// items 5 and 6), each against the reader it exercises. They run when
+/// Files from another reader's test corpus that an erring recovery reads short or wrong, each against
+/// the reader it exercises. They run when
 /// <c>TETITULZ_PDF_CORPUS</c> names another reader's <c>test/pdfs</c> folder and skip otherwise.
 /// </summary>
 public class PublicCorpusRecoveryTests
@@ -36,7 +36,7 @@ public class PublicCorpusRecoveryTests
         Assert.True(doc.Pages.Count >= 1, "the document's page was not recovered");
     }
 
-    /// <summary>An object stream of 65 542 members, the catalog among them, opens: the default cap is above it since GAPS §19h item 6.</summary>
+    /// <summary>An object stream of 65 542 members, the catalog among them, opens: the default cap is above it.</summary>
     [CorpusFact("bug1978317.pdf")]
     public void Bug1978317_AnObjectStreamOf65542Members_Opens()
     {

@@ -48,9 +48,9 @@ public partial class EcCurveSignatureRoundTripTests
     }
 
     /// <summary>
-    /// Ed448 signs and verifies through the full pipeline. It was pinned as failing until
-    /// 2026-10-18 — BouncyCastle 2.7.0's generator cannot resolve the SHAKE256 digest its own Ed448
-    /// factory names — and is now signed and verified by RFC 8419 §3.1 written out
+    /// Ed448 signs and verifies through the full pipeline. BouncyCastle 2.7.0's generator cannot
+    /// resolve the SHAKE256 digest its own Ed448 factory names, so it is signed and verified by RFC
+    /// 8419 §3.1 written out
     /// (<c>CmsSignatureGenerator.Ed448SignedData</c>, <c>CmsSignatureVerifier.VerifyEd448</c>).
     /// </summary>
     [Fact]

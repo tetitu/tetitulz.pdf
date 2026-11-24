@@ -28,10 +28,10 @@ public class RecoveryEdgeAndLimitTests
     // ================================================================
 
     /// <summary>
-    /// A buffer beginning <c>12 0 obj</c>. The backward digit walk used to exit without testing
-    /// index 0 and then increment unconditionally, so the leading digit was dropped from BOTH the
-    /// parsed number and the recorded offset: object <b>2</b> was registered at offset <b>1</b>,
-    /// one byte into the header, and object 12 was absent entirely.
+    /// A buffer beginning <c>12 0 obj</c>. A backward digit walk that exits without testing index 0
+    /// and then increments unconditionally drops the leading digit from BOTH the parsed number and the
+    /// recorded offset: object <b>2</b> registered at offset <b>1</b>, one byte into the header, and
+    /// object 12 absent entirely.
     /// </summary>
     [Fact]
     public void RecoveryScan_ObjectNumberAtBufferOffsetZero_KeepsEveryDigit()

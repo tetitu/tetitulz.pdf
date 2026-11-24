@@ -14,9 +14,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.Docx.Tests;
 
 /// <summary>
-/// The public converters refuse an encrypted document, as the export adapter does: they saw zero
-/// pages and wrote an empty .docx or .pptx, and an .xlsx with no sheet, with nothing said (Wave 22,
-/// SmallPlugins+Viewer-1:6). A document with truly no pages converts, and says so.
+/// The public converters refuse an encrypted document, as the export adapter does, rather than
+/// seeing zero pages and writing an empty .docx or .pptx, or an .xlsx with no sheet, with nothing
+/// said. A document with truly no pages converts, and says so.
 /// </summary>
 public class ConverterEncryptedInputTests
 {

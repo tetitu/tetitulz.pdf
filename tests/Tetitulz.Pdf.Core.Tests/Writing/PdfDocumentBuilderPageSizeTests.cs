@@ -12,11 +12,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Writing;
 
 /// <summary>
-/// Wave 17 R15.1: <see cref="PdfDocumentBuilder.AddPage"/> is the one page every producer makes —
-/// the Builder's, DocxToPdf's, HtmlToPdf's — and it tested <c>&lt;= 0</c> alone, which NaN passes:
-/// a NaN side was written as a <c>/MediaBox</c> of zeros, a page with no size, in a document that
-/// built without a word. Refused now, naming the side; the control is that a positive size still
-/// makes a page of that size.
+/// <see cref="PdfDocumentBuilder.AddPage"/> is the one page every producer makes — the Builder's,
+/// DocxToPdf's, HtmlToPdf's. Tested by <c>&lt;= 0</c> alone, which NaN passes, a NaN side would be
+/// written as a <c>/MediaBox</c> of zeros, a page with no size, in a document that built without a
+/// word. It is refused, naming the side; the control is that a positive size still makes a page of
+/// that size.
 /// </summary>
 public sealed class PdfDocumentBuilderPageSizeTests
 {

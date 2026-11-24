@@ -16,8 +16,7 @@ namespace Tetitulz.Pdf.TestHelpers;
 /// The corpus is deliberately NOT committed: <c>tests/pdf/</c> is gitignored and
 /// <c>raw/</c> holds ad-hoc customer samples. Tests that need it must therefore be
 /// able to *skip honestly* on a clean checkout rather than either hard-failing
-/// (as several used to) or silently early-returning and reporting green while
-/// executing nothing.
+/// or silently early-returning and reporting green while executing nothing.
 ///
 /// Resolution order for each root:
 ///   1. the <c>TETITULZ_PDF_CORPUS</c> / <c>TETITULZ_PDF_RAW</c> environment variable, if set;

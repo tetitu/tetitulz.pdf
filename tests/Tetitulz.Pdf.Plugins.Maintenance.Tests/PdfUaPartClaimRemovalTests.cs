@@ -43,7 +43,7 @@ public sealed class PdfUaPartClaimRemovalTests
         => Assert.Equal(ByReference(xmp), PdfOptimizer.WithoutPdfUaPartClaim(xmp));
 
     // ------------------------------------------------------------------
-    //  The packet as the file stores it — Wave 22, Maintenance-2:7
+    //  The packet as the file stores it
     // ------------------------------------------------------------------
 
     private const string Packet = "<rdf:Description pdfuaid:part=\"1\" dc:format=\"application/pdf\"/>";

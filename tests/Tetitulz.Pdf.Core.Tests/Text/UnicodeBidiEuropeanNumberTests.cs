@@ -63,7 +63,7 @@ namespace Tetitulz.Pdf.Core.Tests.Text
 
         /// <summary>
         /// A left-to-right paragraph that opens with numbers keeps them first: sos is <c>L</c>, so
-        /// W7 makes them <c>L</c> before any letter is seen. They used to swap with the Hebrew after
+        /// W7 makes them <c>L</c> before any letter is seen, so they do not swap with the Hebrew after
         /// them.
         /// </summary>
         [Fact]

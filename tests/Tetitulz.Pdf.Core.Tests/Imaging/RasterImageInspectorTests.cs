@@ -14,10 +14,9 @@ namespace Tetitulz.Pdf.Core.Tests.Imaging;
 /// <summary>
 /// <see cref="RasterImageInspector"/> — the single answer to "what is this image?".
 ///
-/// <para>It exists because that question used to have two answers in two assemblies: one
-/// component read PNG/GIF/BMP/JPEG headers for sizing, another embedded only PNG and JPEG. A GIF
-/// was therefore measured and then dropped, and the layout still advanced by the measured height,
-/// producing a correctly-sized blank hole.</para>
+/// <para>Two answers in two assemblies — one reading PNG/GIF/BMP/JPEG headers for sizing, another
+/// embedding only PNG and JPEG — would measure a GIF and then drop it, and the layout would still
+/// advance by the measured height, producing a correctly-sized blank hole.</para>
 /// </summary>
 public class RasterImageInspectorTests
 {

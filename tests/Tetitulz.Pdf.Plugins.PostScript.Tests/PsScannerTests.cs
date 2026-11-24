@@ -23,7 +23,7 @@ public sealed class PsScannerTests
     }
 
     // ==================================================================
-    //  Edges the overnight sweep found unguarded
+    //  Edges
     // ==================================================================
 
     /// <summary>A stray <c>&gt;</c> as the very last byte is skipped, not read past.</summary>
@@ -403,7 +403,7 @@ public sealed class PsScannerTests
     }
 
     // ==================================================================
-    //  %%BeginData / %%BeginBinary (DSC 3.0 §5.7) — Wave 17 R10.2
+    //  %%BeginData / %%BeginBinary (DSC 3.0 §5.7)
     // ==================================================================
 
     private static (List<PsToken> Tokens, PsScanner Scanner) ScanWithDsc(string source)

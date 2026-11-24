@@ -14,8 +14,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// <c>.btn</c>, <c>code</c> and a <c>.form-control</c> input — are drawn in a box.
     /// </summary>
     /// <remarks>
-    /// They used to print as plain text: the model had a run background and nothing else, so a
-    /// label's padding and its print-stylesheet border were dropped. Pure primaries make the colour
+    /// With a run background and nothing else in the model, they would print as plain text — a
+    /// label's padding and its print-stylesheet border dropped. Pure primaries make the colour
     /// operators unambiguous; <c>re S</c> is a stroked rectangle, which nothing else in these
     /// fixtures draws.
     /// </remarks>

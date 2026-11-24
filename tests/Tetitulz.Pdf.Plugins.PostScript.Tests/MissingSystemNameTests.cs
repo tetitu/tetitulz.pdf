@@ -180,8 +180,8 @@ public sealed class MissingSystemNameTests
     }
 
     /// <summary>
-    /// <c>findencoding</c> answers with the array the PLRM specifies. It used to push the key back
-    /// as a name for every input, which is a <c>typecheck</c> at the first <c>get</c>.
+    /// <c>findencoding</c> answers with the array the PLRM specifies — not the key pushed back as a
+    /// name for every input, which is a <c>typecheck</c> at the first <c>get</c>.
     /// </summary>
     [Fact]
     public void FindEncoding_ReturnsTheArray_NotTheName()
@@ -864,9 +864,9 @@ public sealed class MissingSystemNameTests
     // ==================================================================
 
     /// <summary>
-    /// An undefined name now reaches <c>UnimplementedOperators</c>. It used to leave the list empty
-    /// while <c>IsClean</c> went false, so a caller reading the documented channel could not learn
-    /// what the drawing was missing.
+    /// An undefined name reaches <c>UnimplementedOperators</c>: a list left empty while <c>IsClean</c>
+    /// goes false would leave a caller reading the documented channel unable to learn what the drawing
+    /// is missing.
     /// </summary>
     [Fact]
     public void AnUndefinedName_IsRecordedInUnimplementedOperators()

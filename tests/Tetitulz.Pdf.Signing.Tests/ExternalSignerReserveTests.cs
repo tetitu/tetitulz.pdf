@@ -16,13 +16,13 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// <see cref="IExternalSigner.EstimatedSignatureSize"/> reserves the space it says it does.
 /// </summary>
 /// <remarks>
-/// <para><b>It documented itself as "used to reserve space in the /Contents placeholder" and
-/// nothing read it.</b> Both the reserve (<c>PdfSigner</c>, where the placeholder is sized) and the
-/// fit check that rejects an oversized CMS took <c>SignatureParameters.EstimatedSignatureSize</c>
-/// alone, so a signer that measured its own output — <c>CertStoreExternalSigner</c> sums its real
-/// certificate chain and adds 8 KB for exactly this purpose — was ignored, and a caller who left
-/// the parameter at its 16 KB default got a <c>PdfSigningException</c> instead of the space their
-/// signer had asked for.</para>
+/// <para><b>It documents itself as "used to reserve space in the /Contents placeholder", and both
+/// the reserve and the fit check read it.</b> Taking <c>SignatureParameters.EstimatedSignatureSize</c>
+/// alone in the reserve (<c>PdfSigner</c>, where the placeholder is sized) and in the fit check that
+/// rejects an oversized CMS would ignore a signer that measures its own output —
+/// <c>CertStoreExternalSigner</c> sums its real certificate chain and adds 8 KB for exactly this
+/// purpose — and a caller who left the parameter at its 16 KB default would get a
+/// <c>PdfSigningException</c> instead of the space their signer asked for.</para>
 ///
 /// <para>It is the class of defect CLAUDE.md names repeatedly: <b>a comment asserting a property is
 /// not the property</b>. Nothing else could see it — the interface member exists, is implemented

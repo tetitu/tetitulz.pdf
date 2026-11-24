@@ -168,10 +168,9 @@ public class BoxDecorationTests
     }
 
     /// <summary>
-    /// A transform reports nothing (batch 104): the link rectangles inside a transformed block follow
-    /// it (<c>TransformOriginTests</c>), so the caveat that every transform used to raise — a
-    /// <c>/Rect</c> in default user space left where the untransformed text was — is gone. The
-    /// matrix is still written.
+    /// A transform reports nothing: the link rectangles inside a transformed block follow it
+    /// (<c>TransformOriginTests</c>), so there is no <c>/Rect</c> in default user space left where the
+    /// untransformed text was to report. The matrix is still written.
     /// </summary>
     [Fact]
     public void ATransform_ReportsNoLinkCaveat()

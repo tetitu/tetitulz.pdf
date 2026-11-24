@@ -90,10 +90,9 @@ public sealed class IndirectSignatureDictionaryReadsTests
     }
 
     /// <summary>
-    /// The counter-signer locates the <c>/Contents</c> hole from the same four integers. It used to
-    /// read them with <c>GetArray</c>/<c>GetLong</c> — neither resolving nor type-checking — so it
-    /// REFUSED a signature <c>PdfSignatureVerifier</c>, 25 lines below a <c>/SubFilter</c> read
-    /// fixed for exactly this, verifies happily.
+    /// The counter-signer locates the <c>/Contents</c> hole from the same four integers, resolved and
+    /// type-checked: read with <c>GetArray</c>/<c>GetLong</c>, it would REFUSE a signature
+    /// <c>PdfSignatureVerifier</c> verifies happily.
     /// </summary>
     /// <remarks>
     /// The output is re-verified rather than merely inspected: the counter-signature goes into the

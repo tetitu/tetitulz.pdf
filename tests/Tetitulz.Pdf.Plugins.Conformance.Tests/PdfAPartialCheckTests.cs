@@ -67,8 +67,8 @@ public class PdfAPartialCheckTests
     [Fact]
     public void ATransparencyWalkCutShortNamesTheTransparencyCheckNotA06()
     {
-        // Both resource walks spend the same budget on the same dictionary. The transparency walk's
-        // report used to end "the A06 font-embedding check is partial" — about itself.
+        // Both resource walks spend the same budget on the same dictionary, and each report names
+        // its own check, not "the A06 font-embedding check is partial" for the transparency walk.
         var result = Validate(WidePdf(PastTheBudget));
 
         var transparency = Assert.Single(result.Informational,

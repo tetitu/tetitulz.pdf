@@ -80,7 +80,7 @@ internal static class SigningTestCrypto
     /// <summary>
     /// An intermediate CA with a caller-supplied key pair, so the SAME identity can be issued by
     /// two different roots — the cross-certification shape a CA root rollover produces, and the
-    /// one that used to break chain building.
+    /// one that can break chain building.
     /// </summary>
     public static Issued IssuedIntermediate(Issued issuer, AsymmetricCipherKeyPair keys, string cn)
     {

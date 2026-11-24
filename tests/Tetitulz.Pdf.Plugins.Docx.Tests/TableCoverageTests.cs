@@ -17,11 +17,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.Docx.Tests;
 
 /// <summary>
-/// Which of a page's lines an emitted table already carries. A line counted as covered when its
-/// text was contained in some row's, wherever it stood, so a page number "1" under a row holding
-/// "12" vanished from the DOCX and the XLSX (Wave 22, SmallPlugins+Viewer-1:5), and every line was
-/// searched against every row (1:4). A line is now covered when it is a whole row or stands inside
-/// one. And a table wider than Word lays out is written as lines (1:0).
+/// Which of a page's lines an emitted table already carries: a line is covered when it is a whole
+/// row or stands inside one. Counted as covered whenever its text is contained in some row's,
+/// wherever it stands, a page number "1" under a row holding "12" would vanish from the DOCX and
+/// the XLSX, and every line would be searched against every row. And a table wider than Word lays
+/// out is written as lines.
 /// </summary>
 [Collection(PdfLimitsCollection.Name)]
 public sealed class TableCoverageTests

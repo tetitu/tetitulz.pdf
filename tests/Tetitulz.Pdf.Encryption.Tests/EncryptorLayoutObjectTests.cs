@@ -127,8 +127,8 @@ public class EncryptorLayoutObjectTests
     {
         // An encrypted classic document; the operation rewrites the decrypted copy with object streams and a
         // cross-reference stream, as the optimizer does, and the round trip encrypts that again — in the
-        // layout the operation chose, with the file's own containers, not the operation's (the round trip
-        // used to unpack every object and write it back out under a classic table, larger than its input).
+        // layout the operation chose, with the file's own containers, not the operation's — not every
+        // object unpacked and written back out under a classic table, larger than its input.
         using var plain = new MemoryStream(PublicKeyRoundTripTests.SourcePdf());
         using var protectedCopy = new MemoryStream();
         PdfEncryptor.Encrypt(plain, protectedCopy, new EncryptionParameters

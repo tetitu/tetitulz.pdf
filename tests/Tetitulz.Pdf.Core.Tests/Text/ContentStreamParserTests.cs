@@ -24,14 +24,14 @@ public class ContentStreamParserTests
     /// A closing bracket with no opening one is <b>not</b> an operand and must not become one.
     /// </summary>
     /// <remarks>
-    /// <para><b>Why this is worth pinning.</b> The operand loop used to carry its own copy of the
-    /// token-to-object switch; it now calls <c>ParseInlineValue</c>, whose <c>default</c> maps an
+    /// <para><b>Why this is worth pinning.</b> The operand loop calls <c>ParseInlineValue</c> rather
+    /// than carrying its own copy of the token-to-object switch, and its <c>default</c> maps an
     /// unrecognised token to <c>PdfNull</c>. That is right in a <i>value</i> position — an
     /// inline-image parameter, a marked-content property — and wrong in an operand list, so the
     /// operand loop keeps its own list of which token types are operands and ignores the rest.</para>
     /// <para>If a stray <c>]</c> became a <c>PdfNull</c> operand, every operand index after it would
     /// shift by one, which is how an operator reads its arguments out of position — and mutating
-    /// that distinction away left the whole Core suite green until this test existed.</para>
+    /// that distinction away leaves the rest of the Core suite green.</para>
     /// </remarks>
     [Fact]
     public void AStrayClosingBracketIsNotAnOperand()
@@ -215,14 +215,14 @@ public class ContentStreamParserTests
         Assert.Equal("q",   ops[2].Operator);
     }
 
-    // ── Fix 2: BI glued to the operator before it ─────────────────────────────
+    // ── BI glued to the operator before it ───────────────────────────────────
     //
-    // The inline-image branch used to compare the WHOLE keyword token to "BI", so it
-    // only fired when a generator left whitespace in front of the image.  "qBI" fell
-    // through to SplitOps, which correctly produced q + BI — and then the parser kept
-    // tokenising the image's raw sample bytes as operands and operators.  Every op in
-    // the payload is fabricated: PdfTextExtractor reports characters the page never
-    // draws, and a renderer executes operators the document never contained.
+    // Comparing the WHOLE keyword token to "BI" fires only when a generator leaves whitespace
+    // in front of the image. "qBI" would fall through to SplitOps, which correctly produces
+    // q + BI — and the parser would then tokenise the image's raw sample bytes as operands and
+    // operators. Every op in the payload would be fabricated: PdfTextExtractor reporting
+    // characters the page never draws, and a renderer executing operators the document never
+    // contained.
 
     [Fact]
     public void GluedQBI_InlineImageIsConsumed_DeclaredLength()
@@ -355,10 +355,10 @@ public class ContentStreamParserTests
         Assert.DoesNotContain(ops, o => o.Operator == "BT");
     }
 
-    // ── Fix 3: a self-delimiting filter bounds the payload exactly ─────────────
+    // ── A self-delimiting filter bounds the payload exactly ──────────────────
     //
-    // A filtered inline image with no /L used to go straight to the EI heuristic, because
-    // a filter makes the byte count independent of /W, /H, /BPC and /CS.  Four of the
+    // A filtered inline image with no /L cannot be sized from /W, /H, /BPC and /CS, since a
+    // filter makes the byte count independent of them.  Four of the
     // seven inline-image filters carry their own end-of-data marker (ISO 32000-1 §7.4),
     // so the length is readable from the payload itself — and one of them, /A85, is the
     // case the heuristic provably cannot survive.
@@ -368,7 +368,7 @@ public class ContentStreamParserTests
     {
         // §8.9.7 requires whitespace after ID, not before EI, and producers routinely write
         // ">EI".  The heuristic needs that leading whitespace to recognise the terminator, so
-        // it used to run to end-of-stream and swallow the Q that follows the image.
+        // it would run to end-of-stream and swallow the Q that follows the image.
         var ops = Parse("qBI /W 2 /H 2 /BPC 8 /CS /G /F /AHx ID 00FF00FF>EI Q\n");
 
         Assert.Equal(new[] { "q", "BI", "Q" }, ops.Select(o => o.Operator).ToArray());

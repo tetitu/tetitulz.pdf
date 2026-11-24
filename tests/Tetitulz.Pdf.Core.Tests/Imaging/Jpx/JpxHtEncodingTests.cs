@@ -221,7 +221,7 @@ public sealed partial class JpxHtEncodingTests
     /// A size target chooses HT sets with refinement passes where they pay (§7.4, §7.5): the codestream holds
     /// blocks of two and three passes, and at the same target the picture is better than when the allocator
     /// may choose whole cleanup planes only — a refinement pass steps a third of a plane where a cleanup steps
-    /// a whole one (measured 2026-10-14 on this image: 0.1 to 1.1 dB at each target). Without refinement no
+    /// a whole one (measured on this image: 0.1 to 1.1 dB at each target). Without refinement no
     /// block has more than one pass. Either way the allocation spends the target: the bytes λ's choice leaves
     /// go to the blocks' best upgrades, so the file comes within 3% of it.
     /// </summary>
