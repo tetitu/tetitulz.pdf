@@ -257,9 +257,8 @@ public class BidiLineOrderTests
     // ================================================================ justification
 
     /// <summary>
-    /// Justification used to be disabled outright for right-to-left text (<c>!rtl &amp;&amp; …</c>).
-    /// With placement running left-to-right in both directions the special case disappeared, so
-    /// this is a feature that arrived by deleting a condition.
+    /// Right-to-left text is justified too: placement runs left-to-right in both directions, so
+    /// there is no special case (<c>!rtl &amp;&amp; …</c>) disabling it.
     /// </summary>
     [Fact]
     public void Rtl_Justified_StretchesTheLineToTheFullBand()

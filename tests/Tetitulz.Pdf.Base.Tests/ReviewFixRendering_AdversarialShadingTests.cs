@@ -47,9 +47,9 @@ public sealed class ReviewFixRendering_AdversarialShadingTests
     public void MeshShading_BitsPerCoordinate64_RendersWithoutCrash_AndPageNotBlank()
     {
         // The page paints a solid green rectangle, then invokes a Type 4 mesh shading
-        // declaring /BitsPerCoordinate 64. Pre-fix the 64-bit field collapsed maxCoord to
-        // 0 → NaN vertex coords. The fix rejects the shading; the green rectangle must
-        // still be present (page not blank, no crash).
+        // declaring /BitsPerCoordinate 64. A 64-bit field would collapse maxCoord to 0 →
+        // NaN vertex coords. The shading is rejected; the green rectangle must still be
+        // present (page not blank, no crash).
         byte[] pdf = BuildMeshShadingPdf(bitsPerCoordinate: 64);
 
         byte[] png = null;
@@ -99,8 +99,8 @@ public sealed class ReviewFixRendering_AdversarialShadingTests
     public void NonFiniteCm_DoesNotBlankRestOfPage()
     {
         // q  <Inf> 0 0 1 0 0 cm  ... Q  then a normal green fill.
-        // Pre-fix the Inf operand poisoned GS.CTM for the rest of the q…Q scope, so the
-        // green rectangle drawn afterwards vanished. The fix ignores the bad cm.
+        // Accepted, the Inf operand would poison GS.CTM for the rest of the q…Q scope, and the
+        // green rectangle drawn afterwards would vanish. The bad cm is ignored.
         string content =
             "q " + FloatInfinityReal + " 0 0 1 0 0 cm Q " +
             "0 1 0 rg 20 20 60 60 re f";
@@ -197,8 +197,8 @@ public sealed class ReviewFixRendering_AdversarialShadingTests
         // (85,0) (100,0) (100,15) — a wedge in the bottom-right corner, well clear of the green
         // rectangle at (20,20)-(80,80) — and all three corners are pure blue.
         //
-        // Two vertices would parse but draw nothing (a triangle needs three), which is how this
-        // fixture previously satisfied a "renders without exception" test while painting nothing.
+        // Two vertices would parse but draw nothing (a triangle needs three), satisfying a
+        // "renders without exception" test while painting nothing.
         //
         // With bpc=64 the same bytes are irrelevant: the shading is rejected on its declared bit
         // widths, before any vertex is read.

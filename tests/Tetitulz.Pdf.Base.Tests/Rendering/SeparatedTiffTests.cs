@@ -15,7 +15,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <see cref="PdfSeparations.ToTiff"/> / <c>PdfImageEncoder.EncodeSeparatedTiff</c>: plates as one
 /// separated TIFF (TIFF 6.0 §16). The file is read back here by a minimal IFD reader and Core's
 /// <see cref="RunLengthDecodeFilter"/> — PDF's RunLength is TIFF's PackBits — rather than by the
-/// encoder's own assumptions; an independent tool 12 opened the CMYK form with the same values (2026-10-03).
+/// encoder's own assumptions; an independent tool opens the CMYK form with the same values.
 /// </summary>
 public class SeparatedTiffTests
 {

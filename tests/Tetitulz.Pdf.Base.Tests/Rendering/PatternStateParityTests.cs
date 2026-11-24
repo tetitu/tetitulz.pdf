@@ -33,7 +33,7 @@ public sealed class PatternStateParityTests
 {
     /// <summary>
     /// <c>/P1 scn</c> then <c>/P2 SCN</c> then <c>B</c>: the interior must be P1's red and the
-    /// border P2's blue. Before the fix the interior was blue too.
+    /// border P2's blue — not blue too.
     /// </summary>
     [Fact]
     public void FillAndStrokePatterns_AreIndependent_InTheRasterPath()

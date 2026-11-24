@@ -215,8 +215,7 @@ public class AssemblyLayeringTests
             // of every consumer. The engine lives in Tetitulz.Pdf.Plugins.JavaScript.
             ("Tetitulz.Pdf.Base", "Jint",
              "the JavaScript engine is Tetitulz.Pdf.Plugins.JavaScript (GAPS.md §15b)."),
-            // CLAUDE.md: removed with its only consumer on 2026-08-07 and must not come back -
-            // a PDF reader must not shape text.
+            // CLAUDE.md: must not come back - a PDF reader must not shape text.
             ("Tetitulz.Pdf.Base", "SkiaSharp.HarfBuzz",
              "neither renderer shapes text; see the shaping box in CLAUDE.md."),
         };

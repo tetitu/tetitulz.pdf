@@ -18,13 +18,11 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <summary>
 /// PDF §9.3.8 / Table 52 — text knockout (<c>/TK</c>).
 ///
-/// <para><b>The default is the case that was wrong.</b> <c>/TK</c>'s initial value is
+/// <para><b>The default is the case that matters.</b> <c>/TK</c>'s initial value is
 /// <b>true</b>: the glyphs of one text object composite as a knockout group, so where two glyphs
-/// overlap the later one <i>replaces</i> the earlier rather than painting over it. Both renderers
-/// painted glyph-by-glyph with SrcOver, which is the <c>/TK false</c> model — so the deviation
-/// applied to every file, including the overwhelming majority that never mention the key, and the
-/// only diagnostic fired on an explicit <c>/TK true</c>, i.e. exactly on the files that were
-/// redundantly restating the default.</para>
+/// overlap the later one <i>replaces</i> the earlier rather than painting over it. Painting
+/// glyph-by-glyph with SrcOver is the <c>/TK false</c> model — a deviation for every file,
+/// including the overwhelming majority that never mention the key.</para>
 ///
 /// <para><b>Why the fixture draws the same glyph twice at the same place.</b> The test needs
 /// overlapping ink and must not depend on where a standard-14 glyph puts it. Two identical shows
@@ -143,8 +141,7 @@ public class TextKnockoutTests
     /// none: knocked out, it is the union of its glyphs at that alpha, latest on top — the glyphs
     /// painted opaque inside <c>&lt;g opacity&gt;</c>. The writer emits exactly that, on the state
     /// the text object <i>opens</i> with, so it acts on a file that never writes <c>/TK</c> (this
-    /// fixture does not). It used to report the knockout as ignored, and was renamed when it
-    /// stopped.
+    /// fixture does not), rather than report the knockout as ignored.
     /// </summary>
     [Fact]
     public void SvgExport_EmulatesTheKnockout_EvenWithNoTkInTheFile()

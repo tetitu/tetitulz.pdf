@@ -116,10 +116,9 @@ public sealed class SvgRendererGapTests
         byte[] pdf = BuildPdf(cs);
         using var ms = new MemoryStream(pdf);
         string svg = PdfSvgRenderer.RenderPageToSvg(ms, 0);
-        // 0.5 * 255 = 127.5, which rounds to 128. This asserted 127 until 2026-08-08, when the
-        // device spaces were unified onto the rounding the CIE spaces in PdfColor already used —
-        // DeviceGray 0.5 and CalGray 0.5 (gamma 1) are defined to be the same colour, and they
-        // came out a level apart. GAPS.md §2b step 4.
+        // 0.5 * 255 = 127.5, which rounds to 128 — the rounding the CIE spaces in PdfColor use,
+        // since DeviceGray 0.5 and CalGray 0.5 (gamma 1) are defined to be the same colour.
+        // GAPS.md §2b step 4.
         Assert.Contains("rgb(128,128,128)", svg);
     }
 

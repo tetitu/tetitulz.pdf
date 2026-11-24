@@ -14,19 +14,18 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <summary>
 /// Axial (§8.7.4.5.3) and radial (§8.7.4.5.4) shadings must be mapped through the full CTM.
 ///
-/// <para><b>What was wrong.</b> Both built their Skia gradient from <i>CTM-transformed control
-/// points</i>. That is only equivalent to transforming the gradient for a similarity transform
-/// (translation / rotation / uniform scale). The radial case then patched up a non-uniform scale
-/// by averaging the two CTM axis lengths into one scalar radius and re-stretching the result
-/// along X and Y — which reproduces an <i>axis-aligned</i> ellipse but cannot express a rotated
-/// one, so a sheared or rotated-then-scaled CTM drew the ellipse at the wrong angle. The axial
-/// case had the matching defect: a gradient's iso-lines are perpendicular to its axis only in
-/// shading space, and endpoint transformation forces them to stay perpendicular in device space.</para>
+/// <para><b>Why not transformed control points.</b> Building the Skia gradient from
+/// <i>CTM-transformed control points</i> is only equivalent to transforming the gradient for a
+/// similarity transform (translation / rotation / uniform scale). Averaging the two CTM axis
+/// lengths into one scalar radius and re-stretching along X and Y reproduces an
+/// <i>axis-aligned</i> ellipse but cannot express a rotated one, so a sheared or
+/// rotated-then-scaled CTM would draw the ellipse at the wrong angle; and a gradient's iso-lines
+/// are perpendicular to its axis only in shading space, which endpoint transformation would force
+/// to stay perpendicular in device space.</para>
 ///
-/// <para>Both now hand the CTM to Skia as the shader's local matrix, so the gradient itself is
-/// transformed. A shear CTM is used below because it is precisely the case the old averaging
-/// could not represent — an axis-aligned non-uniform scale came out correct either way, which is
-/// why this went unnoticed.</para>
+/// <para>Both hand the CTM to Skia as the shader's local matrix, so the gradient itself is
+/// transformed. A shear CTM is used below because it is precisely the case averaging cannot
+/// represent — an axis-aligned non-uniform scale comes out correct either way.</para>
 /// </summary>
 public class ShadingCtmMappingTests
 {

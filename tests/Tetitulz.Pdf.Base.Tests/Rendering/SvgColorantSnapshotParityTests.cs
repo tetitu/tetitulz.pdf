@@ -16,11 +16,10 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// the same option and must give the same answer.
 /// </summary>
 /// <remarks>
-/// <para><b>The raster half of this was fixed and the SVG half was not</b>, which is the defect
-/// class CLAUDE.md names as the recurring one here: "one renderer fixed, the other silently
-/// disagreeing". <c>ContentStreamInterpreter.OpSc</c> assigns <c>FillCmyk = null</c> on all seven of
-/// its branches; <c>SvgContentWriter.OpSc</c> ended by assigning only the colour and never touched
-/// <c>FillIsCmyk</c>.</para>
+/// <para><b>Both halves</b>, against the defect class CLAUDE.md names as the recurring one here:
+/// "one renderer fixed, the other silently disagreeing". <c>ContentStreamInterpreter.OpSc</c> assigns
+/// <c>FillCmyk = null</c> on all seven of its branches, and <c>SvgContentWriter.OpSc</c> clears
+/// <c>FillIsCmyk</c> likewise.</para>
 ///
 /// <para><b>The rule both sides implement:</b> only <c>k</c>/<c>K</c> establish a DeviceCMYK
 /// colorant snapshot. Every other colour-setting operator discards it — including a
@@ -28,8 +27,8 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// non-overprinting. That is conservative, and it is deliberate: overprint simulation applies to the
 /// operators §11.7.4.2 is written about.</para>
 ///
-/// <para><b>Asserted on the emitted SVG, parsed as XML.</b> The suite substring-matched SVG for its
-/// entire history, which is how an export that was not even well-formed went unnoticed.</para>
+/// <para><b>Asserted on the emitted SVG, parsed as XML.</b> Substring-matching SVG cannot notice an
+/// export that is not even well-formed.</para>
 /// </remarks>
 public class SvgColorantSnapshotParityTests
 {

@@ -129,8 +129,8 @@ public sealed class FootnoteSplitTests
 
     /// <summary>
     /// A note split across pages is one <c>/Note</c> in the structure tree, its content on every page it
-    /// reaches — the 2 400-word note's three or more — where it used to be one element per page; two
-    /// notes, the control, are two.
+    /// reaches — the 2 400-word note's three or more — not one element per page; two notes, the
+    /// control, are two.
     /// </summary>
     [Fact]
     public void ASplitNote_IsOneNoteElement_OnEveryPageItReaches()
@@ -178,8 +178,8 @@ public sealed class FootnoteSplitTests
 
     /// <summary>
     /// A note of lines ended by line breaks — taller than a page — is cut between its lines too, and
-    /// spans pages inside the margins. It used to be refused the cut and drawn whole, its strip running
-    /// up past the page's top edge.
+    /// spans pages inside the margins, rather than drawn whole, its strip running up past the page's
+    /// top edge.
     /// </summary>
     [Fact]
     public void ANoteOfLineBreaks_TallerThanAPage_SpansPages_InsideTheMargins()

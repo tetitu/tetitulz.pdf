@@ -37,7 +37,7 @@ public class SoftMaskCtmTests
         // Correct (CTM applied): left half black, right half white.
         // Buggy   (identity CTM): the mask white rect lands at device x∈[0,25]
         //    only, so device x=40 would be UNmasked → white. The x=40 black
-        //    assertion is what the pre-fix code fails.
+        //    assertion is what an identity CTM fails.
         byte[] pdf = BuildLuminosityMaskPdf();
         byte[] png = PdfPageRenderer.RenderPage(new MemoryStream(pdf), 0, 72);
 

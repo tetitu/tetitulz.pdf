@@ -11,7 +11,7 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// The PDF exporter asks <c>Core.Writing.LinkTargets</c> before it writes a <c>/URI</c> action (2026-10-20);
+/// The PDF exporter asks <c>Core.Writing.LinkTargets</c> before it writes a <c>/URI</c> action;
 /// the rule itself is tested in Core.
 /// </summary>
 public class LinkTargetPdfExportTests

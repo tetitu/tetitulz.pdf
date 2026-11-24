@@ -34,7 +34,7 @@ public class Type3AdvanceParityTests
 {
     /// <summary>
     /// A code outside <c>/FirstChar…/LastChar</c> advances by <b>0</b>, as the raster path's
-    /// <c>GetType3Width</c> has always done — not by half an em.
+    /// <c>GetType3Width</c> answers — not by half an em.
     /// </summary>
     [Fact]
     public void CodeOutsideWidthsRange_AdvancesByZero_InTheSvgExport()

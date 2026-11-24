@@ -16,14 +16,11 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// A <c>/Decode</c> bound written as an indirect reference (§7.3.10) is resolved, in both renderers.
 /// </summary>
 /// <remarks>
-/// <para><b>Both renderers read the array elements with a plain <c>as PdfNumber</c> cast, which
-/// yields <c>null</c> for <c>6 0 R</c> — and their fallbacks differed, so the same file drew two
-/// different pictures and only one of them was wrong.</b> The raster path fell through to
-/// <c>0.0</c>, making the decode maximum zero, so every sample of an <c>/Indexed</c> image mapped
-/// to <c>palette[0]</c> and the picture came out a flat colour. The SVG path fell through to
-/// <c>maxVal</c>, which for an 8-bit image <i>is</i> the correct maximum — so it produced the right
-/// export from the wrong reasoning, and would have started producing the wrong one the moment the
-/// bit depth changed.</para>
+/// <para><b>A plain <c>as PdfNumber</c> cast yields <c>null</c> for <c>6 0 R</c>, and the two
+/// renderers' fallbacks would differ.</b> A fall-through to <c>0.0</c> makes the decode maximum
+/// zero, so every sample of an <c>/Indexed</c> image maps to <c>palette[0]</c> and the picture comes
+/// out a flat colour. A fall-through to <c>maxVal</c> is, for an 8-bit image, the correct maximum —
+/// the right export from the wrong reasoning, wrong the moment the bit depth changes.</para>
 ///
 /// <para><b>Why the assertion is on pixels.</b> A flat-colour image is a perfectly valid PNG of the
 /// right dimensions; nothing structural separates it from the correct render. The fixture paints a
@@ -33,7 +30,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 public sealed class IndirectDecodeBoundTests
 {
     /// <summary>
-    /// The raster path. Red before the fix: both pixels came back as palette entry 0.
+    /// The raster path. Unresolved, both pixels would come back as palette entry 0.
     /// </summary>
     [Fact]
     public void TheRasterRendererResolvesAnIndirectDecodeBound()
@@ -97,7 +94,7 @@ public sealed class IndirectDecodeBoundTests
     }
 
     /// <summary>
-    /// <b>The case that separates the SVG fix from its own fallback.</b> With a decode maximum that
+    /// <b>The case that separates SVG resolution from its fallback.</b> With a decode maximum that
     /// is <i>not</i> the bit-depth maximum, <c>?? maxVal</c> stops being accidentally right.
     /// </summary>
     /// <remarks>
@@ -105,8 +102,7 @@ public sealed class IndirectDecodeBoundTests
     /// <c>maxVal</c> is 255 — the very number the indirect object holds. Here the bound is
     /// <b>3</b>, so the three possible states are three different colours: resolved gives
     /// <c>palette[3]</c> (blue), the SVG fallback gives <c>palette[255]</c> (green), and the raster
-    /// fallback of <c>0.0</c> gives <c>palette[0]</c> (red). A surviving mutant was a finding about
-    /// the fixture, not about the fix.
+    /// fallback of <c>0.0</c> gives <c>palette[0]</c> (red).
     /// </remarks>
     [Fact]
     public void BothRenderersResolveABoundThatIsNotTheBitDepthMaximum()

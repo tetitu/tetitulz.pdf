@@ -20,7 +20,7 @@ public class Type1ToCffSeacParityTests
 {
     /// <summary>
     /// Base sidebearing 10, accent sidebearing (asb) 100, adx 50. The Type 1 renderer puts the
-    /// accent's 50-unit bar at x 60 to 110. The converted font put it at 150 to 200 before the fix,
+    /// accent's 50-unit bar at x 60 to 110, and so must the converted font — not at 150 to 200,
     /// widening the composite's bounds by 90 units.
     /// </summary>
     [Fact]

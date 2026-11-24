@@ -160,9 +160,9 @@ public class ReviewFixOps_StructuredTextTests
         // Two source codes on one baseline: 0x01 → "fi", 0x02 → "x".
         // The per-source-code loop emits ONE PdfTextChar per code, so the "fi"
         // ligature stays a single cluster (Char == "fi") and "x" is a distinct,
-        // correctly-mapped second cluster. Pre-fix, the loop walked the decoded
-        // string "fix" char-by-char, splitting the ligature and desyncing the
-        // byte cursor for every following code.
+        // correctly-mapped second cluster. Walking the decoded string "fix"
+        // char-by-char would split the ligature and desync the byte cursor for
+        // every following code.
         const string cs = "BT /F1 12 Tf 100 700 Td <0102> Tj ET";
         using var ms = new MemoryStream(BuildLigaturePdf(cs));
         var pages = PdfStructuredTextExtractor.Extract(ms);

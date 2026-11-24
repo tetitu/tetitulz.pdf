@@ -119,9 +119,8 @@ public class FontResolutionTests
         new Paragraph { Runs = { new TextRun { Text = text, FontName = family } } };
 
     /// <summary>
-    /// Two families that resolve to the same face embed it once (Builder-2:5). A face several
-    /// families fall back to used to be embedded once per family, because <c>AddEmbeddedFont</c>
-    /// never dedupes and each family minted its own handle. The provider hands both families the
+    /// Two families that resolve to the same face embed it once (Builder-2:5), not once per family:
+    /// <c>AddEmbeddedFont</c> does not dedupe, and each family would mint its own handle. The provider hands both families the
     /// same bytes, so the two programs are content-equal and share one embedded font.
     /// </summary>
     [Fact]
@@ -245,8 +244,8 @@ public class FontResolutionTests
         var d = BuilderDiagnostics.LastError;
         Assert.NotNull(d);
         Assert.Equal(BuilderDiagnosticKind.FontNotResolved, d.Kind);
-        // The message must say which code point, not just "a font was missing" — this used to be
-        // completely silent, so '????' on the page was indistinguishable from an empty document.
+        // The message must say which code point, not just "a font was missing" — silent, '????' on
+        // the page would be indistinguishable from an empty document.
         Assert.Contains("U+05E9", d.Detail, StringComparison.Ordinal);
     }
 

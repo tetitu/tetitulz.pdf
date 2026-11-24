@@ -17,23 +17,20 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// The inline-image (<c>BI … ID … EI</c>) path, against its image-XObject twin and against the SVG
 /// export.
 ///
-/// <para>Three duplications, found together because they sit on one code path.</para>
+/// <para>Three shared readings on one code path.</para>
 /// <list type="number">
-///   <item><b>The raster inline path was the one image-sample decode in either renderer that
-///     bypassed <c>ContentStreamInterpreter.DecodeImageStream</c></b>, calling
-///     <c>PdfStream.GetDecodedData()</c> directly — so it alone lost the shared
-///     <c>/Columns</c>-from-<c>/Width</c> repair. <b>Live defect.</b></item>
-///   <item><b><c>ContentStreamParser</c> had three copies of its inline value switch</b> and the
-///     inline-image one had no case for a dictionary, so <c>/DP</c> was stored as
-///     <c>PdfNull</c> and its keys leaked into the image dictionary. <b>Live defect</b>, and the
-///     one that made the fixture for (1) misleading until it was fixed — see
+///   <item><b>The raster inline path decodes through
+///     <c>ContentStreamInterpreter.DecodeImageStream</c></b>, like every other image-sample decode;
+///     calling <c>PdfStream.GetDecodedData()</c> directly would lose the shared
+///     <c>/Columns</c>-from-<c>/Width</c> repair.</item>
+///   <item><b><c>ContentStreamParser</c> has one value switch</b>, with a case for a dictionary, so
+///     <c>/DP</c> is read as one; with no case, it would be stored as <c>PdfNull</c> and its keys
+///     leak into the image dictionary, which would make the fixture for (1) misleading — see
 ///     <c>ContentStreamParserTests</c>.</item>
-///   <item><b>The SVG writer carried a private copy of the §8.9.7 Table 93 abbreviation
-///     expander</b> that never renamed <c>/D</c> to <c>/Decode</c>. <b>Latent, not live</b>: every
-///     SVG image-decode read is written <c>Decode ?? D</c> where the raster ones read
-///     <c>Decode</c> alone, so each consumer compensated for what the expander dropped. Removing
-///     the copy is still right — it was one new call site from being live — but the tests below
-///     that turn red when the rename is removed are the <i>raster</i> ones.</item>
+///   <item><b>One §8.9.7 Table 93 abbreviation expander</b>, which renames <c>/D</c> to
+///     <c>/Decode</c>. Every SVG image-decode read is written <c>Decode ?? D</c> where the raster
+///     ones read <c>Decode</c> alone, so the tests below that turn red when the rename is removed
+///     are the <i>raster</i> ones.</item>
 /// </list>
 ///
 /// <para>Every assertion here reads a <b>decoded sample value</b>, because none of these changes
@@ -91,7 +88,7 @@ public sealed class InlineImageParityTests
 
     /// <summary>
     /// The same samples, colour space and decode array, drawn once as an inline image and once as
-    /// an image XObject. The XObject path is the reference: it has always gone through
+    /// an image XObject. The XObject path is the reference: it goes through
     /// <c>DecodeImageStream</c>.
     /// </summary>
     [Theory]
@@ -117,7 +114,7 @@ public sealed class InlineImageParityTests
     }
 
     // ====================================================================
-    //  /Columns  —  the shared repair the raster inline path used to skip
+    //  /Columns  —  the shared repair the raster inline path takes too
     // ====================================================================
 
     /// <summary>

@@ -12,11 +12,10 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering
 {
     /// <summary>
-    /// Regression test for filling TEXT glyphs with a shading PATTERN
-    /// (`/Pattern cs /P scn … Tj`). Pre-fix, the glyph-draw paths ignored
-    /// `FillIsPattern` and painted the stale solid `FillColor` (black), so
-    /// gradient-filled headline text (e.g. the "SUPREME" banner on Cal
-    /// credit-card statements) rendered solid black.
+    /// Filling TEXT glyphs with a shading PATTERN (`/Pattern cs /P scn … Tj`). Glyph-draw paths
+    /// ignoring `FillIsPattern` would paint the stale solid `FillColor` (black), so gradient-filled
+    /// headline text (e.g. the "SUPREME" banner on a card issuer's statements) would render solid
+    /// black.
     /// </summary>
     public sealed class PatternTextFillTests
     {
@@ -80,7 +79,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering
             // The gradient must show both ends — proving the pattern was applied per-pixel.
             Assert.True(reddish > 20, $"expected red (left) gradient pixels, got {reddish}");
             Assert.True(bluish > 20, $"expected blue (right) gradient pixels, got {bluish}");
-            // Pre-fix the whole glyph was solid black; require the gradient dominates.
+            // Ignoring the pattern, the whole glyph would be solid black; require the gradient dominates.
             Assert.True(blackish < glyphPixels / 4,
                 $"too many solid-black glyph pixels ({blackish}/{glyphPixels}); pattern not applied?");
         }

@@ -415,12 +415,11 @@ namespace Tetitulz.Pdf.Base.Tests
         /// <c>PdfOperations.ConvertSvgToPdf(string)</c> takes a FILE PATH, and must produce what the
         /// direct converter produces from the same markup.
         ///
-        /// <para><b>This test used to pass markup to the path parameter</b>, which is how the facade
-        /// shipped never opening a file at all: <c>SvgToPdfConverter</c> has both a
-        /// <c>Convert(Stream)</c> and a <c>Convert(string svgXml)</c>, so the path bound to the
-        /// markup overload and the parser was handed the path text. Asserting "the facade matches
-        /// the direct converter" was true and still missed it, because both sides were being given
-        /// the same markup — the test never exercised the thing the parameter is named for.</para>
+        /// <para><b>A file on disk, not markup.</b> <c>SvgToPdfConverter</c> has both a
+        /// <c>Convert(Stream)</c> and a <c>Convert(string svgXml)</c>, so a path bound to the markup
+        /// overload would hand the parser the path text and never open a file. Passing markup to the
+        /// path parameter would let "the facade matches the direct converter" pass while missing that,
+        /// because both sides would be given the same markup.</para>
         /// </summary>
         public void PdfOperations_ConvertSvgToPdf_ReadsTheFileAtThePathItIsGiven()
         {

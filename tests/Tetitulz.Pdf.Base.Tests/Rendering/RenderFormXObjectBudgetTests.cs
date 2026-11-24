@@ -25,17 +25,15 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// performs 2^(N-1) invocations — 18 one-line forms, a few kilobytes of PDF, is 131 072 renders of a
 /// content stream, each with its own graphics-state push, resource resolve and stream decode.</para>
 ///
-/// <para><b>This is a known attack in this repository, closed on the other side of the codebase.</b>
-/// <c>PdfLimits.MaxFormXObjectInvocationsPerPage</c> exists for exactly it, its doc comment describes
-/// exactly this doubling chain, and <c>PdfStructuredTextExtractor</c> charges against it. Until this
-/// suite was written that constant had <b>one</b> production reference in the whole tree, and neither
-/// renderer was it — so the identical document that extraction refuses in milliseconds was rendered
-/// to completion by both renderers.</para>
+/// <para><b>One budget for every walk of forms.</b>
+/// <c>PdfLimits.MaxFormXObjectInvocationsPerPage</c> exists for exactly this doubling chain, and
+/// <c>PdfStructuredTextExtractor</c> and both renderers charge against it — so a document that
+/// extraction refuses in milliseconds is not rendered to completion.</para>
 ///
 /// <para><b>Why a depth cap cannot substitute.</b> Depth bounds one branch; the cost here is the
 /// number of branches. That is the distinction <c>PdfLimits</c>' own remarks draw between
 /// <c>MaxFormXObjectDepth</c> ("bounds depth and never total work") and this budget, and it is why
-/// the fix is an aggregate counter rather than a deeper guard.</para>
+/// the guard is an aggregate counter rather than a deeper cap.</para>
 /// </remarks>
 public class RenderFormXObjectBudgetTests
 {

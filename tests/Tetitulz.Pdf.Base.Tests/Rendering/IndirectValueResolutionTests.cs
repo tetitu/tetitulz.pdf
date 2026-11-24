@@ -25,10 +25,10 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// "this feature is missing on some files" defect.
 /// </para>
 /// <para>
-/// These pin the sites found on 2026-08-12, where one reader resolved and its counterpart did not:
-/// <c>PdfLinkExtractor</c> resolved a link's <c>/URI</c> while the SVG renderer and
-/// <c>PdfActionRunner</c> read it raw. The fixtures write the value indirectly <b>and</b> assert the
-/// direct form still works, so a fix cannot pass by breaking the ordinary case.
+/// These pin sites where one reader and its counterpart must agree: a link's <c>/URI</c> read by
+/// <c>PdfLinkExtractor</c>, the SVG renderer and <c>PdfActionRunner</c>. The fixtures write the
+/// value indirectly <b>and</b> assert the direct form works, so resolution cannot pass by breaking
+/// the ordinary case.
 /// </para>
 /// </remarks>
 public class IndirectValueResolutionTests

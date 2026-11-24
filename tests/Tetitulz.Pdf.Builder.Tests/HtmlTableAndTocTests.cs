@@ -13,20 +13,19 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// Three defects in the HTML export's table and TOC output (Builder-1:7).
+/// Three defects the HTML export's table and TOC output guards against (Builder-1:7).
 ///
 /// <list type="number">
-/// <item>A cell's paragraphs were emitted by <c>RenderInline</c> back to back — no <c>&lt;p&gt;</c>,
-/// no separation, no direction or alignment — so two paragraphs in a cell became one run of text
-/// aligned the default way.</item>
-/// <item>A vertically merged cell (<c>VerticalMerge.Restart</c>) dropped its <c>Continue</c> rows
-/// but wrote no <c>rowspan</c>, leaving every merged row one cell short and the table misaligned.</item>
-/// <item>The contents list indented each level with physical <c>margin-left</c>, which puts the
-/// indentation on the wrong side of an RTL document; a logical <c>margin-inline-start</c> follows
-/// the direction.</item>
+/// <item>A cell's paragraphs emitted back to back — no <c>&lt;p&gt;</c>, no separation, no direction
+/// or alignment — would make two paragraphs in a cell one run of text aligned the default way.</item>
+/// <item>A vertically merged cell (<c>VerticalMerge.Restart</c>) that drops its <c>Continue</c> rows
+/// must write a <c>rowspan</c>, or every merged row is one cell short and the table misaligned.</item>
+/// <item>The contents list indents each level with a logical <c>margin-inline-start</c>, which
+/// follows the direction; a physical <c>margin-left</c> would put the indentation on the wrong side
+/// of an RTL document.</item>
 /// </list>
 /// Asserted on the parsed markup, not on substrings of a flat string, so run-together text or a
-/// missing span cannot pass (2026-10-23).
+/// missing span cannot pass.
 /// </summary>
 public class HtmlTableAndTocTests
 {

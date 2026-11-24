@@ -14,21 +14,15 @@ namespace Tetitulz.Pdf.Base.Tests;
 /// the PUA at <c>0xF000 + code</c> — must subset like any other.
 /// </summary>
 /// <remarks>
-/// <b>It subsetted to <c>.notdef</c> alone.</b> The subtable scoring gave <c>(3,0)</c> nothing, so
-/// the <c>(1,0)</c> format-0 table these fonts also carry won at priority 1 and the font was
-/// refused by the format gate. Measured before the fix: <c>symbol.ttf</c> and <c>wingding.ttf</c>,
-/// 192 glyphs in and 1 out.
+/// <b>Two parts, both needed.</b> The subtable scoring gives <c>(3,0)</c> a score — otherwise the
+/// <c>(1,0)</c> format-0 table these fonts also carry wins and the font is refused by the format
+/// gate, leaving a subset of <c>.notdef</c> alone (<c>symbol.ttf</c> and <c>wingding.ttf</c>, 192
+/// glyphs in and 1 out) — and the lookup folds U+0041 to 0xF041, since scoring <c>(3,0)</c> alone
+/// would ask for U+0041 in a table keyed at 0xF041.
 ///
-/// <para><b>The backlog row named the wrong gate, and that matters for the fix.</b> It said the
-/// refusal message was "no Windows or Unicode subtable"; the message these fonts actually got was
-/// "the font's only Unicode cmap is format 0". Scoring <c>(3,0)</c> alone would therefore have
-/// changed nothing visible except the wording — the lookup still asks for U+0041 in a table keyed
-/// at 0xF041 — which is why the fold is part of the same change rather than a follow-up.</para>
-///
-/// <para><b>No format-0 reader was needed, contrary to the row.</b> Measured on the shipping fonts:
-/// symbol, wingdings and marlett all carry a <c>(3,0)</c> <b>format 4</b> table (starting at
-/// 0xF020, 0xF020 and 0xF030). The format-0 table is the one that was winning, not the one that was
-/// needed.</para>
+/// <para><b>No format-0 reader is needed.</b> Measured on the shipping fonts: symbol, wingdings and
+/// marlett all carry a <c>(3,0)</c> <b>format 4</b> table (starting at 0xF020, 0xF020 and 0xF030).
+/// The format-0 table is the one that would win, not the one that is needed.</para>
 /// </remarks>
 public class SymbolicFontSubsetTests
 {

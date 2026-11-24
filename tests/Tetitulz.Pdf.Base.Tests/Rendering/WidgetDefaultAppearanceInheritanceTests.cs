@@ -18,20 +18,18 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// the document-wide <c>/AcroForm /DA</c>.
 /// </summary>
 /// <remarks>
-/// <para><b>It was read off the widget alone, which is the one place a producer does not put it.</b>
-/// <c>/DA</c> normally sits on the <i>field</i>, or once on <c>/AcroForm</c> for the whole document.
-/// So the string came back null on a conformant file, <c>ParseDefaultAppearance(null)</c> yielded
-/// size 0 and black, and every <c>/AP</c>-less field drew at the rect-height fallback size in black
-/// whatever the file asked for.</para>
+/// <para><b>The widget alone is the one place a producer does not put it.</b> <c>/DA</c> normally
+/// sits on the <i>field</i>, or once on <c>/AcroForm</c> for the whole document. Read off the widget
+/// alone, the string would come back null on a conformant file, <c>ParseDefaultAppearance(null)</c>
+/// yield size 0 and black, and every <c>/AP</c>-less field draw at the rect-height fallback size in
+/// black whatever the file asked for.</para>
 ///
-/// <para><b>Three inheritable keys were treated three ways inside one 30-line function</b>:
-/// <c>/FT</c> climbed <c>/Parent</c>, <c>/V</c> climbed <c>/Parent</c>, and <c>/DA</c> — four lines
-/// after the first and eleven before the second — did not. Nothing there looked like a missing
-/// case, which is why it survived the rounds that fixed the other two.</para>
+/// <para><b>Three inheritable keys, one rule</b>: <c>/FT</c>, <c>/V</c> and <c>/DA</c> all climb
+/// <c>/Parent</c>. One of the three left out would not look like a missing case.</para>
 ///
 /// <para><b>The assertions are on decoded pixels, and colour is what makes them falsifiable.</b>
-/// A wrong <c>/DA</c> still paints text, so any "did it draw something" check passes with the fix
-/// deleted. Red ink appears only if the file's own <c>/DA</c> was found; black-only means the
+/// A wrong <c>/DA</c> still paints text, so any "did it draw something" check passes with the
+/// inheritance deleted. Red ink appears only if the file's own <c>/DA</c> was found; black-only means the
 /// fallback ran.</para>
 /// </remarks>
 public class WidgetDefaultAppearanceInheritanceTests

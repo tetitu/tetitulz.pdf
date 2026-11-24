@@ -17,21 +17,21 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// §11.6.4's graphics-state soft mask applies to <b>every</b> painting operation, an inline image
 /// (<c>BI … ID … EI</c>) included — in both renderers.
 ///
-/// <para><b>The divergence this file was written for.</b> <c>SvgContentWriter.RenderImageXObject</c>
-/// emits <c>mask="url(#…)"</c> from <c>_gs.SvgMaskId</c> on the element it draws; <c>OpBi</c>, one
-/// file away, emitted the <c>&lt;image&gt;</c> with no such attribute. The raster path honours the
-/// mask on both routes, because both reach <c>PdfRenderContext.DrawBitmap</c> and it goes through
-/// <c>DrawWithOptionalSoftMask</c>. So one document rendered with the image hidden and exported
-/// with it painted in full — the "one renderer fixed, the other silently disagreeing" class.</para>
+/// <para><b>The divergence this file guards.</b> <c>SvgContentWriter.RenderImageXObject</c> emits
+/// <c>mask="url(#…)"</c> from <c>_gs.SvgMaskId</c> on the element it draws, and <c>OpBi</c>, one file
+/// away, must too. The raster path honours the mask on both routes, because both reach
+/// <c>PdfRenderContext.DrawBitmap</c> and it goes through <c>DrawWithOptionalSoftMask</c>. Without
+/// the attribute one document would render with the image hidden and export with it painted in
+/// full — the "one renderer fixed, the other silently disagreeing" class.</para>
 ///
 /// <para><b>Not to be confused with an image's own <c>/SMask</c> entry</b>, which is a different
-/// feature that both routes have always honoured. <see cref="ImageSoftMaskParityTests"/> covers the
-/// XObject route of the same graphics-state mask; this covers the inline one, and asserts the two
-/// routes against each other so neither can be fixed alone again.</para>
+/// feature that both routes honour. <see cref="ImageSoftMaskParityTests"/> covers the XObject route
+/// of the same graphics-state mask; this covers the inline one, and asserts the two routes against
+/// each other so neither can change alone.</para>
 ///
 /// <para><b>What is asserted.</b> The raster half reads a decoded pixel off the rendered page. The
 /// SVG half parses the export as an <c>XDocument</c>, decodes the embedded PNG to prove the image
-/// samples are unchanged by the fix, and then reads the mask reference off the element that carries
+/// samples are unchanged by the mask, and then reads the mask reference off the element that carries
 /// the placement matrix — resolving it to a <c>&lt;mask&gt;</c> the document actually defines, so a
 /// dangling id cannot pass. The control (no <c>gs</c>) must stay <b>unmasked</b> in both, which is
 /// what stops the vacuous "always multiply by something" fix.</para>
@@ -80,7 +80,7 @@ public sealed class InlineImageSoftMaskParityTests
     /// <summary>
     /// The export must carry the mask on the element it places the inline image with, and that
     /// reference must resolve to a <c>&lt;mask&gt;</c> the document defines. The decoded PNG is
-    /// asserted alongside it: the fix must mask the image, not rewrite its samples.
+    /// asserted alongside it: the image is masked, not its samples rewritten.
     /// </summary>
     [Fact]
     public void SvgExport_AppliesTheExtGStateSoftMaskToAnInlineImage()
@@ -93,7 +93,7 @@ public sealed class InlineImageSoftMaskParityTests
     }
 
     /// <summary>
-    /// The control, and the reason the fix cannot be "always emit a mask": with no <c>gs</c> in the
+    /// The control, and the reason the rule cannot be "always emit a mask": with no <c>gs</c> in the
     /// content stream there is no soft mask, so the placed element must carry no <c>mask</c>
     /// attribute and the export must define no <c>&lt;mask&gt;</c> at all.
     /// </summary>
@@ -135,8 +135,8 @@ public sealed class InlineImageSoftMaskParityTests
 
     /// <summary>
     /// The same image, the same soft mask, drawn once inline and once as an image XObject. The
-    /// XObject route is the reference — it has always emitted the mask — so this is what stops the
-    /// two image routes drifting apart again inside the SVG writer.
+    /// XObject route is the reference — it emits the mask — so this is what stops the two image
+    /// routes drifting apart inside the SVG writer.
     ///
     /// <para>The two routes do not emit the same <i>element</i>: an XObject is de-duplicated into
     /// <c>&lt;defs&gt;&lt;image&gt;</c> plus a <c>&lt;use&gt;</c>, an inline image is a single

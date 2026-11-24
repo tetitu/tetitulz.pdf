@@ -39,9 +39,8 @@ public class OptionalContentAllOnTests
     }
 
     /// <summary>
-    /// An annotation's <c>/OC</c> (§12.5.2) by the same rule. The raster loop had its own copy of the
-    /// empty-set shortcut, so once the shared method was fixed the two renderers would have
-    /// disagreed on this page; the SVG loop never had one.
+    /// An annotation's <c>/OC</c> (§12.5.2) by the same rule. An empty-set shortcut of its own in
+    /// either annotation loop would make the two renderers disagree on this page.
     /// </summary>
     [Theory]
     [InlineData("<< /Type /OCMD /OCGs [5 0 R] /P /AllOff >>", false)]

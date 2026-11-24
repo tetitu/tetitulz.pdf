@@ -165,9 +165,8 @@ public sealed class JpxDownsamplingTests : IDisposable
     /// <summary>
     /// The colour key (§8.9.6.4) of a reduced decode is evaluated at the decoded geometry: an
     /// Indexed image whose right half is index 1, keyed out by <c>/Mask [1 1]</c>, drawn a
-    /// quarter size, shows the page there — the key used to be handed the XObject's 512x512 and
-    /// declined the 256x256 bitmap, so the keyed half painted blue (the review of 2026-09-26,
-    /// row 17). The control is the full decode.
+    /// quarter size, shows the page there — handed the XObject's 512x512, the key would decline the
+    /// 256x256 bitmap and the keyed half paint blue. The control is the full decode.
     /// </summary>
     [Fact]
     public void WhenOn_AColourKeyOnAnIndexedJpx_IsEvaluatedAtTheReducedGeometry()

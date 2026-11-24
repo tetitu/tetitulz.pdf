@@ -13,11 +13,10 @@ using Tetitulz.Pdf.TestHelpers;
 namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
-/// Review-fix regression: PdfMetadataWriter.EnsureSeekable previously only rewound
-/// MemoryStream inputs. A seekable non-MemoryStream input (e.g. a FileStream)
-/// positioned mid-way was CopyTo'd from its current offset, truncating the base
-/// document and corrupting every incremental-update writer that flows through it
-/// (metadata, named-dest, bookmark, link). The fix rewinds ANY seekable stream.
+/// PdfMetadataWriter.EnsureSeekable rewinds ANY seekable stream, not only a MemoryStream: a
+/// seekable non-MemoryStream input (e.g. a FileStream) positioned mid-way, CopyTo'd from its
+/// current offset, would truncate the base document and corrupt every incremental-update writer
+/// that flows through it (metadata, named-dest, bookmark, link).
 /// </summary>
 public class ReviewFixOps_EnsureSeekableTests
 {

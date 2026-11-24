@@ -113,7 +113,7 @@ public class ShadingPatternIntersectionTests
         // Asserted inline rather than through a helper: NoUnfalsifiableAssertionsTests reads method
         // BODIES, so extracting the Assert into a helper leaves this one looking assertion-free and
         // fails the guard. That is the guard being right — a body with no Assert is exactly the
-        // shape it exists to ban — so the fix is to inline, never to exempt.
+        // shape it exists to ban — so the answer is to inline, never to exempt.
         SKColor start = moved.GetPixel(36, 36), before = moved.GetPixel(12, 36);
         Assert.True(start.Red > 200 && start.Blue < 60,
             $"x=36 after a +36 shift is the gradient start; expected red, got {start}");

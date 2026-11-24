@@ -52,7 +52,7 @@ public class RenderBudgetChargeParityTests
 
     /// <summary>
     /// Both renderers charge a soft-mask group build, and both refuse the second one under a budget
-    /// of 1. Before the fix the SVG writer charged nothing here and completed silently.
+    /// of 1; uncharged, the SVG writer would complete silently.
     /// </summary>
     [Fact]
     public void SoftMaskGroupBuild_IsChargedByBothRenderers()

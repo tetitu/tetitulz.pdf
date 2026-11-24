@@ -14,24 +14,22 @@ namespace Tetitulz.Pdf.Base.Tests;
 /// <c>0xF000 + code</c>, and the embedder must find its glyphs there.
 /// </summary>
 /// <remarks>
-/// <b>It did not, and the result was silent.</b> <c>FillCmap</c> looked up the plain code point,
-/// found nothing, and every character fell back to <c>.notdef</c>'s advance — a valid PDF in which
-/// EVERY glyph of a symbol font is laid out at one wrong width. Measured on the shipping Windows
-/// fonts before the fix: <c>symbol.ttf</c> returned a flat 600 and <c>wingding.ttf</c> a flat 500
-/// for every code point, where their own <c>hmtx</c> gives 722 / 631 / 549 / 686 and
-/// 587 / 1090 / 747 / 578.
+/// <b>Silent otherwise.</b> Looking up the plain code point would find nothing, and every
+/// character fall back to <c>.notdef</c>'s advance — a valid PDF in which EVERY glyph of a symbol
+/// font is laid out at one wrong width: on the shipping Windows fonts, a flat 600 for
+/// <c>symbol.ttf</c> and a flat 500 for <c>wingding.ttf</c>, where their own <c>hmtx</c> gives
+/// 722 / 631 / 549 / 686 and 587 / 1090 / 747 / 578.
 ///
-/// <para><b>The read side already had the rule</b>, comment and all, in
-/// <c>Core.Fonts.PdfTrueTypeFont</c> — so the two halves of this library disagreed about which
-/// glyph a byte selects in a symbol font. The fix is applied at the embedder's call site rather
-/// than inside <c>TrueTypeFontProgram.TryGetGlyph</c>, because <c>SystemFontResolver.Covers</c>
-/// reads that method to ask whether a font genuinely covers a code point, and folding there would
-/// make every symbol font claim coverage of all of Latin-1.</para>
+/// <para><b>The read side has the same rule</b>, in <c>Core.Fonts.PdfTrueTypeFont</c>, so the
+/// two halves of this library agree about which glyph a byte selects in a symbol font. The fold
+/// is at the embedder's call site rather than inside <c>TrueTypeFontProgram.TryGetGlyph</c>,
+/// because <c>SystemFontResolver.Covers</c> reads that method to ask whether a font genuinely
+/// covers a code point, and folding there would make every symbol font claim coverage of all of
+/// Latin-1.</para>
 ///
-/// <para><b>Nothing could express this fixture before.</b> <c>MinimalTrueType</c> could build a
-/// <c>(3, 0)</c> font, but mapped the literal characters — where the plain lookup succeeds and the
-/// defect does not reproduce. <c>BuildSymbolic</c> is the missing shape, and its absence is why
-/// this stayed green.</para>
+/// <para><b>The fixture's shape matters.</b> A <c>(3, 0)</c> font mapping the literal characters
+/// lets the plain lookup succeed, so the defect does not reproduce; <c>BuildSymbolic</c> keys the
+/// glyphs at <c>0xF000 + code</c>.</para>
 /// </remarks>
 public class SymbolicFontWidthTests
 {

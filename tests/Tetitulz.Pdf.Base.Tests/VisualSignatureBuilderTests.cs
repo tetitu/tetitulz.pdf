@@ -13,7 +13,7 @@ namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
 /// Unit tests for <see cref="VisualSignatureBuilder"/> — specifically the JPEG dimension
-/// parser which previously mishandled standalone markers and 0xFF fill bytes.
+/// parser's handling of standalone markers and 0xFF fill bytes.
 /// </summary>
 public class VisualSignatureBuilderTests
 {
@@ -116,8 +116,8 @@ public class VisualSignatureBuilderTests
     public void GetJpegDimensions_RstMarkerBeforeSof_ReturnsDefaults()
     {
         // Pathological: SOI + RST0 (no length) + EOI — no SOF
-        // Previously the code would read the next 2 bytes after RST0 as a segment length,
-        // treating part of EOI as offset data, potentially reading out of bounds.
+        // Reading the next 2 bytes after RST0 as a segment length would treat part of
+        // EOI as offset data, potentially reading out of bounds.
         byte[] jpeg =
         {
             0xFF, 0xD8,  // SOI

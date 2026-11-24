@@ -12,11 +12,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// Tests for two image-masking gaps:
-///   • <c>/Mask</c> as a separate 1-bit STENCIL image stream (PDF §8.9.6.3) — previously
-///     ignored, so the masked-out areas rendered as an opaque box instead of transparent.
+/// Tests for two image-masking cases:
+///   • <c>/Mask</c> as a separate 1-bit STENCIL image stream (PDF §8.9.6.3) — ignored, the
+///     masked-out areas would render as an opaque box instead of transparent.
 ///   • <c>/SMask</c> with a <c>/Matte</c> backdrop (PDF §11.6.5.2) — the pre-blended base
-///     samples were not un-premultiplied, leaving a matte-colour halo.
+///     samples are un-premultiplied, or a matte-colour halo is left.
 /// </summary>
 public class ImageStencilMaskMatteTests
 {
@@ -100,7 +100,7 @@ public class ImageStencilMaskMatteTests
         Assert.NotNull(bmp);
         SKColor c = bmp.GetPixel(bmp.Width / 2, bmp.Height / 2);
 
-        // With the /Matte fix the recovered red composites to R≈255; the pre-fix value is ~191.
+        // With /Matte applied the recovered red composites to R≈255; without it, ~191.
         Assert.True(c.Red > 220, $"matte-recovered red too dark (R={c.Red}); /Matte not applied?");
         Assert.True(c.Green < 170 && c.Blue < 170, $"expected a red-dominant pixel, got {c}");
     }

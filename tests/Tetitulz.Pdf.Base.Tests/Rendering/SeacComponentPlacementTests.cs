@@ -21,8 +21,8 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// The expected extents below were read from Skia 2 through an independent tool, rendering a PFA built with
 /// exactly these charstrings at 1000 px per em: the accent's first point lands at
 /// adx − asb + composite sbx + accent sbx, the base at its own sidebearing, and the advance is the
-/// composite's. Before the fix the accent's own <c>hsbw</c> reset the current point to (asb, 0) — every
-/// accent drawn on the baseline at the base's origin — and the last component's width became the
+/// composite's. Letting the accent's own <c>hsbw</c> reset the current point to (asb, 0) would draw every
+/// accent on the baseline at the base's origin, and make the last component's width the
 /// composite's.</para>
 ///
 /// <para><b>Type 2.</b> An <c>endchar</c> seac's components are charstrings of their own: a width
@@ -121,7 +121,7 @@ public class SeacComponentPlacementTests
 
     /// <summary>
     /// The composite's <c>hsbw</c> width is the glyph's advance — Skia reports 900 — not the
-    /// base's 800 nor the accent's 400, which each component's own <c>hsbw</c> used to write last.
+    /// base's 800 nor the accent's 400, which each component's own <c>hsbw</c> would otherwise write last.
     /// </summary>
     [Fact]
     public void Type1SeacKeepsTheCompositesAdvance()

@@ -8,8 +8,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// <see cref="BoxStart.IndexOfEnd"/> and <see cref="BoxEnd.IndexOfStart"/> (2026-10-19): the one walk every reader of a
-/// list of blocks finds a box's other edge by — the boxes nested inside counted, both ways — which had three copies.
+/// <see cref="BoxStart.IndexOfEnd"/> and <see cref="BoxEnd.IndexOfStart"/>: the one walk every reader of a
+/// list of blocks finds a box's other edge by — the boxes nested inside counted, both ways.
 /// </summary>
 public class BoxMatchingTests
 {

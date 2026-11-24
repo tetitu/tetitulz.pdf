@@ -126,9 +126,8 @@ public sealed class NoHardcodedPathsTests
     ///
     /// <para><b>Why the sibling regex could not find these.</b> It matches the condition it was
     /// written for — an inline <c>File.Exists</c> — so wrapping the same question in a helper hides
-    /// it completely. <c>BuilderPathTests.BuilderPath_Hebrew_EmbedsCompositeFont</c> and
-    /// <c>RtlExportTests.Pdf_HebrewRtl_EmbedsCompositeFont</c> both did exactly that, and both were
-    /// green on every machine that had no Hebrew font. This check does not look at the condition's
+    /// it completely — a test doing that is green on every machine that lacks what it needs (a Hebrew
+    /// font, say). This check does not look at the condition's
     /// <i>subject</i> at all; it looks at where the <c>return</c> is.</para>
     ///
     /// <para><b>What it deliberately does not flag,</b> because these are not the defect:
@@ -139,7 +138,7 @@ public sealed class NoHardcodedPathsTests
     /// method's own statements are considered. And the condition must contain a <b>call</b>: a
     /// predicate the test asks, rather than an ordinary <c>if</c> over data it already has.</para>
     ///
-    /// <para>The fix is never to delete the condition. It is to move it into an attribute that
+    /// <para>The remedy is never to delete the condition. It is to move it into an attribute that
     /// reports <b>Skipped</b> — <see cref="CorpusFactAttribute"/>, <see cref="SystemFontFactAttribute"/>,
     /// or a per-project one modelled on them — or to remove the host dependency altogether by
     /// injecting the fixture the test needs.</para>

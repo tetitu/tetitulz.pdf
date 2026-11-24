@@ -23,10 +23,9 @@ namespace Tetitulz.Pdf.Base.Tests.TestInfrastructure;
 /// no Hebrew font cannot observe the behaviour at all (CLAUDE.md, banned pattern 3).</para>
 ///
 /// <para><b>It scans through <see cref="SystemFontResolver"/> rather than walking the font
-/// directories itself, and it did the latter until 2026-09-03 — making it the fifth copy of the
-/// coverage search</b> that the resolver's own doc comment was written to replace. Test
-/// infrastructure is exactly where such a copy hides: no production code path reaches it, so the
-/// duplication audits that found the other four never listed it. Its options spell out the two
+/// directories itself</b>, which would be another copy of the coverage search the resolver
+/// replaces. Test infrastructure is exactly where such a copy hides: no production code path
+/// reaches it, so a duplication audit over production code never lists it. Its options spell out the two
 /// things it wants that the resolver's defaults do not give: <c>glyf</c> outlines only, and no
 /// budget small enough to miss a font a real caller would have found.</para>
 /// </summary>

@@ -17,13 +17,13 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <b>both</b> renderers (§8.9.6.3 plus this library's DoS caps).
 /// </summary>
 /// <remarks>
-/// <para><b>The defect.</b> The raster path has always refused a mask larger than
-/// <c>PdfLimits.MaxImageDimension</c> / <c>MaxImagePixelArea</c>; the SVG exporter carried only the
-/// non-positive test, so it walked its sampling loop with the mask's declared stride. For
+/// <para><b>The defect.</b> Both renderers refuse a mask larger than
+/// <c>PdfLimits.MaxImageDimension</c> / <c>MaxImagePixelArea</c>. With only a non-positive test, an
+/// exporter would walk its sampling loop with the mask's declared stride: for
 /// <c>/Width 200000 /Height 1</c> that is a stride of 25 000, every base row maps to mask row 0, and
 /// with <c>/Decode [1 0]</c> reversing the sense every byte past the decoded data reads as bit 0 —
-/// so the whole image went to alpha 0. <b>The same file rendered fully opaque and exported fully
-/// transparent, with no diagnostic on either side.</b></para>
+/// so the whole image would go to alpha 0. <b>The same file would render fully opaque and export
+/// fully transparent, with no diagnostic on either side.</b></para>
 /// <para><b>Why the control matters more than usual here.</b> "The image is still opaque" is also
 /// what an exporter that had stopped applying masks altogether produces, so the second case masks
 /// with a mask that <i>is</i> within the limits and requires both renderers to honour it. Pixels are

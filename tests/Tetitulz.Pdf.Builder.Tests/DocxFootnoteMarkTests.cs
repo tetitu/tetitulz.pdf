@@ -19,9 +19,8 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// so the dagger a caller asked for is the dagger Word shows.
 /// </summary>
 /// <remarks>
-/// <para><b>The mark used to be dropped and reported</b>, on the grounds that Word numbers its own
-/// notes and a custom mark "needs a style this exporter does not write". It needs no style:
-/// §17.11.14 gives <c>w:footnoteReference</c> a <c>w:customMarkFollows</c> attribute, and when it is
+/// <para><b>A custom mark needs no style.</b> §17.11.14 gives <c>w:footnoteReference</c> a
+/// <c>w:customMarkFollows</c> attribute, and when it is
 /// set the run's following text IS the mark, in the body and in the note alike. That is how Word
 /// itself writes a note marked with a symbol.</para>
 ///

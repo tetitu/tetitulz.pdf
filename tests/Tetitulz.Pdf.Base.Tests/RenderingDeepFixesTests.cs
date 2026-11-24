@@ -58,10 +58,10 @@ public sealed class RenderingDeepFixesTests
     public void MeshShading_Type4_StripFlag_DrawsTheSecondTriangle()
     {
         // 4 vertices: 3 with flag 0 (initial triangle) then 1 with flag 1 (strip).
-        // The fix must read flag from the *first* vertex of each triangle and reuse
-        // (b,c) of the previous triangle for flag 1 — the previous code collapsed
-        // both flag 1 and flag 2 onto the flag-0 layout, so the fourth vertex started a
-        // triangle that never got its remaining two vertices and nothing was drawn for it.
+        // The flag is read from the *first* vertex of each triangle, and (b,c) of the previous
+        // triangle reused for flag 1 — collapsing flags 1 and 2 onto the flag-0 layout would make
+        // the fourth vertex start a triangle that never gets its remaining two vertices, so
+        // nothing would be drawn for it.
         using var strip    = PixelAssert.Render(BuildPdfWithType4Mesh(includeStrip: true,  includeFan: false));
         using var flagZero = PixelAssert.Render(BuildPdfWithType4Mesh(includeStrip: false, includeFan: false));
 
@@ -156,7 +156,7 @@ public sealed class RenderingDeepFixesTests
         // Non-uniform CTM (3× X, 1× Y) — the circular shading must come out as an ellipse with
         // semi-axes 300 × 100 centred at user (600,200).  The two probes are the whole point:
         // 250 units along X is inside, 150 units along Y is outside.  A circle of either radius
-        // fails one of them, which is exactly what the pre-fix uniform scaling produced.
+        // fails one of them, which is exactly what uniform scaling would produce.
         using var bmp = PixelAssert.Render(BuildPdfWithRadialShading(ctm: "3 0 0 1 0 0"));
 
         SKColor centre = PixelAssert.At(bmp, 600f, 199f);
@@ -209,10 +209,9 @@ public sealed class RenderingDeepFixesTests
     }
 
     /// <summary>
-    /// <c>/I</c> defaults to <b>false</b>, and this used to emit the isolation wrapper anyway —
-    /// so every exported group was isolated, the same defect the raster renderer had. SVG's own
-    /// default for a group is non-isolated, so the fix is to emit the property only when asked.
-    /// The fixture below is the previous fixture: it never said <c>/I true</c>.
+    /// <c>/I</c> defaults to <b>false</b>, so emitting the isolation wrapper anyway would make every
+    /// exported group isolated. SVG's own default for a group is non-isolated, so the property is
+    /// emitted only when asked. The fixture below never says <c>/I true</c>.
     /// </summary>
     [Fact]
     public void Svg_NonIsolatedTransparencyGroup_OmitsIsolationWrapper()
@@ -407,17 +406,16 @@ public sealed class RenderingDeepFixesTests
     [Fact]
     public void FormXObject_WithOwnFont_DoesNotPolluteFontCacheOfPage()
     {
-        // Before the composite-key fix, FontCache was keyed by resource name only.
-        // If page /Resources had /F1 → Helvetica and the Form XObject had its own
-        // /Resources with /F1 → Times-Roman, the XObject's Tf /F1 operator would
-        // return the page's cached Helvetica instead of Times-Roman.
-        // The fix: MakeKey(resources, name) uses the resources dict's identity so
-        // both font entries coexist in the cache under distinct keys.
+        // FontCache keys by the resources as well as the name: keyed by resource name only, a
+        // page /Resources with /F1 → Helvetica and a Form XObject's own /Resources with
+        // /F1 → Times-Roman would make the XObject's Tf /F1 return the page's cached Helvetica.
+        // MakeKey(resources, name) uses the resources dict's identity so both font entries
+        // coexist in the cache under distinct keys.
         //
-        // Both documents below are identical except for the form's own /F1 BaseFont.  Under the
-        // old name-only key the form always drew whatever the page had cached — Helvetica — so
-        // the two renders came out pixel-identical.  A serif and a sans face cannot draw the same
-        // string the same way, so "the form band differs" IS the fix.
+        // Both documents below are identical except for the form's own /F1 BaseFont. Under a
+        // name-only key the form would draw whatever the page had cached — Helvetica — and the two
+        // renders would come out pixel-identical. A serif and a sans face cannot draw the same
+        // string the same way, so "the form band differs" IS the claim.
         using var serifForm = PixelAssert.Render(BuildPdfPageAndFormWithDifferentF1("Times-Roman"));
         using var sansForm  = PixelAssert.Render(BuildPdfPageAndFormWithDifferentF1("Helvetica"));
 
@@ -691,11 +689,10 @@ public sealed class RenderingDeepFixesTests
     [Fact]
     public void ApplyPdfEncodingOverride_Afii57xxxDifferences_BridgesViaUnicodeToUniXXXX()
     {
-        // Regression test for Bank Hapoalim Hebrew header text.
-        // The embedded CFF font uses "uni05D0" glyph names; the PDF /Encoding
-        // Differences uses "afii57664". Before the fix, the direct name lookup
-        // failed and the char-code→GID map was empty, rendering all Hebrew glyphs
-        // as .notdef (invisible).
+        // A bank statement's Hebrew header text: the embedded CFF font uses "uni05D0"
+        // glyph names, and the PDF /Encoding Differences uses "afii57664". A direct
+        // name lookup alone would fail and leave the char-code→GID map empty, rendering
+        // all Hebrew glyphs as .notdef (invisible).
 
         // CFF font: only two glyphs — .notdef (GID 0) and "uni05D0" (GID 1, alef).
         var glyphNameToGid = new Dictionary<string, int>

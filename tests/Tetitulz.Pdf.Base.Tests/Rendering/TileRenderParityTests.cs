@@ -47,9 +47,8 @@ public class TileRenderParityTests
 
     /// <summary>
     /// A tile covering the whole page must BE the whole page. This is the plain-vanilla case —
-    /// <c>/MediaBox [0 0 200 200]</c>, no <c>/UserUnit</c>, no box override — and it held before
-    /// this round; it is here so the interesting cases below have a control that pins the shared
-    /// geometry rather than only the four options.
+    /// <c>/MediaBox [0 0 200 200]</c>, no <c>/UserUnit</c>, no box override — here so the interesting
+    /// cases below have a control that pins the shared geometry rather than only the four options.
     /// </summary>
     [Fact]
     public void FullPageTile_IsPixelIdenticalToTheWholePageRender()
@@ -121,9 +120,9 @@ public class TileRenderParityTests
     }
 
     /// <summary>
-    /// The headline claim of this round, stated in the two calls a caller actually makes:
+    /// The headline claim, stated in the two calls a caller actually makes:
     /// <c>session.RenderPage(0)</c> and <c>session.RenderPageTile(0, …)</c> covering the same area
-    /// must agree. The session held the options all along and the tile entry point threw them away.
+    /// must agree — the tile entry point keeps the session's options.
     /// </summary>
     [Fact]
     public void SessionPageAndSessionFullPageTile_AgreeOnTheSessionsRenderOptions()

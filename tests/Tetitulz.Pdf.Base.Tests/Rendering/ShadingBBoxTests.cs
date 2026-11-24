@@ -13,7 +13,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
 /// A shading's /BBox (PDF §8.7.4.3) must limit the painted region of the <c>sh</c>
-/// operator. Pre-fix, <c>sh</c> flooded the entire clip and ignored /BBox.
+/// operator, not flood the entire clip.
 /// </summary>
 public class ShadingBBoxTests
 {

@@ -35,7 +35,7 @@ public sealed class Type3EncodingParityTests
 {
     /// <summary>
     /// <c>/Differences [65 /A 65 /B]</c> with CharProc <c>A</c> red and <c>B</c> blue: the glyph
-    /// must be blue. Before the fix the raster path drew red.
+    /// must be blue, not red.
     /// </summary>
     [Fact]
     public void DuplicateDifferencesCode_TheLastEntryWins_InTheRasterPath()

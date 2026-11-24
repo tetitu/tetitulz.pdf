@@ -91,7 +91,7 @@ public sealed class PageRotationTests
 
     /// <summary>
     /// <c>/Rotate 45</c> is malformed, so the page renders <b>upright</b> — same extent as
-    /// <c>/Rotate 0</c>. Before the fix it was drawn at a literal 45° in a 200×100 bitmap.
+    /// <c>/Rotate 0</c>, not drawn at a literal 45° in a 200×100 bitmap.
     /// </summary>
     [Fact]
     public void RotateFortyFive_RendersUprightRatherThanAtFortyFiveDegrees()

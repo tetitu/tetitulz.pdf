@@ -14,9 +14,9 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// on it (Builder-2:3).
 /// </summary>
 /// <remarks>
-/// <c>BoxRoomOnLine</c> used to answer "is this the box's first piece on the line?" by scanning every
-/// piece already on the line — O(n²) over a line of many boxed pieces. It now reads a per-line set of
-/// the boxes added so far, kept in step with the pieces by <c>AddTracked</c>. If that set drifted from
+/// <c>BoxRoomOnLine</c> answers "is this the box's first piece on the line?" from a per-line set of the
+/// boxes added so far, kept in step with the pieces by <c>AddTracked</c>, not by scanning every piece
+/// already on the line — O(n²) over a line of many boxed pieces. If that set drifted from
 /// the pieces, a box's room would be charged once per piece and everything after the box would slide
 /// right. The same box around one run and around several runs that share the box instance must leave
 /// the marker after it at the same x — the box content is identical, so only a miscount could move it.

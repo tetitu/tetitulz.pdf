@@ -12,16 +12,14 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// The three cases the per-paint overprint compositor used to decline — a non-rectangular clip, a
-/// transparency group's layer, a soft mask — are simulated: the raster renderer composites a page
+/// Three cases a per-paint overprint compositor declines — a non-rectangular clip, a transparency
+/// group's layer, a soft mask — are simulated: the raster renderer composites a page
 /// that overprints on its separation plates and recombines them (<c>OverprintPreview</c>).
 /// </summary>
 /// <remarks>
-/// <para><b>What this file used to test.</b> The compositor read back the page's sRGB pixels, and
-/// its <c>BackdropDecline</c> refused when it could not — reporting the reason and painting
-/// normally. Since 2026-10-04 the compositor is gone, and each case is a magenta fill overprinting
-/// cyan that must come out blue, with nothing reported. The names say "simulated" now, because a
-/// test whose name and body disagree is the failure no guard can catch.</para>
+/// <para><b>What each case is.</b> A magenta fill overprinting cyan that must come out blue, with
+/// nothing reported: a compositor reading back the page's sRGB pixels would have to decline these
+/// and paint normally.</para>
 ///
 /// <para>The acceptance control is the same fill with none of the three conditions: also blue, and
 /// also silent — so each case's blue is the overprint, not a fixture that happens to paint blue.</para>

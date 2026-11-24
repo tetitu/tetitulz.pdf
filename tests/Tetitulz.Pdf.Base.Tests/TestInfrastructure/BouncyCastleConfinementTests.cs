@@ -22,16 +22,15 @@ namespace Tetitulz.Pdf.Base.Tests.TestInfrastructure;
 /// Architecture Principles). But the standard security handler never needed it: it needs MD5,
 /// SHA-2, RC4 and AES-CBC, and three of the four are in <c>System.Security.Cryptography</c> on
 /// every target framework here — <c>netstandard2.0</c> included — while RC4 is twenty lines. Those
-/// ciphers now live in <c>Core.Encryption.PdfCryptoPrimitives</c>, and on 2026-08-14 BouncyCastle
-/// went from four files to one.</para>
+/// ciphers live in <c>Core.Encryption.PdfCryptoPrimitives</c>.</para>
 /// <para><b>Only CMS enveloped-data recipients have a real claim on the dependency</b> — the
 /// <c>/Adobe.PubSec</c> handler, in both directions. Anything else reaching for it is either
 /// duplicating a primitive that already exists in Core — the divergence shape this repository keeps
 /// finding defects in — or is quietly re-widening the dependency this separation exists to
 /// contain.</para>
 /// <para><b>The allow-list is a statement about which single FEATURE justifies the dependency, not
-/// a burn-down list</b>, and adding an entry needs a reason in this comment. It gained its second
-/// on 2026-09-01: <c>PdfPublicKeyDecryptor</c> is the reading half of the same feature — unwrapping
+/// a burn-down list</b>, and adding an entry needs a reason in this comment. The second:
+/// <c>PdfPublicKeyDecryptor</c> is the reading half of the same feature — unwrapping
 /// an enveloped-data recipient and building one are the same CMS claim in opposite directions, and
 /// neither has a BCL equivalent that works on <c>netstandard2.0</c>.</para>
 /// <para><b>A third entry, and a genuinely different feature: <c>PdfGcmCipher.cs</c>

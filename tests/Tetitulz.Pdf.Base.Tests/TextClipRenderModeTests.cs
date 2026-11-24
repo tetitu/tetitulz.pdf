@@ -11,17 +11,16 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
-/// Regression tests for the text-clipping render modes (PDF/ISO 32000-2 §9.3.6,
-/// text rendering modes 4-7) on the standard-font (SKTypeface) render path.
+/// The text-clipping render modes (PDF/ISO 32000-2 §9.3.6, text rendering modes 4-7) on
+/// the standard-font (SKTypeface) render path.
 ///
-/// Two pre-fix defects are covered:
-///   1. <c>DrawTextBlob</c> only handled modes 0/1/2, so a clipping mode painted
-///      nothing AND never fed the glyph outlines into the clip accumulator — the
-///      subsequent fill was therefore drawn un-clipped (the entire page filled).
-///      Reproduced by the PDF Association's OverlappingGlyphClipping.pdf, which
-///      rendered as a plain blue rectangle.
-///   2. The clip accumulator combined glyph outlines with the even-odd rule, but
-///      the spec mandates the non-zero winding number rule. NOTE 2 of §9.3.6:
+/// Two defects are guarded:
+///   1. A draw handling only modes 0/1/2 would paint nothing for a clipping mode AND
+///      never feed the glyph outlines into the clip accumulator — the subsequent fill
+///      drawn un-clipped (the entire page filled). The PDF Association's
+///      OverlappingGlyphClipping.pdf would render as a plain blue rectangle.
+///   2. The clip accumulator combines glyph outlines with the non-zero winding number
+///      rule the spec mandates, not even-odd. NOTE 2 of §9.3.6:
 ///      "Due to the use of non-zero winding number rule, the direction of the
 ///      paths comprising each glyph can cause different output for overlapping
 ///      glyphs." Even-odd makes overlapping glyphs cancel to nothing.
@@ -74,7 +73,7 @@ public sealed class TextClipRenderModeTests
         // Clip produced a non-empty region (the glyph was added to the clip)...
         Assert.True(blue > 1000, $"expected blue glyph fill, got {blue} px");
         // ...but it did NOT fill the whole page (the clip was actually applied).
-        // Pre-fix this filled the entire page (~100%).
+        // Unclipped, it would fill the entire page (~100%).
         Assert.True(blue < total * 0.30,
             $"fill was not clipped to the glyph: {blue}/{total} px blue");
     }
@@ -103,7 +102,7 @@ public sealed class TextClipRenderModeTests
         // Draw the SAME glyph twice at the SAME position in clip mode, then fill blue.
         // Non-zero winding rule: every covered region winds ±2 (still non-zero) → it
         // stays filled, so the doubled clip is at least as large as the single clip.
-        // Even-odd rule (the pre-fix bug): every region is crossed an even number of
+        // Even-odd rule (the defect): every region is crossed an even number of
         // times → it cancels to an empty clip → essentially no blue at all.
         using var single = Render(
             "BT /F1 400 Tf 7 Tr 1 0 0 1 100 200 Tm (B) Tj ET\n" +
@@ -132,11 +131,11 @@ public sealed class TextClipRenderModeTests
         // clip region is empty, and the page-filling blue rectangle drawn after ET
         // must be clipped out entirely.
         //
-        // Pre-fix, EndTextClip treated an empty accumulator the same as "no clip
-        // requested" and left the clip unchanged, so the rectangle filled the whole
-        // page. On real Cal credit-card statements this leaked gradient image tiles
-        // (masked by text-clip glyphs) as solid "gradient boxes" wherever a blank
-        // clip glyph sat between the gradient-filled letters.
+        // Treating an empty accumulator the same as "no clip requested" would leave
+        // the clip unchanged, and the rectangle would fill the whole page. On real
+        // card statements that leaks gradient image tiles (masked by text-clip
+        // glyphs) as solid "gradient boxes" wherever a blank clip glyph sits between
+        // the gradient-filled letters.
         using var bmp = Render(
             "BT /F1 400 Tf 7 Tr 1 0 0 1 100 200 Tm ( ) Tj ET\n" +
             "0 0 1 rg 0 0 612 792 re f\n");
@@ -150,7 +149,7 @@ public sealed class TextClipRenderModeTests
     public void TextRenderMode5_StrokesTheText()
     {
         // Mode 5 = stroke text + add to clip. The stroke itself must be painted
-        // (pre-fix DrawTextBlob ignored mode 5 entirely, drawing nothing).
+        // (a draw ignoring mode 5 would draw nothing).
         using var bmp = Render(
             "1 0 0 RG\n" +     // red stroke
             "6 w\n" +

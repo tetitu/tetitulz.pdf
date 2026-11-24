@@ -63,7 +63,7 @@ public class SecurityHardeningTests
     [Fact]
     public void PasswordNormalizer_ManyControlChars_DoesNotTimeOut()
     {
-        // Previously O(n^2): 2048 control chars would allocate ~2000 strings.
+        // Linear: done quadratically, 2048 control chars would allocate ~2000 strings.
         var input = new string('', 2048) + "ok";
         var result = Invoke(input);
         Assert.Equal("ok", result);

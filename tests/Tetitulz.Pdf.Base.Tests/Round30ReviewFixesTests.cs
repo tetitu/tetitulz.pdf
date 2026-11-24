@@ -12,9 +12,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
-/// Regression tests for the code-review remediation round 30.
-/// Focused on the concrete output-corruption fixes whose pre-fix behaviour was
-/// to silently emit a truncated/empty document.
+/// Output-corruption guards: cases where a writer would otherwise silently emit a
+/// truncated or empty document.
 /// </summary>
 public class Round30ReviewFixesTests
 {

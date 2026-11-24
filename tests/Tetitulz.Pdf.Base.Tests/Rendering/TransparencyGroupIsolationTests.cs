@@ -14,10 +14,10 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <summary>
 /// A transparency group's <c>/I</c> (isolated) attribute, PDF §11.6.6 Table 147.
 ///
-/// <para><b>What was wrong.</b> <c>/I</c> was never read. Skia's <c>SaveLayer</c> always begins
-/// transparent, so every group that needed unit compositing rendered <b>isolated</b> — and
-/// <c>/I</c> defaults to <i>false</i>, so the default case was the wrong one. The layer is now
-/// seeded with the backdrop when the group is non-isolated.</para>
+/// <para><b>Why it must be read.</b> Skia's <c>SaveLayer</c> always begins transparent, so unread,
+/// every group that needed unit compositing would render <b>isolated</b> — and <c>/I</c> defaults
+/// to <i>false</i>, so the default case would be the wrong one. The layer is seeded with the
+/// backdrop when the group is non-isolated.</para>
 ///
 /// <para><b>Why the fixture looks like this.</b> The difference is only observable when three
 /// things line up: the group must actually need a layer (here <c>ca 0.99</c> at the <c>Do</c> —
@@ -31,7 +31,7 @@ public class TransparencyGroupIsolationTests
 {
     /// <summary>
     /// <c>/I false</c>: Multiply inside the group must see the green page beneath it.
-    /// Pre-fix this rendered red — the isolated result.
+    /// Red would be the isolated result.
     /// </summary>
     [Fact]
     public void NonIsolatedGroup_BlendsAgainstThePageBackdrop()
@@ -47,7 +47,7 @@ public class TransparencyGroupIsolationTests
 
     /// <summary>
     /// <c>/I true</c>: the group's backdrop is transparent, so Multiply has nothing to darken
-    /// against and the red survives. This is the control — it pins that the fix reads the flag
+    /// against and the red survives. This is the control — it pins that the renderer reads the flag
     /// rather than always seeding.
     /// </summary>
     [Fact]

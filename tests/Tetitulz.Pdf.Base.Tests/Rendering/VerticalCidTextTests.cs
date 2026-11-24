@@ -103,17 +103,14 @@ public sealed class VerticalCidTextTests
     public void VerticalCidFont_MultipleGlyphs_AdvanceDownward()
     {
         // Three CID glyphs in a single Tj string using Identity-V wMode=1.
-        // With the advance bug, all three glyphs stacked at the same position (no advance)
-        // or advanced upward. After the fix they advance downward.
+        // They advance downward — not stacked at one position (no advance), nor upward.
         // Adding a glyph must grow the inked region's HEIGHT and leave its width and top edge
-        // alone. Horizontal advance would grow the width; no advance would grow neither — and the
-        // predecessor's "a PNG came back" could not tell those three apart, as its own comment
-        // conceded ("We just check it renders").
-        // Tm scale 1, not 20. The original fixture combined `20 Tf` with a scale-20 Tm, making one
-        // em 400 device units — so once the §9.7.4.3 position vector was applied (the glyph is drawn
-        // at `currentPoint − v`, dropping it 0.88 em), the SECOND glyph's origin landed at y ≈ −52
-        // and it was clipped away entirely, leaving both renders pixel-identical. The claim below is
-        // unchanged; only the fixture's scale is, so that what it asserts about is on the page.
+        // alone. Horizontal advance would grow the width; no advance would grow neither — and
+        // "a PNG came back" cannot tell those three apart.
+        // Tm scale 1, not 20: `20 Tf` with a scale-20 Tm makes one em 400 device units, so with
+        // the §9.7.4.3 position vector applied (the glyph is drawn at `currentPoint − v`, dropping
+        // it 0.88 em) the SECOND glyph's origin would land at y ≈ −52 and be clipped away
+        // entirely, leaving both renders pixel-identical.
         const string prefix = "BT /F1 20 Tf 1 0 0 1 100 700 Tm ";
 
         using var one = PixelAssert.Render(BuildPdf(prefix + "<0042> Tj ET"));

@@ -16,11 +16,10 @@ namespace Tetitulz.Pdf.Base.Tests.TestInfrastructure;
 /// DeviceCMYK → sRGB formula <c>r = (1−c)(1−k)</c> instead of calling
 /// <c>PdfColor.CmykToRgb</c>.
 ///
-/// <para><b>Why this exists.</b> That one expression had <b>nine</b> implementations across Base
-/// under <b>three</b> rounding conventions (GAPS.md §2b). Two of them had already been reconciled by
-/// hand once, with a comment explaining the fix — and the comment was still true while seven other
-/// copies quietly disagreed. The failure mode is specific: a fix applied to one copy looks complete,
-/// and the copies are individually so short that nobody reads them as duplication.</para>
+/// <para><b>Why this exists.</b> That one expression is short enough to inline anywhere, and
+/// copies of it drift onto different rounding conventions (GAPS.md §2b). The failure mode is
+/// specific: a correction applied to one copy looks complete, and the copies are individually so
+/// short that nobody reads them as duplication.</para>
 ///
 /// <para><b>It has no exemption list, by design.</b> CLAUDE.md: "An empty exemption set is an
 /// invitation; no exemption set is a rule." That is affordable because of the discriminator below,

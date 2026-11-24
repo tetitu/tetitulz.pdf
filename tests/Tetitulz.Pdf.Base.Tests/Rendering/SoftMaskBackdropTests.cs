@@ -41,7 +41,7 @@ public sealed class SoftMaskBackdropTests
 
     /// <summary>
     /// CMYK white as a backdrop leaves the mask fully open, so the black rectangle underneath it
-    /// paints. Before the fix this pixel was the white page.
+    /// paints, rather than leave the white page.
     /// </summary>
     [Fact]
     public void CmykWhiteBackdrop_LeavesTheMaskOpen()
@@ -53,7 +53,7 @@ public sealed class SoftMaskBackdropTests
     /// <summary>
     /// CMYK black is the opposite backdrop and must give the opposite result — the mask is shut and
     /// the rectangle does not paint. Stated as its own test because the pair is the whole point:
-    /// before the fix <b>both</b> produced this outcome.
+    /// a backdrop read wrongly would give <b>both</b> this outcome.
     /// </summary>
     [Fact]
     public void CmykBlackBackdrop_ShutsTheMask()

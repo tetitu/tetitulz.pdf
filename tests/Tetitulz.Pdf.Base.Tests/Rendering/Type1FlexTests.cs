@@ -11,15 +11,14 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering
 {
     /// <summary>
-    /// Regression tests for Type 1 Flex (OtherSubrs 0/1/2) and hint replacement
-    /// (OtherSubr 3) handling in <see cref="Type1CharstringEvaluator"/>.
+    /// Type 1 Flex (OtherSubrs 0/1/2) and hint replacement (OtherSubr 3) handling in
+    /// <see cref="Type1CharstringEvaluator"/>.
     ///
-    /// Computer Modern (cmr10, used by every pdfTeX document) draws its serifs with
-    /// Flex.  Before the fix, each of the seven flex <c>rmoveto</c>s started a new
-    /// subpath — closing the glyph's outer contour prematurely and leaving the current
-    /// point at the wrong place — so the capital "L" (and most serifed glyphs) rendered
-    /// as a mangled blob.  These tests build the standard flex idiom by hand and assert
-    /// that exactly one continuous contour is produced.
+    /// Computer Modern (cmr10, used by every pdfTeX document) draws its serifs with Flex. Were each
+    /// of the seven flex <c>rmoveto</c>s to start a new subpath — closing the glyph's outer contour
+    /// prematurely and leaving the current point at the wrong place — the capital "L" (and most
+    /// serifed glyphs) would render as a mangled blob. These tests build the standard flex idiom by
+    /// hand and assert that exactly one continuous contour is produced.
     /// </summary>
     public class Type1FlexTests
     {
@@ -145,7 +144,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering
             Assert.NotNull(outline.Path);
             Assert.False(outline.Path.IsEmpty);
 
-            // The pre-fix bug turned each flex rmoveto into a real MoveTo → 8 subpaths.
+            // Each flex rmoveto taken as a real MoveTo would give 8 subpaths.
             // A correct flex yields a single continuous contour (one MoveTo).
             Assert.Equal(1, CountMoveVerbs(outline.Path));
         }
@@ -159,7 +158,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering
             var b = outline.Path.Bounds;
             // Outline spans x:[100,370] and y:[100,200]; the trailing vertical stroke
             // only reaches y=200 if the current point was correctly restored to the
-            // flex endpoint (370,100) — the pre-fix bug left it elsewhere.
+            // flex endpoint (370,100).
             Assert.InRange(b.Left, 99f, 101f);
             Assert.InRange(b.Right, 369f, 371f);
             Assert.InRange(b.Top, 99f, 106f);

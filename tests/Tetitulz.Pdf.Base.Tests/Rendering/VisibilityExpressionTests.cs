@@ -15,10 +15,10 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// over its <c>/OCGs</c> list.
 /// </summary>
 /// <remarks>
-/// <para><b>Found unguarded by a mutation-liveness sweep (2026-08-29).</b> Replacing the whole
-/// expression result with "visible" left all 3 040 Base tests green — so every <c>/And</c>,
-/// <c>/Or</c>, <c>/Not</c> and the depth guard were unverified, in a decision point <i>both</i>
-/// renderers share through <c>IsOcEntryHidden</c>.</para>
+/// <para><b>Without these, nothing else holds it.</b> Replacing the whole expression result with
+/// "visible" leaves every other Base test green — every <c>/And</c>, <c>/Or</c>, <c>/Not</c> and
+/// the depth guard unverified, in a decision point <i>both</i> renderers share through
+/// <c>IsOcEntryHidden</c>.</para>
 ///
 /// <para><b>The consequence runs the wrong way.</b> This is the mechanism a document uses to hide a
 /// draft watermark, an internal-only layer, or a redaction underlay; an evaluator that answers
@@ -29,7 +29,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// point both renderers call, it returns a boolean, and a pixel test would confirm the same fact
 /// through two more layers while making the nesting and depth cases impractical to build. See
 /// <c>Visible</c> for why "rather than through a render" is not the same as "by calling the
-/// evaluator directly" — the difference cost this file a rewrite.</para>
+/// evaluator directly".</para>
 /// </remarks>
 public class VisibilityExpressionTests
 {
