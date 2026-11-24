@@ -248,7 +248,7 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
             encoded = null;
             reason = null;
             int w = (int)block.Bounds.Width, h = (int)block.Bounds.Height;
-            var values = new long[w * h];
+            long[] values = workspace.BlockValues(w * h);
             string problem;
             int plane, setPasses;
             if (sourceHt)
@@ -275,7 +275,7 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
                 return false;
             }
 
-            long[] known = KnownBits(values);
+            long[] known = KnownBits(values);   // in place: the decoded values are not read again
             var layerEnd = new int[layers];
             int pass = 0;
             foreach (JpxCodeChunk chunk in block.Chunks)
@@ -347,10 +347,14 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
             return true;
         }
 
-        /// <summary>Each value's known bits: (2μ + 1)·2<sup>k</sup> → μ·2<sup>k</sup>, signed; 0 stays 0.</summary>
+        /// <summary>
+        /// Each value's known bits: (2μ + 1)·2<sup>k</sup> → μ·2<sup>k</sup>, signed; 0 stays 0. Written over
+        /// <paramref name="values"/>, which is returned: each value maps on its own, and a block's decode is one
+        /// array of the workspace's, reused for the next block.
+        /// </summary>
         internal static long[] KnownBits(long[] values)
         {
-            var known = new long[values.Length];
+            long[] known = values;
             for (int i = 0; i < values.Length; i++)
             {
                 long v = values[i];
