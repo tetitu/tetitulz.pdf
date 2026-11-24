@@ -584,6 +584,7 @@ Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::File : System.String { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::Height : System.Single { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::Kind : Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkKind { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::NamedAction : System.String { get }
+Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::ObjectNumber : System.Int32 { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::PageIndex : System.Int32 { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::TargetPageIndex : System.Int32 { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::TargetTop : System.Nullable<System.Single> { get }
@@ -593,6 +594,7 @@ Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::X : System.Single { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLink::Y : System.Single { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkExtractor::ExtractLinks(System.IO.Stream) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Extraction.PdfLink>
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkExtractor::ExtractLinks(System.String) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Extraction.PdfLink>
+Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkExtractor::ExtractLinks(Tetitulz.Pdf.Core.Document.PdfDocument) : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Base.Operations.Extraction.PdfLink>
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkExtractor::LastError : System.String { get }
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkKind::GoTo : Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkKind = 2
 Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkKind::Launch : Tetitulz.Pdf.Base.Operations.Extraction.PdfLinkKind = 5

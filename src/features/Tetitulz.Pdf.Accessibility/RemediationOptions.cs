@@ -75,6 +75,17 @@ namespace Tetitulz.Pdf.Accessibility
         /// </summary>
         public Func<FigureContext, string> AltTextFactory { get; set; }
 
+        /// <summary>
+        /// Supplies each link's alternate description — its <c>/Contents</c>, which closes
+        /// <b>UA22</b>. Receives a <see cref="LinkContext"/> for every link annotation a reader is
+        /// presented, in page order, and returns the description or <c>null</c> to leave the link.
+        /// <para><b>Null (the default) skips the step, and nothing is invented.</b> A link's
+        /// description says where it goes in words a listener understands, which neither its URI
+        /// nor the text under it is; a link left without one stays a UA22 finding in the
+        /// after-audit.</para>
+        /// </summary>
+        public Func<LinkContext, string> LinkDescriptionFactory { get; set; }
+
         /// <summary>Fix heading hierarchy (renumber H1–H6). Default true.</summary>
         public bool FixHeadingHierarchy { get; set; } = true;
 
@@ -234,8 +245,8 @@ namespace Tetitulz.Pdf.Accessibility
         /// </code>
         /// <para><b>Each step becomes its own decrypt/append cycle.</b> The pipeline's steps read
         /// each other's output — reading-order repair must see the tree the tagger built — so the
-        /// alternative, planning all nine against one decrypted copy, would need plan
-        /// <i>composition</i>: steps 2..9 would have to see changes that exist only as staged
+        /// alternative, planning all ten against one decrypted copy, would need plan
+        /// <i>composition</i>: steps 2..10 would have to see changes that exist only as staged
         /// objects, and several revise the same catalog. That is a research problem rather than an
         /// optimisation, and the cost bought is N decrypt/encrypt cycles on an in-memory copy.</para>
         /// <para><b>A step with no encrypted route is skipped, never forced.</b> Running a

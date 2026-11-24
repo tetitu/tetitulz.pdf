@@ -4093,106 +4093,140 @@ public class PdfUa2StructureCheckerTests
     }
 
     // =====================================================================
-    //  Clause 8.9.2.1 — annotation appearance streams must not use marked
-    //  content to substructure themselves (a second, independent sentence
-    //  sharing the same UA2-8.9.2.1 code as the tree-inclusion checks above)
+    //  Clause 8.9.2.1 — no marked-content reference into an annotation's
+    //  appearance stream (a second, independent sentence sharing the same
+    //  UA2-8.9.2.1 code as the tree-inclusion checks above)
     // =====================================================================
     //
-    //  Object layout: 1=catalog, 2=Pages, 3=Page (with /Annots), 4=the
-    //  annotation, 5+=its /AP /N appearance stream(s).
+    //  Object layout: 1=catalog (/StructTreeRoot 6 0 R), 2=Pages, 3=Page (with /Annots),
+    //  4=the annotation, 5=its /AP /N appearance stream, 6=the structure tree root,
+    //  7=its one element, whose /K is the annotation's /OBJR (so the tree-inclusion sentence,
+    //  which shares the code, is met) followed by what the fixture supplies, 8+=whatever else
+    //  the fixture adds.
 
-    [Fact]
-    public void SimpleMarkedContentInAppearanceStream_ReportsUa8921()
+    private const string McidAppearance =
+        "<< /Length 0 >>\nstream\n/Span << /MCID 0 >> BDC q 0 0 10 10 re f Q EMC\nendstream";
+
+    private static byte[] MarkedContentReferencePdf(string kids, string appearance = McidAppearance,
+                                                    string annotation = null, string annots = "4 0 R",
+                                                    params string[] more)
     {
-        byte[] pdf = BuildPdf(new[]
+        var bodies = new List<string>
         {
-            "<< /Type /Catalog /Pages 2 0 R >>",
+            "<< /Type /Catalog /Pages 2 0 R /StructTreeRoot 6 0 R >>",
             "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Annots [4 0 R] >>",
-            "<< /Type /Annot /Subtype /Square /Rect [0 0 10 10] /AP << /N 5 0 R >> >>",
-            "<< /Length 0 >>\nstream\nBMC q 0 0 10 10 re f Q EMC\nendstream",
-        });
-
-        var result = Validate(pdf);
-        Assert.Contains(result.Violations, v => v.Code == "UA2-8.9.2.1");
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Annots [" + annots + "] >>",
+            annotation ?? "<< /Type /Annot /Subtype /Square /Rect [0 0 10 10] /AP << /N 5 0 R >> >>",
+            appearance,
+            "<< /Type /StructTreeRoot /K 7 0 R >>",
+            "<< /Type /StructElem /S /Annot /P 6 0 R /Pg 3 0 R /K [<< /Type /OBJR /Obj 4 0 R >> " + kids + "] >>",
+        };
+        bodies.AddRange(more);
+        return BuildPdf(bodies);
     }
 
+    /// <summary>
+    /// A marked-content reference whose <c>/Stm</c> is the annotation's appearance stream
+    /// (ISO 32000-2 Table 357) is what §8.9.2.1 forbids.
+    /// </summary>
     [Fact]
-    public void PropertyMarkedContentInAppearanceStream_ReportsUa8921()
+    public void McrWhoseStmIsAnAppearanceStream_ReportsUa8921()
     {
-        // BDC (marked content with a properties operand), not just bare BMC.
-        byte[] pdf = BuildPdf(new[]
-        {
-            "<< /Type /Catalog /Pages 2 0 R >>",
-            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Annots [4 0 R] >>",
-            "<< /Type /Annot /Subtype /Square /Rect [0 0 10 10] /AP << /N 5 0 R >> >>",
-            "<< /Length 0 >>\nstream\n/Span BDC q 0 0 10 10 re f Q EMC\nendstream",
-        });
+        var result = Validate(MarkedContentReferencePdf("<< /Type /MCR /Stm 5 0 R /MCID 0 >>"));
 
-        var result = Validate(pdf);
-        Assert.Contains(result.Violations, v => v.Code == "UA2-8.9.2.1");
+        var violation = Assert.Single(result.Violations, v => v.Code == "UA2-8.9.2.1");
+        Assert.Contains("/Stm is an annotation's appearance stream", violation.Message, System.StringComparison.Ordinal);
+        Assert.Contains("Annot (object 7)", violation.Message, System.StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// A reference into a form the appearance draws is not to one of the annotation's appearance
+    /// streams by <c>/Stm</c>, but its <c>/StmOwn</c> names the annotation that owns it — Table 357's
+    /// own example of the entry's use.
+    /// </summary>
     [Fact]
-    public void AppearanceStreamWithoutMarkedContent_DoesNotReportUa8921()
+    public void McrWhoseStmOwnIsAnAnnotation_ReportsUa8921()
     {
-        byte[] pdf = BuildPdf(new[]
-        {
-            "<< /Type /Catalog /Pages 2 0 R >>",
-            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Annots [4 0 R] >>",
-            "<< /Type /Annot /Subtype /Square /Rect [0 0 10 10] /AP << /N 5 0 R >> >>",
-            "<< /Length 0 >>\nstream\nq 0 0 10 10 re f Q\nendstream",
-        });
+        byte[] pdf = MarkedContentReferencePdf(
+            "<< /Type /MCR /Stm 8 0 R /StmOwn 4 0 R /MCID 0 >>",
+            appearance: "<< /Length 0 /Resources << /XObject << /Fm0 8 0 R >> >> >>\nstream\n/Fm0 Do\nendstream",
+            more: new[]
+            {
+                "<< /Type /XObject /Subtype /Form /BBox [0 0 10 10] /Length 0 >>\nstream\n" +
+                    "/Span << /MCID 0 >> BDC 0 0 10 10 re f EMC\nendstream",
+            });
 
-        var result = Validate(pdf);
-        Assert.DoesNotContain(result.Violations, v => v.Code == "UA2-8.9.2.1");
+        var violation = Assert.Single(Validate(pdf).Violations, v => v.Code == "UA2-8.9.2.1");
+        Assert.Contains("/StmOwn is an annotation", violation.Message, System.StringComparison.Ordinal);
     }
 
-    [Fact]
-    public void NonSelectedApStateWithMarkedContent_ReportsUa8921()
+    /// <summary>
+    /// The acceptance controls beside the two refusals. An <c>/MCID</c> in the appearance that no
+    /// reference names, with the annotation included whole through an <c>/OBJR</c> (NOTE 4); a
+    /// text field's <c>/Tx BMC … EMC</c> (ISO 32000-2 §12.7.4.3); a reference into a form the
+    /// page draws, owned by no annotation; a reference into the page's own content.
+    /// </summary>
+    [Theory]
+    [InlineData("", McidAppearance)]
+    [InlineData("",
+                "<< /Length 0 >>\nstream\n/Tx BMC q BT /Helv 10 Tf 2 2 Td (x) Tj ET Q EMC\nendstream")]
+    [InlineData("<< /Type /MCR /Stm 8 0 R /StmOwn 3 0 R /MCID 0 >>", McidAppearance)]
+    [InlineData("<< /Type /MCR /Pg 3 0 R /MCID 0 >>", McidAppearance)]
+    public void NoReferenceIntoAnAppearance_DoesNotReportUa8921(string kids, string appearance)
     {
-        // /AS selects "Off", but the marked content sits only in the "On" state's stream — the
-        // clause names the file's appearance streams in general, not "the currently active one,"
-        // so every named state must be scanned.
-        byte[] pdf = BuildPdf(new[]
+        byte[] pdf = MarkedContentReferencePdf(kids, appearance, more: new[]
         {
-            "<< /Type /Catalog /Pages 2 0 R >>",
-            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Annots [4 0 R] >>",
-            "<< /Type /Annot /Subtype /Widget /Rect [0 0 10 10] /AS /Off " +
-                "/AP << /N << /Off 5 0 R /On 6 0 R >> >> >>",
-            "<< /Length 0 >>\nstream\nq 0 0 10 10 re f Q\nendstream",
-            "<< /Length 0 >>\nstream\nBMC q 0 0 10 10 re f Q EMC\nendstream",
+            "<< /Type /XObject /Subtype /Form /BBox [0 0 10 10] /Length 0 >>\nstream\n" +
+                "/Span << /MCID 0 >> BDC 0 0 10 10 re f EMC\nendstream",
         });
 
-        var result = Validate(pdf);
-        Assert.Contains(result.Violations, v => v.Code == "UA2-8.9.2.1");
+        Assert.DoesNotContain(Validate(pdf).Violations, v => v.Code == "UA2-8.9.2.1");
     }
 
+    /// <summary>
+    /// <c>/AS</c> selects "Off", and the reference names the "On" state's stream — the clause names
+    /// the file's appearance streams in general, not the one shown, so every named state counts.
+    /// </summary>
     [Fact]
-    public void SharedAppearanceStreamDeduplicatedAcrossPages_ReportsOnce()
+    public void McrIntoANonSelectedApState_ReportsUa8921()
     {
-        // Two annotations on two DIFFERENT pages reference the identical appearance stream
-        // object — must be reported exactly once, not once per referencing annotation. Two
-        // annotations on the SAME page would already be deduplicated by PdfXValidator.ScanPage's
-        // own internal, per-call seenForms set, which would pass even without this check's own
-        // document-wide dedup — proven by a mutation that removed this check's own `seen` guard
-        // and survived exactly that way against a same-page version of this fixture.
-        byte[] pdf = BuildPdf(new[]
-        {
-            "<< /Type /Catalog /Pages 2 0 R >>",
-            "<< /Type /Pages /Kids [3 0 R 4 0 R] /Count 2 >>",
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Annots [5 0 R] >>",
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Annots [6 0 R] >>",
-            "<< /Type /Annot /Subtype /Square /Rect [0 0 10 10] /AP << /N 7 0 R >> >>",
-            "<< /Type /Annot /Subtype /Square /Rect [20 20 30 30] /AP << /N 7 0 R >> >>",
-            "<< /Length 0 >>\nstream\nBMC q 0 0 10 10 re f Q EMC\nendstream",
-        });
+        byte[] pdf = MarkedContentReferencePdf(
+            "<< /Type /MCR /Stm 8 0 R /MCID 0 >>",
+            appearance: "<< /Length 0 >>\nstream\nq 0 0 10 10 re f Q\nendstream",
+            annotation: "<< /Type /Annot /Subtype /Widget /FT /Btn /Rect [0 0 10 10] /AS /Off " +
+                        "/AP << /N << /Off 5 0 R /On 8 0 R >> >> >>",
+            more: new[] { McidAppearance });
 
-        var result = Validate(pdf);
-        Assert.Single(result.Violations, v => v.Code == "UA2-8.9.2.1");
+        Assert.Single(Validate(pdf).Violations, v => v.Code == "UA2-8.9.2.1");
+    }
+
+    /// <summary>
+    /// Each reference is a use of one: two into the same appearance stream are two violations.
+    /// </summary>
+    [Fact]
+    public void TwoMcrsIntoOneAppearance_ReportsEach()
+    {
+        byte[] pdf = MarkedContentReferencePdf(
+            "<< /Type /MCR /Stm 5 0 R /MCID 0 >> << /Type /MCR /Stm 5 0 R /MCID 0 >>");
+
+        Assert.Equal(2, Validate(pdf).Violations.Count(v => v.Code == "UA2-8.9.2.1"));
+    }
+
+    /// <summary>
+    /// A page whose annotations reach past the page scan's ceiling of resource entries has its
+    /// appearances listed in part, and a reference into the rest would go unseen, so that is said.
+    /// The control is the same page listing the annotation twice.
+    /// </summary>
+    [Fact]
+    public void AdversarialAnnotsPastTheScanCeiling_SaysTheCheckWasPartial()
+    {
+        static byte[] WithAnnots(int count) => MarkedContentReferencePdf(
+            "", annots: string.Concat(Enumerable.Repeat("4 0 R ", count)));
+
+        Assert.Contains(Validate(WithAnnots(200_001)).Violations,
+            v => v.Code == "UA2-99" && v.Message.Contains("§8.9.2.1", System.StringComparison.Ordinal));
+        Assert.DoesNotContain(Validate(WithAnnots(2)).Violations,
+            v => v.Code == "UA2-99" && v.Message.Contains("§8.9.2.1", System.StringComparison.Ordinal));
     }
 
     // =====================================================================

@@ -1888,6 +1888,7 @@ Tetitulz.Pdf.Core.Objects.PdfName::StdCF : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::StemV : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::Stm : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::StmF : Tetitulz.Pdf.Core.Objects.PdfName
+Tetitulz.Pdf.Core.Objects.PdfName::StmOwn : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::StrF : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::StructElem : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::StructParent : Tetitulz.Pdf.Core.Objects.PdfName

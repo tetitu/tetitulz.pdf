@@ -44,6 +44,7 @@ namespace Tetitulz.Pdf.Accessibility
     ///   <item><b>AutoTag</b> — Heuristic structure-tree generation for untagged PDFs, <i>plus</i>
     ///     the content-stream marked-content tagging the tree points at.</item>
     ///   <item><b>SetFigureAltText</b> — Set /Alt (alternate text) on Figure elements.</item>
+    ///   <item><b>SetLinkDescriptions</b> — Set /Contents (alternate description) on links (UA22).</item>
     ///   <item><b>SetDocumentLanguage</b> — Inject /Lang into the document catalog.</item>
     ///   <item><b>SetDocumentTitle</b> — Set /Info /Title and /DisplayDocTitle.</item>
     ///   <item><b>SetPdfUaIdentifier</b> — Write the <c>pdfuaid:part</c> XMP declaration (UA03).</item>
@@ -120,6 +121,7 @@ namespace Tetitulz.Pdf.Accessibility
         private const string StepFixReadingOrder     = "FixReadingOrder";
         private const string StepSetDocumentMetadata = "SetDocumentMetadata";
         private const string StepSetFigureAltText    = "SetFigureAltText";
+        private const string StepSetLinkDescriptions = "SetLinkDescriptions";
         private const string StepFixHeadingHierarchy = "FixHeadingHierarchy";
         private const string StepSetTabOrder         = "SetTabOrder";
         private const string StepEmbedFonts          = "EmbedFonts";
@@ -509,6 +511,18 @@ namespace Tetitulz.Pdf.Accessibility
             => PdfStructureTreeEditor.SetFieldTooltip(input, output, fieldPartialName, tooltip);
 
         /// <summary>
+        /// Sets the alternate description (<c>/Contents</c>) of the link annotations a reader is
+        /// presented, which closes <b>UA22</b>. The provider receives each link's
+        /// <see cref="LinkContext"/> — its page, rectangle and target — in page order and returns
+        /// the description, or <c>null</c> to leave that link. See
+        /// <see cref="PdfStructureTreeEditor.SetLinkDescriptions"/>.
+        /// </summary>
+        public static SetAltTextResult SetLinkDescriptions(
+            Stream input, Stream output,
+            Func<LinkContext, string> descriptionProvider)
+            => PdfStructureTreeEditor.SetLinkDescriptions(input, output, descriptionProvider);
+
+        /// <summary>
         /// Sets <c>/Tabs /S</c> ("tab order follows the structure tree", ISO 32000-1 Table 30) on
         /// every page that carries at least one annotation and does not already declare it, and
         /// returns the number of pages changed.
@@ -687,10 +701,10 @@ namespace Tetitulz.Pdf.Accessibility
         /// <summary>
         /// Runs the full remediation pipeline in a single call and reports everything it did.
         ///
-        /// <para><b>Pipeline — seven passes, in this order.</b> A "pass" is one appended PDF
+        /// <para><b>Pipeline — eight passes, in this order.</b> A "pass" is one appended PDF
         /// revision. Every pass is skipped outright when it provably cannot change the document,
         /// so a typical untagged file costs <b>two</b> appended revisions (AutoTag + XMP) and the
-        /// worst case is <b>seven</b> (nine if <see cref="RemediationOptions.SingleTextExtraction"/>
+        /// worst case is <b>eight</b> (ten if <see cref="RemediationOptions.SingleTextExtraction"/>
         /// is turned off). The previous implementation appended up to seven revisions
         /// unconditionally — re-serialising the whole file each time — and ran three independent
         /// full text extractions.</para>
@@ -715,6 +729,10 @@ namespace Tetitulz.Pdf.Accessibility
         ///   because AutoTag changes object numbers and creates the structure tree.</item>
         ///   <item><b>Figure alt text</b> — runs only when the structure tree actually contains a
         ///   Figure that would be given text.</item>
+        ///   <item><b>Link descriptions</b> (<see cref="RemediationOptions.LinkDescriptionFactory"/>)
+        ///   — writes each link's <c>/Contents</c> from the caller's text, which closes
+        ///   <b>UA22</b>. Runs only when a factory is supplied: a description is never
+        ///   invented.</item>
         ///   <item><b>Heading hierarchy</b> — runs only when replaying the renumbering over the
         ///   current headings would change at least one level.</item>
         ///   <item><b>Page tab order</b> (<see cref="RemediationOptions.FixTabOrder"/>) — writes
@@ -1095,6 +1113,34 @@ namespace Tetitulz.Pdf.Accessibility
                         BuildFigureAltTextWarnings(r, fabricated)));
             }
 
+            // ---- Pass 3b: link descriptions ----------------------------------
+            if (options.LinkDescriptionFactory == null)
+            {
+                steps.Add(RemediationStepResult.Skip(StepSetLinkDescriptions,
+                    "not requested: RemediationOptions.LinkDescriptionFactory is null, and a link's " +
+                    "description is not invented"));
+            }
+            else
+            {
+                Func<LinkContext, string> describeLink = options.LinkDescriptionFactory;
+                current = RunStep(current, StepSetLinkDescriptions, steps,
+                    enc == null
+                        ? (i, o) => PdfStructureTreeEditor.SetLinkDescriptions(i, o, describeLink)
+                        : ViaEncryptedWriter(enc,
+                            (doc, ff) => PdfStructureTreeEditor.PlanLinkDescriptions(doc, ff, describeLink),
+                            pl => new PlannedRevision(pl.Objects),
+                            (pl, appended) => pl?.Describe(appended)),
+                    r => RemediationStepResult.Ran(StepSetLinkDescriptions, r?.Updated ?? 0,
+                        r != null && r.Failed > 0
+                            ? new[]
+                              {
+                                  r.Failed.ToString(CultureInfo.InvariantCulture) +
+                                  " link annotation(s) could not be given a description (a direct " +
+                                  "dictionary in /Annots, or the provider threw); UA22 stays open for them."
+                              }
+                            : null));
+            }
+
             // ---- Pass 4: heading hierarchy -----------------------------------
             if (!options.FixHeadingHierarchy)
             {
@@ -1247,6 +1293,7 @@ namespace Tetitulz.Pdf.Accessibility
             steps.Add(RemediationStepResult.Skip(StepFixReadingOrder, reason));
             steps.Add(RemediationStepResult.Skip(StepSetDocumentMetadata, reason));
             steps.Add(RemediationStepResult.Skip(StepSetFigureAltText, reason));
+            steps.Add(RemediationStepResult.Skip(StepSetLinkDescriptions, reason));
             steps.Add(RemediationStepResult.Skip(StepFixHeadingHierarchy, reason));
             steps.Add(RemediationStepResult.Skip(StepSetTabOrder, reason));
             steps.Add(RemediationStepResult.Skip(StepEmbedFonts, reason));

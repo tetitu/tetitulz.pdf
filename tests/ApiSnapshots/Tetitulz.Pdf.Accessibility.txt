@@ -57,6 +57,7 @@ Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanDocumentTitle(Tet
 Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanFieldTooltip(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, System.String, System.String) : Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan
 Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanFigureAltText(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, System.Func<Tetitulz.Pdf.Accessibility.Models.FigureContext, System.String>) : Tetitulz.Pdf.Accessibility.Editing.FigureAltTextPlan
 Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanHeadingHierarchy(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32) : Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanLinkDescriptions(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32, System.Func<Tetitulz.Pdf.Accessibility.Models.LinkContext, System.String>) : Tetitulz.Pdf.Accessibility.Editing.FigureAltTextPlan
 Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::PlanStructureTabOrder(Tetitulz.Pdf.Core.Document.PdfDocument, System.Int32) : Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan
 Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetActualText(System.IO.Stream, System.IO.Stream, System.String, System.Func<System.Int32, System.String, System.String>) : System.Int32
 Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetDocumentLanguage(System.IO.Stream, System.IO.Stream, System.String) : System.Boolean
@@ -64,6 +65,7 @@ Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetDocumentTitle(Syst
 Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetFieldTooltip(System.IO.Stream, System.IO.Stream, System.String, System.String) : System.Boolean
 Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetFigureAltText(System.IO.Stream, System.IO.Stream, System.Func<Tetitulz.Pdf.Accessibility.Models.FigureContext, System.String>) : Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
 Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetFigureAltText(System.IO.Stream, System.IO.Stream, System.String) : Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
+Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetLinkDescriptions(System.IO.Stream, System.IO.Stream, System.Func<Tetitulz.Pdf.Accessibility.Models.LinkContext, System.String>) : Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
 Tetitulz.Pdf.Accessibility.Editing.PdfStructureTreeEditor::SetStructureTabOrder(System.IO.Stream, System.IO.Stream) : System.Int32
 Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan::Describe(System.Boolean) : System.Int32
 Tetitulz.Pdf.Accessibility.Editing.StructureTreePlan::ItemsChanged : System.Int32 { get }
@@ -246,6 +248,11 @@ Tetitulz.Pdf.Accessibility.Models.IssueSeverity::Error : Tetitulz.Pdf.Accessibil
 Tetitulz.Pdf.Accessibility.Models.IssueSeverity::Info : Tetitulz.Pdf.Accessibility.Models.IssueSeverity = 2
 Tetitulz.Pdf.Accessibility.Models.IssueSeverity::Warning : Tetitulz.Pdf.Accessibility.Models.IssueSeverity = 1
 Tetitulz.Pdf.Accessibility.Models.IssueSeverity::value__ : System.Int32
+Tetitulz.Pdf.Accessibility.Models.LinkContext::.ctor(System.Int32, System.Int32, Tetitulz.Pdf.Base.Operations.Extraction.PdfLink, System.String)
+Tetitulz.Pdf.Accessibility.Models.LinkContext::ExistingDescription : System.String { get }
+Tetitulz.Pdf.Accessibility.Models.LinkContext::Link : Tetitulz.Pdf.Base.Operations.Extraction.PdfLink { get }
+Tetitulz.Pdf.Accessibility.Models.LinkContext::LinkIndex : System.Int32 { get }
+Tetitulz.Pdf.Accessibility.Models.LinkContext::PageIndex : System.Int32 { get }
 Tetitulz.Pdf.Accessibility.Models.PageContentClassification::HasInlineImage : System.Boolean { get }
 Tetitulz.Pdf.Accessibility.Models.PageContentClassification::ImageXObjectInvocations : System.Int32 { get }
 Tetitulz.Pdf.Accessibility.Models.PageContentClassification::IsBlank : System.Boolean { get }
@@ -353,6 +360,7 @@ Tetitulz.Pdf.Accessibility.PdfAccessibility::SetDocumentTitle(System.IO.Stream, 
 Tetitulz.Pdf.Accessibility.PdfAccessibility::SetFieldTooltip(System.IO.Stream, System.IO.Stream, System.String, System.String) : System.Boolean
 Tetitulz.Pdf.Accessibility.PdfAccessibility::SetFigureAltText(System.IO.Stream, System.IO.Stream, System.Func<Tetitulz.Pdf.Accessibility.Models.FigureContext, System.String>) : Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
 Tetitulz.Pdf.Accessibility.PdfAccessibility::SetFigureAltText(System.IO.Stream, System.IO.Stream, System.String) : Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
+Tetitulz.Pdf.Accessibility.PdfAccessibility::SetLinkDescriptions(System.IO.Stream, System.IO.Stream, System.Func<Tetitulz.Pdf.Accessibility.Models.LinkContext, System.String>) : Tetitulz.Pdf.Accessibility.Models.SetAltTextResult
 Tetitulz.Pdf.Accessibility.PdfAccessibility::SetPdfUaIdentifier(System.IO.Stream, System.IO.Stream, System.Int32 = default, System.String = default, System.String = default) : System.Boolean
 Tetitulz.Pdf.Accessibility.PdfAccessibility::SetStructureTabOrder(System.IO.Stream, System.IO.Stream) : System.Int32
 Tetitulz.Pdf.Accessibility.PlannedRevision::.ctor(System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Writing.IndirectObject>, System.Int32 = default)
@@ -380,6 +388,7 @@ Tetitulz.Pdf.Accessibility.RemediationOptions::FontEmbedding : Tetitulz.Pdf.Acce
 Tetitulz.Pdf.Accessibility.RemediationOptions::FooterMarginPt : System.Single { get; set }
 Tetitulz.Pdf.Accessibility.RemediationOptions::HeaderMarginPt : System.Single { get; set }
 Tetitulz.Pdf.Accessibility.RemediationOptions::Language : System.String { get; set }
+Tetitulz.Pdf.Accessibility.RemediationOptions::LinkDescriptionFactory : System.Func<Tetitulz.Pdf.Accessibility.Models.LinkContext, System.String> { get; set }
 Tetitulz.Pdf.Accessibility.RemediationOptions::MarkArtifacts : System.Boolean { get; set }
 Tetitulz.Pdf.Accessibility.RemediationOptions::MaxDocumentContentBytes : System.Int64 { get; set }
 Tetitulz.Pdf.Accessibility.RemediationOptions::MaxPageContentBytes : System.Int32 { get; set }
@@ -424,6 +433,7 @@ class Tetitulz.Pdf.Accessibility.Models.AutoTagOptions
 class Tetitulz.Pdf.Accessibility.Models.AutoTagResult
 class Tetitulz.Pdf.Accessibility.Models.FigureCandidate
 class Tetitulz.Pdf.Accessibility.Models.FigureContext
+class Tetitulz.Pdf.Accessibility.Models.LinkContext
 class Tetitulz.Pdf.Accessibility.Models.PageContentClassification
 class Tetitulz.Pdf.Accessibility.Models.ReadingOrderAnalysis
 class Tetitulz.Pdf.Accessibility.Models.ReadingOrderFixResult

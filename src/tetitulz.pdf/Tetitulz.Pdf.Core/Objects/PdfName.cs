@@ -445,6 +445,9 @@ namespace Tetitulz.Pdf.Core.Objects
         // ISO 32000-2:2020 Table 357 — a marked-content reference's content stream, when the marked
         // content is not in the page's own content (a form XObject).
         public static readonly PdfName Stm = new PdfName("Stm");
+        // ISO 32000-2:2020 Table 357 — the object referencing a marked-content reference's /Stm,
+        // commonly the annotation whose appearance stream it is.
+        public static readonly PdfName StmOwn = new PdfName("StmOwn");
 
         // No /XResolution or /YResolution here on purpose: neither is an ISO 32000-1 image-dictionary
         // key. An image XObject has no resolution of its own — §8.9.5.2 maps its samples onto the

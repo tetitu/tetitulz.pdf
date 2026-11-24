@@ -196,7 +196,7 @@ public sealed class EncryptedPipelineOrchestrationTests
     /// not silently drop one. This is what would have caught the missing alt-text plan.
     /// </summary>
     [Fact]
-    public void Remediate_Encrypted_ReportsAllNineSteps()
+    public void Remediate_Encrypted_ReportsAllTenSteps()
     {
         RemediationReport report = Remediate(
             Encrypt(ContentBearingPdfTests.ContentPdf()), OwnerPassword, out _);
@@ -205,7 +205,8 @@ public sealed class EncryptedPipelineOrchestrationTests
             new[]
             {
                 "AutoTag", "EmbedFonts", "FixHeadingHierarchy", "FixReadingOrder", "MarkArtifacts",
-                "SetDocumentMetadata", "SetFigureAltText", "SetPdfUaIdentifier", "SetTabOrder",
+                "SetDocumentMetadata", "SetFigureAltText", "SetLinkDescriptions", "SetPdfUaIdentifier",
+                "SetTabOrder",
             },
             report.Steps.Select(s => s.Name).OrderBy(n => n, StringComparer.Ordinal).ToArray());
     }

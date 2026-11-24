@@ -10,8 +10,10 @@ using Tetitulz.Pdf.Core.Writing;
 namespace Tetitulz.Pdf.Accessibility.Editing
 {
     /// <summary>
-    /// What <see cref="PdfStructureTreeEditor.PlanFigureAltText"/> would append, plus the three
-    /// counts the clear-text <c>SetFigureAltText</c> returns.
+    /// What <see cref="PdfStructureTreeEditor.PlanFigureAltText"/> or
+    /// <see cref="PdfStructureTreeEditor.PlanLinkDescriptions"/> would append, plus the three counts
+    /// the clear-text <c>SetFigureAltText</c> or <c>SetLinkDescriptions</c> returns — a link's
+    /// <c>/Contents</c> being its alternate description, the outcomes are the same three.
     /// </summary>
     /// <remarks>
     /// <para>This carries counts where <see cref="StructureTreePlan"/> does not, because alt text is
