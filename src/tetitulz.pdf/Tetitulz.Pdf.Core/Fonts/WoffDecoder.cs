@@ -163,7 +163,7 @@ namespace Tetitulz.Pdf.Core.Fonts
                 }
 
                 // Cannot go negative: a stored table was checked against the budget above, and an
-                // inflated one was capped at it. A check here for "budget < 0" never fired and went.
+                // inflated one was capped at it, so no "budget < 0" check follows.
                 budget -= entry.Data.Length;
                 entries.Add(entry);
             }

@@ -1516,8 +1516,7 @@ namespace Tetitulz.Pdf.Accessibility.Internal
 
         /// <summary>
         /// One implementation, in <see cref="PageBoxNumber"/> — shared with
-        /// <c>PdfArtifactMarker</c>. This side's post-cast finiteness re-test is the one that
-        /// survived the merge; the other copy lacked it.
+        /// <c>PdfArtifactMarker</c>, post-cast finiteness re-test included.
         /// </summary>
         private static bool TryResolveNumber(PdfDocument doc, PdfObject obj, string boxName, out float value)
             => PageBoxNumber.TryResolveFinite(
@@ -1746,11 +1745,10 @@ namespace Tetitulz.Pdf.Accessibility.Internal
             total += (long)partLength + (needsSeparator ? 1 : 0);   // the '\n' joining it to the previous part
             if (total <= maxBytes) return true;
 
-            // Since the bounded decode landed this is a backstop rather than the gate that
-            // normally fires: a part heading past the ceiling is now stopped mid-decode by the
-            // budget Decode passes down. The accumulation itself is still load-bearing — the
-            // assembled buffer is sized from `total` — and a refusal here still costs nothing, so
-            // it stays. Do not read its rarity as dead code.
+            // A backstop rather than the gate that normally fires: a part heading past the
+            // ceiling is stopped mid-decode by the budget Decode passes down. The accumulation
+            // itself is load-bearing — the assembled buffer is sized from `total` — and a refusal
+            // here costs nothing. Do not read its rarity as dead code.
             ReportOverCeiling(maxBytes, "measured after decoding");
             return false;
         }

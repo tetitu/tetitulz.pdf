@@ -314,8 +314,8 @@ namespace Tetitulz.Pdf.Builder.Import
             {
                 // Charged and tested like every block: a repeating subform whose child breaks to a page
                 // area starts a section an instance, each a copy of the area's content areas and
-                // decorations, and nothing tested the ceiling between them — ten thousand instances of a
-                // page area of ten thousand content areas were 10⁸ objects before any export.
+                // decorations, so the ceiling is tested between them too: ten thousand instances of a
+                // page area of ten thousand content areas would otherwise be 10⁸ objects before any export.
                 if (_section != null && _blocks > MaxBlocks) { Note("the layout stopped at its block ceiling"); return; }
                 _page = page;
                 XfaContentArea area = page.ContentAreas[0];
@@ -1664,8 +1664,8 @@ namespace Tetitulz.Pdf.Builder.Import
             /// <summary>
             /// The data instances a subform occurs for, each charged to the block ceiling: an instance
             /// is layout work whether or not it emits a block, and an unframed top-to-bottom subform emits
-            /// none — three such nested, each occurring ten thousand times, were 10¹² instances and no
-            /// block, from a few hundred bytes. Past the ceiling, none.
+            /// none — three such nested, each occurring ten thousand times, would be 10¹² instances and
+            /// no block, from a few hundred bytes. Past the ceiling, none.
             /// </summary>
             private List<XElement?> Instances(XfaSubform s, XElement? data)
             {

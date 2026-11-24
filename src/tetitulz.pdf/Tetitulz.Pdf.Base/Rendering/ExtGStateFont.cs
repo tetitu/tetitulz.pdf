@@ -17,26 +17,22 @@ namespace Tetitulz.Pdf.Base.Rendering
     /// need not be a named resource of the page at all.</para>
     /// </summary>
     /// <remarks>
-    /// <para><b>Why this is a shared type.</b> The two renderers read this entry in
-    /// <i>mutually exclusive</i> shapes, so exactly one of them could ever select the font for any
-    /// given file. <c>ContentStreamInterpreter</c> accepted only a <see cref="PdfName"/> at index 0
-    /// and used it as the resource name — the shape Table 58 does not define — so a
-    /// spec-conformant <c>/Font [5 0 R 12]</c> changed the size and left the <i>face</i> at
-    /// whatever the last <c>Tf</c> had selected (or at none at all, when the stream had no
-    /// <c>Tf</c>). <c>SvgContentWriter</c> accepted only a <see cref="PdfReference"/> and
-    /// reverse-mapped it, so it honoured the conformant shape and ignored the other one. A file
-    /// written either way therefore rendered one way and exported another: the recurring
-    /// "one renderer fixed, the other silently disagreeing" defect class, in the one place where
-    /// the disagreement is total rather than partial.</para>
+    /// <para><b>Why this is a shared type.</b> Read separately, the two renderers could take this
+    /// entry in <i>mutually exclusive</i> shapes, so that exactly one of them selected the font for
+    /// any given file. A reader accepting only a <see cref="PdfName"/> at index 0 as the resource
+    /// name — the shape Table 58 does not define — would let a spec-conformant
+    /// <c>/Font [5 0 R 12]</c> change the size and leave the <i>face</i> at whatever the last
+    /// <c>Tf</c> had selected (or at none at all, when the stream has no <c>Tf</c>); one accepting
+    /// only a <see cref="PdfReference"/> would ignore the other shape. A file written either way
+    /// would render one way and export another, the disagreement total rather than partial.</para>
     ///
-    /// <para><b>Both shapes are now accepted, and the spec one is what the code is built around.</b>
+    /// <para><b>Both shapes are accepted, and the spec one is what the code is built around.</b>
     /// A reference is matched against the page's <c>/Resources /Font</c> to recover the resource
     /// name, because everything downstream of this — <see cref="FontCache"/> and every decode,
     /// width and glyph query in both renderers — is keyed by <c>(resource name, resources)</c>.
-    /// The non-conformant name form stays tolerated rather than dropped: it is what this renderer
-    /// has always accepted, a name in that slot can only have meant a resource name, and refusing
-    /// it would regress files that render correctly today. It is not <i>reported</i>, because
-    /// tolerating it changes nothing about the output.</para>
+    /// The non-conformant name form is tolerated rather than dropped: a name in that slot can only
+    /// mean a resource name, and refusing it would break files that render correctly with it. It
+    /// is not <i>reported</i>, because tolerating it changes nothing about the output.</para>
     ///
     /// <para><b>The limitation is reported.</b> A font that is genuinely not among the page's font
     /// resources — legal, and the reason the entry exists — cannot be selected through a
@@ -94,8 +90,8 @@ namespace Tetitulz.Pdf.Base.Rendering
         private static string ResolveResourceName(PdfDocument doc, PdfObject fontEntry,
                                                   PdfDictionary resources, string diagnosticPrefix)
         {
-            // Non-conformant shape, tolerated: a name here can only ever have meant a
-            // /Resources /Font key, and this is what the raster path has always accepted.
+            // Non-conformant shape, tolerated: a name here can only mean a /Resources /Font
+            // key.
             if (fontEntry is PdfName asResourceName) return asResourceName.Value;
 
             PdfDictionary fontCategory = PdfResolve.Dict(doc, resources, PdfName.Font);

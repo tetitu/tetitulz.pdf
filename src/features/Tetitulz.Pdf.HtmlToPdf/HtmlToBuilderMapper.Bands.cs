@@ -37,8 +37,7 @@ namespace Tetitulz.Pdf.HtmlToPdf
         /// like a document that mirrors its tables and not its flex rows. IT IS NOT. The root style is seeded from
         /// <c>HtmlToPdfOptions.DefaultTextDirection</c> and every derived style copies it, so
         /// <c>Direction</c> is never null by the time a band is mapped and the <c>??</c> never
-        /// fires. Mutating it away reddens nothing — so it is no fix for a defect, since the defect
-        /// does not exist.
+        /// fires. Mutating it away reddens nothing, and it guards against nothing that exists.
         ///
         /// <para>It stays because it is the spelling the table site carries, because it
         /// is the safe reading if the seeding ever changes, and because one rule in one place is

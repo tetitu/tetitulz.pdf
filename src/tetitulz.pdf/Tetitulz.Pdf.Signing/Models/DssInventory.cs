@@ -196,18 +196,15 @@ namespace Tetitulz.Pdf.Signing.Models
     /// (ISO 32000-2 §12.8.4.3).
     /// </summary>
     /// <remarks>
-    /// <para><b>Reporting these decides nothing, which is why they can be reported.</b> The
-    /// objection recorded against reading <c>/VRI</c> was that it would mean choosing which
-    /// signature the caller is asking about — true of a single flat list, and not true of a list
-    /// keyed by signature. <see cref="Key"/> <i>is</i> the signature's identity: the uppercase hex
-    /// SHA-1 of its <c>/Contents</c>. The caller still chooses; it now has something to choose
-    /// from.</para>
+    /// <para><b>Reporting these decides nothing, which is why they can be reported.</b> A single
+    /// flat list would mean choosing which signature the caller is asking about; a list keyed by
+    /// signature does not. <see cref="Key"/> <i>is</i> the signature's identity: the uppercase hex
+    /// SHA-1 of its <c>/Contents</c>. The caller chooses, with something to choose from.</para>
     ///
     /// <para><b>The keys inside a <c>/VRI</c> entry are singular</b> — <c>/OCSP</c> and <c>/CRL</c>,
     /// not the document-wide <c>/OCSPs</c> and <c>/CRLs</c>. Reading it with the plural names finds
     /// nothing and reports an entry with no evidence, which is indistinguishable from a document
-    /// that has none. <c>RevocationChecker.SelectSource</c> has always known this; it is the one
-    /// detail this type had to get right to exist at all.</para>
+    /// that has none. <c>RevocationChecker.SelectSource</c> reads the singular keys too.</para>
     /// </remarks>
     public sealed class DssVriEvidence
     {

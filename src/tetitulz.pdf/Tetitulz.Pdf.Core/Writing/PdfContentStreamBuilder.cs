@@ -59,8 +59,8 @@ namespace Tetitulz.Pdf.Core.Writing
 
         private int _fontCounter;
         private int _imageCounter;
-        // -1, not 0: the first optional-content name has always been OC0, and MintName advances
-        // the counter before it names.
+        // -1, not 0: the first optional-content name is OC0, and MintName advances the counter
+        // before it names.
         private int _optionalContentCounter = -1;
         private int _gsCounter;
 

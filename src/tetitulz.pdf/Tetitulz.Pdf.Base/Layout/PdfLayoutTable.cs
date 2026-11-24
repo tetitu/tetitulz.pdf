@@ -428,12 +428,12 @@ namespace Tetitulz.Pdf.Base.Layout
         private static string F(float v) =>
             // Non-finite goes to "0" instead of the bare keyword `NaN` / `Infinity`, which
             // is not a §7.3.3 number and can cost a strict reader the whole content stream.
-            // The PRECISION here is unchanged and deliberate; only the finiteness rule is shared.
+            // The PRECISION here is deliberate; only the finiteness rule is shared.
             PdfRealFormat.Format(v, "0.##");
 
         // One implementation, in Core.Objects.PdfStringEscape (ISO 32000-1 7.3.4.2).
-        // This copy escaped only ( ) and backslash, so a carriage return reached the file raw
-        // and came back as a line feed, and a NUL truncated some viewers' parsers.
+        // Escaping only ( ) and backslash would let a carriage return reach the file raw and
+        // come back as a line feed, and a NUL truncate some viewers' parsers.
         private static string EscapePdfString(string s) => PdfStringEscape.EscapeLiteral(s);
     }
 

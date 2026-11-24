@@ -105,8 +105,8 @@ internal sealed partial class SvgContentWriter
 
             // A stencil takes its colour from the current fill, and a PATTERN fill has no single
             // colour to bake into the PNG: its value is `url(#patN)`, which the colour parser
-            // cannot read, so the stencil exported as solid BLACK — a confidently wrong result
-            // of exactly the kind PatternFillUnresolved was introduced to stop. Emit the stencil
+            // cannot read, so the stencil would export as solid BLACK — a confidently wrong result
+            // of exactly the kind PatternFillUnresolved exists to stop. Emit the stencil
             // as a luminance <mask> and paint the pattern through it instead, which is what the
             // raster path does by stencilling with the pattern's shader.
             //
@@ -548,15 +548,12 @@ internal sealed partial class SvgContentWriter
         /// Applies the ExtGState transfer function (<c>/TR2 ?? /TR</c>, §10.4) to a decoded image.
         /// </summary>
         /// <remarks>
-        /// <para>Through <see cref="TransferFunctionLut"/>, which the raster path also calls. The
-        /// comment that stood here said "Parity with
-        /// <c>ContentStreamInterpreter.ApplyTransferFunction</c>" — the sentence this project treats
-        /// as a defect marker — and it was not parity in two ways that mattered. This copy called
-        /// <c>PdfFunctionEvaluator.Evaluate</c> <b>per channel per pixel</b> where the raster path
-        /// built a 256-entry table, so a large image cost 3·w·h evaluations against 768; and it
-        /// evaluated with <b>no resolver</b>, so a Type 3 stitching function with indirect
-        /// sub-functions degraded here and not there — a difference in the exported pixels, not just
-        /// in the time.</para>
+        /// <para>Through <see cref="TransferFunctionLut"/>, which the raster path also calls: a
+        /// 256-entry table a channel, built with the document's resolver. Evaluating
+        /// <c>PdfFunctionEvaluator.Evaluate</c> <b>per channel per pixel</b> would cost a large image
+        /// 3·w·h evaluations against 768, and evaluating with <b>no resolver</b> would degrade a
+        /// Type 3 stitching function with indirect sub-functions here and not there — a difference
+        /// in the exported pixels, not just in the time.</para>
         /// </remarks>
         private void ApplyTransferFunctionToBitmap(SkiaSharp.SKBitmap bmp)
             => TransferFunctionLut.ApplyToBitmap(

@@ -63,10 +63,10 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// number and resolving first would throw that away.
         /// </summary>
         /// <remarks>
-        /// Both call sites pass a different shape and both were wrong before. XObjects and
-        /// annotations carry <c>/OC</c> pointing at the OCG; <c>BDC</c> instead names a
-        /// <c>/Properties</c> resource that <em>is</em> the OCG. The single old helper always
-        /// looked for an <c>/OC</c> key, so a <c>/OC /P BDC … EMC</c> block was never suppressed.
+        /// The call sites pass different shapes. XObjects and annotations carry <c>/OC</c> pointing
+        /// at the OCG; <c>BDC</c> instead names a <c>/Properties</c> resource that <em>is</em> the
+        /// OCG. A helper that always looked for an <c>/OC</c> key would never suppress a
+        /// <c>/OC /P BDC … EMC</c> block.
         /// </remarks>
         internal static bool IsOcEntryHidden(
             PdfObject ocEntry,

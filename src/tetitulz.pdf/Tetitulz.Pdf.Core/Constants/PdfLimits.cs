@@ -344,11 +344,9 @@ namespace Tetitulz.Pdf.Core.Constants
         /// a 10 000-page report's tree lands in the low hundreds of thousands of nodes.</para>
         ///
         /// <para><b>It is the ceiling of the one walk every reader of the tree uses</b>
-        /// (`Base.Operations.Structure.StructureTreeWalk`), and it was found by comparing walks:
-        /// while `Accessibility.Internal.StructTreeWalker`, `PdfTaggedTextExtractor` and
-        /// `PdfStructureTreeReader` each read the same tree from untrusted input themselves, the
-        /// extractor, and then the reader, turned out to have the depth cap and the visited set but
-        /// not this one.</para>
+        /// (`Base.Operations.Structure.StructureTreeWalk`): readers walking the same untrusted tree
+        /// themselves would each need the depth cap, the visited set and this, and one carrying the
+        /// first two without this would be bounded in depth and not in work.</para>
         /// </remarks>
         public static int MaxStructTreeEdges { get; set; } = DefaultMaxStructTreeEdges;
 
@@ -476,8 +474,8 @@ namespace Tetitulz.Pdf.Core.Constants
         /// <remarks>
         /// A query reads the earlier drawings of its text in the cells its X window covers, and a
         /// column of one text at one X — a rotated line, or the same glyph shown down the page — puts
-        /// them all in one cell: each glyph read every one before it, so a few hundred kilobytes of
-        /// content were 10<sup>11</sup> comparisons. Sixty-four million is some tens of milliseconds, and
+        /// them all in one cell: each glyph reads every one before it, so a few hundred kilobytes of
+        /// content would be 10<sup>11</sup> comparisons. Sixty-four million is some tens of milliseconds, and
         /// thousands of times what a dense real page spends.
         /// </remarks>
         public static long MaxOverlappingTextComparisons { get; set; } = DefaultMaxOverlappingTextComparisons;

@@ -70,13 +70,11 @@ namespace Tetitulz.Pdf.Base.Operations.Structure
     /// </summary>
     /// <remarks>
     /// <para>The traversal is <see cref="StructureTreeWalk"/>'s — the one walk of this tree, shared
-    /// with the tagged-text extractor, the accessibility feature and the PDF/UA checker. Before it
-    /// was shared, this reader's own walk guarded a cycle in one of the two <c>/K</c> spellings only
-    /// (an element whose <c>/K</c> was a single reference back up the tree recursed to the depth cap
-    /// and threw, while every other reader stopped at the second visit), read <c>/S</c>, <c>/Alt</c>
-    /// and <c>/ActualText</c> unresolved while the extractor resolved them, and was the one walk of
-    /// the tree without an edge ceiling. Each was found by comparing two walks of the same tree; a
-    /// walk in one place is compared with nothing.</para>
+    /// with the tagged-text extractor, the accessibility feature and the PDF/UA checker, so every
+    /// reader guards a cycle in both <c>/K</c> spellings (a single reference back up the tree as
+    /// well as an array), resolves <c>/S</c>, <c>/Alt</c> and <c>/ActualText</c>, and carries the
+    /// edge ceiling. Separate walks of the same tree drift, and a walk in one place is compared
+    /// with nothing.</para>
     /// <para><b>A ceiling is a refusal here, not a truncation.</b> A tree cut short at the depth,
     /// node or edge ceiling would come back looking complete — wrong but invisible, which is worse
     /// than an exception the caller can see — so the reader throws

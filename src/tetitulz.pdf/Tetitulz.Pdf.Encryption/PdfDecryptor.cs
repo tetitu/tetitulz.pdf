@@ -157,9 +157,9 @@ namespace Tetitulz.Pdf.Encryption
             if (output == null) throw new ArgumentNullException(nameof(output));
             if (password == null) password = "";
             // Not normalised here: SASLprep applies to a revision-5+ password only, and it is applied
-            // at the one place that knows the revision — ValidateAndDeriveAes256Key. Doing it here
-            // "pre-emptively, safe for all revisions" was wrong for a revision 2–4 password holding a
-            // no-break space or soft hyphen, which §7.6.3.3 hashes as raw Latin-1 bytes.
+            // at the one place that knows the revision — ValidateAndDeriveAes256Key. Done here, it
+            // would be wrong for a revision 2–4 password holding a no-break space or soft hyphen,
+            // which §7.6.3.3 hashes as raw Latin-1 bytes.
 
             // Buffered() rewinds a seekable input BEFORE copying: copied from its current position, a
             // FileStream a host had already read from would be a truncated, corrupt document.
@@ -512,8 +512,8 @@ namespace Tetitulz.Pdf.Encryption
                 ComposeDropDiagnostic(firstDropReason, dropCount);
 
                 // Remove object streams from the output — their contained objects
-                // are now written as regular indirect objects. (The cross-reference stream never
-                // got in: step 1 skips it.)
+                // are written as regular indirect objects. (The cross-reference stream never
+                // gets in: step 1 skips it.)
                 foreach (int objStmNum in objectStreamNumbers)
                     decryptedObjects.Remove(objStmNum);
 
@@ -1703,8 +1703,8 @@ namespace Tetitulz.Pdf.Encryption
                 // PKCS#7 padding failed. Per ISO 32000 conforming AES-CBC is ALWAYS PKCS#7-padded,
                 // so a padding failure means the ciphertext is wrong (tampered, truncated, or wrong
                 // key). The default is therefore to FAIL CLOSED: tampered ciphertext must not be
-                // silently re-interpreted as valid unpadded plaintext. Historically a no-padding
-                // retry could mask exactly that. The retry is now strictly OPT-IN via
+                // silently re-interpreted as valid unpadded plaintext, which a no-padding retry would
+                // do. The retry is strictly OPT-IN via
                 // <see cref="AllowAesCbcNoPaddingFallback"/> for the rare non-conforming producer
                 // that genuinely encrypts without padding; the <see cref="LastAesCbcPaddingFallback"/>
                 // diagnostic is always set so callers can audit when the fallback fires.

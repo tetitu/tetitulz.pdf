@@ -3633,14 +3633,12 @@ namespace Tetitulz.Pdf.Base.Operations
         /// A <c>&lt;path&gt;</c>: every command of SVG 1.1 §8.3's grammar, absolute and relative.
         /// </summary>
         /// <remarks>
-        /// <para><b>It drew five of them.</b> <c>M</c>, <c>L</c>, <c>H</c>, <c>V</c> and <c>Z</c> were
-        /// handled, and every curve — cubic <c>C</c>/<c>S</c>, quadratic <c>Q</c>/<c>T</c>, elliptical
-        /// arc <c>A</c> — became a PDF comment reported nowhere, so an icon or a logo came out as the
-        /// straight segments between its curves. A quadratic is drawn as its exact cubic; an arc as
-        /// cubics of at most a quarter turn each, from the endpoint parameterisation of Appendix
-        /// F.6.</para>
-        /// <para><b>Two grammar rules were wrong too.</b> Pairs after a moveto are implicit linetos
-        /// (§8.3.2) and were drawn as further movetos, so <c>M 0 0 10 10</c> drew nothing; and
+        /// <para><b>Every curve too</b> — cubic <c>C</c>/<c>S</c>, quadratic <c>Q</c>/<c>T</c>,
+        /// elliptical arc <c>A</c> — or an icon or a logo would come out as the straight segments
+        /// between its curves. A quadratic is drawn as its exact cubic; an arc as cubics of at most a
+        /// quarter turn each, from the endpoint parameterisation of Appendix F.6.</para>
+        /// <para><b>Two grammar rules matter.</b> Pairs after a moveto are implicit linetos
+        /// (§8.3.2) — drawn as further movetos, <c>M 0 0 10 10</c> would draw nothing — and
         /// closepath returns the current point to the subpath's start (§8.3.3), which a relative
         /// command after it counts from.</para>
         /// </remarks>
@@ -5700,12 +5698,13 @@ namespace Tetitulz.Pdf.Base.Operations
         /// optional exponent whose <c>e</c> is followed by digits. So <c>1.5.5</c> is two numbers,
         /// <c>1.5</c> and <c>.5</c>; <c>10-5</c> is <c>10</c> and <c>-5</c>; and <c>1e-3</c> is one
         /// number.</para>
-        /// <para><b>The tokenizer took every digit and point it met</b>, so <c>1.5.5</c>, which
-        /// illustration tools write, was one token that did not parse and read as 0. An exponent
-        /// split at its <c>e</c>, which then went through as a path command. Point lists and
-        /// transform arguments split on separators only, so <c>10-5</c> was one unparseable part and
-        /// was dropped. Digits are ASCII: <c>char.IsDigit</c> took any Unicode decimal digit into a
-        /// token the number parse then rejected.</para>
+        /// <para><b>A token is one number.</b> Taking every digit and point met would read
+        /// <c>1.5.5</c>, which illustration tools write, as one token that does not parse and reads
+        /// as 0, and would split an exponent at its <c>e</c>, which would then go through as a path
+        /// command. Point lists and transform arguments are scanned the same way; split on
+        /// separators only, <c>10-5</c> would be one unparseable part and dropped. Digits are ASCII:
+        /// <c>char.IsDigit</c> would take any Unicode decimal digit into a token the number parse
+        /// then rejects.</para>
         /// </remarks>
         private static bool TryScanNumber(string s, ref int i, out string token)
         {
@@ -5993,8 +5992,8 @@ namespace Tetitulz.Pdf.Base.Operations
         // ── String helpers ────────────────────────────────────────────────────
 
         // One implementation, in Core.Objects.PdfStringEscape (ISO 32000-1 7.3.4.2).
-        // This copy escaped only ( ) and backslash, so a carriage return reached the file raw
-        // and came back as a line feed, and a NUL truncated some viewers' parsers.
+        // Escaping only ( ) and backslash would let a carriage return reach the file raw and
+        // come back as a line feed, and a NUL truncate some viewers' parsers.
         private static string EscapePdfString(string s) => PdfStringEscape.EscapeLiteral(s);
 
         private static string F(float v) => PdfRealFormat.Format(v, "F4");

@@ -17,9 +17,8 @@ namespace Tetitulz.Pdf.Core.Objects
     /// names no <c>Plugins.*</c> assembly, so an internal helper would leave every plugin writing its
     /// own — the same reasoning <see cref="Text.Latin1Text"/> states for itself.</para>
     /// <para><b>Not behind an <c>#if</c>, deliberately.</b> A conditional shim gives the two legs two
-    /// implementations of one idea, which is the shape this repository has been bitten by before:
-    /// <c>ISignatureVerifyPlugin</c> was once compiled *out* of the netstandard2.0 target and nothing
-    /// noticed.</para>
+    /// implementations of one idea, and a type compiled out of one leg is a difference nothing
+    /// notices.</para>
     /// <para><b>Typed <c>IEqualityComparer&lt;object&gt;</c>, matching the BCL.</b>
     /// <c>IEqualityComparer&lt;in T&gt;</c> is contravariant, so this one instance serves
     /// <c>HashSet&lt;PdfObject&gt;</c>, <c>Dictionary&lt;PdfDictionary, T&gt;</c> and any other

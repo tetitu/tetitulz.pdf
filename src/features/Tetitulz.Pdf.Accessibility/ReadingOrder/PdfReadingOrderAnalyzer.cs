@@ -423,8 +423,8 @@ namespace Tetitulz.Pdf.Accessibility.ReadingOrder
         /// output differs from the input.</b> The permutation is computed in memory and only then
         /// handed to the incremental writer, which is documented never to throw — it reports a
         /// failure and leaves the output holding just the original bytes. Returning the permutation
-        /// count unconditionally therefore claimed a repaired reading order for a file that is
-        /// byte-for-byte the input. The count is now returned only once the appended revision has
+        /// count unconditionally would claim a repaired reading order for a file that is
+        /// byte-for-byte the input. The count is returned only once the appended revision has
         /// actually reached <paramref name="output"/>; otherwise the result is <c>0</c> (so
         /// <see cref="ReadingOrderFixResult.Modified"/> is <c>false</c>) and <see cref="LastError"/>
         /// carries the reason — the warning channel this result type does not have.
@@ -657,7 +657,7 @@ namespace Tetitulz.Pdf.Accessibility.ReadingOrder
 
         /// <summary>
         /// Extracts the page text layouts used by the <c>/ActualText</c> fallback. A failure here
-        /// is <em>not</em> fatal any more: marked-content positions do not depend on it, so the
+        /// is <em>not</em> fatal: marked-content positions do not depend on it, so the
         /// analysis continues with the fallback unavailable and says so.
         /// </summary>
         private static IReadOnlyList<PdfPageTextLayout> TryExtractStructuredText(byte[] bytes)

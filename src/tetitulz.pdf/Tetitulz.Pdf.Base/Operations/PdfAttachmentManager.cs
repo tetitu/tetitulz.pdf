@@ -798,9 +798,9 @@ namespace Tetitulz.Pdf.Base.Operations
         }
 
         // Traversal is Core.Document.PdfNameTree (GAPS §15c): one implementation across the three
-        // rings that walk name trees, and it adds a /Kids cycle guard and an entry budget this copy
-        // did not have — a two-node cycle is shallow, so the depth cap alone let it spin to
-        // MaxTreeDepth once per entry point.
+        // rings that walk name trees, with a /Kids cycle guard and an entry budget — a two-node
+        // cycle is shallow, so a depth cap alone would let it spin to MaxTreeDepth once per entry
+        // point.
         //
         // The value stays an unresolved PdfReference on purpose: an embedded file is identified by
         // object number here, and resolving it would lose exactly that. Returns false when the walk

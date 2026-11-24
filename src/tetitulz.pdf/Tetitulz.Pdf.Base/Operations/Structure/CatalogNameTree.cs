@@ -17,25 +17,24 @@ namespace Tetitulz.Pdf.Base.Operations.Structure
     /// (§7.9.6).
     /// </summary>
     /// <remarks>
-    /// <para><b>Why this is one helper.</b> The two Base writers that edit a name tree answered
-    /// the same questions differently, and both got at least one wrong:</para>
+    /// <para><b>Why this is one helper.</b> The Base writers that edit a name tree (the
+    /// attachments and the destinations) ask the same questions, and each has one answer here:</para>
     /// <list type="bullet">
-    ///   <item><b>Which other categories survive.</b> <c>PdfAttachmentManager</c> replaced the
-    ///     catalog's whole <c>/Names</c> dictionary with a new one holding only
-    ///     <c>/EmbeddedFiles</c>. So adding or removing an attachment deleted every named
-    ///     destination, every document-level script and every other name tree the document had.
-    ///     The output still opened, and its attachments were correct, so nothing noticed.</item>
-    ///   <item><b>What a key is.</b> Both rebuilt every existing key from its decoded text with
-    ///     <c>new PdfString(text)</c>. §7.9.6 compares keys "on a simple byte-by-byte basis", and
-    ///     re-encoding changes the bytes. For example, a key stored as UTF-16BE whose text is
-    ///     ASCII comes back one byte per character. A PDFDocEncoded key holding a bullet or a
-    ///     dash comes back as UTF-16BE. Either way a <c>/GoTo</c> naming the destination by its
-    ///     original bytes stopped finding it. Keys are now kept as stored.</item>
-    ///   <item><b>Which order.</b> Both sorted by decoded text. §7.9.6 sorts by bytes, and
+    ///   <item><b>Which other categories survive.</b> All of them. Replacing the catalog's whole
+    ///     <c>/Names</c> dictionary with one holding only <c>/EmbeddedFiles</c> would make adding
+    ///     or removing an attachment delete every named destination, every document-level script
+    ///     and every other name tree the document had — while the output still opened and its
+    ///     attachments were correct, so nothing would notice.</item>
+    ///   <item><b>What a key is.</b> The bytes as stored. §7.9.6 compares keys "on a simple
+    ///     byte-by-byte basis", and rebuilding a key from its decoded text with
+    ///     <c>new PdfString(text)</c> changes the bytes: a key stored as UTF-16BE whose text is
+    ///     ASCII would come back one byte per character, and a PDFDocEncoded key holding a bullet
+    ///     or a dash as UTF-16BE. Either way a <c>/GoTo</c> naming the destination by its original
+    ///     bytes would stop finding it.</item>
+    ///   <item><b>Which order.</b> §7.9.6 sorts by bytes, not decoded text, and
     ///     <c>PdfNameTree.CompareKeys</c> is that rule.</item>
-    ///   <item><b>A truncated read.</b> The destinations writer refused to rewrite a tree it could
-    ///     not read in full. The attachments writer ignored the flag and rewrote the part it had
-    ///     read.</item>
+    ///   <item><b>A truncated read.</b> A tree that could not be read in full is not rewritten:
+    ///     rewriting the part read would drop the rest.</item>
     /// </list>
     /// <para><b>Where the leaf goes.</b> An indirect tree root is superseded in place, so nothing
     /// that points at it changes. Otherwise a new leaf object is minted, and the name dictionary

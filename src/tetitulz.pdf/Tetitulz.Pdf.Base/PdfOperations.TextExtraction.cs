@@ -26,12 +26,12 @@ namespace Tetitulz.Pdf.Base
         /// Extracts all text from a PDF file.
         /// </summary>
         /// <remarks>
-        /// <b>This opened the file directly</b>, and so did three things its <see cref="Stream"/>
-        /// sibling does not: it never decrypted (an encrypted document extracted as the empty
-        /// string, silently), it never fired the text-extraction plugin hook (a plugin observing
-        /// extraction saw stream reads and was blind to file reads), and it never reset
-        /// <see cref="LastExtractionError"/> — so a previous encrypted read's message survived into
-        /// this call's successful answer, which is precisely what that property's contract forbids.
+        /// <b>Read through the <see cref="Stream"/> sibling</b>, so it decrypts, fires the
+        /// text-extraction plugin hook and resets <see cref="LastExtractionError"/> as that does.
+        /// Opening the file directly would extract an encrypted document as the empty string,
+        /// silently, leave a plugin observing extraction blind to file reads, and let a previous
+        /// encrypted read's message survive into this call's successful answer, which is precisely
+        /// what that property's contract forbids.
         /// </remarks>
         public static string ExtractText(string pdfPath)
         {
@@ -43,7 +43,8 @@ namespace Tetitulz.Pdf.Base
         /// <summary>
         /// Extracts text from a specific page of a PDF file (1-based page number).
         /// </summary>
-        /// <remarks>Same three defects as the whole-document overload above; same fix.</remarks>
+        /// <remarks>Read through the <see cref="Stream"/> sibling, as the whole-document overload
+        /// above is, and for the same three reasons.</remarks>
         public static string ExtractText(string pdfPath, int pageNumber)
         {
             if (pdfPath == null) throw new ArgumentNullException(nameof(pdfPath));

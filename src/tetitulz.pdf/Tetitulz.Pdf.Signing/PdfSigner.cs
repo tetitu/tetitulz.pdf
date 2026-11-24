@@ -253,14 +253,12 @@ namespace Tetitulz.Pdf.Signing
             //
             // A trailer with a DIRECT /Root — `/Root << /Type /Catalog … >>` — has no object number
             // to supersede, and ObjectNumberOf answers 0, which is reserved as the head of the free
-            // list. Without this the writer emitted `0 0 obj` plus an xref entry for it, so the
-            // signed catalog was written but unreachable: a MALFORMED FILE THAT REPORTED SUCCESS,
+            // list. Without this the writer would emit `0 0 obj` plus an xref entry for it, so the
+            // signed catalog would be written but unreachable: a MALFORMED FILE THAT REPORTED SUCCESS,
             // with a signature verifying over a document whose catalog cannot be found.
             //
-            // Plugins.EthereumSign.PdfBlockchainSigner has carried this guard, and a comment saying
-            // the same thing, since it hit the defect; the two writers here share its helper and
-            // never got it. Same shape as the /Kids-inheritance fix that reached PdfAcroForm and not
-            // PdfSigner: the repair landed one level short.
+            // Plugins.EthereumSign.PdfBlockchainSigner refuses the same trailer: a fix to one
+            // writer is a finding about every writer of the same shape.
             int catalogObjNum = CatalogObjectNumberOrRefuse(originalTrailer);
             int catalogGen = Core.Writing.ExistingObjectGeneration.Of(
                 parser.CrossReferenceTable, catalogObjNum, originalTrailer[PdfName.Root]);

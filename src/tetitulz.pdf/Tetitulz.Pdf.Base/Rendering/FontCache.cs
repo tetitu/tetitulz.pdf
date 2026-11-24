@@ -1099,9 +1099,9 @@ namespace Tetitulz.Pdf.Base.Rendering
                 //
                 // StandardEncodings' classification, not a private copy, because the two meet inside
                 // ApplyPdfEncodingOverride, which joins both answers on one int key. "uniXXXXYYYY"
-                // is now refused rather than truncated to its first four digits: that form is a
-                // code-point SEQUENCE, and mapping U+0041 to a glyph drawing "AB" made a page that
-                // asked for "A" render "AB".
+                // is refused rather than truncated to its first four digits: that form is a
+                // code-point SEQUENCE, and mapping U+0041 to a glyph drawing "AB" would make a page
+                // that asked for "A" render "AB".
                 if (StandardEncodings.TryGetAglCodePoint(kv.Key, out int cp) && !result.ContainsKey(cp))
                     result[cp] = kv.Value;
             }
@@ -1563,11 +1563,11 @@ namespace Tetitulz.Pdf.Base.Rendering
 
             // DW2 = [vy w1y].  w1y is the y-displacement per glyph in glyph units; per spec it is
             // negative (downward in PDF Y-up space) and callers use the absolute magnitude
-            // (positive = one em of downward advance).  DW2[0] is the position vector's y — read
-            // into a comment for years and never applied, which is the defect this closes.
-            // The elements resolved, as /W's are (PdfType0Font.ParseWArray takes the resolver):
-            // read as stored, a `/DW2 [880 7 0 R]` fell to the −1000 default and a /W2 entry written
-            // with referenced numbers was passed over, in this cache and in the PDF/UA-2 check alike.
+            // (positive = one em of downward advance).  DW2[0] is the position vector's y, and is
+            // applied. The elements resolved, as /W's are (PdfType0Font.ParseWArray takes the
+            // resolver): read as stored, a `/DW2 [880 7 0 R]` would fall to the −1000 default and a
+            // /W2 entry written with referenced numbers be passed over, in this cache and in the
+            // PDF/UA-2 check alike.
             if (doc.ResolveObject(cidFont[PdfName.DW2]) is PdfArray dw2 && dw2.Count >= 2)
             {
                 if (doc.ResolveObject(dw2[0]) is PdfNumber vy) defaultVy = (float)vy.DoubleValue;
@@ -1620,11 +1620,11 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// <remarks>
         /// <b>All three arguments are guarded, and the <c>resourceName</c> one is not defensive
         /// padding.</b> <c>PdfName</c>'s constructor throws <c>ArgumentNullException</c>, so
-        /// <c>new PdfName(null)</c> below turned a missing font name into an exception out of
+        /// <c>new PdfName(null)</c> below would turn a missing font name into an exception out of
         /// <c>IsEmbedded</c> — which the SVG writer calls with <c>_gs.FontName</c>, null before the
-        /// first <c>Tf</c> and after a malformed one. The sibling of this method in
-        /// <c>PdfStructuredTextExtractor</c> guarded all three from the start; this copy guarded
-        /// one, and a content stream that shows text without setting a font crashed the export.
+        /// first <c>Tf</c> and after a malformed one — and a content stream that shows text without
+        /// setting a font would crash the export. The sibling of this method in
+        /// <c>PdfStructuredTextExtractor</c> guards all three too.
         /// </remarks>
         private PdfDictionary LookupFontDict(string resourceName, PdfDictionary resources, PdfDocument doc)
         {

@@ -124,7 +124,7 @@ internal sealed partial class SvgContentWriter
 
         /// <summary>
         /// The legacy inline <c>(...) PS</c> operator. A registered <c>IPostScriptPlugin</c>
-        /// can execute it; otherwise it stays the no-op it has always been.
+        /// can execute it; otherwise it is a no-op.
         /// </summary>
         private void OpPs(ContentStreamOperation op)
         {
@@ -393,7 +393,7 @@ internal sealed partial class SvgContentWriter
 
             // /BBox clip, emitted in page space so the <path d> needs no transform attribute.
             // One emitter, in EmitBBoxClip. The box is in FORM space, so it goes through
-            // /Matrix ∘ CTM rather than the CTM alone — the one thing this copy varied.
+            // /Matrix ∘ CTM rather than the CTM alone.
             bool clipped = EmitBBoxClip(bboxArr, formCtm, "psclip", openGroup: true) != null;
 
             var child = new SvgContentWriter(_sb, _doc, resources, _pageW, _pageH);

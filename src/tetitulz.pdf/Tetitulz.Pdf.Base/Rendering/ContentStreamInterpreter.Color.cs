@@ -194,11 +194,10 @@ namespace Tetitulz.Pdf.Base.Rendering
             _ctx.GS.StrokeColor = GrayColor(GetFloat(op, 0));
             ClearSepTints(stroke: true);
             _ctx.GS.StrokeDeviceGray = true;
-            // The stroke half of the rule the fill half has always had. `G` and `RG` select a
-            // device space that is NOT DeviceCMYK, so the colorant snapshot overprint simulation
-            // reads must go with the colour — and here it did not, so `1 0 0 0 K … 0 G` left cyan
-            // in StrokeCmyk and PdfRenderContext.Transparency.cs:529 composited a grey stroke
-            // against colorants the file had already replaced.
+            // The stroke half of the fill half's rule. `G` and `RG` select a device space that is
+            // NOT DeviceCMYK, so the colorant snapshot overprint simulation reads goes with the
+            // colour — kept, `1 0 0 0 K … 0 G` would leave cyan in StrokeCmyk and the overprint
+            // compositor would composite a grey stroke against colorants the file had replaced.
             _ctx.GS.StrokeCmyk = null;
             _ctx.GS.StrokeIsPattern = false;
         }
@@ -366,13 +365,12 @@ namespace Tetitulz.Pdf.Base.Rendering
             // [0, hival]. This rounded toward +infinity, so `sc 2.4` picked palette entry 3 — the
             // wrong colour for every non-integral index, and a file that writes 2.9999999 for
             // entry 3 (float round-trip) is the case the spec sentence exists for.
-            // Midpoints go away from zero, matching the PostScript `round` this file already fixed.
+            // Midpoints go away from zero, matching the PostScript `round`.
             if (cs == PdfColorSpaceNames.Indexed && csArr != null && csArr.Count >= 4)
             {
-                // One reader, in IndexedPalette.TryReadSpace, which all four /Indexed sites call.
-                // This copy did not clamp /HiVal, so it clamped the index against the file's raw
-                // value and then fell past the end of the (always-clamped) palette to black, where
-                // the SVG colour site clamped first and painted a real entry.
+                // One reader, in IndexedPalette.TryReadSpace, which all four /Indexed sites call. It
+                // clamps /HiVal, so the index is clamped against the palette's real length: against the
+                // file's raw value it would fall past the end of the palette to black.
                 IndexedPalette.TryReadSpace(_doc, csArr, out var idxBase, out int hival, out byte[] table);
 
                 float indexF = op.Operands.Length > 0 ? GetFloat(op, 0) : 0f;

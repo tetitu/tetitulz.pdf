@@ -68,8 +68,7 @@ internal sealed partial class SvgContentWriter
 
             // try/finally, not a straight-line close: Execute catches per operator, so a throw
             // out of an emitter would otherwise leave the clip group open and the document
-            // no longer well-formed XML — which is how the unbalanced-group defect this
-            // writer already had once got in.
+            // no longer well-formed XML.
             try
             {
                 if (shType == 2 || shType == 3)

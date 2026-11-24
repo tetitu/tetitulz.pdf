@@ -19,12 +19,12 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Document
     /// arguments there, so it has no allocator. Only the code writing the file owns the numbering.
     /// This is the same ownership argument CLAUDE.md makes for the two incremental writers.</para>
     ///
-    /// <para><b>The defect it fixes.</b> The walk this replaces promoted one level only:
-    /// <c>/XObject → Im1</c> is a <see cref="PdfStream"/>, so images worked, but a font nests
-    /// deeper — <c>/Font → F1 → /FontDescriptor → /FontFile</c> — so the font program stayed
-    /// direct. <c>PdfWriter.WriteObject</c> then serialised it as dictionary entries and dropped
-    /// <c>RawData</c> silently, so importing a <c>.ps</c> that embeds its own Type 1 font produced
-    /// a <c>/FontFile</c> with no font program in it, the glyphs gone, and a success report.</para>
+    /// <para><b>Every level, not one.</b> <c>/XObject → Im1</c> is a <see cref="PdfStream"/> one
+    /// level down, but a font nests deeper — <c>/Font → F1 → /FontDescriptor → /FontFile</c>. A
+    /// font program left direct would be serialised by <c>PdfWriter.WriteObject</c> as dictionary
+    /// entries with its <c>RawData</c> silently dropped, so importing a <c>.ps</c> that embeds its
+    /// own Type 1 font would produce a <c>/FontFile</c> with no font program in it, the glyphs
+    /// gone, and a success report.</para>
     ///
     /// <para><b>Copy-on-write, never mutation.</b> <c>PostScriptPageCollector.AttachResources</c>
     /// hands the same dictionary instance to every page and <c>PdfResourceCollector</c> still owns

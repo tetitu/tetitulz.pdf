@@ -507,9 +507,9 @@ namespace Tetitulz.Pdf.Base.Images
                 if (fillOrder == 2) ReverseBitsInPlace(raw);
 
                 // A strip inflates no further than its rows: twice a full strip's bytes and a margin,
-                // since a writer may pad the last strip to RowsPerStrip. It went through each filter at
-                // the decompression ceiling, and the bytes past its rows were thrown away below — a
-                // 20 KB strip inflated to 20 MB for a 100 × 100 page.
+                // since a writer may pad the last strip to RowsPerStrip. At the decompression ceiling,
+                // with the bytes past its rows thrown away below, a 20 KB strip would inflate to 20 MB
+                // for a 100 × 100 page.
                 long ceiling = 2L * rowBytes * Math.Min(rowsPerStrip, height) + 65_536;
                 byte[] decoded = Decompress(raw, compression, rowsThisStrip, (int)w, samples,
                                             bitsPerSample, predictor, tags, bytes, bigEndian, ceiling);
@@ -706,8 +706,6 @@ namespace Tetitulz.Pdf.Base.Images
 
         /// <summary>
         /// A sample to a byte, through <see cref="RasterSample.ScaleToByteFromMax"/>, the one rule.
-        /// This was a truncating copy of its own; at the 1, 4 and 8 bits it is called with the two
-        /// agree exactly, so the copy was the only difference.
         /// </summary>
         private static byte Scale(int value, int max)
             => (byte)RasterSample.ScaleToByteFromMax(value, max);

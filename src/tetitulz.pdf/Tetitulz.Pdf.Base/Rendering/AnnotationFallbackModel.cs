@@ -56,10 +56,10 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// content stream does. It is a third reader of <c>rg</c>/<c>g</c>, reached only through a
         /// <c>/DA</c> <i>string</i>, which a sweep over the operator handlers does not see.</para>
         /// <para><b>The reading is <see cref="Base.Operations.Forms.DefaultAppearanceString"/></b>, shared with
-        /// the form appearance generator and the annotation appearance builder. This copy read
-        /// <c>g</c> and <c>rg</c> and not <c>k</c>, so a CMYK <c>/DA</c> drew black in both renderers
-        /// while the appearance generated for the same annotation used the colour. CMYK goes through
-        /// <see cref="PdfColor.CmykToRgb"/>, the renderers' one conversion.</para>
+        /// the form appearance generator and the annotation appearance builder, so a CMYK
+        /// <c>/DA</c> (<c>k</c>) draws its colour in both renderers, as the appearance generated for
+        /// the same annotation does. CMYK goes through <see cref="PdfColor.CmykToRgb"/>, the
+        /// renderers' one conversion.</para>
         /// </remarks>
         internal static (float size, SKColor fill) ParseDefaultAppearance(string da)
         {
@@ -250,10 +250,10 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// <param name="formNeedsAppearances">The document-scoped answer from
         /// <see cref="FormNeedsAppearances"/>.</param>
         /// <remarks>
-        /// <para><b>The defect this closes.</b> A form filled by a producer that relies on the flag
-        /// carries the blank template's appearance stream beside a written <c>/V</c>. Neither
-        /// renderer read <c>/NeedAppearances</c> at all, so that appearance was drawn and the field
-        /// rendered <b>empty</b> — the same picture a form nobody filled in produces.</para>
+        /// <para><b>Why <c>/NeedAppearances</c> is read.</b> A form filled by a producer that relies
+        /// on the flag carries the blank template's appearance stream beside a written <c>/V</c>.
+        /// Drawn, that appearance would render the field <b>empty</b> — the same picture a form
+        /// nobody filled in produces.</para>
         ///
         /// <para><b>Narrowed on purpose, in three ways</b>, because the synthetic fallback is a
         /// rougher drawing than a real appearance stream and replacing a good one is a regression:</para>

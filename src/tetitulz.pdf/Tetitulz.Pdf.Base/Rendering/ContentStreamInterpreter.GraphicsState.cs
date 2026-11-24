@@ -157,8 +157,8 @@ namespace Tetitulz.Pdf.Base.Rendering
 
             // /D [array phase] — dash pattern from ExtGState (same pair the 'd' operator takes).
             // One implementation, in DashPattern.TryReadExtGState, which the SVG writer also calls:
-            // this copy resolved only the outer two objects, so an indirect dash length or phase
-            // read as 0, and an empty array left a stale phase behind.
+            // it resolves every element, so an indirect dash length or phase is read rather than 0,
+            // and an empty array leaves no stale phase behind.
             if (DashPattern.TryReadExtGState(_doc, extGs, out float[] gsDash, out float gsDashPhase))
             {
                 _ctx.GS.DashPattern = gsDash;

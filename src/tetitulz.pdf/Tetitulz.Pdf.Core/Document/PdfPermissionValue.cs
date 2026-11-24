@@ -17,20 +17,19 @@ namespace Tetitulz.Pdf.Core.Document
     /// permission granted".</para>
     /// </summary>
     /// <remarks>
-    /// <para><b>What each copy did with the wrong number:</b></para>
+    /// <para><b>What the saturated number would do at each reader:</b></para>
     /// <list type="bullet">
     ///   <item><b>Key derivation.</b> Algorithm 2 hashes the four bytes of <c>/P</c>, low byte
     ///     first, so for R ≤ 4 a saturated value derives the <i>wrong file key</i> — the document
-    ///     will not open with its own correct password. This is the expensive one: it is not a
+    ///     would not open with its own correct password. This is the expensive one: it is not a
     ///     permissions question at all.</item>
-    ///   <item><b><c>EncryptionInfo.PValue</c>.</b> Reported <c>int.MaxValue</c> — all permissions
-    ///     set — for a document that withheld most of them.</item>
-    ///   <item><b><c>/Perms</c> authentication.</b> Compared the saturated value against the
-    ///     authenticated one and announced <c>PMismatch</c>: an accusation of tampering against a
-    ///     file nobody had touched, which is exactly the failure that check's own comment says it
-    ///     was written to avoid.</item>
-    ///   <item><b>PDF/UA UA06.</b> Read bit 10 out of <c>int.MaxValue</c>, so
-    ///     "content extraction for accessibility is permitted" passed for every such document
+    ///   <item><b><c>EncryptionInfo.PValue</c>.</b> Would report <c>int.MaxValue</c> — all
+    ///     permissions set — for a document that withheld most of them.</item>
+    ///   <item><b><c>/Perms</c> authentication.</b> Would compare the saturated value against the
+    ///     authenticated one and announce <c>PMismatch</c>: an accusation of tampering against a
+    ///     file nobody had touched, which is exactly the failure that check exists to avoid.</item>
+    ///   <item><b>PDF/UA UA06.</b> Would read bit 10 out of <c>int.MaxValue</c>, so
+    ///     "content extraction for accessibility is permitted" would pass for every such document
     ///     whether it was or not.</item>
     /// </list>
     ///

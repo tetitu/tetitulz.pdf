@@ -1850,7 +1850,7 @@ namespace Tetitulz.Pdf.Builder.Model
         /// <summary>
         /// The marker's own style — CSS's <c>::marker</c>: its colour, size, weight and face —
         /// overriding <see cref="TextFormat"/> for the marker alone. <c>null</c> (the default) is
-        /// the item's own style, as the marker has always taken.
+        /// the item's own style.
         /// </summary>
         public TextRun? MarkerFormat { get; set; }
         /// <summary>Explicit, pre-resolved list marker (e.g. "1.2.", "•", "א."); when set

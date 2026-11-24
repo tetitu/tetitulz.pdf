@@ -102,9 +102,8 @@ namespace Tetitulz.Pdf.Base.Encryption
         /// <para><b>No leak.</b> <c>PdfHelpers.EnsureSeekable(input).CopyTo(copy)</c>, for a
         /// non-seekable input, allocates a buffering <see cref="MemoryStream"/> and hands it back —
         /// which nothing there would dispose, because a caller cannot tell whether it was given
-        /// its own stream or a new one. That ownership ambiguity is the open <c>EnsureSeekable</c>
-        /// row in the consolidation backlog; the shared reader sidesteps it by never needing a
-        /// seekable stream at all.</para>
+        /// its own stream or a new one. The shared reader sidesteps that ownership ambiguity by
+        /// never needing a seekable stream at all.</para>
         /// </remarks>
         private static byte[] ReadAllBytes(Stream input) => StreamBytes.ReadAll(input);
     }

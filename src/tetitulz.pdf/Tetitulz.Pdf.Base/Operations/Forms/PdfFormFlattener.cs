@@ -212,9 +212,9 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
             var stamped = new HashSet<PdfDictionary>();
 
             // Preserve existing content stream(s). Shared with PdfPageContentAppender, which is
-            // where the resolve-before-you-branch reasoning lives: this copy had the identical
-            // defect, and an indirect /Contents ARRAY was nested rather than spliced, so flattening
-            // a form onto such a page erased everything already drawn on it.
+            // where the resolve-before-you-branch reasoning lives: an indirect /Contents ARRAY
+            // nested rather than spliced would make flattening a form onto such a page erase
+            // everything already drawn on it.
             var newContents = PdfPageContentAppender.CopyExistingContents(doc, page.Dictionary);
 
             // The page's stamped forms, registered once after the loop where the page reads its
@@ -444,9 +444,9 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
                 widget, doc, PdfName.MaxLen, o => o is PdfNumber) as PdfNumber)?.LongValue ?? 0);
 
             // §12.7.4.3, through the one reading the filler uses. The field type is resolved up the
-            // widget's /Parent chain, as WidgetAppearanceIsStale resolved it to get here: this copy
-            // tested the flag bits alone, so a choice widget carrying them was laid out as a text
-            // field the filler would not have treated as one.
+            // widget's /Parent chain, as WidgetAppearanceIsStale resolved it to get here: the flag
+            // bits alone would lay a choice widget carrying them out as a text field the filler
+            // would not treat as one.
             bool isText = (AnnotationFallbackModel.ResolveWidgetEntry(
                 widget, doc, PdfName.FT, o => o is PdfName) as PdfName)?.Value == PdfFieldTypes.Text;
             var layout = FieldLayout.For(isText, flags, maxLen,

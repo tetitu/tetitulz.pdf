@@ -15,16 +15,15 @@ namespace Tetitulz.Pdf.Base.Rendering
     /// </summary>
     /// <remarks>
     /// <para><b>The sibling of <see cref="AnnotationQuadPoints"/>, and it exists for the same
-    /// reason.</b> Two renderers reading <c>/QuadPoints</c> separately disagree in three ways on
-    /// real files; <c>/InkList</c> and <c>/Vertices</c> are the same question. Copies that agree
-    /// today are not the bar: nothing structural keeps them in step until one of them
-    /// changes.</para>
+    /// reason.</b> Two renderers reading <c>/QuadPoints</c> separately would disagree in three
+    /// ways on real files; <c>/InkList</c> and <c>/Vertices</c> are the same question, and two
+    /// copies that agree are kept in step by nothing structural.</para>
     ///
     /// <para><b>The one rule worth naming: four numbers.</b> A stroke or polyline needs two points
     /// to draw anything, so an entry with fewer than four coordinates is skipped rather than
     /// half-drawn — and an odd trailing coordinate is ignored by the <c>i + 1 &lt; Count</c> step,
-    /// not treated as a point with an implied zero. Both renderers already did this; stating it once
-    /// means the next reader does not have to infer it twice.</para>
+    /// not treated as a point with an implied zero. Both renderers rely on this, so it is stated
+    /// here, once.</para>
     ///
     /// <para>Painting stays with the caller, because that is where they legitimately differ: the
     /// raster path builds a path on the graphics context, the SVG path builds a <c>d</c> attribute.

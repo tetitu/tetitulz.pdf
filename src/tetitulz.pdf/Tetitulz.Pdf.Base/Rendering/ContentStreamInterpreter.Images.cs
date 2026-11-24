@@ -1400,7 +1400,7 @@ namespace Tetitulz.Pdf.Base.Rendering
                     // The abort is carried out of the fill rather than thrown through it. A
                     // `return null` cannot cross a delegate boundary, and swallowing the budget
                     // exception inside the producer would silently paint a half-decoded image —
-                    // which is the opposite of what this catch has always meant. The flag stops
+                    // which is the opposite of what this catch means. The flag stops
                     // every later row too, so the transform is abandoned exactly where it was.
                     Exception aborted = null;
                     BitmapPixels.Fill(bmp, (row, y) =>
@@ -2044,9 +2044,7 @@ namespace Tetitulz.Pdf.Base.Rendering
         {
             // csArr = [/Indexed base hival lookup]
             // One reader, in IndexedPalette.TryReadSpace, shared with the other three /Indexed
-            // sites. This copy clamped /HiVal with a bare literal 255 rather than
-            // PdfColorSpaceNames.MaxIndexedHiVal — the same value, written where a rename could
-            // not reach it.
+            // sites.
             IndexedPalette.TryReadSpace(_doc, csArr, out var baseObj, out int hival, out byte[] table);
 
             // Resolve the base colour space into a flat index→colour palette (handles

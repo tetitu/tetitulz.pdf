@@ -70,9 +70,9 @@ namespace Tetitulz.Pdf.Base.Rendering
             if (resolved is PdfArray arr)
             {
                 // §10.4 gives the array form exactly four functions, [R/C, G/M, B/Y, Gray/K], and
-                // only the first three reach an sRGB composite. A SHORTER array is malformed; the
-                // raster image path has always tolerated it by remapping the channels it does
-                // carry, so that is the shared behaviour rather than refusing the whole entry.
+                // only the first three reach an sRGB composite. A SHORTER array is malformed; it is
+                // tolerated by remapping the channels it does carry, rather than refusing the whole
+                // entry, in the raster image path and here alike.
                 // Any element may be /Identity, which resolves to null and leaves its channel
                 // alone — the same as a missing element.
                 fnR = ElementAt(arr, 0, doc);
@@ -102,8 +102,9 @@ namespace Tetitulz.Pdf.Base.Rendering
 
             // A function of no type §7.10 defines leaves its channel as it was. The evaluator
             // answers such a function with {0}, not null — its convention for "no usable colour" —
-            // so the identity fallback below never fired and a broken /TR drove the channel to 0:
-            // the page painted black where the function was meant to adjust it.
+            // so without this check the identity fallback below would never fire and a broken /TR
+            // would drive the channel to 0: the page painted black where the function was meant to
+            // adjust it.
             long type = PdfResolve.Number(doc, fn, PdfName.FunctionType) is PdfNumber t && t.IsInteger ? t.LongValue : -1;
             if (type != 0 && type != 2 && type != 3 && type != 4) return null;
 

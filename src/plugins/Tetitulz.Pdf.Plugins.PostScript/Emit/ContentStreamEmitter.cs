@@ -563,8 +563,8 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Emit
         {
             // Past the cap every Op() is a no-op, but the interpolated strings below are built by
             // the CALLER of Op — C# evaluates an argument before the callee's early return — so a
-            // truncated stream went on formatting the whole path on every later paint. That was
-            // most of the cost of the quadratic clip case: work whose output is discarded.
+            // truncated stream would go on formatting the whole path on every later paint: most of
+            // the cost of the quadratic clip case, work whose output is discarded.
             if (Truncated) return;
 
             foreach (var s in segments)

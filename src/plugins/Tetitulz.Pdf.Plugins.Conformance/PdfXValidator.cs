@@ -398,8 +398,8 @@ namespace Tetitulz.Pdf.Plugins.Conformance
             try
             {
                 // BOM-aware: XMP permits UTF-16, and Encoding.UTF8.GetString does not throw on it —
-                // it substitutes, so this catch never fired and the version search silently failed
-                // on a conforming file. One decoder, in Core.Metadata.XmpPacket.
+                // it substitutes, so this catch would never fire and the version search would silently
+                // fail on a conforming file. One decoder, in Core.Metadata.XmpPacket.
                 xmp = Tetitulz.Pdf.Core.Metadata.XmpPacket.DecodeText(xmpBytes);
             }
             catch (Exception ex)
@@ -525,11 +525,9 @@ namespace Tetitulz.Pdf.Plugins.Conformance
                     // without this it would be reported once per reference.
                     if (!seenFonts.Add(fontObj)) continue;
 
-                    // One traversal, in FontEmbeddingProbe. This site walked only descArr[0] —
-                    // §9.7.1 gives a Type 0 font exactly one descendant, so that was latent rather
-                    // than live, but it was not what the other two validators did. It also had no
-                    // cycle guard, being iterative rather than recursive; the shared walk is
-                    // recursive and carries both that and the depth cap.
+                    // One traversal, in FontEmbeddingProbe, shared with the other two validators. It is
+                    // recursive and carries a cycle guard and the depth cap; §9.7.1 gives a Type 0 font
+                    // exactly one descendant, but the walk does not assume it.
                     //
                     // ISO 15930 requires *every* font to be embedded and grants the standard 14 no
                     // exemption — unlike ISO 32000-1 §9.6.2.2, which is where the temptation to
@@ -1137,9 +1135,8 @@ namespace Tetitulz.Pdf.Plugins.Conformance
             {
                 switch (op.Operator)
                 {
-                    // The three operators that set a device colour directly. Each was once answered
-                    // here without the policy: `rg` was reported even against an RGB output intent,
-                    // where X-3 and X-4 allow it.
+                    // The three operators that set a device colour directly, each answered under the
+                    // policy: `rg` is not reported against an RGB output intent, where X-3 and X-4 allow it.
                     case PdfOperators.SetRgbFill:
                     case PdfOperators.SetRgbStroke:
                         if (policy.IsForbidden(PdfColorSpaceNames.DeviceRGB))

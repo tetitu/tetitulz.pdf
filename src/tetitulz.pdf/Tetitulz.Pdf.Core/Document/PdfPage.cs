@@ -104,8 +104,8 @@ namespace Tetitulz.Pdf.Core.Document
         /// <para>The indirect case is resolved explicitly, exactly as the five page boxes below do:
         /// <see cref="PdfDictionary.GetInteger"/> tests <c>v is PdfNumber</c> and never follows a
         /// <see cref="PdfReference"/>, so a producer that shares one rotation object across every
-        /// page of a batch scan — <c>/Rotate 12 0 R</c> — read back as "no rotation" and the page
-        /// rendered, printed and extracted sideways with nothing reported.</para>
+        /// page of a batch scan — <c>/Rotate 12 0 R</c> — would read back as "no rotation" and the
+        /// page render, print and extract sideways with nothing reported.</para>
         /// </summary>
         public int? Rotate
         {
@@ -189,8 +189,8 @@ namespace Tetitulz.Pdf.Core.Document
         ///
         /// <para>Indirect values are resolved for the same reason as <see cref="Rotate"/>:
         /// <see cref="PdfDictionary.GetDouble"/> does not follow a reference, so a shared
-        /// <c>/UserUnit 12 0 R</c> silently read back as the 1.0 default and every measurement
-        /// derived from the page was wrong by that factor.</para>
+        /// <c>/UserUnit 12 0 R</c> would silently read back as the 1.0 default and every
+        /// measurement derived from the page be wrong by that factor.</para>
         /// </summary>
         public double UserUnit
         {

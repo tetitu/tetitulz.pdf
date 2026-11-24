@@ -662,10 +662,9 @@ namespace Tetitulz.Pdf.Base.Operations.Structure
             return doc.ResolveObject(obj) as PdfDictionary;
         }
 
-        // One implementation, in PdfOptionalContentRefs. The comment this replaces
-        // recorded what the divergence cost: this copy took the document and never used it, so an
-        // indirect /OFF read as empty and the caller's Set() below REPLACED the config's lists —
-        // making one layer visible reset every other layer's state.
+        // One implementation, in PdfOptionalContentRefs, which resolves an indirect /OFF. Read as
+        // empty, it would let the caller's Set() below REPLACE the config's lists — making one
+        // layer visible reset every other layer's state.
         private static HashSet<int> BuildOcgList(PdfObject listObj, PdfDocument doc)
             => PdfOptionalContentRefs.Collect(doc, listObj);
 

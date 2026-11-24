@@ -413,9 +413,9 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             /// The drawn width of <paramref name="text"/> under <b>this segment's</b> style.
             /// </summary>
             /// <remarks>
-            /// <b>The wrap loop measures candidate substrings a segment does not carry yet</b>, and
-            /// it did so with a bare <c>resolver.MeasureTextWidth</c> at five sites — ignoring the
-            /// scale and tracking <see cref="Width"/> applies. The body renderer has the identical
+            /// <b>The wrap loop measures candidate substrings a segment does not carry yet</b>, and a
+            /// bare <c>resolver.MeasureTextWidth</c> there would ignore the scale and tracking
+            /// <see cref="Width"/> applies. The body renderer has the identical
             /// pair for the identical reason: one definition, two entry points. Without it a
             /// 150%-scaled cell run is wrapped to two-thirds of the width it draws at and runs past
             /// the cell edge.
@@ -438,9 +438,9 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             /// </summary>
             /// <remarks>
             /// A clone rather than a field-by-field copy at the call site, because the wrap loop
-            /// rebuilds every segment it emits: the hand-written copy silently dropped
-            /// <see cref="TextScale"/> and <see cref="CharSpacing"/> the moment they were added,
-            /// which is how a style field gets lost between measuring and drawing.
+            /// rebuilds every segment it emits, and a hand-written copy silently drops each style field
+            /// added after it — <see cref="TextScale"/> and <see cref="CharSpacing"/> among them — which
+            /// is how a style field gets lost between measuring and drawing.
             /// </remarks>
             public CellSeg CloneStyle(string text) => new CellSeg
             {

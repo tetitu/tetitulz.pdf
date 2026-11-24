@@ -557,9 +557,8 @@ namespace Tetitulz.Pdf.Core.Fonts
                 _preserveExisting = true;
                 try { ParseCmapFormat(r, symbolOrMac); }
                 finally { _preserveExisting = false; }
-                // The comment above this method has always claimed the Symbolic flag is set from a
-                // (3,0) cmap; nothing set it. Only claim it when that subtable actually supplied
-                // mappings.
+                // The Symbolic flag is set from a (3,0) cmap, as the comment above this method says,
+                // and only when that subtable actually supplied mappings.
                 if (symbolIsThreeZero && _cmap.Count > before) Flags |= 4;
             }
         }
@@ -642,8 +641,9 @@ namespace Tetitulz.Pdf.Core.Fonts
             r.Skip(4);  // language
             uint nGroups = r.U32();
             // Cumulative work, as format 4 counts it: groups that overlap one another never raise
-            // _cmap.Count, so a hundred thousand copies of one 0x1FFFF-wide group were 1.3×10^10
-            // writes — groups × width, two counts the file chooses — with neither break firing.
+            // _cmap.Count, so a hundred thousand copies of one 0x1FFFF-wide group would be
+            // 1.3×10^10 writes — groups × width, two counts the file chooses — with neither break
+            // firing.
             long work = 0;
             for (uint g = 0; g < nGroups; g++)
             {

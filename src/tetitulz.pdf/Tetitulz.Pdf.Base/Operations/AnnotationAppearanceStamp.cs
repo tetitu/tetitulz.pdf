@@ -131,16 +131,16 @@ namespace Tetitulz.Pdf.Base.Operations
         /// <param name="rw">Rectangle width.</param>
         /// <param name="rh">Rectangle height.</param>
         /// <remarks>
-        /// <para><b>Two things were wrong here once, and they compounded.</b></para>
+        /// <para><b>Two mistakes are avoided here, and they would compound.</b></para>
         /// <list type="number">
-        ///   <item>The <c>/Matrix</c> was emitted as an explicit <c>cm</c> <b>and</b> left on the
-        ///   form. §8.10.1 makes <c>Do</c> apply the form's <c>/Matrix</c> itself, so it was
-        ///   composed twice: a 90-degree-rotated widget (<c>/Matrix [0 1 -1 0 0 0]</c>) came out
-        ///   rotated 180 from where the un-flattened one rendered. The matrix is not emitted.</item>
-        ///   <item>The scale was taken from the raw <c>/BBox</c> extents, with no translation by
-        ///   (−bx0,−by0) and without transforming the box by <c>/Matrix</c> first. A <c>/BBox</c> of
-        ///   <c>[10 10 110 30]</c> therefore drew 10 points right and up of the rectangle and was
-        ///   clipped by the <c>re W n</c> box.</item>
+        ///   <item>The <c>/Matrix</c> is not emitted as an explicit <c>cm</c>: §8.10.1 makes
+        ///   <c>Do</c> apply the form's <c>/Matrix</c> itself, so it would be composed twice, and a
+        ///   90-degree-rotated widget (<c>/Matrix [0 1 -1 0 0 0]</c>) would come out rotated 180 from
+        ///   where the un-flattened one renders.</item>
+        ///   <item>The scale is not taken from the raw <c>/BBox</c> extents: with no translation by
+        ///   (−bx0,−by0), and without transforming the box by <c>/Matrix</c> first, a <c>/BBox</c> of
+        ///   <c>[10 10 110 30]</c> would draw 10 points right and up of the rectangle and be clipped
+        ///   by the <c>re W n</c> box.</item>
         /// </list>
         /// <para>The algorithm: transform the four <c>/BBox</c> corners by <c>/Matrix</c>, take that
         /// axis-aligned bounding box, and emit the single <c>cm</c> mapping it onto the rectangle —

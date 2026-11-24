@@ -1483,8 +1483,8 @@ namespace Tetitulz.Pdf.Core.Imaging.Jpx
             if (smask != 0 && opacityChannels.Count == 0 && extras.Count == 0)
             {
                 // Announced, but there is no channel it could be. Not a refusal: the image is
-                // opaque, which is what the plugin path's ImageSampleLayout has always made of the
-                // same file — an /SMaskInData with nothing to apply to is ignored, not fatal.
+                // opaque, which is what the plugin path's ImageSampleLayout makes of the same file —
+                // an /SMaskInData with nothing to apply to is ignored, not fatal.
                 p.Deviations.Add($"/SMaskInData {smask} announces an opacity channel, but the JPEG 2000 data declares none and has no channel beyond {needs}'s {target}; the image is opaque (ISO 32000-2 §7.4.9 asks for exactly one)");
                 smask = 0;
             }

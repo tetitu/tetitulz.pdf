@@ -108,13 +108,11 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// <param name="hival">
         /// The file's <c>/HiVal</c>. <b>Clamped here, not at the call sites.</b> §8.6.6.3 caps it at
         /// 255, and everything below is sized and looped from it — an allocation, an init loop, and
-        /// for a Separation/DeviceN base one tint-transform evaluation per entry. The image caller
-        /// had always clamped; when <c>OpSc</c> was rewritten to share the raster builder it did
-        /// not, so <c>/Indexed /DeviceRGB 400000000 (…)</c> made every <c>sc</c> allocate 1.6 GB and
-        /// run a 400-million-iteration loop, and a negative <c>/HiVal</c> threw
-        /// <c>OverflowException</c> out of the operator. One caller remembering the invariant and
-        /// the other forgetting it is exactly what a shared helper is supposed to prevent, so the
-        /// clamp lives with the code that depends on it.
+        /// for a Separation/DeviceN base one tint-transform evaluation per entry. Unclamped,
+        /// <c>/Indexed /DeviceRGB 400000000 (…)</c> would make every <c>sc</c> allocate 1.6 GB and
+        /// run a 400-million-iteration loop, and a negative <c>/HiVal</c> throw
+        /// <c>OverflowException</c> out of the operator. The clamp lives with the code that depends
+        /// on it, so no caller can forget it.
         /// </param>
         /// <param name="intent">
         /// The rendering intent in force, so an <c>/Indexed</c> base that is an ICC profile picks
@@ -136,8 +134,8 @@ namespace Tetitulz.Pdf.Base.Rendering
 
             // Expanded, because an inline image's /Indexed base can be written /G, /RGB or /CMYK
             // (§8.9.7, Table 93) and nothing upstream expands a name INSIDE an array. Unexpanded,
-            // /G fell to the `default` arm below — three components per palette entry where the file
-            // wrote one, so the table was read three bytes at a time and every colour was wrong.
+            // /G would fall to the `default` arm below — three components per palette entry where the
+            // file wrote one, so the table would be read three bytes at a time and every colour wrong.
             baseName = PdfColorSpaceNames.Expand(baseName);
             if (table == null) return palette;
 

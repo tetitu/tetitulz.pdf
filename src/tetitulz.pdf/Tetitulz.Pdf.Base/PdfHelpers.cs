@@ -13,8 +13,8 @@ namespace Tetitulz.Pdf.Base
     /// Shared utility methods used across the operations layer. DRY principle: one
     /// definition, used everywhere.
     ///
-    /// <para><b>Adoption status.</b> Both members here are now thin forwarders to the single
-    /// implementation: <see cref="EnsureSeekable"/> to <c>Core.IO.SeekableStream</c> and
+    /// <para>Both members are thin forwarders to the single implementation:
+    /// <see cref="EnsureSeekable"/> to <c>Core.IO.SeekableStream</c> and
     /// <see cref="CloneDictionary"/> to <c>PdfDictionary.CloneShallow</c>.</para>
     ///
     /// <para><b>Not to be confused with</b> <c>PdfMetadataWriter.EnsureSeekable</c>, which is

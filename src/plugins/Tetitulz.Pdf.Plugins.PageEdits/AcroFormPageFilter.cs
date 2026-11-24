@@ -108,7 +108,7 @@ namespace Tetitulz.Pdf.Plugins.PageEdits
         /// reasonable thing to want, and doing it through the shared symbol would move this cap as a
         /// side effect nobody wrote down.</para>
         ///
-        /// <para><b>The pin is one-sided, which is why it now has a test.</b>
+        /// <para><b>The pin is one-sided, which is why it has a test.</b>
         /// <c>PdfSplitter</c> reads <i>this</i> constant by symbol, so it can never drift from
         /// PageEdits; nothing whatever connects PageEdits to Conformance except the sentence above.
         /// Raising Conformance's alone makes the checker accept field trees the splitter still

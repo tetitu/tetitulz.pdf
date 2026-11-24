@@ -68,11 +68,11 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             }
 
             // Placed through the shared helper rather than by hand. DocxRenderContext.LastLineDescent
-            // is consumed in exactly one place — PlaceInline — and this method did its own
-            // NeedsNewPage/BreakFlow and painted at CursorY − height, so an inline picture put its
-            // top edge exactly on the previous line's baseline and painted over the descenders of
-            // its p's and g's. An inline chart, autoshape or SmartArt diagram in the same position
-            // cleared them, so two inline drawings in one document were laid out by two rules.
+            // is consumed in exactly one place — PlaceInline — so its own NeedsNewPage/BreakFlow and a
+            // paint at CursorY − height would put an inline picture's top edge exactly on the previous
+            // line's baseline, over the descenders of its p's and g's, while an inline chart,
+            // autoshape or SmartArt diagram in the same position cleared them: two inline drawings in
+            // one document laid out by two rules.
             var box = Drawings.DrawingPlacement.PlaceInline(widthPts, heightPts, context);
             PaintImageAt(context, box.X, box.BottomY, box.Width, box.Height, img);
             context.AdvanceCursor(box.Height);

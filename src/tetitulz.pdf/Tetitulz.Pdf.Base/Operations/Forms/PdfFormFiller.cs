@@ -161,11 +161,11 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
                     state.Result.UnmatchedList.Add(kvp.Key);
 
             // Never LOWER the flag. /NeedAppearances is document-scoped (§12.7.2 Table 218) and
-            // this pass knows only about the fields it was asked to fill. A form that arrived with
-            // it true did so because some field holds a /V with no /AP — the standard "let the
+            // this pass knows only about the fields it was asked to fill. A form that arrives with
+            // it true does so because some field holds a /V with no /AP — the standard "let the
             // viewer draw it" pattern — and clearing it as a side effect of filling one unrelated
-            // field made every one of those other fields render blank, with nothing in
-            // FormFillResult mentioning them (they were never in the values dictionary, so they
+            // field would make every one of those other fields render blank, with nothing in
+            // FormFillResult mentioning them (they are never in the values dictionary, so they
             // are not in Filled, Unmatched or FieldsWithoutAppearance either).
             state.Result.NeedAppearances =
                 ExistingNeedAppearances(state)

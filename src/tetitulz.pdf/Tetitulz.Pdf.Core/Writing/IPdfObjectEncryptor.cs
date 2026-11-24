@@ -10,9 +10,8 @@ namespace Tetitulz.Pdf.Core.Writing
     ///
     /// <para><b>Why this interface exists.</b> An incremental update appends objects to a file
     /// whose reader will decrypt everything it reads with a per-object key. Objects written in
-    /// clear text therefore decode to garbage — which is why every writer in this library refused
-    /// to edit an encrypted document at all. The fix needs the file encryption key inside
-    /// <see cref="PdfWriter"/>, and <c>Tetitulz.Pdf.Core</c> has no cryptography: it cannot
+    /// clear text therefore decode to garbage. Writing them encrypted needs the file encryption
+    /// key inside <see cref="PdfWriter"/>, and <c>Tetitulz.Pdf.Core</c> has no cryptography: it cannot
     /// reference <c>Tetitulz.Pdf.Encryption</c> (the dependency runs the other way, and pulling
     /// BouncyCastle into Core would put it in every consumer's graph). So Core declares the
     /// operation and <c>Tetitulz.Pdf.Encryption.PdfIncrementalEncryption</c> supplies it.</para>

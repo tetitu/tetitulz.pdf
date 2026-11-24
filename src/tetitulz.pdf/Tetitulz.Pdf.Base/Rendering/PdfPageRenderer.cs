@@ -415,7 +415,7 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// </summary>
         /// <remarks>
         /// Cancellation is checked at page boundaries <b>and inside the content-stream loop</b>, so
-        /// a single enormous page no longer runs to completion after the token trips. Partial
+        /// a single enormous page does not run to completion after the token trips. Partial
         /// bitmaps in flight are discarded.
         /// </remarks>
         public static byte[][] RenderAllPages(string inputPath, int dpi,
@@ -452,10 +452,10 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// sequential against 174 ms across 12 workers, and 301 ms re-opening the document per
         /// <i>page</i> on four threads.</para>
         /// <para><b>Two consequences of running off the calling thread, neither hidden.</b>
-        /// <see cref="RenderDiagnostics"/> events now arrive on worker threads, and the
+        /// <see cref="RenderDiagnostics"/> events arrive on worker threads, and the
         /// <c>[ThreadStatic]</c> <c>Last*</c> diagnostic slots a caller might read afterwards are
         /// written on those threads rather than this one. A host that needs either — or that wants
-        /// the old deterministic single-threaded profile — sets
+        /// a deterministic single-threaded profile — sets
         /// <see cref="PdfRenderOptions.MaxRenderThreads"/> to 1, which renders on the calling
         /// thread with one shared state.</para>
         /// <para><b>Memory is proportional to the worker count.</b> Each worker retains a parsed
@@ -1337,13 +1337,12 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// Renders all pages of a PDF stream and returns each page as JPEG bytes.
         /// </summary>
         /// <remarks>
-        /// <b>This was the slowest batch path in the library and had neither of the two
-        /// optimisations its PNG sibling had</b> — a sequential loop that opened a fresh
-        /// <see cref="PdfDocument"/> and <see cref="FontCache"/> for every page, where
-        /// <see cref="RenderAllPages(Stream,int,PdfRenderOptions)"/> shared one of each. Measured
-        /// on a 50-page document in one run: 1695 ms here against 1089 ms there, and 174 ms for the
-        /// shared core both now use. Two paths doing the same work by different means is the defect
-        /// class this repository keeps finding; there is now one implementation.
+        /// <b>The same core as <see cref="RenderAllPages(Stream,int,PdfRenderOptions)"/></b>, one
+        /// <see cref="PdfDocument"/> and <see cref="FontCache"/> shared across the pages and the work
+        /// spread over workers. Measured on a 50-page document in one run: 174 ms, against 1695 ms
+        /// for a sequential loop opening a fresh document and font cache for every page. Two paths
+        /// doing the same work by different means is the defect class this repository keeps finding,
+        /// so there is one implementation.
         /// </remarks>
         public static byte[][] RenderAllPagesAsJpg(Stream input, int dpi = DefaultDpi,
             int quality = DefaultJpegQuality, PdfRenderOptions renderOptions = null)
@@ -1596,17 +1595,14 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// overprint re-arm, and the two options that must reach the context.
         /// </summary>
         /// <remarks>
-        /// <para><b>The whole-page path and the tile path had this twice, and the record says how
-        /// that goes.</b> The comments the two copies carried are both drift reports: the tile
-        /// path's background clear was "the <i>fifth</i> decision on which a tile mosaic silently
-        /// disagreed with the whole page", and its overprint line existed only as "same per-render
-        /// re-arm as the full-page path above". Five divergences had already been found and fixed
-        /// one at a time; this is the sixth not happening.</para>
+        /// <para><b>The whole-page path and the tile path both take it.</b> Configured twice, each
+        /// decision — the background clear, the overprint re-arm — would be one on which a tile
+        /// mosaic could silently disagree with the whole page.</para>
         ///
         /// <para><b>Why the overprint reset is here and not in the caller.</b> The one-shot
-        /// reporting slots are <c>[ThreadStatic]</c> and were once re-armed only by tests, so on a
-        /// server host the second and every later page rendered on a thread went silent about
-        /// overprint it had not simulated. A slot a caller reads after an operation is reset at the
+        /// reporting slots are <c>[ThreadStatic]</c>; re-armed only by tests, they would leave the
+        /// second and every later page rendered on a server host's thread silent about overprint it
+        /// had not simulated. A slot a caller reads after an operation is reset at the
         /// start of that operation — and "the operation" is a render, which is exactly this method.</para>
         ///
         /// <para><b>Deliberately not used by <c>ExtractInkCoverage</c>.</b> That pass builds a
@@ -3064,14 +3060,14 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// </summary>
         /// <remarks>
         /// <para><b>Internal and shared for the same reason as <see cref="ResolveRenderBox"/>.</b>
-        /// The SVG exporter guarded the value it read from the file; <see cref="MeasurePage"/> and
-        /// <see cref="RenderPageTileToBitmap"/> read the same attacker-controlled entry with no
-        /// guard at all, and <c>PdfPage.UserUnit</c> validates nothing. So a page carrying
-        /// <c>/UserUnit 0</c> exported correctly at full size and <b>rendered as a 1x1-pixel
-        /// image</b>: the device scale went to zero, <c>Math.Max(1, Ceiling(w * 0))</c> collapsed
-        /// both extents to one pixel, and <see cref="ClampRenderDimensions"/> never fired because
-        /// 1x1 is under every limit — so the page vanished with no diagnostic. A negative value
-        /// did the same; <see cref="GetRenderSize(Stream,int,int,PdfRenderOptions)"/> additionally returned
+        /// The SVG exporter, <see cref="MeasurePage"/> and <see cref="RenderPageTileToBitmap"/> read
+        /// the same attacker-controlled entry, and <c>PdfPage.UserUnit</c> validates nothing.
+        /// Unguarded, a page carrying <c>/UserUnit 0</c> would <b>render as a 1x1-pixel image</b>
+        /// while exporting at full size: the device scale would go to zero,
+        /// <c>Math.Max(1, Ceiling(w * 0))</c> collapse both extents to one pixel, and
+        /// <see cref="ClampRenderDimensions"/> never fire because 1x1 is under every limit — so the
+        /// page would vanish with no diagnostic. A negative value would do the same, and
+        /// <see cref="GetRenderSize(Stream,int,int,PdfRenderOptions)"/> return
         /// <c>EffectiveDpi = NaN</c> from the division by it.</para>
         /// <para>The refusal is reported rather than silently applied: at the pixel level "the
         /// file asked for a scale we ignored" is indistinguishable from "the file never asked".</para>
@@ -3226,9 +3222,9 @@ namespace Tetitulz.Pdf.Base.Rendering
             float dpi = PdfUnits.PointsPerInch)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
-            // The one float dpi on the surface, and the one entry that never checked it: 0, a
-            // negative or NaN went through MeasurePage's Math.Max(1, …) and came back as a 1×1
-            // map with no channels — the same answer as a page with no spot ink.
+            // The one float dpi on the surface: 0, a negative or NaN would go through
+            // MeasurePage's Math.Max(1, …) and come back as a 1×1 map with no channels — the same
+            // answer as a page with no spot ink.
             NumericArguments.RequirePositive(dpi, nameof(dpi));
             return WithDecryptedPage(input, pageIndex, renderOptions?.Password, (page, doc) =>
             {
@@ -3397,10 +3393,9 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// implementation of that.
         /// </summary>
         /// <remarks>
-        /// This copy set <c>Position = 0</c> unconditionally, which <b>throws</b> on a non-seekable
-        /// stream rather than reading it from where it is. The shared reader rewinds only what can
-        /// be rewound, so a caller handing this a network or compressed stream now gets bytes
-        /// instead of an exception.
+        /// The shared reader rewinds only what can be rewound, so a caller handing this a network
+        /// or compressed stream gets its bytes from where it is; an unconditional
+        /// <c>Position = 0</c> would <b>throw</b> on such a stream.
         /// </remarks>
         private static byte[] ReadAllBytes(Stream s) => StreamBytes.ReadAll(s);
     }

@@ -94,8 +94,8 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// </summary>
         /// <remarks>
         /// The extractors decode a shown string one code at a time (a glyph's text comes from its
-        /// own bytes), and did so by copying each code's bytes into a fresh array and building a
-        /// <c>StringBuilder</c> per code: on a hundred-thousand-show document that was a third of
+        /// own bytes); copying each code's bytes into a fresh array and building a
+        /// <c>StringBuilder</c> per code would be, on a hundred-thousand-show document, a third of
         /// plain extraction's allocation. A font answers from a per-code cache where it can — a
         /// simple font's 256 codes, a composite font's codes up to a ceiling — and the text is the
         /// same string instance each time. The base answers by rebuilding the bytes, which is exact:

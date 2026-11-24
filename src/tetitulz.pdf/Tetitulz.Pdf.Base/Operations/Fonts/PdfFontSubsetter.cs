@@ -1297,20 +1297,18 @@ namespace Tetitulz.Pdf.Base.Operations.Fonts
             /// Lays the subsetted tables out as a TrueType container.
             /// </summary>
             /// <remarks>
-            /// <para>One implementation, in <see cref="Core.Fonts.SfntBuilder"/>. This copy was one of four,
-            /// and <b>the only one that sorted the table directory with the culture-sensitive
-            /// default comparer</b> — <c>tables.Keys.OrderBy(t =&gt; t)</c> rather than
-            /// <c>StringComparer.Ordinal</c>. §5.2 requires ascending <i>byte</i> order, which is
-            /// what <c>searchRange</c>/<c>entrySelector</c>/<c>rangeShift</c> exist to let a reader
-            /// binary-search; the default comparer sorts <c>OS/2</c> between <c>name</c> and
-            /// <c>post</c> instead of first, so essentially every subset this produced carried a
-            /// mis-ordered directory. A linear-scanning reader finds the tables anyway and a
-            /// binary-searching one may not, which is the "renders in most viewers and fails
-            /// validation in others" failure <see cref="Core.Fonts.SfntBuilder"/>'s own remarks name.</para>
+            /// <para>One implementation, in <see cref="Core.Fonts.SfntBuilder"/>, which sorts the table
+            /// directory with <c>StringComparer.Ordinal</c>, never the culture-sensitive default
+            /// comparer. §5.2 requires ascending <i>byte</i> order, which is what
+            /// <c>searchRange</c>/<c>entrySelector</c>/<c>rangeShift</c> exist to let a reader
+            /// binary-search; the default comparer would sort <c>OS/2</c> between <c>name</c> and
+            /// <c>post</c> instead of first, so essentially every subset would carry a mis-ordered
+            /// directory. A linear-scanning reader finds the tables anyway and a binary-searching one
+            /// may not, which is the "renders in most viewers and fails validation in others" failure
+            /// <see cref="Core.Fonts.SfntBuilder"/>'s own remarks name.</para>
             ///
-            /// <para>The shared builder also drops the <c>Math.Log</c>-derived directory hints for
-            /// integer arithmetic, which cannot land a power of two on the wrong side of a
-            /// <c>Math.Floor</c>.</para>
+            /// <para>The shared builder derives the directory hints by integer arithmetic, which cannot
+            /// land a power of two on the wrong side of a <c>Math.Floor</c> as <c>Math.Log</c> can.</para>
             /// </remarks>
             private static byte[] AssembleFont(Dictionary<string, byte[]> tables)
             {

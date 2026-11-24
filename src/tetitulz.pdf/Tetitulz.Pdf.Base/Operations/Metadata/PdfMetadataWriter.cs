@@ -52,13 +52,13 @@ namespace Tetitulz.Pdf.Base.Operations.Metadata
             // be dropped — and the replacement written at the SAME object number, superseding the
             // original. §14.3.3 Table 317 makes /Trapped a standard entry
             // and permits any custom key besides; this library's own PdfXConverter writes /Trapped,
-            // so `WriteMetadata` after `PdfXConverter` silently broke PDF/X conformance. No test
-            // caught it because a dropped key is an ABSENCE, which nothing asserted.
+            // so `WriteMetadata` after `PdfXConverter` would silently break PDF/X conformance — and a
+            // dropped key is an ABSENCE, which a test sees only if it asserts the key is there.
             //
             // Resolved, not indexed: §7.3.10 lets the trailer's /Info be an indirect reference, and
             // PdfDictionary's indexer does not follow one — reading it raw yields null, which is
-            // indistinguishable from "the document has no /Info" and would have re-created the
-            // very data loss this fixes. Same idiom as OutputIntentWriter.
+            // indistinguishable from "the document has no /Info" and would be the same data loss
+            // by another route. Same idiom as OutputIntentWriter.
             var existingInfo = doc.ResolveObject(doc.Trailer[PdfName.Info]) as PdfDictionary;
             var infoDict = existingInfo == null
                 ? new PdfDictionary()
@@ -113,21 +113,19 @@ namespace Tetitulz.Pdf.Base.Operations.Metadata
         /// <para>The XMP writer goes through <see cref="XmpMetadataRevision"/>; <see cref="WriteInfo"/>
         /// is this helper's one caller.</para>
         ///
-        /// <para><b>Two of those steps were doing nothing, and both looked like they were.</b></para>
+        /// <para><b>Two steps that look necessary are not here.</b></para>
         /// <list type="number">
         ///   <item><c>ms.Position = 0</c> — <see cref="IncrementalUpdateWriter"/>'s six-argument
-        ///     <c>WriteUpdate</c> rewinds the source itself before copying it. The same dead line as
-        ///     the eleven found elsewhere this round.</item>
+        ///     <c>WriteUpdate</c> rewinds the source itself before copying it.</item>
         ///   <item><c>mergedTrailer.GetInteger(PdfName.Size) ?? (maxObjNum + 1)</c> — which reads as
-        ///     "use the merged trailer's <c>/Size</c>, since the merge may have raised it". It never
-        ///     has: <see cref="MergeTrailer"/>'s <i>last</i> statement sets <c>/Size</c> to exactly
-        ///     the <c>newSize</c> it was handed, overriding both the original trailer and the patch.
-        ///     So the expression was always <c>maxObjNum + 1</c>, and it is now written that way.</item>
+        ///     "use the merged trailer's <c>/Size</c>, since the merge may have raised it". It cannot:
+        ///     <see cref="MergeTrailer"/>'s <i>last</i> statement sets <c>/Size</c> to exactly the
+        ///     <c>newSize</c> it was handed, overriding both the original trailer and the patch. So
+        ///     the size is written as <c>maxObjNum + 1</c>.</item>
         /// </list>
         ///
-        /// <para>The second is why replacing it with the bare fallback changed no test — an
-        /// <i>equivalent</i> mutation, not a coverage gap, and worth distinguishing: a test written
-        /// to "cover" it could not have failed either.</para>
+        /// <para>The two spellings of the second are an <i>equivalent</i> mutation, not a coverage
+        /// gap, and worth distinguishing: a test written to "cover" the longer one could not fail.</para>
         /// </remarks>
         private static void AppendWithMergedTrailer(
             Stream source, Stream output, List<IndirectObject> objects,

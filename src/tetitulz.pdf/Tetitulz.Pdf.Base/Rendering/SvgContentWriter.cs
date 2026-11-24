@@ -199,9 +199,6 @@ internal sealed partial class SvgContentWriter
         // The Tz operand is a percentage of the normal horizontal scaling (PDF §9.3.4).
         private const float HorizontalScalingPercent = 100f;
 
-        // See ContentStreamInterpreter: the 500-unit fallback lives in Rendering/GlyphWidth.cs
-        // and both renderers call it. This copy was left unreferenced by that move.
-
         // Alpha within this of 1.0 counts as fully opaque, so `fill-opacity="1"` is not
         // emitted for a ca/CA of 0.9999.
         private const float OpaqueAlphaEpsilon = 0.001f;
@@ -238,11 +235,11 @@ internal sealed partial class SvgContentWriter
                     // constant as the raster interpreter.
                     RenderCancellation.Poll(ref sinceCheck, cancellable, CancellationToken);
 
-                    // Per-operator fault isolation, as the raster interpreter has always had.
-                    // Without it ONE bad operator aborted the whole export: a truncated
-                    // /ImageMask, say, threw out of Dispatch and propagated out of
-                    // RenderPageToSvg, so the caller got an exception instead of a page. The
-                    // raster path loses one image and renders the rest.
+                    // Per-operator fault isolation, as the raster interpreter has. Without it ONE
+                    // bad operator would abort the whole export: a truncated /ImageMask, say,
+                    // would throw out of Dispatch and propagate out of RenderPageToSvg, so the
+                    // caller would get an exception instead of a page. The raster path loses one
+                    // image and renders the rest.
                     try { Dispatch(op); }
                     catch (OperationCanceledException)
                     {
@@ -274,10 +271,9 @@ internal sealed partial class SvgContentWriter
         ///
         /// <para>A clip or marked-content group is closed by the matching <c>Q</c>/<c>EMC</c>.
         /// Both are legal to omit at the end of a content stream — <c>… re W n …</c> at top
-        /// level needs no <c>Q</c> at all — and the writer then emitted an unbalanced document:
-        /// <b>the SVG was not well-formed XML</b>. It went unnoticed because the suite only ever
-        /// searched the output for substrings; the first test to call <c>XDocument.Parse</c> on
-        /// it failed immediately.</para>
+        /// level needs no <c>Q</c> at all — and without this the writer would emit an unbalanced
+        /// document: <b>SVG that is not well-formed XML</b>, which a test searching the output for
+        /// substrings cannot see; the tests parse it with <c>XDocument.Parse</c>.</para>
         /// </summary>
         private void CloseOpenGroups()
         {

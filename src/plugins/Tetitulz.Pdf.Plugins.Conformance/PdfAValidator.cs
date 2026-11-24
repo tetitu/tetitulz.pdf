@@ -1250,9 +1250,9 @@ namespace Tetitulz.Pdf.Plugins.Conformance
         }
 
         // Traversal is Core.Document.PdfNameTree (GAPS §15c): one implementation across the three
-        // rings that walk name trees, and it adds the /Kids cycle guard and entry budget this copy
-        // lacked. Only the value matters here — the key names the attachment, the violation names
-        // the file — so the key is deliberately not read.
+        // rings that walk name trees, with the /Kids cycle guard and the entry budget. Only the
+        // value matters here — the key names the attachment, the violation names the file — so the
+        // key is deliberately not read.
         private static void CheckAfRelationshipInNameTree(
             PdfDictionary node, PdfDocument doc, List<PdfAViolation> v)
         {

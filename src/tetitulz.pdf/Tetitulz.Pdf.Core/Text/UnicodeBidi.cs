@@ -927,18 +927,16 @@ namespace Tetitulz.Pdf.Core.Text
         /// <para><b>Derived from <see cref="GetBidiClass"/> rather than restated, and that is the
         /// whole point.</b> A caller deciding how to lay a run out needs the same answer the
         /// reorder used; <see cref="IsRightToLeftParagraph"/>'s own remarks already say that
-        /// re-deriving it from the text is how the two get to disagree. They did:
-        /// <c>Base.Operations.TextDirection.IsRtlChar</c> listed seven ranges by hand and covered
-        /// only <c>0750–077F</c> and <c>08A0–08FF</c> of the <c>0700–08FF</c> block this classifier
-        /// returns <c>AL</c> for — so Syriac (U+0710), Thaana (U+0780), NKo, Samaritan, Mandaic and
-        /// Arabic Extended-B were strong RTL to Core and left-to-right to Base, inside a single
-        /// extractor that calls both.</para>
+        /// re-deriving it from the text is how the two get to disagree. A hand list covering only
+        /// <c>0750–077F</c> and <c>08A0–08FF</c> of the <c>0700–08FF</c> block this classifier
+        /// returns <c>AL</c> for would make Syriac (U+0710), Thaana (U+0780), NKo, Samaritan,
+        /// Mandaic and Arabic Extended-B strong RTL to Core and left-to-right to Base, inside a
+        /// single extractor that calls both.</para>
         ///
         /// <para><b>It takes a <see cref="char"/>, so an astral RTL script answers <c>false</c> at
-        /// the surrogate</b> — the same limit the hand-written copy had. Fixing that means taking a
-        /// code point and routing to <c>GetSupplementaryBidiClass</c>, which is a wider change than
-        /// the divergence this closes; callers that hold whole strings should keep using the
-        /// reorder rather than this predicate.</para>
+        /// the surrogate.</b> Answering it means taking a code point and routing to
+        /// <c>GetSupplementaryBidiClass</c>, a wider change; callers that hold whole strings should
+        /// keep using the reorder rather than this predicate.</para>
         /// </remarks>
         internal static bool IsStrongRtl(char c)
         {

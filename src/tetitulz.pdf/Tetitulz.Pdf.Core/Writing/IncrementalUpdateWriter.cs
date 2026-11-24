@@ -1611,9 +1611,9 @@ namespace Tetitulz.Pdf.Core.Writing
             return true;
         }
 
-        // §7.2.3 Table 1. One implementation, in PdfConstants — this was a fourth private copy of
-        // the same six bytes, and the copy that mattered was PdfParser.FindStartXref's INLINE set
-        // of three, which is why a survey for "IsPdfWhitespace" would never have found the defect.
+        // §7.2.3 Table 1. One implementation, in PdfConstants — every reader of the six bytes,
+        // including PdfParser.FindStartXref, asks it; an inline set of three would be invisible to a
+        // survey for "IsPdfWhitespace".
         private static bool IsPdfWhitespace(byte b) => PdfConstants.IsWhitespace(b);
 
         private static bool NeedsLeadingEol(byte[] originalBytes)

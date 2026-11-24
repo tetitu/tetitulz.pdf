@@ -15,27 +15,19 @@ namespace Tetitulz.Pdf.Base.Operations.Structure
     /// default configuration hide?"</b>.
     /// </summary>
     /// <remarks>
-    /// <b>Four open-codings of this existed in <c>Base</c></b>, two as named helpers
-    /// (<c>PdfPageRenderer.CollectOcgRefs</c>, <c>PdfOcgManager.BuildOcgList</c>) and two written
-    /// out inline beside the second. They agree today — but only because one of them was
-    /// <i>repaired</i> rather than shared, and the comment left at that repair says what the
-    /// divergence cost: the copy took the document and never used it, so an indirect <c>/OFF</c>
-    /// yielded an empty set, and its caller's write then <b>replaced</b> the config's list —
-    /// making one layer visible reset every other layer's state.
-    ///
-    /// <para>That is the state CLAUDE.md warns about: reconciled copies with nothing structural
-    /// holding them together. One of the four inline reads still lacked the direct-array fallback
-    /// the other three had.</para>
+    /// <b>One reading for every caller in <c>Base</c></b> — the renderer's
+    /// (<c>PdfPageRenderer.CollectOcgRefs</c>) and the manager's (<c>PdfOcgManager.BuildOcgList</c>)
+    /// among them. A reading that took the document and never used it would read an indirect
+    /// <c>/OFF</c> as an empty set, and its caller's write would then <b>replace</b> the config's
+    /// list — making one layer visible reset every other layer's state.
     ///
     /// <para><b>Elements are collected as references, never resolved.</b> An optional-content group
     /// is identified BY object number, so resolving an element would throw away the very identity
     /// being recorded. A non-reference element is skipped rather than guessed at.</para>
     ///
-    /// <para>A <c>Contains(doc, listObj, objNum)</c> single-membership test lived here until the
-    /// <c>/BaseState</c> merge below. It had exactly one caller — <c>PdfOcgManager</c>'s
-    /// <c>IsInOffList</c>, which <i>was</i> the second, wrong answer to "is this group hidden?" —
-    /// so leaving it would have left the shorter path back to the divergence in place. Ask
-    /// <see cref="BuildHiddenSet"/> and test its result.</para>
+    /// <para>There is no single-membership test: "is this group hidden?" has one answer,
+    /// <see cref="BuildHiddenSet"/>, which merges <c>/BaseState</c>, and a shorter path that skips
+    /// the merge would be a second, wrong one. Ask it and test its result.</para>
     ///
     /// <para>No static fields, so no type initializer — a leaf by construction. That matters here:
     /// the alternative was for <c>PdfOcgManager</c> to call <c>PdfPageRenderer</c>'s static, and

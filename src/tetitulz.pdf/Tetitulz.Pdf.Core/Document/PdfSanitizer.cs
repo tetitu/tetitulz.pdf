@@ -42,8 +42,8 @@ namespace Tetitulz.Pdf.Core.Document
     /// reference is gone — each becomes unreachable and so leaves the file, rather than being emitted
     /// as an orphan with its bytes intact. The object-stream containers (<c>/Type /ObjStm</c>) and the
     /// cross-reference streams (<c>/Type /XRef</c>) a compressed input is built from are themselves
-    /// unreachable from the catalog, so a file that carried its actions inside an object stream no
-    /// longer ships that stream's untouched copy — the defect this rewrite closes.</para>
+    /// unreachable from the catalog, so a file that carried its actions inside an object stream
+    /// does not ship that stream's untouched copy.</para>
     /// </remarks>
     public static class PdfSanitizer
     {

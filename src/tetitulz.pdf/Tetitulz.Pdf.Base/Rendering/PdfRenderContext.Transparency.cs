@@ -53,9 +53,9 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// graphics-state frame, live or saved, still references it.
         /// </summary>
         /// <remarks>
-        /// <para>The soft mask became shareable when <see cref="GraphicsState.Clone"/> started
-        /// propagating it across <c>q</c> (§8.4.2 Table 52). One frame can therefore no longer own
-        /// the bitmap, and the two obvious repairs are both wrong: disposing on every replacement
+        /// <para>The soft mask is shared: <see cref="GraphicsState.Clone"/> propagates it across
+        /// <c>q</c> (§8.4.2 Table 52). No one frame owns the bitmap, and the two obvious
+        /// alternatives are both wrong: disposing on every replacement
         /// frees a bitmap a saved frame will draw with (use-after-free), and never disposing leaks
         /// a page-sized native allocation per <c>gs /SMask</c>.</para>
         /// <para>The stack is bounded by <see cref="MaxStateStackDepth"/> and a mask changes at
@@ -84,11 +84,10 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// peeked rather than summed.
         /// </summary>
         /// <remarks>
-        /// The entry means "emulating knockout", <b>not</b> "isolated knockout". The two were the
-        /// same thing when this stack was written; the condition is now
+        /// The entry means "emulating knockout", <b>not</b> "isolated knockout". The condition is
         /// <c>knockout &amp;&amp; backdrop == null</c>, which an isolated group always satisfies
-        /// and a non-isolated one often does. The name said the narrower thing for a while after
-        /// the behaviour widened, which is the disagreement no guard in this repository catches.
+        /// and a non-isolated one often does; a name saying the narrower thing would be a
+        /// disagreement no guard in this repository catches.
         /// </remarks>
         private readonly Stack<bool> _knockoutGroups = new Stack<bool>();
 
@@ -379,15 +378,14 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// <summary>
         /// Mirrors <c>PdfRenderOptions.ImageResampler</c>: which filter a scaled bitmap is drawn
         /// with. The default defers to the image's own <c>/Interpolate</c> flag, which is what the
-        /// spec asks for and what this renderer has always done.
+        /// spec asks for.
         /// </summary>
         /// <remarks>
-        /// <b>The option existed for a release and reached nothing.</b> Both sampling decisions —
-        /// the image draw and the soft-mask draw — read <c>/Interpolate</c> directly, so a caller
-        /// asking for nearest-neighbour to keep a scan pixel-sharp silently got Mitchell wherever
-        /// the flag was true, and three of the enum's four values were unreachable. Its only two
-        /// tests asserted that the property returned what was assigned to it, which a dead property
-        /// passes.
+        /// <b>Both sampling decisions read it</b> — the image draw and the soft-mask draw. Either
+        /// reading <c>/Interpolate</c> directly would give a caller asking for nearest-neighbour to
+        /// keep a scan pixel-sharp Mitchell wherever the flag is true, silently. A test that the
+        /// property returns what was assigned to it would pass for an option that reached nothing,
+        /// so the tests assert the pixels.
         /// </remarks>
         public ImageResampler ImageResampler { get; set; } = ImageResampler.PdfSpecInterpolate;
 
@@ -630,11 +628,10 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// </summary>
         /// <remarks>
         /// §11.6.4 applies the graphics-state soft mask to <b>every</b> painting operation.
-        /// <c>DrawBitmap</c> drew straight onto the canvas and so was the one painting operation
-        /// that ignored it — while the SVG exporter has always emitted <c>mask="url(#…)"</c> on its
-        /// <c>&lt;image&gt;</c> elements. The same file therefore rendered an unmasked image and
-        /// exported a masked one. (<see cref="DrawWithSoftMask"/>'s own doc comment claimed it
-        /// wrapped "path fills and strokes, text, images, shadings" — the images part was aspiration.)
+        /// <c>DrawBitmap</c> straight onto the canvas would be the one painting operation that
+        /// ignored it — while the SVG exporter emits <c>mask="url(#…)"</c> on its
+        /// <c>&lt;image&gt;</c> elements, so the same file would render an unmasked image and
+        /// export a masked one.
         /// This mirrors <see cref="ScreenTextOp"/>, including using the NULL-bounds overload: the op
         /// sets an absolute matrix, so a bounds value would be re-mapped by the canvas's current
         /// matrix into the wrong space.

@@ -687,8 +687,8 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
             sb.Append("0 g\n");
             sb.Append(InvFmt("0.5 w {0:F4} {1:F4} {2:F4} {3:F4} re S\n", 0.5, 0.5, w - 1, h - 1));
             // Text — only when every character fits the single-byte encoding the font is written
-            // with (the rule FormAppearance applies). Anything else was Latin-1 encoded into '?'s;
-            // it is now left out and /NeedAppearances asks the viewer to draw it.
+            // with (the rule FormAppearance applies). Anything else would be Latin-1 encoded into
+            // '?'s, so it is left out and /NeedAppearances asks the viewer to draw it.
             if (!string.IsNullOrEmpty(tf.DefaultValue) && FormAppearance.IsSingleByteEncodable(tf.DefaultValue))
             {
                 sb.Append("BT\n");

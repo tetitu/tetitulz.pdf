@@ -13,27 +13,27 @@ namespace Tetitulz.Pdf.Accessibility.Internal
     /// </summary>
     /// <remarks>
     /// <para><c>PdfArtifactMarker</c> and <c>ContentStreamTagger</c> each read <c>/CropBox</c> else
-    /// <c>/MediaBox</c> and pull <c>y0</c>/<c>y1</c> out of it, and they disagreed on one step:
+    /// <c>/MediaBox</c> and pull <c>y0</c>/<c>y1</c> out of it, and both ask this one question:
     /// whether the value is still finite <b>after</b> the cast to <c>float</c>.</para>
     ///
     /// <para><b>A double can be finite and still overflow a float.</b> <c>/MediaBox [0 0 612 1e40]</c>
-    /// passes <c>double.IsInfinity</c> and becomes <c>+Infinity</c> on the cast. The tagger re-tested
-    /// and refused; the marker returned <c>true</c> with an infinite top, and the damage ran a long
-    /// way from the cast:</para>
+    /// passes <c>double.IsInfinity</c> and becomes <c>+Infinity</c> on the cast. Accepted, an
+    /// infinite top would do its damage a long way from the cast:</para>
     ///
     /// <list type="bullet">
-    ///   <item><c>top - bottom</c> is <c>+Infinity</c>, and <c>+Inf &gt; 0</c> is true, so the
-    ///   extent read reported <b>success</b>.</item>
+    ///   <item><c>top - bottom</c> would be <c>+Infinity</c>, and <c>+Inf &gt; 0</c> is true, so
+    ///   the extent read would report <b>success</b>.</item>
     ///   <item>The header/footer overlap guard compares <c>header + footer &gt;= height</c>, which
-    ///   is false against an infinite height, so the page was processed.</item>
+    ///   is false against an infinite height, so the page would be processed.</item>
     ///   <item>The classifier's header arm evaluates <c>top - y</c> — <c>+Infinity</c> for every
-    ///   line, never within the margin — so <b>no line was ever classified as a header</b>, while
-    ///   the footer arm went on working. Headers silently stopped being marked as artifacts.</item>
-    ///   <item><c>PageTagOptions.PageHeight</c> was set to <c>+Infinity</c> and handed to the
-    ///   tagger — the very value the tagger's own resolver would have refused.</item>
+    ///   line, never within the margin — so <b>no line would ever be classified as a header</b>,
+    ///   while the footer arm still worked: headers would silently stop being marked as
+    ///   artifacts.</item>
+    ///   <item><c>PageTagOptions.PageHeight</c> would be set to <c>+Infinity</c> and handed to the
+    ///   tagger — the very value the tagger's own resolver refuses.</item>
     /// </list>
     ///
-    /// <para>The tagger's stricter answer is the one kept: a coordinate that cannot be expressed is
+    /// <para>The stricter answer is the one taken: a coordinate that cannot be expressed is
     /// not a coordinate, and refusing the page's header/footer classification is a bounded loss
     /// where an unbounded band is not.</para>
     /// </remarks>

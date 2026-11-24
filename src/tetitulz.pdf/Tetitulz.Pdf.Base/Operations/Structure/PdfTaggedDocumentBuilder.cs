@@ -68,8 +68,8 @@ namespace Tetitulz.Pdf.Base.Operations.Structure
         // representable: widening them to double yields 595.280029296875 and
         // 841.8900146484375, which PdfNumber's "F6" formatting writes into /MediaBox
         // as "595.280029" / "841.890015". Rounding back to the two decimals the
-        // constant documents keeps the emitted box byte-identical to the value this
-        // builder has always written, while still deriving it from the shared constant.
+        // constant documents writes the box as 595.28 / 841.89, while still deriving
+        // it from the shared constant.
         private static readonly double PageWidth  = Math.Round((double)PdfPageSizes.A4Width,  2);
         private static readonly double PageHeight = Math.Round((double)PdfPageSizes.A4Height, 2);
 

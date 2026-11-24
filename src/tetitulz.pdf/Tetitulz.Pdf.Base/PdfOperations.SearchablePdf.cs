@@ -321,7 +321,7 @@ namespace Tetitulz.Pdf.Base
                 return Fail(out reason, $"{plugin.Name} ran over page {pageIndex} and returned no result");
 
             // The engine saw the ROTATED image; the layer is written in UNROTATED user space. Undo
-            // the renderer's rotation first, then apply the one mapping that has always been here.
+            // the renderer's rotation first, then apply the one mapping from engine pixels to user space.
             // The unrotated pixel extent is the image's, transposed for a quarter turn.
             bool quarterTurn = size.Rotation == 90 || size.Rotation == 270;
             int rawWidth = quarterTurn ? bitmap.Height : bitmap.Width;

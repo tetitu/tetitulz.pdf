@@ -794,12 +794,12 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Operators
             // which is the worst outcome in this codebase.
             if (IsType3(font))
             {
-                // The font's own /FontMatrix and this interpreter's size matrix COLLIDE, and that
-                // collision is half the defect: KeyMatrix is literally the string "FontMatrix", so
-                // a program-built dictionary's [0.001 …] lands in the slot `scalefont` accumulates
-                // into — and `12 scalefont` then produced `0.012 0 0 0.012 0 0 Tm`, a document
-                // rendered at 1/1000 scale with a clean report. Resetting the size matrix is what
-                // makes `scalefont` mean the same thing it does for every other font.
+                // The font's own /FontMatrix and this interpreter's size matrix COLLIDE: KeyMatrix is
+                // literally the string "FontMatrix", so a program-built dictionary's [0.001 …] lands
+                // in the slot `scalefont` accumulates into — and `12 scalefont` would then produce
+                // `0.012 0 0 0.012 0 0 Tm`, a document rendered at 1/1000 scale with a clean report.
+                // Resetting the size matrix is what makes `scalefont` mean the same thing it does for
+                // every other font.
                 //
                 // Deliberately NOT generalised to any dictionary carrying a /FontMatrix: every
                 // dictionary findfont produces has an identity KeyMatrix, and the re-encoding tests
@@ -1220,10 +1220,10 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Operators
         /// <c>cx cy char ax ay string awidthshow</c> — <c>widthshow</c>'s per-character adjustment
         /// plus <c>ashow</c>'s per-glyph one.
         ///
-        /// <para>The pop order is the operand order reversed, and it was wrong: the operands were
-        /// read as <c>ax ay cx cy char string</c>, so the word-spacing amount was applied to every
-        /// glyph, the letter spacing was dropped, and a non-integral <c>ay</c> raised a typecheck
-        /// from the <c>char</c> slot.</para>
+        /// <para>The pop order is the operand order reversed. Read as
+        /// <c>ax ay cx cy char string</c>, the word-spacing amount would be applied to every glyph,
+        /// the letter spacing dropped, and a non-integral <c>ay</c> raise a typecheck from the
+        /// <c>char</c> slot.</para>
         /// </summary>
         private static void AWidthShow(PsInterpreter i)
         {

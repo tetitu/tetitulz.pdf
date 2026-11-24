@@ -25,13 +25,6 @@ namespace Tetitulz.Pdf.Core.Writing
     /// </summary>
     public sealed class PdfDocumentBuilder
     {
-        /// <summary>
-        /// Length, in bytes, of each half of the trailer's <c>/ID</c> array. PDF 32000-1:2008,
-        /// 14.4 specifies the file identifier as a 16-byte (128-bit) value.
-        /// </summary>
-        // The /ID length moved to PdfTrailerBuilder.FileIdLengthBytes with the generator that uses
-        // it — this copy was the only one of the four writers that had named the number at all.
-
         private sealed class PageSpec
         {
             public PdfContentStreamBuilder Builder;

@@ -21,7 +21,7 @@ namespace Tetitulz.Pdf.HtmlToPdf
     /// their own cells on the float side, the following content in a cell beside them. That gives
     /// the correct result for what business HTML floats — a logo beside an address block, an image
     /// beside a caption, a sidebar beside body copy.</para>
-    /// <para><b>Exact when it can be, a band when it cannot.</b> Builder now has real floats —
+    /// <para><b>Exact when it can be, a band when it cannot.</b> Builder has real floats —
     /// <c>Paragraph.Float</c> plus per-line exclusion rectangles in the exporter — so a float whose
     /// content is one paragraph and whose width is known is emitted as a genuine float: text flows
     /// down its side and <i>returns to the full measure</i> past its bottom, which is what CSS

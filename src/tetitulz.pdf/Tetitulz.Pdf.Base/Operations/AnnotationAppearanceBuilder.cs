@@ -434,11 +434,10 @@ namespace Tetitulz.Pdf.Base.Operations
         /// </summary>
         /// <remarks>
         /// The name, the colour, the line width and the caption's size and place are the renderers'
-        /// fallback's (<see cref="Rendering.AnnotationFallbackModel"/>). The summary above has always
-        /// said so. It was not true: an "Approved" stamp was outlined in red here, where the fallback
-        /// chooses green by name, at half the fallback's minimum width, with its caption placed by a
-        /// different estimate. A stamp with no <c>/Name</c> took its label from <c>/Contents</c> here
-        /// and read "Draft" in the fallback. Table 181 makes Draft the default.
+        /// fallback's (<see cref="Rendering.AnnotationFallbackModel"/>): an "Approved" stamp is
+        /// outlined in green, as the fallback chooses by name, at the fallback's minimum width, with
+        /// its caption placed by the same estimate, and a stamp with no <c>/Name</c> reads "Draft",
+        /// the default Table 181 makes.
         /// </remarks>
         private static string BuildStamp(
             PdfDictionary annot, double width, double height, PdfDictionary resources)

@@ -49,8 +49,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering.Drawings
 
         /// <summary>
         /// A whole rectangle as a single <c>re</c>. Kept distinct from four <see cref="LineTo"/>
-        /// calls because <c>re</c> is what the renderer has always emitted for a plain rectangle,
-        /// and the existing shape tests assert on it.
+        /// calls because a plain rectangle is written as one <c>re</c>, which the shape tests assert on.
         /// </summary>
         internal void Rectangle(double x, double y, double w, double h)
             => _ops.AppendFormat(CultureInfo.InvariantCulture, "{0:F2} {1:F2} {2:F2} {3:F2} re\n", x, y, w, h);
@@ -58,7 +57,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering.Drawings
         /// <summary>
         /// The bezier constant for a quarter arc: <c>4/3·tan(90°/4)</c>. A circle drawn from four
         /// cubic segments with control points this far along the tangents is within 0.02% of the
-        /// true circle — the standard approximation, and the value this renderer has always used.
+        /// true circle — the standard approximation.
         /// </summary>
         internal const double QuarterArcK = 0.5522847498;
 

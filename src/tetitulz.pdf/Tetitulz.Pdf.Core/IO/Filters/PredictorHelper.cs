@@ -149,8 +149,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
             if (reject != null) return Skip(data, reject);
 
             // RejectDimensions bounds a row at 128 MB, so these fit an int; and the output is
-            // smaller than the input, so its size does too. Two overflow guards here could not fire
-            // and were removed.
+            // smaller than the input, so its size does too. No overflow guard here could fire.
             int bytesPerPixel = Math.Max(1, (colors * bitsPerComponent + 7) / 8);
             int rowBytes = (int)(((long)columns * colors * bitsPerComponent + 7) / 8);
             int rowWithFilter = rowBytes + 1;

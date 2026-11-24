@@ -13,18 +13,16 @@ namespace Tetitulz.Pdf.Base.Rendering
     /// The dash pattern of §8.4.3.6 — reading the <c>d</c> operator, the effective repeat period,
     /// and the phase normalisation. <b>One implementation, both renderers.</b>
     ///
-    /// <para><b>The period and phase functions were byte-identical copies</b>, and the SVG one
-    /// carried a comment reading "Same function as <c>PdfRenderContext.NormaliseDashPhase</c>".
-    /// That sentence is the marker this repository has learned to distrust: nothing enforces prose,
-    /// and every rendering defect the project has found was one renderer lagging the other.</para>
+    /// <para><b>One reading, because prose does not enforce agreement</b>: a comment saying two
+    /// copies are the same function is the marker this repository has learned to distrust, and
+    /// every rendering defect the project has found was one renderer lagging the other.</para>
     ///
-    /// <para><b>Reading the operator was <i>not</i> identical, which is why the copies mattered.</b>
-    /// The raster handler required both operands and ignored the operator otherwise; the SVG one
-    /// accepted the array alone and supplied a phase of 0. So <c>d [3 3]</c> with the phase missing
-    /// left the previous dash in force in one renderer and installed a new one in the other. The
-    /// conservative reading is now shared: §8.4.3.6 defines <c>d</c> as taking two operands, so a
-    /// stream carrying one has not written a <c>d</c>, and the graphics state is left alone rather
-    /// than being changed on a guess.</para>
+    /// <para><b>Reading the operator is where two copies would differ.</b> One requiring both
+    /// operands and one supplying a phase of 0 for the array alone would leave the previous dash in
+    /// force in one renderer and install a new one in the other for <c>d [3 3]</c> with the phase
+    /// missing. The shared reading is the conservative one: §8.4.3.6 defines <c>d</c> as taking
+    /// two operands, so a stream carrying one has not written a <c>d</c>, and the graphics state is
+    /// left alone rather than being changed on a guess.</para>
     ///
     /// <para><b>No static fields</b>, only pure functions — the same leaf discipline
     /// <c>SvgSyntax</c> and <c>TransferFunctionLut</c> are held to, so sharing it between the two
@@ -49,7 +47,7 @@ namespace Tetitulz.Pdf.Base.Rendering
             {
                 // §8.4.3.6: an empty array turns dashing off. The phase is meaningless then, and
                 // storing the operand's value would leave a stale offset to be applied by whatever
-                // `d` comes next. The raster path used to keep it; the SVG path zeroed it.
+                // `d` comes next. Both renderers zero it.
                 return true;
             }
 

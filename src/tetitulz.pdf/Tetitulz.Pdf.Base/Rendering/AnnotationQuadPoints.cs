@@ -15,20 +15,20 @@ namespace Tetitulz.Pdf.Base.Rendering
     /// Underline, StrikeOut, Squiggly), read once for both renderers.
     /// </summary>
     /// <remarks>
-    /// <para>Both renderers read the same array and disagreed about it in three ways, each visible
-    /// on a real file:</para>
+    /// <para>Both renderers read the array here; read separately, they could disagree about it in
+    /// three ways, each visible on a real file:</para>
     /// <list type="number">
-    ///   <item><b>The sentinel guard.</b> The raster path has always skipped a quad whose corners
-    ///     exceed <see cref="MaxCoordinate"/> — <c>[-32768 … 32768]</c> is a producer's "unset"
-    ///     marker, not a rectangle, and painting it covers the page. The SVG exporter had no such
-    ///     guard, so the identical file rendered clean and exported as one enormous filled path.</item>
-    ///   <item><b>The extents.</b> Raster took min/max over all four corners; the SVG side used only
-    ///     the two corners it assumed were the bottom edge. §12.5.6.10's corner order has been
-    ///     written inconsistently by real producers for years — widely used viewers' own output has swapped the
-    ///     last two — so a quad in another winding gave a rule of the wrong length, in the wrong
-    ///     place, or both.</item>
-    ///   <item><b>The absent case.</b> Raster reports "no quads" so Highlight can fall back to
-    ///     filling the <c>/Rect</c>; the SVG side silently drew nothing.</item>
+    ///   <item><b>The sentinel guard.</b> A quad whose corners exceed <see cref="MaxCoordinate"/>
+    ///     is skipped — <c>[-32768 … 32768]</c> is a producer's "unset" marker, not a rectangle, and
+    ///     painting it covers the page. Guarded on one side only, the identical file would render
+    ///     clean and export as one enormous filled path.</item>
+    ///   <item><b>The extents.</b> Min/max over all four corners, never only the two corners
+    ///     assumed to be the bottom edge. §12.5.6.10's corner order has been written
+    ///     inconsistently by real producers for years — widely used viewers' own output has swapped
+    ///     the last two — so a quad in another winding would give a rule of the wrong length, in
+    ///     the wrong place, or both.</item>
+    ///   <item><b>The absent case.</b> "No quads" is reported, so Highlight can fall back to
+    ///     filling the <c>/Rect</c> rather than silently drawing nothing.</item>
     /// </list>
     /// <para>A leaf by construction — no static fields, so no type initializer and no
     /// initialization edge between the renderers.</para>

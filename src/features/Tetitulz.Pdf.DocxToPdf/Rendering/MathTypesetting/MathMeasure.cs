@@ -62,18 +62,18 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering.MathTypesetting
 
         private static MathBox Embedded(string text, MathStyle style, DocxRenderContext context)
         {
-            // Real code points, not UTF-16 code units. `text.Select(c => (int)c)` turned every
+            // Real code points, not UTF-16 code units. `text.Select(c => (int)c)` would turn every
             // supplementary-plane maths glyph — 𝑥 U+1D465, 𝔸 U+1D538, which Word's equation editor
             // writes directly into m:t — into two lone surrogates. No cmap maps a surrogate, so
-            // `missing` was never 0 even when the font covered the character: the term became a
-            // phantom of estimated width and the diagnostic named "U+D835, U+DC65", code points
-            // that do not exist as characters.
+            // `missing` would never be 0 even when the font covered the character: the term would
+            // become a phantom of estimated width and the diagnostic name "U+D835, U+DC65", code
+            // points that do not exist as characters.
             //
             // Through FontResolver.RequiredCodePoints, not a bare .Distinct(): this method re-checks
             // coverage itself after resolving, so filtering only inside ResolveEmbeddedFont would
             // have left the equation path answering the same question a second, stricter way — the
             // resolver would hand back a font and `missing` would still reject it. Whitespace is not
-            // evidence of coverage; see that helper for the defect and why it stayed invisible.
+            // evidence of coverage; that helper's remarks say why, and why the failure is invisible.
             var codePoints = FontResolver.RequiredCodePoints(UnicodeText.CodePointsToCover(text));
             // A font embedded in the DOCX first, then the host's — the order body runs and list marks use. Without
             // the host's, an equation in a document embedding no font would draw its non-WinAnsi symbols

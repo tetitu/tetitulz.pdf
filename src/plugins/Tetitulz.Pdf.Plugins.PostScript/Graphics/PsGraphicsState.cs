@@ -128,7 +128,7 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Graphics
         /// <remarks>The CMYK weights are PLRM's own 0.3/0.59/0.11 — <b>not</b> BT.601's
         /// 0.299/0.587/0.114, which is why <see cref="Luma"/> is not reused for that arm. The RGB
         /// arm keeps BT.601 from Core.Constants (the double set; <c>(double)0.299f != 0.299</c>,
-        /// see GAPS.md §2b), which is what it has always used.</remarks>
+        /// see GAPS.md §2b).</remarks>
         public double ToGray() => Space switch
         {
             PsColorSpace.Gray => C0,

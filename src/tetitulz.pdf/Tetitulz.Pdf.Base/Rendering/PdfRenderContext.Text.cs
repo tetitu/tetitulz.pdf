@@ -122,7 +122,7 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// </param>
         /// <param name="unicodeText">
         /// The run's text, attached for copy/paste and accessibility only. It never affects glyph
-        /// selection — §9.4 already fixed that.
+        /// selection — §9.4 has done that by the time this runs.
         /// </param>
         public float DrawGlyphRunWithWidths(
             ushort[] glyphIds, SKTypeface typeface, float[] pdfWidths,
@@ -465,15 +465,11 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// for the normalised transform the text sites draw under.
         /// </summary>
         /// <remarks>
-        /// <para><b>Every §8.4.3 stroke property, from the one builder.</b> These sites used to
-        /// construct an <c>SKPaint</c> inline and set only the style, the colour and the width, so
-        /// a stroked text run silently took Skia's defaults for the line cap, the line join, the
-        /// miter limit and the dash — butt, miter, 4 and solid — however the file had set
-        /// <c>J</c>, <c>j</c>, <c>M</c> or <c>d</c>. A path stroke beside it honoured all four.</para>
-        /// <para><b>The raster renderer also disagreed with itself.</b> The captured-glyph stroke
-        /// (since removed with the per-paint overprint compositor) went through
-        /// <c>BuildStrokePaint</c>, so the same <c>2 Tr</c> run changed cap, join, miter and dash
-        /// depending on whether something unrelated had routed it through glyph capture.</para>
+        /// <para><b>Every §8.4.3 stroke property, from the one builder.</b> An <c>SKPaint</c> built
+        /// inline with only the style, the colour and the width would give a stroked text run
+        /// Skia's defaults for the line cap, the line join, the miter limit and the dash — butt,
+        /// miter, 4 and solid — however the file had set <c>J</c>, <c>j</c>, <c>M</c> or <c>d</c>,
+        /// while a path stroke beside it honoured all four.</para>
         /// <para>The width is the one property that cannot come straight from the builder:
         /// <c>BuildStrokePaint</c> scales by the CTM because a path is drawn under the canvas's
         /// base transform, while these sites set an absolute screen matrix normalised by the font

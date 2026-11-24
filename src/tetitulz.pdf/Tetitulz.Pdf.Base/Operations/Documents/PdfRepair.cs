@@ -487,8 +487,8 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         /// </para>
         /// <para>
         /// The table's size is therefore bounded by <see cref="RawObjectScanner.MaxObjectNumber"/>, i.e. ~20 MB of
-        /// rows in the worst case a hostile file can force. That ceiling is the bound; do not
-        /// re-derive one from the object <i>count</i>, which is what this defect was.
+        /// rows in the worst case a hostile file can force. That ceiling is the bound; one derived
+        /// from the object <i>count</i> would not bound the numbers a file chooses.
         /// </para>
         /// </remarks>
         private static void WriteXref(

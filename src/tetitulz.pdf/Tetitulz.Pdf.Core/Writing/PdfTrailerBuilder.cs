@@ -18,28 +18,23 @@ namespace Tetitulz.Pdf.Core.Writing
     /// <c>PdfColorSpaceConverter</c>), <c>IncrementalUpdateWriter</c> itself and
     /// <c>Tetitulz.Pdf.Signing</c> — copies of a trailer do not agree.</para>
     ///
-    /// <para><b>The tenth was found later, and how it hid is the reusable part.</b> Every copy above
-    /// lived in a named helper — <c>BuildTrailer</c>, <c>MergeTrailer</c> — so a grep for the name
-    /// found them all. <c>PdfOperations.RotateAllPages</c> had <see cref="ForUpdate"/>'s body written
-    /// out <i>inline</i>, three statements in the middle of a longer method, and no identifier to
-    /// search for; it was found only by searching for the <b>rule</b> (a loop copying trailer entries
-    /// forward, then a <c>/Size</c> restated). It was harmless, because that site passes its trailer
-    /// to <c>IncrementalUpdateWriter.WriteUpdate</c>, which routes it through
-    /// <see cref="ForAppendedRevision"/> and strips the keys again — but it had already drifted
-    /// (no deny list), and it was one reordering away from mattering. <b>A consolidation's
-    /// completeness check has to search for the behaviour, not the identifier.</b></para>
+    /// <para><b>A copy hides where no identifier names it.</b> A trailer built inline — three
+    /// statements in the middle of a longer method, a loop copying trailer entries forward, then a
+    /// <c>/Size</c> restated — has no name to search for, so a completeness check has to search for
+    /// the <b>rule</b>. Even one whose result <c>IncrementalUpdateWriter.WriteUpdate</c> routes
+    /// through <see cref="ForAppendedRevision"/>, stripping the keys again, drifts (no deny list)
+    /// and is one reordering away from mattering. <b>A consolidation's completeness check has to
+    /// search for the behaviour, not the identifier.</b></para>
     ///
-    /// <para><b>The <c>/Prev</c> guard is the half that matters, and only Core had it.</b> A
-    /// <c>/Prev 0</c> points at the <c>%PDF</c> header and an out-of-range one points past the end
-    /// of the file; either is a claim a reader cannot follow.
-    /// <c>IncrementalUpdateWriter</c> has omitted the key in that case for some time, with a comment
-    /// explaining why. <c>PdfSigner</c> and <c>VisualSignatureBuilder</c> build and write their own
-    /// trailers directly through <c>PdfWriter.WriteTrailer</c>, so Core's guard never ran for them,
-    /// and they wrote <c>/Prev</c> unconditionally. The value arrives as 0 whenever
+    /// <para><b>The <c>/Prev</c> guard is the half that matters.</b> A <c>/Prev 0</c> points at
+    /// the <c>%PDF</c> header and an out-of-range one points past the end of the file; either is a
+    /// claim a reader cannot follow, so the key is omitted in that case. <c>PdfSigner</c> and
+    /// <c>VisualSignatureBuilder</c>, which write their own trailers directly through
+    /// <c>PdfWriter.WriteTrailer</c>, take theirs from here too. The value arrives as 0 whenever
     /// <c>startxref</c> cannot be located — the parser reports 0 when it recovered a file by
     /// scanning, and <c>PdfSigner</c>'s own 1&#160;KB tail scan reports 0 for the same reason.</para>
     ///
-    /// <para><b>What omitting the key does not do, because it was measured.</b> It does not rescue
+    /// <para><b>What omitting the key does not do, measured.</b> It does not rescue
     /// the document. When the previous section is unnameable the appended revision declares only
     /// the objects it wrote, and nothing re-declares the rest: through <c>PdfSigner</c> the result
     /// reopens with a catalog and zero pages, and through <c>IncrementalUpdateWriter</c>'s

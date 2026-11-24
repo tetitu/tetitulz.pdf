@@ -45,11 +45,11 @@ namespace Tetitulz.Pdf.Accessibility.Internal
         /// A <c>long</c>, and that is load-bearing rather than tidiness. The product is
         /// <c>Content.Length × (pages − 1)</c>, bounded only by
         /// <c>AutoTagOptions.MaxPageContentBytes</c> (4 MiB) and by the page count, so it overflows
-        /// <c>int</c> once (pages − 1) ≥ 512 for a 4 MiB form. A negative product passed the
+        /// <c>int</c> once (pages − 1) ≥ 512 for a 4 MiB form. A negative product would pass the
         /// "> remainingBudget" test, and <c>PdfAutoTagger</c>'s <c>duplicationBudget -=
-        /// BudgetCost</c> then *raised* the remaining budget, so every later form was unbounded too:
-        /// 600 pages × 4 MiB wrote 2.4 GB out of a 60 KB input while
-        /// <see cref="SharedFormDuplicator.MaxDuplicatedFormBytes"/> never fired.
+        /// BudgetCost</c> would then *raise* the remaining budget, leaving every later form unbounded
+        /// too: 600 pages × 4 MiB would write 2.4 GB out of a 60 KB input without
+        /// <see cref="SharedFormDuplicator.MaxDuplicatedFormBytes"/> ever refusing.
         /// </remarks>
         internal long BudgetCost;
     }

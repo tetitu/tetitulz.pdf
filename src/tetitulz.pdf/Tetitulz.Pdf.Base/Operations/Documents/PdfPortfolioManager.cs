@@ -353,8 +353,8 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         }
 
         // Traversal is Core.Document.PdfNameTree (GAPS §15c): one implementation across the three
-        // rings that walk name trees, and it adds the /Kids cycle guard and entry budget this copy
-        // lacked. The value is resolved here rather than in the walker because only this caller
+        // rings that walk name trees, with the /Kids cycle guard and the entry budget. The value
+        // is resolved here rather than in the walker because only this caller
         // wants the file-spec dictionary; two others need the reference identity preserved.
         private static void CollectNameTreePairs(PdfDictionary node,
             List<(string, PdfDictionary)> pairs, PdfDocument doc)

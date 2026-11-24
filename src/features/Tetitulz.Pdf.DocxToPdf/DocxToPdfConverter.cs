@@ -153,16 +153,14 @@ namespace Tetitulz.Pdf.DocxToPdf
         /// Clears the per-thread diagnostic slot at the start of a conversion.
         /// </summary>
         /// <remarks>
-        /// <para><b><see cref="LastDiagnostic"/> promised this and only half-delivered it.</b>
-        /// <c>DocxRenderContext.RenderToPdf</c> cleared the slot on entry, so the legacy renderer
-        /// honoured the contract — and the Builder path (<c>UseLegacyRenderer = false</c>) never
-        /// cleared it at all, nor did the LibreOffice and Word engines. A caller converting a clean
-        /// document on that path was handed the previous conversion's message and had no way to know
-        /// it was stale.</para>
+        /// <para><b><see cref="LastDiagnostic"/> promises this on every path</b> — the legacy
+        /// renderer, the Builder path (<c>UseLegacyRenderer = false</c>) and the LibreOffice and Word
+        /// engines. A slot one path leaves uncleared hands a caller converting a clean document the
+        /// previous conversion's message, with no way to know it is stale.</para>
         /// <para>Here rather than in each renderer, because this is the one prologue every engine
         /// and both renderers pass through. <c>DocxRenderContext</c> keeps its own clear: it is
         /// reachable directly within the assembly, and a slot cleared twice costs nothing while a
-        /// slot cleared nowhere is this defect.</para>
+        /// slot cleared nowhere is a stale answer.</para>
         /// </remarks>
         private static void BeginConversion() => Rendering.DocxDiagnostics.Clear();
 

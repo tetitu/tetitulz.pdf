@@ -56,13 +56,11 @@ namespace Tetitulz.Pdf.Core.Plugins
         /// <param name="imageDictionary">
         /// The <b>image XObject dictionary</b> (may be null) — <c>/Width</c>, <c>/Height</c>,
         /// <c>/ColorSpace</c>, <c>/BitsPerComponent</c>, <c>/DecodeParms</c> and the rest.
-        /// <para><b>NOT the decode-parameters dictionary.</b> This parameter was named
-        /// <c>parameters</c> and documented as "/DecodeParms", while both dispatch sites
-        /// (<c>PluginImageDecoder</c> and <c>JpxImageDecoder</c>) have always passed the image
-        /// dictionary — so a JBIG2 plugin written to the contract read
-        /// <c>parameters[/JBIG2Globals]</c>, got null, and declined every page that used a shared
-        /// symbol dictionary. The dispatch sites are right (a decoder needs the geometry and the
-        /// colour space too); the name and the doc were wrong.</para>
+        /// <para><b>NOT the decode-parameters dictionary.</b> Both dispatch sites
+        /// (<c>PluginImageDecoder</c> and <c>JpxImageDecoder</c>) pass the image dictionary, because a
+        /// decoder needs the geometry and the colour space too; a JBIG2 plugin reading
+        /// <c>/JBIG2Globals</c> straight off this dictionary would get null and decline every page
+        /// that uses a shared symbol dictionary.</para>
         /// <para>Resolve <c>/DecodeParms</c> from this dictionary yourself, and note that for a
         /// filter <b>chain</b> it is an ARRAY positionally matched to <c>/Filter</c>, so the entry
         /// for <paramref name="filterName"/> is the one at that filter's index.</para>

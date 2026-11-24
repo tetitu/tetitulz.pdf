@@ -142,9 +142,8 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// <para><b>Not interchangeable with
         /// <c>Operations.Metadata.PdfColorSpaceConverter.RgbToCmykWithGcr</c></b>, which works in linear
         /// light and pulls part of <c>min(c,m,y)</c> into K for printable rich blacks. Both are
-        /// correct for their own job — round-trip fidelity here, print quality there — and the two
-        /// were once both called <c>RgbToCmyk</c>, which is the only reason they read as a
-        /// duplicate. See GAPS.md §2b.</para>
+        /// correct for their own job — round-trip fidelity here, print quality there — so the two
+        /// are not a duplicate, though both turn RGB into CMYK. See GAPS.md §2b.</para>
         /// </summary>
         internal static void RgbToCmykExactInverse(SKColor rgb, out float c, out float m, out float y, out float k)
         {

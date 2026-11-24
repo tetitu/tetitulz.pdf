@@ -637,27 +637,21 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         /// leaves it null.
         /// </param>
         /// <remarks>
-        /// <para><b>Why this is a method.</b> The sequence — derive the trailer, rewind the source,
-        /// write the update at the previous xref offset with the new <c>/Size</c> — was written out
-        /// eleven times across <c>Base.Operations</c> and the Conformance plugin, identically apart
-        /// from line wrapping.
+        /// <para><b>Why this is a method.</b> The sequence — derive the trailer, write the update at
+        /// the previous xref offset with the new <c>/Size</c> — is the same for every incremental
+        /// writer in <c>Base.Operations</c> and the Conformance plugin.
         /// </para>
         ///
-        /// <para><b>One of those four lines did nothing, and eleven call sites carried it.</b> Every
-        /// copy set <c>ms.Position = 0</c> before calling
+        /// <para><b>The source is not rewound here.</b>
         /// <see cref="IncrementalUpdateWriter.WriteUpdate(Stream, Stream, List{IndirectObject},
-        /// PdfDictionary, long, int, IPdfObjectEncryptor)"/> — which does exactly that itself,
-        /// immediately before copying the original through, and whose only earlier read of the
-        /// stream saves and restores the position around an absolute seek. So the caller's rewind
-        /// was redundant at all eleven sites, and it is not repeated here.</para>
+        /// PdfDictionary, long, int, IPdfObjectEncryptor)"/> sets <c>Position = 0</c> itself,
+        /// immediately before copying the original through, and its only earlier read of the
+        /// stream saves and restores the position around an absolute seek.</para>
         ///
-        /// <para>It reads as the load-bearing line of the four, which is presumably why it was
-        /// copied so faithfully — a call site that <i>did</i> have to rewind and forgot would emit a
-        /// revision appended to nothing, with no exception and no failed assertion, just a broken
-        /// PDF. That is a good reason to check rather than to assume: deleting the rewind from this
-        /// helper leaves all 3 022 Base and 495 Conformance tests green, which is what a line that
-        /// never did anything looks like, and is <b>not</b> the same as a coverage gap. The evidence
-        /// that it is dead is <c>IncrementalUpdateWriter</c>'s own code, not the green run.</para>
+        /// <para>A rewind reads as load-bearing — a writer that <i>did</i> have to rewind and forgot
+        /// would emit a revision appended to nothing, with no exception and no failed assertion, just
+        /// a broken PDF — so the evidence that none is needed is <c>IncrementalUpdateWriter</c>'s own
+        /// code, not a green test run, which a line that does nothing would also leave.</para>
         ///
         /// <para><b>Two callers deliberately do not use this.</b>
         /// <c>PdfImageReplacer</c> builds a <i>plan</i> — it derives the trailer and the size and

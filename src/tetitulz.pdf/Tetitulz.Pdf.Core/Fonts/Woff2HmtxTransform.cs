@@ -98,8 +98,7 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// <remarks>
         /// No range checks here: <see cref="Rebuild"/> has already made <paramref name="count"/>
         /// non-negative (<c>numberOfHMetrics &lt;= numGlyphs</c>) and every glyph index a valid one
-        /// (<c>xMins.Length == numGlyphs</c>). The two guards this had could not fire, and the sweep
-        /// (<c>.claude/sweep-woff2-hmtx.ps1</c>, W9 and W10) confirmed it.
+        /// (<c>xMins.Length == numGlyphs</c>), so a guard here could not fire.
         /// </remarks>
         private static int[] ReadOrDerive(Woff2Reader reader, bool absent, int firstGlyph, int count,
                                           int[] xMins)

@@ -399,9 +399,9 @@ namespace Tetitulz.Pdf.Base.Operations.Structure
             PdfObject resolved = doc.ResolveObject(destObj);
 
             // Explicit destination array: [pageRef /XYZ ...] or [pageIndex /Fit ...]
-            // One implementation, in Operations.PdfDestinationPage — the third of the three copies.
-            // An explicit destination that names no page yields null here rather than falling
-            // through to the named-destination lookup below, which is what the copy did.
+            // One implementation, in Operations.PdfDestinationPage. An explicit destination that
+            // names no page yields null here rather than falling through to the named-destination
+            // lookup below.
             if (resolved is PdfArray arr && arr.Count > 0)
             {
                 int index = PdfDestinationPage.IndexFromDestArray(doc, arr);

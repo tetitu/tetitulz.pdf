@@ -251,9 +251,9 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// <remarks>
         /// <c>[ThreadStatic]</c> like every other diagnostic slot in this tree, and one-shot because
         /// a page sets its colour hundreds of times and a channel that repeats is a channel a caller
-        /// filters. <b>Keyed to the provider instance</b>: a bare flag, never reset, said it once in a
-        /// thread's lifetime — so a host that registered a second provider, or a render after the
-        /// first on a pooled thread, was never told. It cannot fire on an ordinary render: the built-in
+        /// filters. <b>Keyed to the provider instance</b>: a bare flag, never reset, would say it once
+        /// in a thread's lifetime — so a host that registered a second provider, or a render after the
+        /// first on a pooled thread, would never be told. It cannot fire on an ordinary render: the built-in
         /// provider takes the intent directly, and a provider implementing
         /// <see cref="IIccIntentColorTransformProvider"/> receives it.
         /// </remarks>

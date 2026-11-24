@@ -374,8 +374,8 @@ namespace Tetitulz.Pdf.Base.Operations.Structure
         // pathologically deep /Kids chain would otherwise stack-overflow
         // (uncatchable in .NET).
         // Traversal is Core.Document.PdfNameTree (GAPS §15c): one implementation across the three
-        // rings that walk name trees, and it adds the /Kids cycle guard and entry budget this copy
-        // lacked. The destination value stays unresolved until ResolveDestArray, which is where
+        // rings that walk name trees, with the /Kids cycle guard and the entry budget. The
+        // destination value stays unresolved until ResolveDestArray, which is where
         // this type's own /D-indirection handling lives. Returns false when the walk stopped at a
         // limit, which the entries it did reach cannot show.
         private static bool WalkNameTree(PdfDictionary node, PdfDocument doc,
@@ -422,10 +422,7 @@ namespace Tetitulz.Pdf.Base.Operations.Structure
 
         private static NamedDestination ParseDestination(string name, PdfArray destArr, PdfDocument doc)
         {
-            // One implementation, in Operations.PdfDestinationPage. This copy carried the comment
-            // "matching PdfLinkExtractor.PageIndexFromDestArray", which was the only thing standing
-            // between three hand-written copies of §12.3.2.2 — and the copy it named lacked this
-            // one's `ReferenceObjectNumber > 0` clause, so the assertion was not even true.
+            // One implementation, in Operations.PdfDestinationPage.
             int pageIndex = PdfDestinationPage.IndexFromDestArray(doc, destArr);
 
             string type = (destArr.Count > 1) ? (destArr[1] as PdfName)?.Value : null;

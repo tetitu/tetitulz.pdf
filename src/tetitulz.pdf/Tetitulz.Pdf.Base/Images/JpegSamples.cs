@@ -42,7 +42,7 @@ namespace Tetitulz.Pdf.Base.Images
     /// bit for bit against an independent JPEG decoder on noisy CMYK JPEGs, chroma-subsampled and not. Skia
     /// undoes the Adobe inversion itself, so the samples are the inks; <see cref="Describing"/>
     /// accordingly drops a four-component image's <c>/Decode</c>, which describes that inversion —
-    /// the rule the codec path has always applied.</para>
+    /// the rule the codec path applies too.</para>
     /// </remarks>
     public static class JpegSamples
     {

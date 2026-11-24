@@ -25,7 +25,7 @@ namespace Tetitulz.Pdf.Encryption
     /// (RFC 5652) that authenticates an encrypted document's byte range, so tampering is detected
     /// independently of any digital signature.
     ///
-    /// <para><b>Both placements are built here, and both are now placed and checked.</b> §6.5.1's
+    /// <para><b>Both placements are built here, and both are placed and checked.</b> §6.5.1's
     /// standalone token goes in an <c>AuthCode</c> dictionary and is written by
     /// <c>PdfMacTokenSeal</c>. §6.5.2's attached token — the same CMS with <c>signatureDigest</c>
     /// present — is built by <see cref="BuildAttachedToSigToken"/> and affixed to a signature's

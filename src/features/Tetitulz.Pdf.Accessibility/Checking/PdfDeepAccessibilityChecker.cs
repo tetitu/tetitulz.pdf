@@ -64,18 +64,17 @@ namespace Tetitulz.Pdf.Accessibility.Checking
     ///   <item>UA99 — A check could not be completed; its findings are missing (Info).</item>
     /// </list>
     ///
-    /// <para><b>Why UA16–UA19 exist.</b> Before they were added the audit could not tell a
-    /// properly tagged document from one whose structure tree points at nothing: a file with a
-    /// handful of empty structure elements, no MCIDs and no ParentTree produced a single
-    /// Info-level remark and therefore looked very nearly conformant. Those four checks, plus
-    /// raising the missing-/ParentTree finding from Info to Error, are what make hollow tagging
-    /// fail the audit.</para>
+    /// <para><b>Why UA16–UA19 exist.</b> Without them the audit could not tell a properly tagged
+    /// document from one whose structure tree points at nothing: a file with a handful of empty
+    /// structure elements, no MCIDs and no ParentTree would produce a single Info-level remark and
+    /// look very nearly conformant. Those four checks, with the missing-/ParentTree finding an
+    /// Error rather than Info, are what make hollow tagging fail the audit.</para>
     ///
     /// <para><b>Why UA30 exists on top of them.</b> UA16 asks a purely <i>local</i> question — is
     /// <i>this</i> element a leaf that points at nothing — so a tree in which every element has an
     /// element child slips past it even when the tree as a whole reaches zero content. That shape
-    /// is the original hollow-tagging defect wearing a disguise, and only UA17 caught it, by
-    /// accident, and only when a page happened to draw unmarked text. UA30 asks the
+    /// is hollow tagging in disguise, and without UA30 only UA17 would catch it, by accident, and
+    /// only when a page happened to draw unmarked text. UA30 asks the
     /// <i>transitive</i> question instead and reports the highest element of each hollow subtree,
     /// so a remediator gets one actionable entry per broken branch rather than one per element.</para>
     ///
@@ -105,7 +104,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking
     /// payload leaves a page unscannable, and the four checks that need decoded content
     /// (UA14's marked-content mapping, UA17, UA18, UA24) must then skip it. Each such skip is
     /// recorded and named per page by <see cref="ReportContentCoverage"/>, so a report can never
-    /// again be byte-identical to one in which those checks ran and found nothing.</para>
+    /// be byte-identical to one in which those checks ran and found nothing.</para>
     ///
     /// <para><b>Nor is a page that was only half-read.</b> A page whose own <c>/Contents</c> decodes
     /// perfectly can still invoke a Form XObject that will not resolve or decode, or name a property
@@ -364,9 +363,8 @@ namespace Tetitulz.Pdf.Accessibility.Checking
         /// tokenised by <see cref="ContentStreamScanner"/> into an object per operation, so the cost
         /// of a page is a multiple of its decoded size, not a fraction of it. This library runs
         /// server-side on files it did not produce; without a ceiling one hostile page decides how
-        /// much memory and CPU the audit spends. <see cref="ContentStreamTagger"/> has had such a
-        /// ceiling since the tagging pass was written (4 MiB); the audit had none, which is the gap
-        /// this closes.
+        /// much memory and CPU the audit spends. <see cref="ContentStreamTagger"/> holds the tagging
+        /// pass to such a ceiling (4 MiB) for the same reason.
         /// </para>
         ///
         /// <para>
@@ -468,7 +466,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking
         }
 
         // One implementation, in Core.IO.StreamBytes. It rewinds a seekable stream before
-        // reading; this copy read from wherever the position happened to be.
+        // reading, where a copy reading from the current position would see only the rest.
         private static byte[] ReadAll(Stream s) => StreamBytes.ReadAll(s);
 
         // ================================================================

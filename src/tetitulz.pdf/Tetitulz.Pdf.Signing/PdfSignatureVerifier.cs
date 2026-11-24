@@ -1426,9 +1426,7 @@ namespace Tetitulz.Pdf.Signing
                 if ((Res(doc, v, PdfName.SubFilter) as PdfName)?.Value != "ETSI.RFC3161") continue;
 
                 // The same one reader VerifyField uses, so the two cannot disagree about which
-                // timestamps are readable — this copy resolved the array and type-checked the
-                // elements, but by hand, four lines that had to stay in step with the other five
-                // sites by review alone.
+                // timestamps are readable.
                 var contents = v.GetString(PdfName.Contents);   // in place, per §12.8.1 — see VerifyField
                 if (contents == null) continue;
                 if (!SignedByteRanges.TryRead(v, doc, out var byteRange, out _)) continue;

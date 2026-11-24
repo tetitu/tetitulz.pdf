@@ -156,11 +156,10 @@ namespace Tetitulz.Pdf.Core.Parsing
         /// recovery was attempted.
         /// </summary>
         /// <remarks>
-        /// <para>Six of the eight public-corpus files that would not open stopped at "Cannot find
-        /// document catalog": a cross-reference table that read cleanly and a trailer whose
-        /// <c>/Root</c> was missing or named an object that was not there (GAPS §7c). Other readers
-        /// re-index the file and take the last <c>/Type /Catalog</c> object; this parser did so
-        /// only when the cross-reference table itself was unreadable. The scan rebuilds the table
+        /// <para>A common way for a file not to open is a cross-reference table that reads cleanly
+        /// and a trailer whose <c>/Root</c> is missing or names an object that is not there (GAPS
+        /// §7c). Other readers re-index the file and take the last <c>/Type /Catalog</c> object, and
+        /// so does this parser, not only when the cross-reference table itself is unreadable. The scan rebuilds the table
         /// from the objects' own headers — the latest copy of each in the file wins, as §7.5.6
         /// has it — so a document opened this way may read a different revision of an object than
         /// its cross-reference table named, which is what this slot says.</para>
@@ -2005,14 +2004,13 @@ namespace Tetitulz.Pdf.Core.Parsing
                         element = GetObject(eRef.ReferenceObjectNumber);
 
                         // Written BACK into the array, not merely into this local. The recursion
-                        // below does fix up the referenced dictionary — but the array still held
-                        // the reference, and FilterPipeline reads each element as
-                        // `element as PdfDictionary`, which is null for one. So the parms were
-                        // repaired and then thrown away: for /DecodeParms [12 0 R] the JBIG2Globals
-                        // resolution this whole method exists for never reached the filter, and
-                        // the outcome was the blank-page-with-no-diagnostic the remarks describe.
-                        // The single-valued branch at the call site has always written back, and
-                        // says why in as many words.
+                        // below fixes up the referenced dictionary — but an array still holding
+                        // the reference would lose it, since FilterPipeline reads each element as
+                        // `element as PdfDictionary`, which is null for one: for /DecodeParms
+                        // [12 0 R] the JBIG2Globals resolution this whole method exists for would
+                        // never reach the filter, and the outcome would be the
+                        // blank-page-with-no-diagnostic the remarks describe. The single-valued
+                        // branch at the call site writes back too, and says why in as many words.
                         if (element != null) arr[i] = element;
                     }
                     if (element is PdfDictionary) ResolveDecodeParmsStreamValues(element);
@@ -2223,9 +2221,9 @@ namespace Tetitulz.Pdf.Core.Parsing
             // LastObjectParseError documents itself as "null when the last GetObject call on this
             // thread succeeded", and that is what makes it usable: a caller handed PdfNull reads it
             // to tell "genuinely absent" from "failed to parse, here is why". Without this reset a
-            // single earlier failure was reported against every later success, so the caller blamed
-            // the wrong object. CLAUDE.md states the rule after LastPermsValidation was found to be
-            // [ThreadStatic] and still wrong for exactly this reason.
+            // single earlier failure would be reported against every later success, so the caller
+            // would blame the wrong object. [ThreadStatic] alone does not prevent that; CLAUDE.md
+            // states the rule.
             LastObjectParseError = null;
             LastObjectHeaderRecovery = null;
 

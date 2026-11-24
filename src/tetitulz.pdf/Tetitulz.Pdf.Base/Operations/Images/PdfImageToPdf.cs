@@ -314,7 +314,7 @@ namespace Tetitulz.Pdf.Base.Operations.Images
                     return false;
 
                 // Raw, with no filter: PdfContentStreamBuilder.AddImage deflates unfiltered samples
-                // itself now. This file compressed them here, twice, because it once did not.
+                // itself, so compressing them here would compress them twice.
                 data = samples;
                 filter = null;
                 colorSpace = PdfColorSpaceNames.DeviceRGB;

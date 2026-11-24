@@ -507,8 +507,8 @@ namespace Tetitulz.Pdf.Encryption
         /// <summary>
         /// A copy of <paramref name="value"/> with every reference resolved from <paramref name="doc"/>,
         /// bounded in depth and in the objects copied — a reference the file repeats is copied each
-        /// time, so ten references to an array of ten, seven levels deep, were 10⁶ objects inside the
-        /// depth bound — and refused when a reference cannot be read, which is not an absent entry.
+        /// time, so ten references to an array of ten, seven levels deep, would be 10⁶ objects inside
+        /// the depth bound — and refused when a reference cannot be read, which is not an absent entry.
         /// </summary>
         private static PdfObject ResolvedCopy(PdfDocument doc, PdfObject value, int depth, ref int copied)
         {

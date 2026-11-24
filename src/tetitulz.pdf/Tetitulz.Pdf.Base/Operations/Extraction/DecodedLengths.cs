@@ -12,10 +12,10 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
     /// stream, under the listing's ceiling.
     /// </summary>
     /// <remarks>
-    /// The 3D and rich-media listers measured each annotation's stream as they came to it, and a
-    /// decode refused at the ceiling is not cached by the stream: one asset past 64 MiB, named by a
-    /// thousand annotation entries, was inflated to the ceiling a thousand times. A stream is now
-    /// measured the first time a listing meets it and answered from that after.
+    /// A decode refused at the ceiling is not cached by the stream, so measuring each
+    /// annotation's stream as it is met would inflate one asset past 64 MiB, named by a thousand
+    /// annotation entries, to the ceiling a thousand times. A stream is measured the first time a
+    /// listing meets it and answered from that after — the 3D and rich-media listers alike.
     /// </remarks>
     internal sealed class DecodedLengths
     {

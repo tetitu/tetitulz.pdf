@@ -485,10 +485,9 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
                             // An outer section's range starts before an inner one's, so an enclosing
                             // /ActualText replaces whatever this section produced and an enclosing
                             // /ReversedChars marks it again: the work is done once, by the outermost
-                            // section that does it. Each EMC re-walked every glyph since its section
-                            // began, so N nested sections around G glyphs cost N × G. (A guard of this
-                            // shape was once removed because no test saw an outcome change; its
-                            // evidence is the work, MarkedContentWork.)
+                            // section that does it. Each EMC re-walking every glyph since its section
+                            // began would cost N nested sections around G glyphs N × G; no outcome
+                            // changes without this guard, so its evidence is the work, MarkedContentWork.
                             if (section.Reversed && openReversed == 0 && openActualText == 0)
                                 MarkReversedRun(output, section);
                             if (openActualText == 0)
@@ -725,12 +724,11 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
             float effectiveFontSize = gs.FontSize * gs.HorizScale;
 
             // Codes come from the font's own encoding CMap, NOT from a fixed stride.
-            // A fixed stride (FontCache.GetCharCodeSize, since removed) took the narrowest codespace, so a mixed-width CMap —
-            // 1-byte ASCII plus 2-byte CJK, which is what the Shift-JIS-based Adobe CMaps are —
-            // reported 1 and split every 2-byte code in half: the width lookup was wrong and the
-            // decoded cluster was garbage from that point on. The codec is the splitter.
-            // PdfRedactionEngine and PdfTemplateEngine were converted in the same
-            // change; a fixed stride must not come back to any of the three.
+            // A fixed stride would take the narrowest codespace, so a mixed-width CMap — 1-byte
+            // ASCII plus 2-byte CJK, which is what the Shift-JIS-based Adobe CMaps are — would give
+            // 1 and split every 2-byte code in half: the width lookup wrong and the decoded cluster
+            // garbage from that point on. The codec is the splitter, here as in PdfRedactionEngine
+            // and PdfTemplateEngine; a fixed stride must not reach any of the three.
             // A code at a time from the codec (GlyphIdResolver.NextCode), not a list per string.
             var codec = fontCache?.GetEncodingCodec(gs.FontName, resources, doc);
 
@@ -806,10 +804,10 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
 
                 // The emitted box is in PAGE space (see the class doc), but charW/charH are in
                 // unscaled TEXT space. A producer that writes "1 Tf" and carries the size in the
-                // matrix instead — Cairo and matplotlib both do, e.g. "12 0 0 12 x y Tm" — got a
-                // box 12x too small, while px/py went through fullTm and were correct. Every
-                // inter-glyph gap then dwarfed the word-split threshold in AssembleLines
-                // (gap = next.X - (prev.X + prev.Width)) and EVERY glyph became its own word.
+                // matrix instead — Cairo and matplotlib both do, e.g. "12 0 0 12 x y Tm" — would get
+                // a box 12x too small, while px/py, through fullTm, are correct. Every inter-glyph
+                // gap would then dwarf the word-split threshold in AssembleLines
+                // (gap = next.X - (prev.X + prev.Width)) and EVERY glyph become its own word.
                 // Column norms of the [a b c d] sub-matrix, so a pure rotation (norm 1) leaves
                 // the box unchanged. charW/charH themselves stay in text space: the advance
                 // below is composed INTO Tm and must not be pre-scaled.
@@ -2165,7 +2163,7 @@ namespace Tetitulz.Pdf.Base.Operations.Extraction
         /// <summary>
         /// When true, each assembled line's text is rebuilt in logical reading order via the full
         /// Unicode bidi algorithm (<see cref="Tetitulz.Pdf.Core.Text.UnicodeBidi"/>) instead of the
-        /// geometric right-to-left/left-to-right sort.  This fixes mixed-direction lines common in
+        /// geometric right-to-left/left-to-right sort.  This handles mixed-direction lines common in
         /// Hebrew/Arabic invoices (e.g. an RTL label followed by an LTR amount or part-code): the
         /// label reads right-to-left while embedded numbers/codes stay intact.  Character, word, and
         /// line bounding boxes are unaffected — only <see cref="PdfTextLine.Text"/> changes.

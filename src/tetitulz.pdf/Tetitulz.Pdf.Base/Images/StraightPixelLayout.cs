@@ -29,8 +29,8 @@ namespace Tetitulz.Pdf.Base.Images
     ///
     /// <para><b>Where a caller does NOT want straight colour, it should not use this.</b> The
     /// luminosity pass reads the premultiplied byte deliberately, because colour·α is exactly the
-    /// term it was computing by hand — see the comment there. That site is the reason the register
-    /// row warns that converting these is not mechanical.</para>
+    /// term it computes by hand — see the comment there. That site is why converting a caller to
+    /// this is not mechanical.</para>
     ///
     /// <para><b>Four colour types, and one of them cannot be written.</b> The two 8888 orders carry
     /// real alpha and are read and written. <see cref="SKColorType.Rgb888x"/> is four bytes with a

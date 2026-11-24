@@ -521,17 +521,14 @@ namespace Tetitulz.Pdf.Core.Document
         {
             // Resolved. Unlike the two reads above, this one's null path is fail-CLOSED — the
             // caller treats certEnd <= 0 as "cannot reason about this file" and records a
-            // violation. So the defect here produced a FALSE non-compliance report on a valid
-            // document rather than a false clean bill. Still worth fixing: a compliance channel
-            // that cries wolf is one a caller learns to ignore, which is how the fail-open ones
-            // above get missed.
+            // violation — so a misread here is a FALSE non-compliance report on a valid document
+            // rather than a false clean bill; a compliance channel that cries wolf is one a caller
+            // learns to ignore, which is how the fail-open ones above get missed.
             //
-            // ONE reader, in SignedByteRanges. This copy resolved the ARRAY and then called
-            // GetLong on the elements, which THROWS for anything that is not a PdfNumber — a
-            // PdfNull, or the indirect reference §7.3.10 permits. Analyze's own doc comment
-            // promises it "never throws on malformed input", and that exception escaped it,
-            // straight out of a public API. Now such a file returns 0 and is reported as a
-            // malformed certification range, which is what the comment above describes.
+            // ONE reader, in SignedByteRanges, which refuses rather than throws for an element that
+            // is not a PdfNumber — a PdfNull, or the indirect reference §7.3.10 permits — so
+            // Analyze keeps its promise that it "never throws on malformed input": such a file
+            // returns 0 and is reported as a malformed certification range.
             if (!SignedByteRanges.TryRead(sigDict, doc, out var br, out _)) return 0;
             // Reject the same ill-formed ranges the signature verifier rejects so a crafted
             // ByteRange cannot understate the certified region.

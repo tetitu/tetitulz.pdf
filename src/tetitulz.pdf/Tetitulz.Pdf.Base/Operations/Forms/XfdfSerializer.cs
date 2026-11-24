@@ -411,9 +411,9 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
                 // VERTICES IS A CHILD ELEMENT, NOT AN ATTRIBUTE, AND THAT IS NOT SYMMETRIC WITH
                 // coords. Text-markup quad points ride on the `coords` attribute; a polygon's
                 // vertices do not, and an independent reader refuses the whole annotation with "missing
-                // element 'vertices'" when they are written as one. The asymmetry is the format's,
-                // and it was found by asking an independent reader to read what this writes rather than by
-                // reasoning about what looked consistent.
+                // element 'vertices'" when they are written as one. The asymmetry is the format's, and
+                // only an independent reader reading what this writes shows it; reasoning about what
+                // looks consistent does not.
                 if (a.Vertices != null && a.Vertices.Length > 0)
                 {
                     writer.WriteStartElement(VerticesElement, Namespace);
@@ -687,11 +687,12 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
         /// an interior capital that no case rule recovers, so this is a table rather than a
         /// <c>ToTitleCase</c>.</para>
         ///
-        /// <para><b>Reading the element name verbatim was a data-destroying bug and it round-tripped
-        /// silently.</b> A <c>&lt;highlight&gt;</c> came back as subtype <c>highlight</c>, which
-        /// wrote <c>/Subtype /highlight</c> into the PDF — a name no reader matches, so the
-        /// annotation is present, well-formed and invisible. It was found by converting an independent implementation's
-        /// FDF to XFDF and back and diffing against the original, not by reading this code.</para>
+        /// <para><b>Reading the element name verbatim would destroy data and round-trip
+        /// silently.</b> A <c>&lt;highlight&gt;</c> would come back as subtype <c>highlight</c>,
+        /// writing <c>/Subtype /highlight</c> into the PDF — a name no reader matches, so the
+        /// annotation is present, well-formed and invisible. Converting an independent
+        /// implementation's FDF to XFDF and back and diffing against the original shows it; reading
+        /// this code does not.</para>
         ///
         /// <para><b>An unrecognised name is returned unchanged</b>, so a subtype from a later
         /// specification survives the round trip in whatever case it arrived in. That is better

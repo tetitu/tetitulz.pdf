@@ -521,11 +521,11 @@ namespace Tetitulz.Pdf.Core.IO.Filters
                 catch { run = columns - pos; recovered = true; }
                 int end = Math.Min(columns, pos + run);
 
-                // Pad in WHITE, not in the current colour. The doc comment above has always said
-                // "absorbed as white padding", and the code did the opposite on every second run —
-                // `color` alternates, so a stream truncated mid-black-run painted the rest of the
-                // scanline solid black. A fax clipped by a wrong /Length came back as a full-height
-                // bitmap with black bands and no way to tell it from a clean decode.
+                // Pad in WHITE, not in the current colour, as the doc comment above says ("absorbed as
+                // white padding"). `color` alternates, so padding in it would paint the rest of the
+                // scanline solid black for a stream truncated mid-black-run, and a fax clipped by a wrong
+                // /Length would come back as a full-height bitmap with black bands and no way to tell it
+                // from a clean decode.
                 FillRun(cur, pos, end, recovered ? (byte)0 : color);
 
                 if (recovered)

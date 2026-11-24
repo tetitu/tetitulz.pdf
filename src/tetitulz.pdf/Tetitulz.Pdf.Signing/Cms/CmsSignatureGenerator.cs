@@ -79,13 +79,12 @@ namespace Tetitulz.Pdf.Signing.Cms
         /// requires the value to be a DER-encoded CMS object, and the CAdES/PAdES profiles say the
         /// same; a strict validator is entitled to reject the other form.</para>
         ///
-        /// <para><b>Nothing in this library could see the difference, which is why there is one
-        /// implementation of it now.</b> Both forms parse to the same <c>SignedData</c>, so every
+        /// <para><b>Nothing in this library can see the difference, which is why there is one
+        /// implementation of it.</b> Both forms parse to the same <c>SignedData</c>, so every
         /// round trip, every verification and every test that reads the structure agrees under
-        /// either — the defect is invisible to any assertion about what the CMS <i>means</i>. Six
-        /// sites wrote a CMS into a <c>/Contents</c> and each called <c>GetEncoded()</c> on its own;
-        /// converting some of them would have left the rest, and no test in the tree would have
-        /// reported which.</para>
+        /// either — the wrong form is invisible to any assertion about what the CMS <i>means</i>.
+        /// Every site writing a CMS into a <c>/Contents</c> encodes through here; a site calling
+        /// <c>GetEncoded()</c> on its own would be reported by no test in the tree.</para>
         ///
         /// <para><b>DER is also shorter</b>, since a declared length replaces the terminator, so
         /// nothing that fitted its reserve before stops fitting.</para>
@@ -293,28 +292,23 @@ namespace Tetitulz.Pdf.Signing.Cms
         /// <para>ONE implementation, in <c>DigestAlgorithms.ResolveOidForNewSignature</c> — a
         /// hand-written copy of the rule here is the one that would drift dangerously.</para>
         ///
-        /// <para><b>THE DEFECT THIS FIXES.</b> The <c>default:</c> arm returned
-        /// <see cref="PdfDigestOids.Sha256"/> for <i>any</i> unrecognised name, under a doc comment
-        /// defending it ("the caller chose the name, and an unknown name has always meant 'use the
-        /// default'"). <c>PdfSigner.Sign</c> hands
-        /// <c>SignatureParameters.DigestAlgorithm</c> straight to this class with no prior
-        /// acceptance check, so <c>DigestAlgorithm = "SHA-224"</c> — or "MD5", or a typo — produced
-        /// a <b>SHA-256</b> signature and reported success, while
-        /// <c>PdfCounterSigner.AddCounterSignature</c> threw on the identical string and
-        /// <c>TsaClient.GetHashOid</c>'s own comment called the behaviour a defect
-        /// ("the silent fallback masked crypto-strength errors"). An unrecognised name now throws
-        /// <c>ArgumentException</c>, matching the other three.</para>
+        /// <para><b>An unrecognised name throws <c>ArgumentException</c></b>, as
+        /// <c>PdfCounterSigner.AddCounterSignature</c> and <c>TsaClient.GetHashOid</c> do.
+        /// <c>PdfSigner.Sign</c> hands <c>SignatureParameters.DigestAlgorithm</c> straight to this
+        /// class with no prior acceptance check, so a default of SHA-256 for any unrecognised name
+        /// would turn <c>DigestAlgorithm = "SHA-224"</c> — or "MD5", or a typo — into a <b>SHA-256</b>
+        /// signature reported as a success.</para>
         ///
-        /// <para><b>Why it survived.</b> The substitution leaves no trace: the CMS is well-formed,
-        /// it verifies, and its <c>digestAlgorithm</c> field reads SHA-256 — indistinguishable from
-        /// a signature the caller really did ask for in SHA-256.</para>
+        /// <para><b>Such a substitution leaves no trace</b>: the CMS is well-formed, it verifies, and
+        /// its <c>digestAlgorithm</c> field reads SHA-256 — indistinguishable from a signature the
+        /// caller really did ask for in SHA-256.</para>
         ///
-        /// <para>Both of this call site's genuine policies are kept, as arguments rather than as
-        /// drift. Streebog stays accepted, including the aliases
+        /// <para>This call site's two own policies are arguments, not drift. Streebog is accepted,
+        /// including the aliases
         /// <see cref="PdfDigestOids.FromName"/> does not carry, because
         /// <c>UseAlgorithm(SignatureAlgorithm.GostR3410_2012_256)</c> sets
         /// <c>DigestAlgorithm = "GOST3411-2012-256"</c> and this is the only one of the four that
-        /// can sign with it. And a <see langword="null"/>/empty name still means SHA-256: these are
+        /// can sign with it. And a <see langword="null"/>/empty name means SHA-256: these are
         /// public entry points, and declining to name an algorithm is not the same as naming one
         /// that does not exist.</para>
         /// </remarks>

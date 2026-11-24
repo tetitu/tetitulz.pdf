@@ -29,9 +29,8 @@ namespace Tetitulz.Pdf.Plugins.Conformance
     ///   longer covers what was signed and the signature verifies as <i>corrupt</i> rather than as
     ///   modified.</item>
     /// </list>
-    /// <para>This was <c>PdfXConverter</c>'s private pair until the PDF/A side was found to have
-    /// neither check. One implementation, so the two converters cannot answer differently for one
-    /// file.</para>
+    /// <para>One implementation, for <c>PdfXConverter</c> and the PDF/A converter alike, so the two
+    /// converters cannot answer differently for one file.</para>
     /// </remarks>
     internal static class ConverterInputInspection
     {

@@ -557,8 +557,8 @@ namespace Tetitulz.Pdf.Accessibility.Artifacts
         /// <para>
         /// <b>The mechanism itself is <see cref="VerifiedWrite"/>.</b> Counting the bytes
         /// <paramref name="output"/> actually accepted is exact where reading
-        /// <see cref="AccessibilityDiagnostics.LastError"/> across the call — what this method used
-        /// to do — is a lossy proxy. What stays here is the <em>message</em>, which has to name what
+        /// <see cref="AccessibilityDiagnostics.LastError"/> across the call would be a lossy proxy.
+        /// What stays here is the <em>message</em>, which has to name what
         /// a caller of <b>this</b> operation is not getting.
         /// </para>
         /// </summary>
@@ -883,13 +883,12 @@ namespace Tetitulz.Pdf.Accessibility.Artifacts
         /// <c>/MarkInfo &lt;&lt;/Marked true&gt;&gt;</c>.
         ///
         /// <para>
-        /// <b>Presence of <c>/StructTreeRoot</c> is the wrong question,</b> and asking it was a
-        /// live defect: a hollow tree — a <c>/StructTreeRoot</c> over elements with no <c>/K</c>,
-        /// no <c>/ParentTree</c> and no marked content — resolves to a dictionary and so passed,
-        /// and this pass stamped the Tagged-PDF claim onto a document that is untagged in every
-        /// sense assistive technology cares about. <see cref="PdfAccessibility"/> refuses the same
-        /// write on the same input, so the two writers disagreed about one flag and the artifacts
-        /// pass, which runs first, won.
+        /// <b>Presence of <c>/StructTreeRoot</c> is the wrong question:</b> a hollow tree — a
+        /// <c>/StructTreeRoot</c> over elements with no <c>/K</c>, no <c>/ParentTree</c> and no
+        /// marked content — resolves to a dictionary and so would pass, and this pass would stamp the
+        /// Tagged-PDF claim onto a document that is untagged in every sense assistive technology
+        /// cares about. <see cref="PdfAccessibility"/> refuses the same write on the same input, and
+        /// the two writers must not disagree about one flag, since the artifacts pass runs first.
         /// </para>
         ///
         /// <para>
@@ -981,8 +980,8 @@ namespace Tetitulz.Pdf.Accessibility.Artifacts
                 }
             }
 
-            // Resolved, not a bare cast. An indirect /Marked read as absent here, so this pass
-            // rewrote /MarkInfo on a document that already said what it was about to say — a
+            // Resolved, not a bare cast. An indirect /Marked read as absent would make this pass
+            // rewrite /MarkInfo on a document that already says what it is about to say — a
             // revision that changes nothing, reported as a change. The same rule applies at
             // PdfAccessibility.IsMarkedTrue, and the two writers must not disagree about whether
             // the flag is already set.
@@ -1109,12 +1108,12 @@ namespace Tetitulz.Pdf.Accessibility.Artifacts
         /// <c>ContentStreamTagger</c>, which reads the same boxes for the same reason.
         /// </summary>
         /// <remarks>
-        /// This copy stopped at <c>double.IsInfinity</c> and did not re-test after the cast, so a
-        /// coordinate finite as a double but outside float range (<c>/MediaBox [0 0 612 1e40]</c>)
-        /// came back as <c>+Infinity</c> with a <c>true</c> result. The consequence surfaced far
-        /// from here: the header arm of the classifier evaluates <c>top - y</c>, which is
-        /// <c>+Infinity</c> for every line, so <b>no line was ever classified as a header</b> while
-        /// footers went on being marked normally.
+        /// A copy that stopped at <c>double.IsInfinity</c> without re-testing after the cast would
+        /// return <c>+Infinity</c>, with a <c>true</c> result, for a coordinate finite as a double but
+        /// outside float range (<c>/MediaBox [0 0 612 1e40]</c>). The consequence would surface far
+        /// from here: the header arm of the classifier evaluates <c>top - y</c>, which would be
+        /// <c>+Infinity</c> for every line, so <b>no line would ever be classified as a header</b>
+        /// while footers were still marked normally.
         /// </remarks>
         private static bool TryGetNumber(
             PdfDocument doc, PdfObject obj, string where, string boxName, out float value)

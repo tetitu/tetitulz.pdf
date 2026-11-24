@@ -64,13 +64,13 @@ namespace Tetitulz.Pdf.Core.Text
         /// <para><b>Escaping is not the question here — representability is.</b> XML 1.0 §2.2
         /// defines <c>Char</c> as <c>#x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] |
         /// [#x10000-#x10FFFF]</c>, and a character outside that set has <i>no spelling at all</i>:
-        /// <c>&amp;#1;</c> is as ill-formed as a raw <c>0x01</c>. So the five-entity pass could not
-        /// have fixed this and a caller could not have worked around it.</para>
+        /// <c>&amp;#1;</c> is as ill-formed as a raw <c>0x01</c>. So the five-entity pass cannot
+        /// handle it and a caller cannot work around it.</para>
         ///
-        /// <para><b>What it broke.</b> One such byte makes the entire document unparseable, not
-        /// just the element carrying it — which is how a PDF→SVG export of a composite font with no
-        /// <c>/ToUnicode</c> produced a file every XML reader rejected. There the decoded "text" is
-        /// the raw code units, and a CID of 1 is an ordinary thing for a subset font to use.</para>
+        /// <para><b>What it would break.</b> One such byte makes the entire document unparseable,
+        /// not just the element carrying it — so a PDF→SVG export of a composite font with no
+        /// <c>/ToUnicode</c> would produce a file every XML reader rejects. There the decoded "text"
+        /// is the raw code units, and a CID of 1 is an ordinary thing for a subset font to use.</para>
         ///
         /// <para><b>Dropped rather than substituted.</b> None of these characters has a glyph, so
         /// removing one changes no rendering; U+FFFD in their place would put a visible box into a

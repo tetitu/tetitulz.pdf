@@ -100,13 +100,12 @@ namespace Tetitulz.Pdf.Base.Rendering
         /// </param>
         /// <param name="fillColor">The stencil's ink, alpha included. Ignored for a grey image.</param>
         /// <remarks>
-        /// <para><b>One loop, reached from both renderers.</b> The raster interpreter and the SVG
-        /// writer each had their own, and they were not equivalent: the SVG copy handled only the
-        /// stencil case, wrote through <c>SetPixel</c> per pixel rather than one buffer assignment,
-        /// and — the part that mattered — <b>had no bounds test at all</b>, so a stencil whose CCITT
-        /// or JBIG2 filter had failed (both report failure by returning their compressed input)
-        /// indexed straight off the end of the array. The callers keep their own length guards,
-        /// which are deliberately different, but the indexing arithmetic is now written once.</para>
+        /// <para><b>One loop, reached from both renderers</b>: the stencil and grey cases, one
+        /// buffer assignment rather than <c>SetPixel</c> per pixel, and — the part that matters — a
+        /// bounds test, since a stencil whose CCITT or JBIG2 filter has failed (both report failure by
+        /// returning their compressed input) would otherwise index straight off the end of the array.
+        /// The callers keep their own length guards, which are deliberately different, but the
+        /// indexing arithmetic is written once.</para>
         ///
         /// <para><b>The callers' length guards must stay theirs.</b> The explicit
         /// <c>/BitsPerComponent 1</c> branch accepts <c>&gt;=</c> because an

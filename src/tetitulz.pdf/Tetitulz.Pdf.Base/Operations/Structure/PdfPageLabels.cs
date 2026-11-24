@@ -318,26 +318,16 @@ namespace Tetitulz.Pdf.Base.Operations.Structure
             return result.AsReadOnly();
         }
 
-        // CollectNumberTreePairs lived here: a hand-rolled §7.9.7 walk with its own depth cap,
-        // reference-identity visited set and kid-slot counter. Its own remarks called it "the copy
-        // that did not" guard the way PdfNameTree already did — which is the duplication report
-        // CLAUDE.md says to read as one. It is now Core.Document.PdfNumberTree, the walk that type
-        // exists to be, and ReadLabels calls it directly.
-        //
-        // Two differences came with the merge, both widenings. The shared walk descends /Kids even
-        // on a node that also carries /Nums, where this returned at the leaf; and a key that is not
-        // a number is now skipped rather than read as 0, which was not "no entry" but page ONE.
+        // The §7.9.7 walk is Core.Document.PdfNumberTree's, which ReadLabels calls directly. It
+        // descends /Kids even on a node that also carries /Nums, and skips a key that is not a
+        // number rather than reading it as 0, which would be not "no entry" but page ONE.
 
         // One implementation, in Core.Objects.PdfDictionary.CloneShallow.
         private static PdfDictionary CloneDictionary(PdfDictionary src) => PdfDictionary.CloneShallow(src);
 
-        // One implementation, in Core.Writing.PdfTrailerBuilder.
-        //
-        // This copy was the odd one out: it carried the original's /Prev forward instead of
-        // dropping it. Harmless in practice — IncrementalUpdateWriter drops it again from whatever
-        // trailer it is handed — and that is the point worth keeping. Six of the seven caller-side
-        // copies were doing work the writer redoes, which is why one of them could differ for its
-        // whole life with nothing to show for it.
+        // One implementation, in Core.Writing.PdfTrailerBuilder. IncrementalUpdateWriter also
+        // drops /Prev from whatever trailer it is handed, so no caller's trailer carries the
+        // original's forward.
         private static PdfDictionary BuildTrailer(PdfDictionary existing, int size)
             => PdfTrailerBuilder.ForUpdate(existing, size);
     }

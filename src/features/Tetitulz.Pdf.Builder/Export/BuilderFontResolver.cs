@@ -280,7 +280,7 @@ namespace Tetitulz.Pdf.Builder.Export
         ///
         /// <para><b>It is one method rather than three inline tests</b> for the reason
         /// <c>SystemFontResolver.Embeddable</c> gives for the same decision: three copies of a rule
-        /// are three places for it to be fixed at one of them. Note the mirrored asymmetry — the
+        /// are three places for a correction to reach only one. Note the mirrored asymmetry — the
         /// gate is applied here and deliberately <b>not</b> in <see cref="FromProvider"/>. A caller
         /// who hands over a font program has made a licensing decision this code cannot see and may
         /// hold a licence the bits know nothing about; a font the library picks up by itself is the

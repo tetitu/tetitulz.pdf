@@ -170,7 +170,7 @@ namespace Tetitulz.Pdf.HtmlToPdf
             st.Highlight = null;
             st.Link = null;
             // No `st.Box = null`: only an inline element's own style ever carries a box, and a
-            // block is never derived from one — a mutation removing that line survived the suite.
+            // block is never derived from one, so such a line would do nothing.
             if (el != null) { ApplyDirection(el, st); ApplyInlineStyle(el.GetAttribute("style"), st); ApplyLineHeight(el, st); }
             if (el?.GetAttribute("lang") is string lang) st.Language = lang;
             st.Highlight = null; // a block's background-color is paragraph shading, not text highlight

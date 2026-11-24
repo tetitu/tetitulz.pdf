@@ -1953,13 +1953,11 @@ namespace Tetitulz.Pdf.Builder.Export
         /// <para>NOT clamped to the band, because the guard makes a clamp unreachable: any width that
         /// would need clamping is by definition wider than <paramref name="width"/>, so
         /// <c>width - floatWidth</c> is negative, so it is already below the minimum and takes the
-        /// block path. A mutation removing a <c>Math.Min(..., width)</c> here survived the whole
-        /// suite, which is what dead code looks like from the outside.</para>
+        /// block path, so a <c>Math.Min(..., width)</c> here would be dead code.</para>
         /// <para>Registering the exclusion of a float as wide as its container would squeeze the
         /// following text into the one point <c>GetLineSegment</c> floors the width at, which is
-        /// unreadable and not what any reader does: the content goes BELOW it. Found by the clamping
-        /// test, which asked for three times the band and got a column of text one point wide rather
-        /// than text underneath.</para>
+        /// unreadable and not what any reader does: the content goes BELOW it. The clamping test asks
+        /// for three times the band and expects text underneath, not a column one point wide.</para>
         /// </remarks>
         private static bool FloatBox(Ctx ctx, Paragraph para, double x, double y, double width,
             out double left, out double floatWidth, out double top)
@@ -4538,11 +4536,10 @@ namespace Tetitulz.Pdf.Builder.Export
                 LineSpacingPt = li.LineSpacingPt,   // a loose or in-cell item's
                 LineHeightFactor = li.LineHeightFactor,
             };
-            // The marker and the run selection are ModelRules', not this exporter's. They were
-            // open-coded here while the other three exporters called the shared helpers, and the
-            // duplication is how the defect below survived: every list assertion in the suite goes
-            // through a fixture whose content lives in Runs, so the branch that reads Text was
-            // exercised by nothing.
+            // The marker and the run selection are ModelRules', not this exporter's, as for the
+            // other three exporters. Open-coded here, a branch could go untested: every list
+            // assertion in the suite goes through a fixture whose content lives in Runs, so a
+            // branch reading Text would be exercised by nothing.
             p.Runs.Add(CloneStyleRun(li.MarkerFormat ?? fmt, ModelRules.ListMarker(li)));
 
             // The item's content, Text or Runs — AddListItem("first"), the primary public overload,
@@ -6647,14 +6644,12 @@ namespace Tetitulz.Pdf.Builder.Export
         /// Parses a <c>#RRGGBB</c> (or <c>#RGB</c>) colour into 0..1 components.
         /// </summary>
         /// <remarks>
-        /// <para><b>An unparseable colour is reported, not quietly painted black.</b> Anything the
-        /// parser did not understand — a three-digit shorthand, a CSS keyword, an <c>rgb()</c>
-        /// function — yielded (0,0,0) in silence, so <c>Shading = "white"</c> painted a solid black
-        /// rectangle behind black text and <c>Color = "#f00"</c> drew black instead of red. Both are
-        /// plausible values for a hand-written <c>DocumentBuilder</c> caller, and the model
+        /// <para><b>An unparseable colour is reported, not quietly painted black.</b> In silence,
+        /// <c>Shading = "white"</c> would paint a solid black rectangle behind black text. Such
+        /// values are plausible for a hand-written <c>DocumentBuilder</c> caller, and the model
         /// documents these properties only as "(hex)".</para>
-        /// <para>The <c>#RGB</c> shorthand is now accepted (CSS doubles each digit); everything else
-        /// still falls back to black, because a wrong guess is worse than a documented default —
+        /// <para>The <c>#RGB</c> shorthand is accepted (CSS doubles each digit); everything else
+        /// falls back to black, because a wrong guess is worse than a documented default —
         /// but it says so through <see cref="BuilderDiagnosticKind.ContentApproximated"/>.</para>
         /// <para>The report is capped per export: this runs once per drawn piece, so an unbounded
         /// report would mint one message per glyph run of a document that sets one bad colour.</para>

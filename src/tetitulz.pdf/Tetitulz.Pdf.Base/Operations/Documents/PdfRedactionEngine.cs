@@ -231,9 +231,9 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
             }
 
             using var fontCache = new FontCache();
-            // Transitive "drawn exactly once in the whole document" test. No longer decides
-            // whether redaction is POSSIBLE - every form is now cloned at its invocation - but it
-            // still decides what the caller is TOLD: a form that is drawn elsewhere keeps its
+            // Transitive "drawn exactly once in the whole document" test. It does not decide
+            // whether redaction is POSSIBLE - every form is cloned at its invocation - but it
+            // decides what the caller is TOLD: a form that is drawn elsewhere keeps its
             // original object, so its content survives in the output and that must be reported.
             var formIsUniquelyDrawn = FormInvocationCounter.BuildUniquelyDrawnTest(doc);
             var forms = new FormCloneContext(doc, formIsUniquelyDrawn);
@@ -2261,14 +2261,14 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
         /// box of NaN when any mapped corner is not finite.
         /// </summary>
         /// <remarks>
-        /// <para><b>The defect this closes let text survive redaction while the operation reported
+        /// <para><b>Without the NaN box, text would survive redaction while the operation reported
         /// success.</b> The extents are seeded from <c>float.MaxValue</c>/<c>float.MinValue</c>, and
-        /// every comparison against NaN is false — so a corner that mapped to NaN left the sentinels
-        /// untouched and this returned <c>{MaxValue, MaxValue, MinValue, MinValue}</c>: an inverted
-        /// box, indistinguishable from a real one by type, that <see cref="AabbHitsAny"/> then
-        /// evaluated as <c>float.MaxValue &lt;= rect.right</c> — <b>no hit</b>. The glyph was
-        /// written to the output verbatim and the caller was told the redaction succeeded.
-        /// <b>Swallowing the NaN here is what made the failure invisible</b>, so the check belongs
+        /// every comparison against NaN is false — so a corner that mapped to NaN would leave the
+        /// sentinels untouched and this return <c>{MaxValue, MaxValue, MinValue, MinValue}</c>: an
+        /// inverted box, indistinguishable from a real one by type, that <see cref="AabbHitsAny"/>
+        /// would evaluate as <c>float.MaxValue &lt;= rect.right</c> — <b>no hit</b>. The glyph would
+        /// be written to the output verbatim and the caller told the redaction succeeded.
+        /// <b>Swallowing the NaN here would make the failure invisible</b>, so the check belongs
         /// here rather than only at the test: by the time the box reaches
         /// <see cref="AabbHitsAny"/> its four values are finite again.</para>
         /// <para>A <c>cm</c> operand that overflows a <c>float</c> is enough to reach it — the
@@ -2332,13 +2332,12 @@ namespace Tetitulz.Pdf.Base.Operations.Documents
 
             PdfFont font = ResourceFontLookup.Resolve(fontName, resources, doc);
             // Codes come from the font's own encoding CMap, not from a fixed stride.
-            // A fixed stride (FontCache.GetCharCodeSize, since removed) took the NARROWEST codespace,
-            // so a mixed-width CMap — 1-byte ASCII plus 2-byte CJK, which is what the Shift-JIS-based
-            // Adobe CMaps are — gave 1 and made the walk step through every 2-byte code one byte at a time. Each
-            // half is then treated as its own character: the width lookup is wrong, and worse, a
-            // redaction hit can drop one half and keep the other, leaving bytes that decode to
-            // something the author never wrote. The codec is the splitter, and nothing here needs a
-            // step size any more.
+            // A fixed stride would take the NARROWEST codespace, so a mixed-width CMap — 1-byte
+            // ASCII plus 2-byte CJK, which is what the Shift-JIS-based Adobe CMaps are — would give 1
+            // and make the walk step through every 2-byte code one byte at a time. Each half would
+            // then be its own character: the width lookup wrong, and worse, a redaction hit could
+            // drop one half and keep the other, leaving bytes that decode to something the author
+            // never wrote. The codec is the splitter, and nothing here needs a step size.
             IReadOnlyList<CMapCodec.Code> Split(byte[] bytes) =>
                 GlyphIdResolver.DecodeCodes(fontCache, fontName, resources, doc, bytes);
 

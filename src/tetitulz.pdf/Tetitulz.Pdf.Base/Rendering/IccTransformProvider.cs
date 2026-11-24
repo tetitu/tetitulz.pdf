@@ -145,7 +145,7 @@ namespace Tetitulz.Pdf.Base.Rendering
                 return SKColors.Black;
 
             // The managed evaluator when the profile is one it covers; otherwise the
-            // component-count fallback below, which is what this method has always done.
+            // component-count fallback below.
             var normalised = new float[sourceComponents.Length];
             for (int i = 0; i < normalised.Length; i++) normalised[i] = sourceComponents[i] / 255f;
             if (IccColorTransform.TryTransform(iccProfileBytes, normalised, out SKColor managed))

@@ -227,7 +227,7 @@ namespace Tetitulz.Pdf.Base.Operations
                 var link = links[li];
                 if (link == null) continue;
                 if (link.Uri == null) throw new ArgumentException("A link's Uri is null.", nameof(links));
-                // A NaN corner went through NormalisedRect's Math.Min/Max as NaN and was written as
+                // A NaN corner would go through NormalisedRect's Math.Min/Max as NaN and be written as
                 // a /Rect of zeros: a link annotation nothing can click, counted as written.
                 NumericArguments.RequireFinite(link.X1, nameof(links), $"[{li}].X1");
                 NumericArguments.RequireFinite(link.Y1, nameof(links), $"[{li}].Y1");
@@ -483,8 +483,8 @@ namespace Tetitulz.Pdf.Base.Operations
 
             // §12.5.5 — write the appearance the annotation shows, rather than leaving every
             // viewer to invent one. This library's own renderer synthesises a fallback at draw
-            // time, which is exactly why the absence went unnoticed for so long: the annotations
-            // looked right here and were at the mercy of whatever else opened the file.
+            // time, so an annotation without one would look right here and be at the mercy of
+            // whatever else opened the file.
             AttachAppearance(annot, ref nextObjNum, objects);
 
             objects.Add(new IndirectObject(annotObjNum, 0, annot));

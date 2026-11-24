@@ -176,12 +176,10 @@ namespace Tetitulz.Pdf.Base.Operations.Structure
     /// and the PDF/UA checker all read the tree through it.
     /// </summary>
     /// <remarks>
-    /// <para><b>Why one.</b> Four hand-written walks of this tree each capped recursion depth and
-    /// tracked visited elements, and each had, at some point, lacked a bound the others carried: the
-    /// extractor had no edge budget while the accessibility walker did; the reader's cycle guard
-    /// covered one of the two <c>/K</c> spellings; the checker's node budget could not fire on the
-    /// shared-array graph it existed for. Each was found by comparing two walks of the same tree.
-    /// A walk in one place is compared with nothing.</para>
+    /// <para><b>Why one.</b> A hand-written walk of this tree caps recursion depth and tracks
+    /// visited elements, and separate walks each come to lack a bound another carries — an edge
+    /// budget, a cycle guard over both <c>/K</c> spellings, a node budget that fires on a
+    /// shared-array graph. A walk in one place is compared with nothing.</para>
     ///
     /// <para><b>What it bounds.</b> A global visited set — object number where the element has one,
     /// reference identity for a direct dictionary — makes every reachable element expand at most

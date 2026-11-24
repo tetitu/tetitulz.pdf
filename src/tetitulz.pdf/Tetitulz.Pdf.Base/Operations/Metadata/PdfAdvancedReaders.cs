@@ -113,12 +113,11 @@ namespace Tetitulz.Pdf.Base.Operations.Metadata
         /// </summary>
         /// <remarks>
         /// <para><b>§14.12 Table 409 makes both "an indirect reference to the page object"</b>, and
-        /// this read never accepted one. It resolved the entry and asked for a number — so a
-        /// conforming <c>/Start 12 0 R</c> resolved to a page <i>dictionary</i> and came back null,
-        /// for every part of every document written to the standard, while the tests passed on
-        /// fixtures that wrote a page number instead. The reference is now matched through
-        /// <see cref="PdfDestinationPage.IndexOfPage"/>, the reader a destination's page goes
-        /// through, so the two cannot disagree about what a page reference names.</para>
+        /// the reference is matched through <see cref="PdfDestinationPage.IndexOfPage"/>, the reader
+        /// a destination's page goes through, so the two cannot disagree about what a page reference
+        /// names. Resolving the entry and asking for a number would turn a conforming
+        /// <c>/Start 12 0 R</c> into a page <i>dictionary</i> and null, for every part of every
+        /// document written to the standard.</para>
         ///
         /// <para><b>The number spelling is read too</b>, direct or behind a reference, because some
         /// producers write it — and it is range-checked the way a

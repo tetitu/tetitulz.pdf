@@ -112,29 +112,27 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         /// question and must not answer it three ways.
         /// </summary>
         /// <remarks>
-        /// <para><b>The defect this closes.</b> <see cref="Resolve"/> took the caller's set through a
-        /// bare <c>.Distinct()</c> and then demanded a <c>cmap</c> entry for every member — including
-        /// the whitespace <c>RunRenderer</c> puts into the very same string as the text, because
-        /// <c>&lt;w:br/&gt;</c> becomes <c>'\n'</c> and <c>&lt;w:tab/&gt;</c> becomes <c>'\t'</c>
-        /// (RunRenderer.Render). Most faces map neither U+0009 nor U+000A at all, so a Hebrew or CJK
-        /// run holding a tab or a line break asked for coverage no font could give:
-        /// <see cref="Covers"/> returned false for every candidate, <see cref="Resolve"/> returned
-        /// null, and the run fell through to the standard-14 path where
+        /// <para><b>Why whitespace is removed.</b> <c>RunRenderer</c> puts whitespace into the very
+        /// same string as the text, because <c>&lt;w:br/&gt;</c> becomes <c>'\n'</c> and
+        /// <c>&lt;w:tab/&gt;</c> becomes <c>'\t'</c> (RunRenderer.Render). Most faces map neither
+        /// U+0009 nor U+000A at all, so demanding a <c>cmap</c> entry for every member of a bare
+        /// <c>.Distinct()</c> would make a Hebrew or CJK run holding a tab or a line break ask for
+        /// coverage no font can give: <see cref="Covers"/> would return false for every candidate,
+        /// <see cref="Resolve"/> null, and the run fall through to the standard-14 path where
         /// <c>RunRenderer.EncodeWinAnsiLiteral</c> maps every non-WinAnsi character to a space — a
         /// page of correctly-sized BLANK lines, for text a font on the machine could draw.</para>
         ///
-        /// <para><b>Why it survived.</b> The failure is indistinguishable from the one it imitates.
-        /// Losing the run is exactly what happens when nothing on the host covers Hebrew, which on a
-        /// bare container is genuinely the case, and <c>ReportNoCoveringFont</c> filters the reported
-        /// code points through <c>IsWinAnsiCodePoint</c> — so the diagnostic named the Hebrew letters
-        /// and never mentioned the tab that actually caused it. Whitespace is invisible in the
-        /// output, so no rendering test could see the difference either.</para>
+        /// <para><b>Such a failure is indistinguishable from the one it imitates.</b> Losing the run
+        /// is exactly what happens when nothing on the host covers Hebrew, which on a bare container
+        /// is genuinely the case, and <c>ReportNoCoveringFont</c> filters the reported code points
+        /// through <c>IsWinAnsiCodePoint</c> — so the diagnostic would name the Hebrew letters and
+        /// never mention the tab. Whitespace is invisible in the output, so no rendering test could
+        /// see the difference either.</para>
         ///
         /// <para><b>Why excluding it is free.</b> Nearly every font has a space, so requiring one
-        /// never discriminated between candidates, and <c>UnicodeText.Shape</c> already falls back to
+        /// never discriminates between candidates, and <c>UnicodeText.Shape</c> already falls back to
         /// the space glyph for anything the cmap misses. This is the same four-member rule, for the
-        /// same stated reason, as <c>Core.Fonts.SystemFontResolver.Distinct</c> — the one of this
-        /// tree's four coverage resolvers that had it.</para>
+        /// same stated reason, as <c>Core.Fonts.SystemFontResolver.Distinct</c>.</para>
         /// </remarks>
         internal static int[] RequiredCodePoints(IEnumerable<int> codePoints)
         {
@@ -416,10 +414,9 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         /// How many candidates the family-name match answered from the <c>name</c> table alone.
         ///
         /// <para>Its own counter rather than a share of <see cref="ProbeRejections"/>, because the two
-        /// wire into different loops and a single number cannot fail for one of them. This one existed
-        /// only after the family-name half shipped untested: the honesty note in GAPS §16 item 4a said
-        /// a regression that stopped consulting <c>FamilyName</c> would be caught by nothing, which was
-        /// true, and is what this closes. Counted whether or not the path was already in
+        /// wire into different loops and a single number cannot fail for one of them. Without it, a
+        /// change that stopped consulting <c>FamilyName</c> would be caught by nothing. Counted
+        /// whether or not the path was already in
         /// <see cref="FileCache"/>, so it does not depend on what ran before.</para>
         /// </summary>
         internal static long ProbeFamilyNames => System.Threading.Interlocked.Read(ref _probeFamilyNames);

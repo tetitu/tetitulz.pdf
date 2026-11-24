@@ -18,12 +18,12 @@ namespace Tetitulz.Pdf.Base.Operations.Images
     /// with the pages and resource names that reach it.
     /// </summary>
     /// <remarks>
-    /// <para><b>One walk for two operations.</b> <see cref="PdfImageReplacer"/> built this index to
-    /// find and replace an image wherever it is drawn, and <c>PdfColorSpaceConverter</c> iterated
-    /// the pages' own <c>/XObject</c> dictionaries and nothing deeper — so an RGB image inside a
-    /// form XObject (a letterhead, a logo placed by a layout tool) survived a conversion that
-    /// reported the document converted, and an image two pages shared was converted, and counted,
-    /// twice. Both now read this.</para>
+    /// <para><b>One walk for two operations.</b> <see cref="PdfImageReplacer"/> reads this index to
+    /// find and replace an image wherever it is drawn, and <c>PdfColorSpaceConverter</c> to convert
+    /// every image once. Iterating the pages' own <c>/XObject</c> dictionaries and nothing deeper
+    /// would let an RGB image inside a form XObject (a letterhead, a logo placed by a layout tool)
+    /// survive a conversion that reported the document converted, and convert, and count, an image
+    /// two pages shared twice.</para>
     ///
     /// <para><b>Every container that paints with resources of its own</b> is walked: a form XObject
     /// (§8.10), a tiling pattern (§8.7.3.1, <c>/PatternType 1</c>), a Type 3 font's glyph

@@ -20,7 +20,7 @@ namespace Tetitulz.Pdf.Base.Operations.Barcodes
     /// symbol as a whole must still end in dark — a final white element cannot be told from the
     /// quiet zone — so <see cref="Stop"/> carries a seventh element and is 13 modules. Any code
     /// walking these patterns must take the width from <see cref="ModulesOf"/> rather than assume
-    /// eleven; assuming eleven is precisely the defect this class was extracted to fix.</para>
+    /// eleven; assuming eleven is precisely the mistake this class exists to prevent.</para>
     /// </remarks>
     internal static class Code128Symbols
     {

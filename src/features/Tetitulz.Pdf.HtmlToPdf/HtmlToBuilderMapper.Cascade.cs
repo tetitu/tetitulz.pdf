@@ -64,9 +64,8 @@ namespace Tetitulz.Pdf.HtmlToPdf
                                    : LoadLocalStylesheet(href!, out location);
                     if (loaded == null)
                     {
-                        // The third silent-drop site, and the most expensive: a whole stylesheet
-                        // going missing changes every page, yet the conversion returned a valid PDF
-                        // and OnDiagnostic never fired. A remote one has already said why.
+                        // Reported: a whole stylesheet going missing changes every page while the
+                        // conversion still returns a valid PDF. A remote one has already said why.
                         if (!string.IsNullOrEmpty(href) && !isRemote) ReportResourceDeclined("stylesheet", href!);
                         continue;
                     }

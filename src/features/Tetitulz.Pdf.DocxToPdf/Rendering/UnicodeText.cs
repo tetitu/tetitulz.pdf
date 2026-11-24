@@ -15,10 +15,9 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
     /// </summary>
     /// <remarks>
     /// <para><b>The shape → bidi → glyph-id pipeline itself lives in Core</b>
-    /// (<see cref="TextRunComposer.Compose"/>), shared with <c>Builder.Export.RtlText</c>: two copies
-    /// would each acquire exactly the fix the other lacked — the <b>code-point</b> walk (a
-    /// supplementary-plane character is one glyph, not two lone surrogates) and the caller-supplied
-    /// <see cref="BaseDirection"/>. The Core implementation has both.</para>
+    /// (<see cref="TextRunComposer.Compose"/>), shared with <c>Builder.Export.RtlText</c>, so both
+    /// get the <b>code-point</b> walk (a supplementary-plane character is one glyph, not two lone
+    /// surrogates) and the caller-supplied <see cref="BaseDirection"/>.</para>
     /// <para><b>What stays here is what is genuinely DOCX-shaped:</b> <see cref="NeedsUnicode"/> /
     /// <see cref="IsWinAnsi"/> ask which <i>encoding</i> to write, not which glyphs exist — folding
     /// them into the Latin-1 test the Builder side uses would change which font is picked for

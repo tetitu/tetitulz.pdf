@@ -176,8 +176,8 @@ namespace Tetitulz.Pdf.Base.Operations
         /// </summary>
         /// <remarks>
         /// The one rule for what a word contributes to a visual line — the reading order above and
-        /// the field extractor's label keys alike. When the two differed, a label was found in a
-        /// word's text and its value read from the same word's glyphs, of which it had none.
+        /// the field extractor's label keys alike. Were the two to differ, a label could be found in a
+        /// word's text and its value read from the same word's glyphs, of which it has none.
         /// </remarks>
         internal static List<PdfTextChar> VisualGlyphs(PdfTextWord word)
         {

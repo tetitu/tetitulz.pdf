@@ -69,11 +69,11 @@ namespace Tetitulz.Pdf.Plugins.Conformance
         /// </param>
         /// <remarks>
         /// <para><b>This overload throws where the options overload returns a result.</b> It has no
-        /// channel to report through, and the options overload now RETURNS — writing nothing — on an
-        /// encrypted or signed input. Forwarding blindly therefore turned a thrown exception into a
-        /// zero-byte output file and a normal return, which is strictly worse: a batch job cannot
-        /// tell that from a successful conversion of an empty document. So the result is inspected
-        /// and a refusal is re-raised as the exception this signature has always used.</para>
+        /// channel to report through, and the options overload RETURNS — writing nothing — on an
+        /// encrypted or signed input. Forwarding blindly would turn a refusal into a zero-byte output
+        /// file and a normal return, which is strictly worse: a batch job cannot tell that from a
+        /// successful conversion of an empty document. So the result is inspected and a refusal is
+        /// raised as an exception.</para>
         /// </remarks>
         /// <param name="input">Stream holding the source PDF.</param>
         /// <param name="output">Receives the PDF/A-1b output.</param>

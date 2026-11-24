@@ -16,11 +16,10 @@ namespace Tetitulz.Pdf.Core.IO.Filters
     /// <para><b>This filter expands, and therefore honours
     /// <see cref="StreamFilter.MaxOutputBytes"/>.</b> A full group is five characters producing four
     /// bytes, which contracts — but <c>z</c> is <i>one</i> character producing four bytes, so a
-    /// stream of nothing but <c>z</c> is a 4x amplification. It was grouped with ASCIIHexDecode as a
-    /// filter that "cannot outgrow its input by enough to matter" and consulted no ceiling at all,
-    /// so 256 MiB of <c>z</c> produced 1 GiB past a 512 MiB limit that never fired, and a caller
-    /// passing a smaller ceiling of its own was overrun by 4x in silence — no exception, just a
-    /// bigger buffer than it asked for.</para>
+    /// stream of nothing but <c>z</c> is a 4x amplification. Treated like ASCIIHexDecode, as a
+    /// filter that "cannot outgrow its input by enough to matter", 256 MiB of <c>z</c> would
+    /// produce 1 GiB past a 512 MiB limit, and a caller passing a smaller ceiling of its own would
+    /// be overrun by 4x in silence — no exception, just a bigger buffer than it asked for.</para>
     /// </remarks>
     public sealed class Ascii85DecodeFilter : StreamFilter
     {
