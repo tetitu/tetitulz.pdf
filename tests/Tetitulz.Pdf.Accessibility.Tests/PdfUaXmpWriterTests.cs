@@ -799,4 +799,53 @@ public class PdfUaXmpWriterTests
         Assert.Single(Regex.Matches(twice, "<pdfaExtension:schemas"));
         Assert.DoesNotContain(ValidatePdfA(twice, 2).Violations, v => v.Code == "A34" || v.Code == "A36");
     }
+
+    // ===============================================================
+    //  dc:title from the document's own /Info /Title
+    // ===============================================================
+
+    /// <summary>
+    /// ISO 14289-1 7.1 and ISO 14289-2 §8.11.1 read the title from <c>dc:title</c> alone. With no
+    /// title given, a packet without one is written with the document's own <c>/Info /Title</c>;
+    /// a packet that has one keeps it; the caller's title wins over both; and a document with no
+    /// title anywhere (the control) gets none made up.
+    /// </summary>
+    [Fact]
+    public void SetPdfUaIdentifier_NoTitleGiven_WritesTheInfoTitleOnlyWhereThePacketHasNone()
+    {
+        const string Info = "<< /Title (Annual Report) >>";
+        string keptPacket = ExistingXmpPacket().Replace(
+            "<dc:creator>", "<dc:title><rdf:Alt><rdf:li xml:lang=\"x-default\">Kept Title</rdf:li></rdf:Alt></dc:title><dc:creator>");
+
+        byte[] infoOnly = BuildClassicPdf(new[]
+        {
+            null,
+            "<< /Type /Catalog /Pages 2 0 R >>",
+            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>",
+            Info,
+        }, "/Info 4 0 R");
+        byte[] withDcTitle = BuildClassicPdf(new[]
+        {
+            null,
+            "<< /Type /Catalog /Pages 2 0 R /Metadata 5 0 R >>",
+            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>",
+            Info,
+            StreamObject("/Type /Metadata /Subtype /XML", keptPacket),
+        }, "/Info 4 0 R");
+
+        string carried = XmpOf(Apply(infoOnly));
+        string kept = XmpOf(Apply(withDcTitle));
+        string given = XmpOf(Apply(infoOnly, title: "Given Title"));
+        string none = XmpOf(Apply(ClassicPdfWithoutMetadata()));
+
+        Assert.Contains(">Annual Report</rdf:li>", carried, StringComparison.Ordinal);
+        Assert.Contains(">Kept Title</rdf:li>", kept, StringComparison.Ordinal);
+        Assert.DoesNotContain("Annual Report", kept, StringComparison.Ordinal);
+        Assert.Contains(">Given Title</rdf:li>", given, StringComparison.Ordinal);
+        Assert.DoesNotContain("Annual Report", given, StringComparison.Ordinal);
+        Assert.DoesNotContain("dc:title", none, StringComparison.Ordinal);
+        Assert.Contains("pdfuaid:part", none, StringComparison.Ordinal);
+    }
 }

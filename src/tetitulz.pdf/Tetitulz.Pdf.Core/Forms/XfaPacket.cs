@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml;
 using Tetitulz.Pdf.Core.Document;
 using Tetitulz.Pdf.Core.Objects;
 
@@ -183,6 +185,94 @@ namespace Tetitulz.Pdf.Core.Forms
         {
             int i = IndexOf(name);
             return i < 0 ? null : _streams[i];
+        }
+
+        /// <summary>The <c>config</c> packet's name — the form's processing options, <c>dynamicRender</c> among them.</summary>
+        public const string ConfigPacket = "config";
+
+        /// <summary>
+        /// Whether the form is a dynamic XFA form: its <c>dynamicRender</c> element — the child of
+        /// <c>acrobat7</c>, of <c>acrobat</c>, of <c>config</c>, of the <c>xdp</c> root (ISO 14289-1
+        /// 7.15 NOTE) — has the value <c>required</c>. <see langword="false"/> when there is no such
+        /// element, it says anything else, or a packaged entry has no <c>config</c> packet;
+        /// <see langword="null"/> when the bytes it would be in could not be read, and
+        /// <paramref name="unreadable"/> then says why.
+        /// </summary>
+        /// <remarks>
+        /// <para>A packaged entry's <c>config</c> packet is read, its root <c>config</c>; an unpackaged
+        /// entry's one stream is the whole XDP, its root <c>xdp</c>. Elements are matched by local name,
+        /// since each XFA release gives the config grammar a namespace of its own version, and the
+        /// value is compared ordinally once the whitespace around it is set aside: XFA keywords are
+        /// case-sensitive. The first such element decides.</para>
+        /// <para>The bytes come through <see cref="BoundedBytes"/>, and the reader prohibits a DTD and
+        /// resolves nothing. It builds no tree and keeps the names of the first five levels only, so
+        /// its memory does not grow with the packet's depth.</para>
+        /// </remarks>
+        public bool? RequiresDynamicRender(out string unreadable)
+        {
+            unreadable = null;
+            PdfStream stream;
+            if (IsPackaged)
+            {
+                int i = IndexOf(ConfigPacket);
+                if (i < 0) return false;
+                stream = _streams[i];
+            }
+            else
+            {
+                stream = _streams[0];
+            }
+
+            byte[] bytes = BoundedBytes(stream, out string refusal);
+            if (bytes == null)
+            {
+                unreadable = refusal ?? "the packet does not decode";
+                return null;
+            }
+
+            var settings = new XmlReaderSettings
+            {
+                DtdProcessing = DtdProcessing.Prohibit,
+                XmlResolver = null,
+                IgnoreComments = true,
+                IgnoreProcessingInstructions = true,
+            };
+            var path = new string[5];
+            try
+            {
+                using var input = new MemoryStream(bytes, writable: false);
+                using var reader = XmlReader.Create(input, settings);
+                while (reader.Read())
+                {
+                    if (reader.NodeType != XmlNodeType.Element) continue;
+                    int depth = reader.Depth;
+                    if (depth >= path.Length) continue;
+                    path[depth] = reader.LocalName;
+                    if (!IsDynamicRenderPath(path, depth)) continue;
+
+                    string value = reader.IsEmptyElement ? string.Empty : reader.ReadElementContentAsString();
+                    return string.Equals(value.Trim(), "required", StringComparison.Ordinal);
+                }
+                return false;
+            }
+            catch (XmlException ex)
+            {
+                unreadable = "the packet could not be read as XML (" + ex.Message + ")";
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Whether the element at <paramref name="depth"/> is <c>dynamicRender</c> under
+        /// <c>config/acrobat/acrobat7</c>, the <c>config</c> element the root (depth 3) or the root's
+        /// child (depth 4, the deepest <paramref name="path"/> holds).
+        /// </summary>
+        private static bool IsDynamicRenderPath(string[] path, int depth)
+        {
+            int config = depth - 3;
+            if (config < 0 || path[depth] != "dynamicRender") return false;
+            if (config == 1 && path[0] != "xdp") return false;
+            return path[config] == "config" && path[config + 1] == "acrobat" && path[config + 2] == "acrobat7";
         }
 
         private int IndexOf(string name)

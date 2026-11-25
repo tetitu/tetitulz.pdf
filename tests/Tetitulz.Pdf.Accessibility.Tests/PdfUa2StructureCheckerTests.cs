@@ -5368,13 +5368,15 @@ public class PdfUa2StructureCheckerTests
     public void Type1CWhoseProgramCannotBeDecoded_IsSkippedWithoutAbortingEitherCheck_Ua8456AndUa8459()
     {
         // Seventeen filters exceed PdfLimits.MaxFilterChainLength, so decoding the program throws.
-        // Neither the width check nor the undefined-name check may turn that into UA2-99.
+        // Neither the width check nor the undefined-name check may turn that into UA2-99; the glyph check of
+        // §8.4.5.5.1 says, in a UA2-99 of its own, that it could not judge the font.
         string filters = " /Filter [" + string.Concat(Enumerable.Repeat("/ASCIIHexDecode ", 17)) + "]";
         byte[] pdf = Type1FamilyPdf(MinimalOpenTypeCff.BuildBareCff(MinimalOpenTypeCff.NamedBoxGlyphs("A")),
             "FontFile3", " /Subtype /Type1C" + filters, 590, "<< /Differences [65 /B] >>");
 
         var violations = Validate(pdf).Violations;
-        Assert.DoesNotContain(violations, v => v.Code == "UA2-99");
+        Assert.DoesNotContain(violations, v => v.Code == "UA2-99"
+            && !v.Message.StartsWith("§8.4.5.5.1's glyph sentence was not judged for a font", System.StringComparison.Ordinal));
         Assert.DoesNotContain(violations, v => v.Code == "UA2-8.4.5.6" || v.Code == "UA2-8.4.5.9");
     }
 

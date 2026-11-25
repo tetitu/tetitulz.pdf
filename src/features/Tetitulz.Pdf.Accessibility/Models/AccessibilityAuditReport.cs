@@ -13,9 +13,9 @@ namespace Tetitulz.Pdf.Accessibility.Models
     /// checkers <c>PdfAccessibility.Audit</c> runs:
     /// <list type="bullet">
     ///   <item>the base PDF/UA-1 checker in <c>Tetitulz.Pdf.Plugins.Conformance</c>, which emits
-    ///     <c>UA00</c>–<c>UA09</c>, <c>UA25</c>–<c>UA29</c>, <c>UA50</c> and <c>UA99</c>;</item>
+    ///     <c>UA00</c>–<c>UA09</c>, <c>UA25</c>–<c>UA29</c>, <c>UA50</c> and up, and <c>UA99</c>;</item>
     ///   <item>the extended deep checker, which emits <c>UA00</c>, <c>UA06</c>,
-    ///     <c>UA10</c>–<c>UA24</c>, <c>UA30</c> and <c>UA99</c>, and maps issues to WCAG
+    ///     <c>UA10</c>–<c>UA24</c>, <c>UA30</c>–<c>UA35</c> and <c>UA99</c>, and maps issues to WCAG
     ///     criteria and Matterhorn checkpoints.</item>
     /// </list>
     /// The two ranges overlap deliberately, and a combined audit drops the base checker's
