@@ -211,6 +211,40 @@ public sealed class KeyedHashTests
         Assert.NotEqual(PdfName.Font.GetHashCode(), PdfName.XObject.GetHashCode());
     }
 
+    /// <summary>
+    /// <see cref="KeyedHash.Strings"/> compares ordinally and hashes as <see cref="KeyedHash.Of(string)"/>,
+    /// so a LINQ grouping under it hashes as the string form does.
+    /// </summary>
+    [Fact]
+    public void Strings_ComparesOrdinallyAndHashesAsOf()
+    {
+        IEqualityComparer<string> strings = KeyedHash.Strings;
+        Assert.True(strings.Equals("Font", new string("Font".ToCharArray())));
+        Assert.False(strings.Equals("Font", "font"));
+        Assert.False(strings.Equals("Font", null!));
+        Assert.Equal(KeyedHash.Of("XObject"), strings.GetHashCode("XObject"));
+        Assert.Equal(0, strings.GetHashCode(null!));
+
+        List<string> names = NamesSharingNetFrameworkHash(6);
+        Assert.Equal(64, names.GroupBy(n => n, strings).Count());
+    }
+
+    /// <summary>
+    /// A comparer from <see cref="KeyedHash.Comparer{T}(Func{T, int})"/> hashes through the function it
+    /// is given and compares as the type does: a tuple's own equality, its strings ordinally.
+    /// </summary>
+    [Fact]
+    public void Comparer_HashesThroughItsFunctionAndComparesAsTheType()
+    {
+        IEqualityComparer<(string, int)> keys =
+            KeyedHash.Comparer<(string, int)>(k => unchecked(KeyedHash.Of(k.Item1) * 31 + k.Item2));
+        Assert.Equal(unchecked(KeyedHash.Of("Font") * 31 + 2), keys.GetHashCode(("Font", 2)));
+        Assert.True(keys.Equals(("Font", 2), (new string("Font".ToCharArray()), 2)));
+        Assert.False(keys.Equals(("Font", 2), ("font", 2)));
+        Assert.False(keys.Equals(("Font", 2), ("Font", 3)));
+        Assert.Throws<ArgumentNullException>(() => KeyedHash.Comparer<(string, int)>(null));
+    }
+
     /// <summary>FNV-1 of a symbol key's size and bytes, the unkeyed hash an image can make collide.</summary>
     private static int Fnv1(int width, int height, byte[] bits)
     {

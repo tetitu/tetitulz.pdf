@@ -4,13 +4,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Tetitulz.Pdf.TestHelpers;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -55,13 +52,6 @@ public sealed class SaturatingCastGuardTests
 
     private static readonly HashSet<SpecialType> Floating = new() { SpecialType.System_Single, SpecialType.System_Double };
 
-    private static readonly string[][] SymbolSets =
-    {
-        new[] { "NET", "NETCOREAPP", "NET10_0", "NET5_0_OR_GREATER", "NET6_0_OR_GREATER", "NET7_0_OR_GREATER",
-                "NET8_0_OR_GREATER", "NET9_0_OR_GREATER", "NET10_0_OR_GREATER", "NETCOREAPP3_0_OR_GREATER" },
-        new[] { "NETSTANDARD", "NETSTANDARD2_0" },
-    };
-
     private sealed record Scan(List<string> Findings, int HelperCasts, int CastsToIntegers, List<string> Unresolved,
                                List<string> NotRestored);
 
@@ -90,46 +80,16 @@ public sealed class SaturatingCastGuardTests
 
     private static Scan Run()
     {
-        string root = TestCorpus.RepoRoot!;
-        string src = Path.Combine(root, "src");
-        var files = Directory.EnumerateFiles(src, "*.cs", SearchOption.AllDirectories)
-            .Where(f => !f.Replace('\\', '/').Contains("/obj/") && !f.Replace('\\', '/').Contains("/bin/"))
-            .OrderBy(f => f, StringComparer.Ordinal)
-            .ToList();
-
-        var references = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var dll in ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!).Split(Path.PathSeparator))
-            references.TryAdd(Path.GetFileName(dll), dll);
-        foreach (var dll in Directory.EnumerateFiles(AppContext.BaseDirectory, "*.dll"))
-            if (!Path.GetFileName(dll).StartsWith("Tetitulz.Pdf.", StringComparison.Ordinal))   // compiled from source
-                references.TryAdd(Path.GetFileName(dll), dll);
-        // A project's directory, and whether its packages are restored here (its project.assets.json).
-        var projectDirs = Directory.EnumerateFiles(src, "*.csproj", SearchOption.AllDirectories)
-            .Select(Path.GetDirectoryName).ToList();
-        var unrestored = projectDirs.Where(d => !File.Exists(Path.Combine(d!, "obj", "project.assets.json")))
-            .Select(d => Path.GetRelativePath(root, d!).Replace('\\', '/') + "/").ToList();
-        foreach (var dir in projectDirs)
-        {
-            string assets = Path.Combine(dir!, "obj", "project.assets.json");
-            if (!File.Exists(assets)) continue;
-            foreach (var dll in CompileAssets(assets))
-                references.TryAdd(Path.GetFileName(dll), dll);
-        }
-        var metadata = references.Values.Where(File.Exists).Select(p => MetadataReference.CreateFromFile(p)).ToList();
-
+        var sources = new SourceCompilations();
         var findings = new SortedSet<string>(StringComparer.Ordinal);
         var unresolved = new SortedSet<string>(StringComparer.Ordinal);
         var notRestored = new SortedSet<string>(StringComparer.Ordinal);
         int helperCasts = 0, castsToIntegers = 0;
-        foreach (var symbols in SymbolSets)
+        foreach (var compilation in sources.Each())
         {
-            var options = new CSharpParseOptions(LanguageVersion.Latest, preprocessorSymbols: symbols);
-            var trees = files.Select(f => CSharpSyntaxTree.ParseText(File.ReadAllText(f), options, f)).ToList();
-            var compilation = CSharpCompilation.Create("guard", trees, metadata,
-                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true));
-            foreach (var tree in trees)
+            foreach (var tree in compilation.SyntaxTrees)
             {
-                string rel = Path.GetRelativePath(root, tree.FilePath).Replace('\\', '/');
+                string rel = sources.Relative(tree);
                 var model = compilation.GetSemanticModel(tree);
                 foreach (var cast in tree.GetRoot().DescendantNodes().OfType<CastExpressionSyntax>())
                 {
@@ -140,7 +100,7 @@ public sealed class SaturatingCastGuardTests
                     string where = $"{rel}:{tree.GetLineSpan(cast.Span).StartLinePosition.Line + 1}  {cast}";
                     if (source == null || source.TypeKind == TypeKind.Error)
                     {
-                        (unrestored.Any(u => rel.StartsWith(u, StringComparison.Ordinal)) ? notRestored : unresolved).Add(where);
+                        (sources.IsUnrestored(rel) ? notRestored : unresolved).Add(where);
                         continue;
                     }
                     if (!Floating.Contains(source.SpecialType) || model.GetConstantValue(cast).HasValue) continue;
@@ -150,29 +110,5 @@ public sealed class SaturatingCastGuardTests
             }
         }
         return new Scan(findings.ToList(), helperCasts, castsToIntegers, unresolved.ToList(), notRestored.ToList());
-    }
-
-    /// <summary>Every compile-time assembly a restored project's packages supply, from its <c>project.assets.json</c>.</summary>
-    private static IEnumerable<string> CompileAssets(string assetsPath)
-    {
-        using var doc = JsonDocument.Parse(File.ReadAllText(assetsPath));
-        var rootEl = doc.RootElement;
-        var folders = rootEl.GetProperty("packageFolders").EnumerateObject().Select(p => p.Name).ToList();
-        var libraries = rootEl.GetProperty("libraries");
-        foreach (var target in rootEl.GetProperty("targets").EnumerateObject())
-            foreach (var lib in target.Value.EnumerateObject())
-            {
-                if (!lib.Value.TryGetProperty("compile", out var compile)) continue;
-                if (!libraries.TryGetProperty(lib.Name, out var library) || !library.TryGetProperty("path", out var path)) continue;
-                foreach (var file in compile.EnumerateObject())
-                {
-                    if (!file.Name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)) continue;
-                    foreach (var folder in folders)
-                    {
-                        string full = Path.Combine(folder, path.GetString()!, file.Name);
-                        if (File.Exists(full)) { yield return full; break; }
-                    }
-                }
-            }
     }
 }

@@ -8,6 +8,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Builder.Export
 {
@@ -66,7 +67,12 @@ namespace Tetitulz.Pdf.Builder.Export
 
         /// <summary>Literal-marker instances already minted, keyed by list instance, level and text.</summary>
         private readonly Dictionary<(int listNumId, int level, string text), int> _literal =
-            new Dictionary<(int listNumId, int level, string text), int>();
+            new Dictionary<(int listNumId, int level, string text), int>(LiteralKeys);
+
+        /// <summary>A marker's text is the document's, so it hashes under a key it cannot see (<see cref="KeyedHash"/>).</summary>
+        private static readonly IEqualityComparer<(int listNumId, int level, string text)> LiteralKeys =
+            KeyedHash.Comparer<(int listNumId, int level, string text)>(
+                k => unchecked((k.listNumId * 31 + k.level) * 31 + KeyedHash.Of(k.text)));
 
         internal DocxNumbering(MainDocumentPart main) => _main = main;
 

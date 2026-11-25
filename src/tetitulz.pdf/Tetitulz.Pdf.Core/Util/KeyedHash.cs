@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 
 namespace Tetitulz.Pdf.Core.Util
@@ -25,10 +26,11 @@ namespace Tetitulz.Pdf.Core.Util
     /// string's UTF-16 code units. <c>Dictionary&lt;string, …&gt;</c> and <c>HashSet&lt;string&gt;</c>
     /// protect themselves on .NET Framework by switching to a randomized comparer when a bucket grows
     /// long; a key type of the library's own (<c>PdfName</c>, a PostScript key) does not, so it hashes
-    /// through here. A tuple holding a string, and LINQ's <c>Distinct</c>, <c>GroupBy</c> and
-    /// <c>ToLookup</c>, hash a string with the runtime's function: on .NET Framework the host makes
-    /// that keyed with <c>&lt;UseRandomizedStringHashAlgorithm enabled="1" /&gt;</c> in its
-    /// configuration file's <c>&lt;runtime&gt;</c> section.</para>
+    /// through here. Neither does a tuple holding a string, nor LINQ's <c>Distinct</c>,
+    /// <c>GroupBy</c> and <c>ToLookup</c>, even under <c>StringComparer.Ordinal</c>: such a table
+    /// takes <see cref="Comparer{T}(Func{T, int})"/> or <see cref="Strings"/> when a file chose its strings
+    /// (16 384 colliding names take 5.2 s as a <c>(string, string)</c> key there and 0.9 s to group,
+    /// against 4 and 3 ms for random names). The framework's XML name tables are not affected.</para>
     /// <para>Public because a plugin needs it: Core's <c>InternalsVisibleTo</c> names no plugin.</para>
     /// </remarks>
     public static class KeyedHash
@@ -69,6 +71,35 @@ namespace Tetitulz.Pdf.Core.Util
             if (offset < 0 || count < 0 || offset > data.Length - count)
                 throw new ArgumentOutOfRangeException(nameof(count), "The range is outside the array.");
             return Fold(Hash(K0, K1, data, offset, count));
+        }
+
+        /// <summary>
+        /// Ordinal string equality under <see cref="Of(string)"/>: the comparer for a LINQ set
+        /// operation (<c>GroupBy</c>, <c>Distinct</c>, <c>ToLookup</c>) over strings a file chose. A
+        /// <c>Dictionary</c> or <c>HashSet</c> of <c>string</c> needs none.
+        /// </summary>
+        public static IEqualityComparer<string> Strings { get; } = new OrdinalStrings();
+
+        /// <summary>
+        /// A comparer that tests equality as <typeparamref name="T"/> does and hashes through
+        /// <paramref name="hash"/>: the comparer for a tuple key holding a string a file chose, built
+        /// over <see cref="Of(string)"/>, since the tuple's own hash is the runtime's string hash.
+        /// </summary>
+        public static IEqualityComparer<T> Comparer<T>(Func<T, int> hash)
+            => new HashedBy<T>(hash ?? throw new ArgumentNullException(nameof(hash)));
+
+        private sealed class OrdinalStrings : IEqualityComparer<string>
+        {
+            public bool Equals(string x, string y) => string.Equals(x, y, StringComparison.Ordinal);
+            public int GetHashCode(string obj) => Of(obj);
+        }
+
+        private sealed class HashedBy<T> : IEqualityComparer<T>
+        {
+            private readonly Func<T, int> _hash;
+            internal HashedBy(Func<T, int> hash) => _hash = hash;
+            public bool Equals(T x, T y) => EqualityComparer<T>.Default.Equals(x, y);
+            public int GetHashCode(T obj) => _hash(obj);
         }
 
         private static int Fold(ulong hash) => unchecked((int)hash ^ (int)(hash >> 32));

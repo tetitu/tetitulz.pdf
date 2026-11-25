@@ -680,7 +680,14 @@ namespace Tetitulz.Pdf.Builder.Export
             // the same question and need different answers.
             public readonly Dictionary<(string family, bool bold, bool italic),
                 List<(PdfDocumentBuilder.EmbeddedFont handle, TrueTypeFontProgram prog)>> UniFonts =
-                new();
+                new(FaceKeys);
+
+            // A family name is the document's, so it hashes under a key the document cannot see
+            // (KeyedHash): the tuple's own hash is the runtime's string hash, which .NET Framework does
+            // not key.
+            private static readonly IEqualityComparer<(string family, bool bold, bool italic)> FaceKeys =
+                KeyedHash.Comparer<(string family, bool bold, bool italic)>(
+                    k => unchecked((KeyedHash.Of(k.family) * 31 + (k.bold ? 1 : 0)) * 31 + (k.italic ? 1 : 0)));
 
             // The embedded-font handle already minted for a resolved program, keyed by the program's
             // content, so two families that fall back to the same face share one handle and

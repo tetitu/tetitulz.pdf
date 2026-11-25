@@ -2374,9 +2374,11 @@ Tetitulz.Pdf.Core.Util.DiagnosticFanOut::Invoke(System.Action<System.String>, Sy
 Tetitulz.Pdf.Core.Util.DiagnosticFanOut::Invoke<T1, T2, T3>(System.Action<T1, T2, T3>, T1, T2, T3) : System.Void
 Tetitulz.Pdf.Core.Util.DiagnosticFanOut::Invoke<T>(System.Action<T>, T) : System.Void
 Tetitulz.Pdf.Core.Util.DiagnosticMessage::Compose(System.String, System.String, System.String, System.Exception) : System.String
+Tetitulz.Pdf.Core.Util.KeyedHash::Comparer<T>(System.Func<T, System.Int32>) : System.Collections.Generic.IEqualityComparer<T>
 Tetitulz.Pdf.Core.Util.KeyedHash::Of(System.Byte[], System.Int32, System.Int32) : System.Int32
 Tetitulz.Pdf.Core.Util.KeyedHash::Of(System.Double) : System.Int32
 Tetitulz.Pdf.Core.Util.KeyedHash::Of(System.String) : System.Int32
+Tetitulz.Pdf.Core.Util.KeyedHash::Strings : System.Collections.Generic.IEqualityComparer<System.String> { get }
 Tetitulz.Pdf.Core.Util.NumericArguments::IsFinite(System.Double) : System.Boolean
 Tetitulz.Pdf.Core.Util.NumericArguments::RequireFinite(System.Double, System.String, System.String = default) : System.Void
 Tetitulz.Pdf.Core.Util.NumericArguments::RequireNonNegative(System.Double, System.String, System.String = default) : System.Void

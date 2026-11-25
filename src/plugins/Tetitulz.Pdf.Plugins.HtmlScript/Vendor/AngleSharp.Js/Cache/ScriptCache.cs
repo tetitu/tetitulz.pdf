@@ -7,7 +7,9 @@ namespace Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Cache
     using Jint.Runtime;
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Threading;
+    using Tetitulz.Pdf.Core.Util;   // TETITULZ MODIFICATION (../../VENDORED.md, item 11)
 
     /// <summary>
     /// Caches the parsed and analyzed form of scripts. A prepared script is
@@ -32,10 +34,17 @@ namespace Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Cache
         //  bounded, and forgotten together when the set fills.
         private const Int32 SeenOnceCapacity = 4096;
 
+        //  TETITULZ MODIFICATION (../../VENDORED.md, item 11): a source hashes under a key the page cannot
+        //  see, as every tuple key holding a string does here. Declared before the cache it keys: static
+        //  fields are initialised in order.
+        private static readonly IEqualityComparer<(String Source, TimeSpan? RegexTimeout)> SourceKeys =
+            KeyedHash.Comparer<(String Source, TimeSpan? RegexTimeout)>(
+                k => unchecked(KeyedHash.Of(k.Source) * 31 + k.RegexTimeout.GetHashCode()));
+
         //  TETITULZ MODIFICATION (../../VENDORED.md, item 7): keyed by the regex timeout too, since a
         //  prepared script's regular-expression literals keep the timeout they were prepared with.
         private static readonly ConcurrentDictionary<(String Source, TimeSpan? RegexTimeout), Entry> _scripts =
-            new ConcurrentDictionary<(String Source, TimeSpan? RegexTimeout), Entry>();
+            new ConcurrentDictionary<(String Source, TimeSpan? RegexTimeout), Entry>(SourceKeys);
 
         private static readonly ConcurrentDictionary<(Int32 Length, Int32 Hash, TimeSpan? RegexTimeout), Byte> _seenOnce =
             new ConcurrentDictionary<(Int32 Length, Int32 Hash, TimeSpan? RegexTimeout), Byte>();
@@ -88,7 +97,9 @@ namespace Tetitulz.Pdf.Plugins.HtmlScript.AngleSharpJs.Cache
         {
             if (key.Source.Length > MaxCachedSourceLength) return;
 
-            var seenKey = (key.Source.Length, key.Source.GetHashCode(), key.RegexTimeout);
+            //  TETITULZ MODIFICATION (../../VENDORED.md, item 11): KeyedHash, so a page cannot make its
+            //  source pass for a library's.
+            var seenKey = (key.Source.Length, KeyedHash.Of(key.Source), key.RegexTimeout);
             if (_seenOnce.TryAdd(seenKey, 0))
             {
                 if (_seenOnce.Count > SeenOnceCapacity) _seenOnce.Clear();

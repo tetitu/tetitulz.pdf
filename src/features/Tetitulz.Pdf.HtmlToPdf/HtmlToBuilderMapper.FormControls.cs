@@ -14,6 +14,7 @@ using AngleSharp.Html.Parser;
 using Tetitulz.Pdf.Builder.Export;
 using Tetitulz.Pdf.Core.Constants;
 using Tetitulz.Pdf.Core.Imaging;
+using Tetitulz.Pdf.Core.Util;
 using Tetitulz.Pdf.Core.Text;
 using M = Tetitulz.Pdf.Builder.Model;
 
@@ -251,7 +252,11 @@ namespace Tetitulz.Pdf.HtmlToPdf
         /// since names are only ever added, never removed, the suffix chosen is identical.
         /// </summary>
         private readonly Dictionary<string, int> _nextFieldSuffix = new(StringComparer.Ordinal);
-        private readonly Dictionary<(string Group, string Base), int> _nextRadioValueSuffix = new();
+        private readonly Dictionary<(string Group, string Base), int> _nextRadioValueSuffix = new(RadioValueKeys);
+
+        /// <summary>The page's own names, hashed under a key it cannot see (<see cref="KeyedHash"/>).</summary>
+        private static readonly IEqualityComparer<(string Group, string Base)> RadioValueKeys =
+            KeyedHash.Comparer<(string Group, string Base)>(k => unchecked(KeyedHash.Of(k.Group) * 31 + KeyedHash.Of(k.Base)));
 
         /// <summary>
         /// Maps a control to a form-field placeholder run and returns <c>true</c>, or returns
