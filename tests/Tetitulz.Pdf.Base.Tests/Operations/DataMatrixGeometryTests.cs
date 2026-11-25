@@ -16,8 +16,8 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
 /// Data Matrix symbols turned on the page, square and rectangular, rasterised by the test's own rotation
-/// (cos and sin, never the locator's transform) and read through <see cref="PdfBarcodeReader"/>. Until
-/// 2026-10-18 only square symbols were read (<see cref="DataMatrixLocator"/>); turned ones are
+/// (cos and sin, never the locator's transform) and read through <see cref="PdfBarcodeReader"/>. An
+/// upright symbol is <see cref="DataMatrixLocator"/>'s; a turned one is
 /// <see cref="DataMatrixTurnedLocator"/>'s.
 /// </summary>
 public class DataMatrixGeometryTests

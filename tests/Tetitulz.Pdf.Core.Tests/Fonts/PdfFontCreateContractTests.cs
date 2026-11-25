@@ -13,16 +13,15 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts;
 /// <see cref="PdfFont.Create"/>'s two arguments have different contracts, and the order in which
 /// it checks them is load-bearing.
 ///
-/// <para><b>What it used to do.</b> It null-checked <c>fontDict</c> and then dereferenced
-/// <c>document</c> unconditionally on the very next line, so a caller with a font dictionary and no
-/// document got a bare <see cref="NullReferenceException"/> out of a factory that otherwise
-/// degrades gracefully. Found while writing a fixture for an unrelated row.</para>
+/// <para><b>The document is required once there is a font dictionary.</b> Dereferencing
+/// <c>document</c> unconditionally after the <c>fontDict</c> null check would hand a caller with a
+/// font dictionary and no document a bare <see cref="NullReferenceException"/> out of a factory
+/// that otherwise degrades gracefully.</para>
 ///
-/// <para><b>And what the first fix got wrong.</b> Requiring the document <i>before</i> the
-/// <c>fontDict == null</c> check refused <c>Create(null, null)</c> — a legitimate call, because a
-/// page may name a font resource that is not there, the answer is a fallback font, and that path
-/// never touches the document. Two existing cache tests were doing exactly that. The order is the
-/// design, not an accident.</para>
+/// <para><b>And not before.</b> Requiring the document <i>before</i> the <c>fontDict == null</c>
+/// check would refuse <c>Create(null, null)</c> — a legitimate call, because a page may name a font
+/// resource that is not there, the answer is a fallback font, and that path never touches the
+/// document. The order is the design, not an accident.</para>
 /// </summary>
 public class PdfFontCreateContractTests
 {

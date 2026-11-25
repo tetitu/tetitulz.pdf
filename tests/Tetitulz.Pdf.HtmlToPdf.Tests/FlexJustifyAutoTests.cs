@@ -13,9 +13,9 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
 /// A non-wrapping flex line of auto-width items that grow nothing keeps the items at their measured
-/// widths (batch 121): the free space is <c>justify-content</c>'s to place — at the end for
-/// <c>flex-start</c> — where the table used to stretch the items across the width and report the
-/// value. A line the items overflow still shares the width out, and a growing item still grows.
+/// widths: the free space is <c>justify-content</c>'s to place — at the end for <c>flex-start</c> —
+/// not stretched across the items with the value reported. A line the items overflow still shares
+/// the width out, and a growing item still grows.
 /// </summary>
 public class FlexJustifyAutoTests
 {

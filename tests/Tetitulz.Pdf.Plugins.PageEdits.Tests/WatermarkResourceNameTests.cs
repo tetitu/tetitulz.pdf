@@ -19,9 +19,9 @@ namespace Tetitulz.Pdf.Plugins.PageEdits.Tests;
 /// <remarks>
 /// The watermarker registers a font and an opacity state through the shared content builder, whose
 /// first names are <c>F1</c> and <c>GS1</c>, the names ordinary PDFs use most. Merged into a page that
-/// already used them, the watermark's replaced the page's. Every line of the page's own text re-rendered
-/// in the watermark's font, and its own content took the watermark's opacity. The fix is in Base
-/// (<c>PdfPageContentAppender</c> reserves the page's names); this is the consumer's view of it.
+/// already uses them, the watermark's would replace the page's: every line of the page's own text would
+/// re-render in the watermark's font, and its own content take the watermark's opacity. The rule is in
+/// Base (<c>PdfPageContentAppender</c> reserves the page's names); this is the consumer's view of it.
 /// </remarks>
 public class WatermarkResourceNameTests
 {

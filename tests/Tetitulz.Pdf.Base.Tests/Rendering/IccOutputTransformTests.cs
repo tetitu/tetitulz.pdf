@@ -17,7 +17,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <see cref="IccOutputTransform"/>: sRGB into an output profile, with black-point compensation and
 /// white kept white. Against the reference renderer.3 (the reference colour engine) where the host has RSWOP.icm —
 /// <c>-sDEVICE=separation output -sOutputICCProfile=RSWOP.icm</c> with <c>-dRenderIntent</c> and
-/// <c>-dBlackPtComp</c>, eight RGB swatches, 2026-10-03 — and on synthetic profiles everywhere.
+/// <c>-dBlackPtComp</c>, eight RGB swatches — and on synthetic profiles everywhere.
 /// </summary>
 public class IccOutputTransformTests
 {

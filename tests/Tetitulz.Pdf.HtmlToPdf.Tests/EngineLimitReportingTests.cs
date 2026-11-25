@@ -50,11 +50,9 @@ public class EngineLimitReportingTests
     /// A grid with <b>no column template</b> is still stacked, and still says so. The managed
     /// engine takes its track count from the template and cannot infer one from the items.
     ///
-    /// <para><b>Renamed and re-aimed on 2026-08-18, not re-asserted under its old name.</b> It was
-    /// <c>Grid_IsReportedRatherThanSilentlyStacked</c> and its fixture carried
-    /// <c>grid-template-columns:1fr 1fr</c> — which is now laid out as a table, so the old test was
-    /// asserting a report for the case that works. The report was narrowed to the declining case,
-    /// and this pair is what pins the boundary.</para>
+    /// <para>A grid with <c>grid-template-columns:1fr 1fr</c> is laid out as a table and not
+    /// reported; the report is for the declining case, and this pair is what pins the
+    /// boundary.</para>
     /// </summary>
     [Theory]
     [InlineData("grid")]

@@ -210,9 +210,8 @@ public sealed class SvgGapClosureTests
     }
 
     /// <summary>
-    /// And because that case is exported correctly, it must NOT be reported. The diagnostic used to
-    /// fire for the extend-true gradient as well, which is a host being told its output is
-    /// approximate when it is exact.
+    /// And because that case is exported correctly, it must NOT be reported: a diagnostic firing for
+    /// the extend-true gradient as well would tell a host its output is approximate when it is exact.
     /// </summary>
     [Fact]
     public void AxialShading_ExtendBothEnds_ReportsNothing()

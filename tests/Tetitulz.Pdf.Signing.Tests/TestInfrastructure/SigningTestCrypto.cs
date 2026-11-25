@@ -22,14 +22,6 @@ namespace Tetitulz.Pdf.Signing.Tests.TestInfrastructure;
 /// <summary>
 /// Certificate / CA / TSA builders for this assembly's signing tests. Everything is generated in
 /// memory — no files, no network — per the project's self-contained test rule.
-///
-/// <para><b>This is the union of two copies that coexisted until 2026-08-14.</b> A second
-/// <c>SigningTestCrypto</c> lived in <c>Helpers/</c>, a leftover of the parallel-session merge
-/// recorded in TODO Phase 13, and the two had drifted: this one had <c>IssuedIntermediate</c> and
-/// a required-issuer <c>TsaCert</c>, that one had <c>SelfSignedLeaf</c> and an optional-issuer
-/// <c>TsaCert</c>. Both were live — eight test files used one, four the other — and a plain
-/// <c>using</c> naming both was a compile error, which is how it was noticed. The superset is
-/// here; nothing was dropped.</para>
 /// </summary>
 /// <remarks>
 /// A near-identical helper exists in <c>Tetitulz.Pdf.Core.Tests</c>. It is duplicated rather than
@@ -88,7 +80,7 @@ internal static class SigningTestCrypto
     /// <summary>
     /// An intermediate CA with a caller-supplied key pair, so the SAME identity can be issued by
     /// two different roots — the cross-certification shape a CA root rollover produces, and the
-    /// one that used to break chain building.
+    /// one that can break chain building.
     /// </summary>
     public static Issued IssuedIntermediate(Issued issuer, AsymmetricCipherKeyPair keys, string cn)
     {

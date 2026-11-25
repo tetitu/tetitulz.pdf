@@ -385,7 +385,7 @@ public class InlineImageLengthTests
     };
 
     // =====================================================================
-    //  The scanners' boundaries — found by the overnight sweep
+    //  The scanners' boundaries
     // =====================================================================
 
     /// <summary>

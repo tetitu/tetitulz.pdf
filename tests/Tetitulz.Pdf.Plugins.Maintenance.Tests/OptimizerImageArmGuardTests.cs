@@ -22,14 +22,13 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 
 /// <summary>
-/// The image re-encoder's three arms against the content they lost (GAPS §19h, the optimizer
-/// comparison of 2026-10-15): the JPEG arm decoded every JPEG through Skia and declared the result
-/// <c>/DeviceRGB</c> — an Adobe CMYK JPEG came back near-negative, an RGB one with an inverting
-/// <c>/Decode</c> lost the array without its inversion — and now takes Base's one decode of a DCT
-/// image, refusing what that decode's colours do not stand for; the raw arm re-encoded an
-/// <c>/Indexed</c> image's palette indices as grey, and now refuses them as the JPEG 2000 arm always
-/// has; and a grey image of any origin went out as a three-component JPEG under <c>/DeviceGray</c>,
-/// which every reader that strides by the dictionary sheared.
+/// The image re-encoder's three arms against content they could lose: the JPEG arm takes Base's one
+/// decode of a DCT image, refusing what that decode's colours do not stand for — decoding every JPEG
+/// through Skia and declaring the result <c>/DeviceRGB</c> would bring an Adobe CMYK JPEG back
+/// near-negative and drop an inverting <c>/Decode</c> without its inversion; the raw arm refuses an
+/// <c>/Indexed</c> image's palette indices, as the JPEG 2000 arm does, rather than re-encode them as
+/// grey; and a grey image of any origin goes out as one component, not a three-component JPEG under
+/// <c>/DeviceGray</c>, which every reader that strides by the dictionary would shear.
 /// </summary>
 public class OptimizerImageArmGuardTests
 {
@@ -130,8 +129,8 @@ public class OptimizerImageArmGuardTests
     /// <summary>
     /// The colour space's references are followed wherever a producer puts them: the dictionary's
     /// <c>/ColorSpace 9 0 R</c> naming the array, and a grey profile's <c>/N 8 0 R</c>. Either unresolved
-    /// read as three components, which differs from the grey frame, so the JPEG was re-encoded as
-    /// <c>/DeviceGray</c> and the profile dropped (the review of batch 131).
+    /// would read as three components, which differs from the grey frame, so the JPEG would be re-encoded
+    /// as <c>/DeviceGray</c> and the profile dropped.
     /// </summary>
     [Theory]
     [InlineData("/ColorSpace 9 0 R", "7 0 obj\n<< /N 1 /Length 4 >>\nstream\nabcd\nendstream\nendobj\n8 0 obj\n1\nendobj\n9 0 obj\n[/ICCBased 7 0 R]\nendobj\n")]
@@ -296,8 +295,8 @@ public class OptimizerImageArmGuardTests
 
     /// <summary>
     /// A 96 × 96 JPEG whose dictionary declares 101 × 6000 under a 100-wide limit asks for a 100 × 5940
-    /// resample — an upscale of its samples, and with a larger declared height a multi-gigabyte one
-    /// (the review of batch 131). It is refused for that reason before any resize, where a JPEG whose
+    /// resample — an upscale of its samples, and with a larger declared height a multi-gigabyte one.
+    /// It is refused for that reason before any resize, where a JPEG whose
     /// dictionary matches its frame is downsampled to the limit.
     /// </summary>
     [Fact]

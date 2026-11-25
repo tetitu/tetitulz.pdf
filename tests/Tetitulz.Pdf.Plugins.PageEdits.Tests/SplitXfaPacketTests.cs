@@ -17,9 +17,9 @@ namespace Tetitulz.Pdf.Plugins.PageEdits.Tests;
 /// <summary>
 /// The <c>/V</c> leak that <see cref="SplitAcroFormFieldScopeTests"/> closed, arriving through the
 /// other channel: a hybrid XFA form keeps its values in an <b>XML</b> packet on
-/// <c>/AcroForm /XFA</c>, so extracting page 1 used to hand the recipient the answers written on
-/// page 2 in <c>&lt;xfa:datasets&gt;</c> even after the field filter had correctly withheld the
-/// field objects (GAPS.md §16 item 6).
+/// <c>/AcroForm /XFA</c>, so carried along, extracting page 1 would hand the recipient the answers
+/// written on page 2 in <c>&lt;xfa:datasets&gt;</c> even after the field filter had correctly
+/// withheld the field objects.
 /// </summary>
 /// <remarks>
 /// <para>Every leak assertion is against the <b>whole output byte array</b>, for the same reason the

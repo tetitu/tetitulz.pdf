@@ -12,7 +12,7 @@ namespace Tetitulz.Pdf.Core.Tests.Imaging.Jpx;
 /// <summary>
 /// e-sRGB, e-sYCC and ROMM-RGB to 8-bit sRGB (<see cref="Jp2ExtendedColour"/>): each pinned by
 /// hand values from its standard, and each reached through a JP2 whose colr box names it (EnumCS
-/// 20, 24, 21) — the review of 2026-09-26, row 9: the three were painted untransformed.
+/// 20, 24, 21), rather than painted untransformed.
 /// </summary>
 public sealed class Jp2ExtendedColourTests
 {

@@ -20,8 +20,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <para><b>The fixture is a four-component JPEG, not an RGB one labelled CMYK.</b>
 /// <c>ImageDecodeArrayTests</c>' CMYK regression encodes RGB — SkiaSharp cannot encode CMYK — and
 /// tags it <c>/DeviceCMYK</c>, which pins the <c>/Decode</c> rule but never exercises a CMYK
-/// decode. So neither GAPS.md's "a CMYK JPEG may not render in the raster path" nor the renderer's
-/// "SkiaSharp handles the APP14 inversion" had ever been checked. This one was written by an independent tool
+/// decode, so it cannot check the renderer's "SkiaSharp handles the APP14 inversion". This one was written by an independent tool
 /// 12.2.0 (<c>Image.new('CMYK')</c>, saved as JPEG at quality 100 without subsampling): 16×16, the
 /// left eight columns pure cyan (C = 255) and the right eight pure yellow (Y = 255), with an Adobe
 /// APP14 marker (transform 0) and the samples stored inverted — an independent tool reads it back as exactly
@@ -30,8 +29,8 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <para><b>Both renderers, all three <c>/Decode</c> shapes.</b> A four-component JPEG's colour
 /// comes from the decoder's own APP14 handling, so the array is not consulted: the inverted
 /// convention producers write, an identity array and none at all render alike. That is a
-/// statement about this library, pinned so it cannot drift on one side only — the SVG exporter
-/// used to send the last two out as raw CMYK JPEG bytes while the raster path converted them.</para>
+/// statement about this library, pinned so it cannot drift on one side only — an SVG exporter
+/// sending the last two out as raw CMYK JPEG bytes while the raster path converts them fails.</para>
 /// </remarks>
 public class CmykJpegRenderingTests
 {

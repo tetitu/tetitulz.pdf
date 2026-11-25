@@ -14,7 +14,7 @@ namespace Tetitulz.Pdf.Plugins.Conformance.Tests;
 
 /// <summary>
 /// The PDF/A and PDF/UA-1 checkers against files this repository did not write: a subset of
-/// the published profile's test corpus (CC BY 4.0; <c>Fixtures/the published profiles/README.md</c>), each file named for the
+/// the published profile's test corpus (CC BY 4.0; <c>Fixtures/veraPDF/README.md</c>), each file named for the
 /// clause it tests and whether a conforming validator passes it.
 /// </summary>
 /// <remarks>
@@ -23,9 +23,8 @@ namespace Tetitulz.Pdf.Plugins.Conformance.Tests;
 /// though it should fail) or a check deliberately stricter than the published profile's (<c>stricter</c>). The list
 /// only shrinks: an entry whose file now gets its expected verdict fails the test until it is
 /// removed, so a newly closed rule is recorded where it was closed.</para>
-/// <para>The first run (2026-10-18) found 14 conforming PDF/A files and 28 conforming PDF/UA-1 files
-/// reported as violations, and every file-header test file passed; each was fixed against the published profile's
-/// profile rule and the files that exercise it.</para>
+/// <para>A disagreement is closed against the published profile's rule and the files that exercise it,
+/// never by reading the checker's own answer back.</para>
 /// </remarks>
 public class ConformanceCorpusTests
 {

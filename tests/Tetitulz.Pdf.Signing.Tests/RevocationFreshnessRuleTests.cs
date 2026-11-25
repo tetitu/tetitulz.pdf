@@ -11,7 +11,7 @@ namespace Tetitulz.Pdf.Signing.Tests;
 
 /// <summary>
 /// <c>Cms.RevocationFreshness.WhyNotCurrent</c>, the one currency rule the verifier and the LTV
-/// embedder both ask (GAPS.md §1, closed 2026-10-20). The two callers' own tests reach it through
+/// embedder both ask. The two callers' own tests reach it through
 /// their limits; these pin the rule's four arms, its boundaries and its handling of extreme limits.
 /// </summary>
 public class RevocationFreshnessRuleTests

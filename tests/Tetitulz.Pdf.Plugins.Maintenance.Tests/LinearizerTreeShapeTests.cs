@@ -17,7 +17,7 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 
 /// <summary>
 /// What the linearizer does with a document whose shape Annex F cannot number, whose page tree's two
-/// directions disagree, or that holds an object it cannot parse (Wave 22, Maintenance-2:5, 2:6, 2:8).
+/// directions disagree, or that holds an object it cannot parse.
 /// </summary>
 public sealed class LinearizerTreeShapeTests
 {

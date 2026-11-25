@@ -18,8 +18,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
-/// What the producers write is not localised. The analyzer pre-pass of 2026-10-24 listed 363 sites
-/// formatting without a culture, every one reaching the file through <c>PdfRealFormat</c> or a
+/// What the producers write is not localised. An analyzer lists hundreds of sites formatting
+/// without a culture, every one reaching the file through <c>PdfRealFormat</c> or a
 /// formatter of its own, so the class is held by running rather than by reading each: the SVG of a
 /// page with negative coordinates and the appearance stream of a form field are the same bytes
 /// under <c>sv-SE</c>, whose minus sign is U+2212, and <c>de-DE</c>, whose decimal separator is a

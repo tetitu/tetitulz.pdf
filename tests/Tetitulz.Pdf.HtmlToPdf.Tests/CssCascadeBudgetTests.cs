@@ -92,8 +92,8 @@ public class CssCascadeBudgetTests
     }
 
     /// <summary>
-    /// At real scale: a 32-compound descendant selector over a document nesting 25 000 deep used to
-    /// backtrack for tens of billions of steps and hang the whole conversion (the compound cap let a
+    /// At real scale: a 32-compound descendant selector over a document nesting 25 000 deep would
+    /// backtrack for tens of billions of steps and hang the whole conversion (the compound cap lets a
     /// 32-compound selector through). The match-cost gate skips it before the DOM query, so the
     /// conversion finishes. Run on a dedicated thread: a regression that dropped the gate fails the
     /// join in a minute rather than hanging the test host indefinitely.
@@ -114,8 +114,8 @@ public class CssCascadeBudgetTests
         var worker = new Thread(() => model = Model(html, reports), 32 * 1024 * 1024) { IsBackground = true };
         worker.Start();
         // Ten minutes, not one: the evidence of the gate is CostReported below, and the join only
-        // tells a hang from a slow run. Under coverage instrumentation beside 27 other assemblies
-        // the gated conversion itself passed 60 s on 2026-10-24; an ungated one never returns.
+        // tells a hang from a slow run. Under coverage instrumentation beside the other assemblies
+        // the gated conversion itself can pass 60 s; an ungated one never returns.
         bool finished = worker.Join(TimeSpan.FromMinutes(10));
 
         Assert.True(finished, "the cascade did not finish within 10 minutes: the selector matched unbounded");

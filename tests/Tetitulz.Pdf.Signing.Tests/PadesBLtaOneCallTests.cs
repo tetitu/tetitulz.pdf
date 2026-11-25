@@ -15,15 +15,15 @@ using Xunit;
 namespace Tetitulz.Pdf.Signing.Tests;
 
 /// <summary>
-/// PAdES B-LTA in one call (GAPS §20b, 2026-10-15): <see cref="PdfSigner.Sign(Stream, Stream, SignatureParameters)"/>
+/// PAdES B-LTA in one call: <see cref="PdfSigner.Sign(Stream, Stream, SignatureParameters)"/>
 /// with <see cref="SignatureParameters.ApplyPadesBaseline"/> at <see cref="PadesBaseline.B_LTA"/>
 /// appends the document timestamp itself — a third revision over the signature and its <c>/DSS</c>,
-/// from the same loopback TSA — where the caller had to run <c>PdfDocumentTimestamper</c> as a second
-/// pass. B-LT is the control: one TSA request, one signature, no <c>/DocTimeStamp</c>.
+/// from the same loopback TSA — with no second <c>PdfDocumentTimestamper</c> pass. B-LT is the
+/// control: one TSA request, one signature, no <c>/DocTimeStamp</c>.
 /// </summary>
 /// <remarks>
 /// The test certificates name no OCSP responder or CRL, so the <c>/DSS</c> stage reports its
-/// revocation warnings through the <see cref="PdfSigningException"/> the signer has always thrown
+/// revocation warnings through the <see cref="PdfSigningException"/> the signer throws
 /// <i>after</i> writing the file; the document timestamp is appended before that throw, so the file
 /// the caller holds is the archived one. The tests read the output through the exception.
 /// </remarks>

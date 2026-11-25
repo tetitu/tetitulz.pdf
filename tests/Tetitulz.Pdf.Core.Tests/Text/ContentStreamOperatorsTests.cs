@@ -17,10 +17,9 @@ namespace Tetitulz.Pdf.Core.Tests.Text
     /// Guards <see cref="ContentStreamOperators"/> — the one operator set behind Core's
     /// <see cref="ContentStreamParser"/> and the accessibility feature's content scanner.
     ///
-    /// <para><b>Why the reflection test is the point of this file.</b> Both call sites used to
-    /// keep a hand-written copy of this set, and both were incomplete in ways neither file could
-    /// show you: Core's was missing <c>ID</c> (the accessibility copy had it), and <b>both</b>
-    /// were missing <c>PS</c>, which both renderers dispatch a handler for. A list of "the
+    /// <para><b>Why the reflection test is the point of this file.</b> A hand-written copy of this
+    /// set at each call site can be incomplete in ways neither file shows — missing <c>ID</c> in one,
+    /// or <c>PS</c>, which both renderers dispatch a handler for, in both. A list of "the
     /// operators we implemented" cannot contain the one nobody modelled, so the check has to be
     /// mechanical — against <see cref="PdfOperators"/>'s own field list, which is the closest
     /// thing in the tree to the spec's index.</para>
@@ -67,9 +66,8 @@ namespace Tetitulz.Pdf.Core.Tests.Text
 
         /// <summary>
         /// The count assertion is not padding. The two set-equality tests above are both satisfied
-        /// by an <b>empty</b> set on both sides, which is exactly the vacuity trap the 2026-08-14
-        /// StandardEncoding round caught in itself. Pinning the number means emptying either side
-        /// reddens this file.
+        /// by an <b>empty</b> set on both sides — the vacuity trap. Pinning the number means emptying
+        /// either side reddens this file.
         /// </summary>
         [Fact]
         public void TheOperatorCountIsPinnedSoAnEmptySetCannotPassTheEqualityTests()

@@ -15,7 +15,7 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 /// <summary>
 /// <see cref="PdfAccessibility.Audit(string)"/> — both PDF/UA-1 checkers, the plugin's and the deep
 /// one — against the published profile's PDF/UA-1 test files (CC BY 4.0), the subset committed under the
-/// conformance plugin's tests (<c>Fixtures/the published profiles/PDF_UA-1</c>), each named for its clause and verdict.
+/// conformance plugin's tests (<c>Fixtures/veraPDF/PDF_UA-1</c>), each named for its clause and verdict.
 /// </summary>
 /// <remarks>
 /// <para>The plugin's own corpus test runs <c>PdfUaChecker</c> alone; the structure rules — 7.2's

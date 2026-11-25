@@ -17,11 +17,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Signing.Tests;
 
 /// <summary>
-/// Wave 17, R6.1: a CRL that is the issuer's, signature-verified and current can still be the
-/// wrong CRL for a certificate — a CA-only or user-only partition, a delta, a per-reason or
-/// per-distribution-point list, an indirect CRL (RFC 5280 §6.3.3). Absence from one of those used to
-/// read as <see cref="PdfRevocationStatus.Good"/>, so whoever assembled the <c>/DSS</c> could pick
-/// the issuer's own published partition that does not list the certificate. Each kind is asserted
+/// A CRL that is the issuer's, signature-verified and current can still be the wrong CRL for a
+/// certificate — a CA-only or user-only partition, a delta, a per-reason or per-distribution-point
+/// list, an indirect CRL (RFC 5280 §6.3.3). Read as <see cref="PdfRevocationStatus.Good"/>, absence
+/// from one of those would let whoever assembled the <c>/DSS</c> pick the issuer's own published
+/// partition that does not list the certificate. Each kind is asserted
 /// as <see cref="PdfRevocationStatus.Unknown"/> beside a control that is in scope and reads
 /// <c>Good</c>, so the claim is about scope and not about appending a revision.
 /// </summary>

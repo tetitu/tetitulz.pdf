@@ -48,7 +48,7 @@ public class PdfAccessibilityFixerLangRepairTests
     }
 
     /// <summary>
-    /// The absent-key case, unchanged — without it the fix could be "always rewrite /Lang" and the
+    /// The absent-key case, unchanged — without it the rule could be "always rewrite /Lang" and the
     /// theory above would still pass.
     /// </summary>
     [Fact]

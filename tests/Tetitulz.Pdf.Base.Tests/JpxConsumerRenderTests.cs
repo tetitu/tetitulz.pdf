@@ -20,7 +20,7 @@ using H = Tetitulz.Pdf.TestHelpers.Jp2Headers;
 namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
-/// Every consumer of a <c>JPXDecode</c> image sees the in-house decoder's pixels (Wave 15g), with
+/// Every consumer of a <c>JPXDecode</c> image sees the in-house decoder's pixels, with
 /// <b>no plugin registered</b>: the raster renderer, the SVG writer, a soft mask, the plugin
 /// fallback order, and the JP2 colour rules a PDF consumer applies (ISO 32000-2 §7.4.9) — each
 /// asserted on rendered pixels against the lossless fixture's own source planes, drawn 1:1.
@@ -346,8 +346,8 @@ public sealed class JpxConsumerRenderTests : IDisposable
 
     /// <summary>
     /// A soft mask declared JPXDecode that no codec reads applies no mask — on both renderers the
-    /// base image paints as it is. The raw-path fallback this replaced read the mask's bytes as
-    /// grey samples: all zeros here, so the base image vanished (the review of 2026-09-26, row 19).
+    /// base image paints as it is. A raw-path fallback reading the mask's bytes as grey samples
+    /// would read all zeros here, and the base image would vanish.
     /// </summary>
     [Fact]
     public void SoftMask_ThatNoCodecDecodes_LeavesTheImageUnmaskedOnBothRenderers()
@@ -373,7 +373,7 @@ public sealed class JpxConsumerRenderTests : IDisposable
 
     /// <summary>
     /// A plugin hands back one byte per sample whatever the codestream's depth: for a 12-bit
-    /// codestream the door says the plugin narrowed it (the review of 2026-09-26, row 21); for
+    /// codestream the door says the plugin narrowed it; for
     /// an 8-bit one it says nothing of the kind.
     /// </summary>
     [Theory]
@@ -435,7 +435,7 @@ public sealed class JpxConsumerRenderTests : IDisposable
     /// A colr profile whose data colour space the transform cannot take (a 2CLR profile, here
     /// ranked first by precedence) is passed over for the next lower colour specification, as
     /// §7.4.9 says — the image paints as the sRGB box beneath it — and the plan says why. An RGB
-    /// profile in the same place is taken (the review of 2026-09-26, row 18).
+    /// profile in the same place is taken.
     /// </summary>
     [Fact]
     public void Raster_AnIccProfileTheTransformCannotTake_FallsToTheNextColourSpecification()
@@ -473,7 +473,7 @@ public sealed class JpxConsumerRenderTests : IDisposable
                 && r.Detail.Contains("Component Mapping box without a Palette box", StringComparison.Ordinal));
     }
 
-    // ── the dictionary's colour space and what the raw path cannot carry (the review of 2026-09-26, rows 4 and 5) ──
+    // ── the dictionary's colour space and what the raw path cannot carry ──
 
     private static JpxLosslessFixtures.Fixture GrayAlpha => JpxLosslessFixtures.GrayAlpha40x24_OneLevel;
 

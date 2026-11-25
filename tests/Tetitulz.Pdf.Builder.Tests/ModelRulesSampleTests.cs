@@ -8,8 +8,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// The loose-list-item marker and the first-strong sampling the Auto text direction reads, which the
-/// 2026-10-10 overnight sweep found unpinned: a numbered item's marker, the empty samples of an
+/// The loose-list-item marker and the first-strong sampling the Auto text direction reads: a
+/// numbered item's marker, the empty samples of an
 /// absent paragraph or section, and a list item's text reaching the sample of its section.
 /// </summary>
 public class ModelRulesSampleTests

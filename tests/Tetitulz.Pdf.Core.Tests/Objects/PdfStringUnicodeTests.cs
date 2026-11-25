@@ -13,11 +13,10 @@ namespace Tetitulz.Pdf.Core.Tests.Objects;
 /// <summary>
 /// <see cref="PdfString"/>'s text constructor and §7.9.2.2 encoding.
 /// <para>
-/// The class used to contradict itself: <see cref="PdfString.GetText"/> read UTF-16BE correctly,
-/// while the constructor encoded everything through Latin-1 — whose encoder fallback substitutes
-/// <c>?</c>. Every character outside Latin-1 was destroyed at the point of writing, silently, so
-/// a Hebrew or CJK title, alt text, tooltip or annotation <c>/Contents</c> became question marks
-/// and nothing reported it.
+/// The constructor must agree with <see cref="PdfString.GetText"/>, which reads UTF-16BE: encoding
+/// everything through Latin-1 — whose encoder fallback substitutes <c>?</c> — would destroy every
+/// character outside Latin-1 at the point of writing, silently, so a Hebrew or CJK title, alt text,
+/// tooltip or annotation <c>/Contents</c> would become question marks and nothing would report it.
 /// </para>
 /// </summary>
 public class PdfStringUnicodeTests

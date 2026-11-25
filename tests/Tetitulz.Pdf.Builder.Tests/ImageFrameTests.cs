@@ -83,8 +83,8 @@ public class ImageFrameTests
 
     /// <summary>
     /// A blank box takes its size on the page: the paragraph after it sits lower by the box's
-    /// height (and frame) than after an image run that occupies nothing — the canvas that used to
-    /// let everything below a signature pad move up into its place.
+    /// height (and frame) than after an image run that occupies nothing — a box occupying nothing
+    /// would let everything below a signature pad move up into its place.
     /// </summary>
     [Fact]
     public void ABlankBoxReservesItsHeight()

@@ -313,8 +313,8 @@ public class FormAppearanceLayoutTests
     [Fact]
     public void AValueThatIsBothSubstitutedAndTruncatedReportsBoth()
     {
-        // Two things went wrong with one value, and which of them the caller heard about used to
-        // depend on the order the code happened to be in.
+        // Two things go wrong with one value, and which of them the caller hears about must not
+        // depend on the order the code happens to be in.
         var options = new FormFillOptions
         {
             FontProvider = _ => null,               // consulted, supplies nothing
@@ -338,8 +338,8 @@ public class FormAppearanceLayoutTests
     {
         // The provider supplies a font built over the Arabic letters themselves. Shaping substitutes
         // presentation forms, which that font has no glyph for — so it cannot draw a single glyph of
-        // the run. Asked about the letters, the resolver used to accept it and the appearance was
-        // then refused; asked about the shaped forms, it falls through to a host font that can.
+        // the run. Asked about the letters, the resolver would accept it and the appearance then be
+        // refused; asked about the shaped forms, it falls through to a host font that can.
         var options = new FormFillOptions
         {
             FontProvider = _ => MinimalTrueType.Build(Arabic),

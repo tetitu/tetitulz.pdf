@@ -28,8 +28,8 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 /// arbitrary vector proves nothing about which is right — it would pass under either. These six
 /// were found by generating 240 files (120 per producer) and keeping the ones where the readings
 /// part company: <b>2 of 120 from an independent checker, 4 of 120 from an independent implementation</b>, a rate consistent with the
-/// one-in-37.7 this suite already measured. In all six the answer is the same, and it is not the
-/// reading this library used to have.</para>
+/// one-in-37.7 this suite measures. In all six the answer is the same, and it is the reading this
+/// library has.</para>
 ///
 /// <para><b>The two agreeing rows are the acceptance control.</b> Without them, "the hash matches"
 /// would be satisfied by a change that broke the common case in some compensating way; with them,
@@ -37,9 +37,8 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 ///
 /// <para><b>The end-to-end pair is a separate claim.</b> A hash vector settles the predicate; it
 /// says nothing about the key salt, the intermediate key, the AES-256 unwrap of <c>/UE</c>, or
-/// object decryption. Those two files are the <i>first externally produced encrypted PDFs</i> this
-/// suite has ever opened — §20a records that every R6 test before them round-tripped this library
-/// against itself, which is why a change applied to both halves was invisible.</para>
+/// object decryption. Those two files are externally produced encrypted PDFs: an R6 test that
+/// round-trips this library against itself cannot see a change applied to both halves.</para>
 ///
 /// <para><b>Read this file as characterisation of somebody else's output</b>, not of ours. If a
 /// row here ever disagrees with the implementation, the implementation moved.</para>

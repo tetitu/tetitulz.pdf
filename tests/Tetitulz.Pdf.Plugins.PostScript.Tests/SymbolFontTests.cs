@@ -13,14 +13,13 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
 /// Symbol and ZapfDingbats — the two standard faces a reader draws through their own built-in
-/// encoding whatever <c>/Encoding</c> says (ISO 32000-1 §9.6.6.4) — shown from PostScript (Wave 17
-/// R10.3).
+/// encoding whatever <c>/Encoding</c> says (ISO 32000-1 §9.6.6.4) — shown from PostScript.
 ///
-/// <para>Until 2026-10-16 the plugin measured them through WinAnsi against a width table Core did
-/// not have: <c>(ab) show</c> in Symbol advanced the pen by <b>nothing</b>, reported both bytes as
-/// having "no glyph", and declared <c>/Encoding /WinAnsiEncoding</c> on a font whose glyphs are
-/// αβ — the right picture (a reader ignores that declaration) behind a report blaming the program,
-/// and every later string drawn on top of it.</para>
+/// <para>Measured through WinAnsi against a width table with no entry for them, <c>(ab) show</c>
+/// in Symbol would advance the pen by <b>nothing</b>, report both bytes as having "no glyph", and
+/// declare <c>/Encoding /WinAnsiEncoding</c> on a font whose glyphs are αβ — the right picture (a
+/// reader ignores that declaration) behind a report blaming the program, and every later string
+/// drawn on top of it.</para>
 /// </summary>
 public sealed class SymbolFontTests
 {

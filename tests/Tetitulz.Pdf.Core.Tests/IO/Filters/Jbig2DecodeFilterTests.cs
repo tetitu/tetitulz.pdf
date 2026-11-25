@@ -133,19 +133,14 @@ public class Jbig2DecodeFilterTests
         foreach (byte b in decoded) Assert.Equal(0xFF, b);
     }
 
-    // `Decode_LegacyPolaritySwitch_ReturnsTheExactComplementOfTheDefault` stood here, pinning
-    // `Jbig2DecodeFilter.EmitLegacyInvertedPolarity` — a process-wide switch that restored the
-    // pre-2026-08-12 bytes for a consumer that had compensated for the old inversion downstream.
-    // The switch is gone (GAPS.md §2d: "a compatibility flag for a defect is how the defect comes
-    // back"), and with it the only configuration in which this decoder could return T.88 polarity.
-    // The polarity claim itself is not lost: the test above asserts it on the one stream where the
-    // two readings are exact complements of each other, a blank page.
+    // No switch restores the inverted polarity: a compatibility flag for a defect is how the
+    // defect comes back. The test above asserts the polarity on the one stream where the two
+    // readings are exact complements of each other, a blank page.
 
     // ==================================================================
     //  Fallback behaviour — unsupported features must not throw.
     // ==================================================================
 
-    [Fact]
     /// <summary>
     /// The wrapper filter's contract for a region it decodes only experimentally: it must never
     /// throw on synthetic input, and it must return a <b>usable, deterministic</b> result — either
@@ -155,6 +150,7 @@ public class Jbig2DecodeFilterTests
     /// Decode doesn't throw"). That admits garbage of any length, and cannot tell a stable
     /// fallback from one that returns something different on every call.</para>
     /// </summary>
+    [Fact]
     public void Decode_TextRegion_ProducesAUsableDeterministicResult()
     {
         var textBody = new byte[32];

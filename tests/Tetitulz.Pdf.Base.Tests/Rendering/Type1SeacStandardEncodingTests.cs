@@ -25,9 +25,8 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 ///
 /// <para><b>What it pins that a Core table test cannot.</b> The table itself lives in
 /// <c>Core.Fonts.AdobeStandardEncodingNames</c> and is asserted there. This is the other half: that
-/// <c>Type1CharstringEvaluator</c> — one of the two Base sites that used to carry its own copy —
-/// really reads it. Emptying the Core table leaves both Base sites compiling and every existing
-/// Base font test green.</para>
+/// <c>Type1CharstringEvaluator</c> really reads it. Emptying the Core table leaves the Base sites
+/// compiling and every other Base font test green.</para>
 /// </summary>
 public class Type1SeacStandardEncodingTests
 {

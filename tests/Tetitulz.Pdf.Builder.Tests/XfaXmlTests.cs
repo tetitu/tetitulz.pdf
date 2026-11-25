@@ -10,7 +10,7 @@ namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
 /// <see cref="XfaXml.Attr"/>, the one attribute reading the template, its prototypes and rich text
-/// share (2026-10-20; there were three): by local name in any namespace, a namespace declaration not
+/// share: by local name in any namespace, a namespace declaration not
 /// an attribute.
 /// </summary>
 public class XfaXmlTests

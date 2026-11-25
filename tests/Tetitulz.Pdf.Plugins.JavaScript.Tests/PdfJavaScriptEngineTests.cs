@@ -32,13 +32,13 @@ public class PdfJavaScriptEngineTests
         Assert.Null(ctx.Error);
     }
 
-    [Fact]
     /// <summary>
     /// A null context makes <c>Execute</c> a no-op. Surviving the call is only half of that
     /// contract — the other half is that the engine is <b>still usable afterwards</b>, which is
     /// what a partially-initialised or poisoned engine would fail. The predecessor asserted
     /// neither: its body contained no assertion at all.
     /// </summary>
+    [Fact]
     public void Execute_NullContext_IsANoOpAndLeavesTheEngineUsable()
     {
         PdfJsEngine.Execute("var x = 1;", null);
@@ -287,12 +287,12 @@ public class PdfJavaScriptEngineTests
         Assert.False(ctx.ValidationPassed);
     }
 
-    [Fact]
     /// <summary>
     /// <c>AFRange_Validate</c> must alert only when the value is out of range, and the alert must
     /// name the range. Asserting the in-range case adds <b>no</b> message is what makes this
     /// falsifiable — a stub that alerted unconditionally would satisfy "not empty".
     /// </summary>
+    [Fact]
     public void AFRange_Validate_AlertsOnlyWhenTheValueIsOutOfRange()
     {
         var outOfRange = new PdfJsExecutionContext { EventValue = "999" };

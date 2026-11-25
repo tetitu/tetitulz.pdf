@@ -840,8 +840,8 @@ public sealed class XfaLayoutImportTests
         Assert.Equal(At(lined, "LEFTX").X, At(lined, "RIGHTX").X, 1);
         Assert.True(At(lined, "RIGHTX").Y - At(lined, "LEFTX").Y > 50, $"LEFTX at y {At(lined, "LEFTX").Y:F1}, RIGHTX at {At(lined, "RIGHTX").Y:F1}");
 
-        // A turned draw with an anchor point other than its top-left is turned in the flow (2026-10-19; it was laid out
-        // unrotated, reported): a flowed child's anchor point is ignored, so it lands where a top-left one does.
+        // A turned draw with an anchor point other than its top-left is turned in the flow: a flowed
+        // child's anchor point is ignored, so it lands where a top-left one does.
         string Single(string anchor) => "<subform layout=\"tb\" w=\"576pt\">"
             + Draw("t", "0", "0", "2in", "0.3in", "TURNEDX").Replace("<draw ", $"<draw rotate=\"90\" {anchor}") + "</subform>";
         byte[] anchored = Export(Template(Page(), Single("anchorType=\"bottomRight\" ")), null, out XfaLayoutResult anchoredResult);
@@ -1133,8 +1133,8 @@ public sealed class XfaLayoutImportTests
         var wide = Placed(D("A", "3.5in") + D("B", "3.5in"));
         Assert.Same(wide[0].Line, wide[1].Line);
 
-        // A quarter-turned child stands in its line at its turned extent (2026-10-19; the flow was laid out top to
-        // bottom): B, 3 in by 0.3 in, turned, is 0.3 in wide and 3 in tall beside A, and its line is that tall; turned a
+        // A quarter-turned child stands in its line at its turned extent: B, 3 in by 0.3 in, turned, is 0.3 in
+        // wide and 3 in tall beside A, and its line is that tall; turned a
         // quarter counter-clockwise, its top-left corner goes 3 in down its 0.3 in column. An anchored child is placed by
         // its top-left corner, as a flowed child's anchor point is ignored.
         var turned = Placed(D("A", "3in") + D("B", "3in").Replace("<draw ", "<draw rotate=\"90\" ") + D("C", "1in").Replace("<draw ", "<draw anchorType=\"bottomRight\" "));
@@ -1215,8 +1215,8 @@ public sealed class XfaLayoutImportTests
     }
 
     /// <summary>
-    /// A line holding a child whose height its own layout decides (2026-10-19; the flow was laid out top to bottom,
-    /// reported): each child a box of its width floated to the line's start — left, right under <c>rl-tb</c> — its
+    /// A line holding a child whose height its own layout decides: each child a box of its width floated to
+    /// the line's start — left, right under <c>rl-tb</c> — its
     /// content laid out in it, the line's first clearing the floats before it, an empty clearing box after the
     /// flow. Drawn, the flowing child stands beside the draw before it at one top, and what follows the flow below
     /// both; under <c>rl-tb</c> a narrower child alone on its line is at the line's right.

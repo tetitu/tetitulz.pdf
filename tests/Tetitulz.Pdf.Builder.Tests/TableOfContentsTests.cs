@@ -290,11 +290,10 @@ public sealed class TableOfContentsTests
 
     /// <summary>
     /// A contents entry whose text reaches near the right margin keeps its page number on the entry's
-    /// line, not on a line of its own (Builder-2:8). The number is right-aligned at a tab stop at the
-    /// margin; when the text ran up to the stop the number used to wrap, so an entry was one line in
-    /// the number-less first pass and two in the second — the two passes disagreed on its height and
-    /// every page number after it could drift. The number now pins to the stop even when the text has
-    /// reached it, so both passes lay the entry out the same.
+    /// line, not on a line of its own. The number is right-aligned at a tab stop at the margin and
+    /// pins to the stop even when the text has reached it, so both passes lay the entry out the same:
+    /// a number that wrapped would make the entry one line in the number-less first pass and two in
+    /// the second, and every page number after it could drift.
     /// </summary>
     [Fact]
     public void ALongEntrysPageNumberStaysOnItsLine()

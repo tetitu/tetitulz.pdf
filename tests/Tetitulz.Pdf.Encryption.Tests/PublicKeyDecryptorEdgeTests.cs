@@ -15,8 +15,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Encryption.Tests;
 
 /// <summary>
-/// The edges of <see cref="PdfPublicKeyDecryptor"/> the overnight sweep found unguarded: the
-/// recipient cap, the defaults of <c>/V</c>, <c>/R</c> and <c>/EncryptMetadata</c>, and a stream that
+/// The edges of <see cref="PdfPublicKeyDecryptor"/>: the recipient cap, the defaults of <c>/V</c>,
+/// <c>/R</c> and <c>/EncryptMetadata</c>, and a stream that
 /// cannot seek.
 /// </summary>
 public class PublicKeyDecryptorEdgeTests
@@ -27,10 +27,9 @@ public class PublicKeyDecryptorEdgeTests
 
     /// <summary>
     /// A document listing more recipients than the reader examines is refused, with the count.
-    /// It used to be truncated: the file key hashes every recipient, so reading the first 1024 of
-    /// 1025 derived a wrong key and turned the document into noise without saying so. The control
-    /// is 1024 recipients, none of them this key's, which reaches the recipient match and is
-    /// refused for that reason instead.
+    /// Truncated, it would decrypt to noise without saying so: the file key hashes every recipient,
+    /// so reading the first 1024 of 1025 derives a wrong key. The control is 1024 recipients, none
+    /// of them this key's, which reaches the recipient match and is refused for that reason instead.
     /// </summary>
     [Fact]
     public void MoreRecipientsThanTheCap_IsRefusedWithTheCount()

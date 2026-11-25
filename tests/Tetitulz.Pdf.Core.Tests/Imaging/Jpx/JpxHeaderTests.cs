@@ -14,10 +14,8 @@ namespace Tetitulz.Pdf.Core.Tests.Imaging.Jpx;
 /// its framing, its declared grid, each component's precision, and its colour-channel count.
 /// </summary>
 /// <remarks>
-/// These were two suites until Wave 15a — Base's <c>JpxImageDecoderTests</c> (framing and colour)
-/// and the plugin's <c>JpxCodestreamHeaderTests</c> (precision) — over two box walkers. The walkers
-/// disagreed on a 64-bit box length past the end of the data; the tests at the end pin the
-/// reconciled behaviour.
+/// One reader serves framing, colour and precision alike: two box walkers would disagree on a
+/// 64-bit box length past the end of the data, and the tests at the end pin the one behaviour.
 /// </remarks>
 public sealed class JpxHeaderTests
 {

@@ -13,8 +13,8 @@ using Tetitulz.Pdf.Core.Objects;
 namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
-/// XFDF's rich text, <c>&lt;contents-richtext&gt;</c>, is an annotation's <c>/RC</c> (2026-10-21, the
-/// residual GAPS.md §19b named): read as its inner XHTML, as an independent implementation reads it, and written back as
+/// XFDF's rich text, <c>&lt;contents-richtext&gt;</c>, is an annotation's <c>/RC</c>: read as its
+/// inner XHTML, as an independent implementation reads it, and written back as
 /// markup only when it is markup. The written file is parsed as XML, which is what another reader does.
 /// </summary>
 public class XfdfRichTextTests
@@ -94,9 +94,9 @@ public class XfdfRichTextTests
 
     /// <summary>
     /// A compact file — no white space between elements — loses nothing: the <c>&lt;vertices&gt;</c> after
-    /// a <c>&lt;contents&gt;</c>, and every <c>&lt;gesture&gt;</c> of an <c>&lt;inklist&gt;</c>. The reader
-    /// used to step past whatever followed an element it had read, so the vertices went, and every
-    /// second stroke; an indented file, which is what this library writes, hid it.
+    /// a <c>&lt;contents&gt;</c>, and every <c>&lt;gesture&gt;</c> of an <c>&lt;inklist&gt;</c>. A reader
+    /// stepping past whatever follows an element it has read would lose the vertices and every second
+    /// stroke; an indented file, which is what this library writes, would hide it.
     /// </summary>
     [Fact]
     public void ACompactFile_LosesNoElementAfterOneThatWasRead()

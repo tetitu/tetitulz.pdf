@@ -16,12 +16,12 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests.TestInfrastructure;
 /// whether something was reported at all has to subscribe to <c>OnEvent</c>. But that event is
 /// process-wide while every other slot on the sink is <c>[ThreadStatic]</c> — so a naive subscriber
 /// receives reports raised by whatever else is converting at the same moment. xUnit runs test
-/// classes in parallel, which made that a live cross-test flake here: a test asserting "the
-/// unrepresentable-text warning did NOT fire" passed alone and failed in a full run, because a
-/// concurrent test in another class was legitimately reporting exactly that.</para>
+/// classes in parallel, so a test asserting "the unrepresentable-text warning did NOT fire" would
+/// pass alone and fail in a full run, because a concurrent test in another class legitimately
+/// reports exactly that.</para>
 ///
-/// <para>The fix is to keep only what this thread raised. <c>Report</c> invokes handlers
-/// synchronously on the reporting thread, so the check is exact rather than a heuristic.</para>
+/// <para>So it keeps only what this thread raised. <c>Report</c> invokes handlers synchronously on
+/// the reporting thread, so the check is exact rather than a heuristic.</para>
 /// </summary>
 internal sealed class DiagnosticCollector : IDisposable
 {

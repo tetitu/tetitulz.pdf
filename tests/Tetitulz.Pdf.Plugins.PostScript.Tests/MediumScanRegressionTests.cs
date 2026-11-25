@@ -13,16 +13,13 @@ using Tetitulz.Pdf.Plugins.PostScript.Tests.TestInfrastructure;
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
-/// The MEDIUM findings of the assembly-wide scan (2026-08-13) that belong to this plugin.
+/// Defects in this plugin that do not warrant a file of their own. The <c>gsave</c>-depth report
+/// is pinned by <c>GraphicsStateStackDepthTests</c>, not here.
 ///
-/// <para>Ten were confirmed against the code and fixed; the eleventh — the undeduplicated
-/// <c>gsave</c>-depth report — was already closed by the HIGH round and is pinned by
-/// <c>GraphicsStateStackDepthTests</c>, so it has no test here.</para>
-///
-/// <para><b>Every assertion is on something the fix produces, never on the absence of an
-/// exception.</b> Where the finding is about a budget, the evidence is <c>BudgetExhausted</c>
-/// against a stated ceiling and a <b>bounded</b> loop, so the test is fast whether or not the fix
-/// is present — a wall-clock threshold would be the banned shape and would also make the mutation
+/// <para><b>Every assertion is on something the code produces, never on the absence of an
+/// exception.</b> Where a test is about a budget, the evidence is <c>BudgetExhausted</c> against a
+/// stated ceiling and a <b>bounded</b> loop, so the test is fast whether or not the guard is
+/// present — a wall-clock threshold would be the banned shape and would also make the mutation
 /// check take minutes. Where it is about emitted output, the evidence is the parsed content-stream
 /// operation, not a substring.</para>
 /// </summary>
@@ -346,7 +343,7 @@ public sealed class MediumScanRegressionTests
 
     /// <summary>
     /// The behaviour the flags exist for is untouched: an <c>exit</c> <i>inside</i> a loop still
-    /// ends that loop. Without this the fix could be "clear the flag unconditionally, everywhere".
+    /// ends that loop. Without this the rule could be "clear the flag unconditionally, everywhere".
     /// </summary>
     [Fact]
     public void ExitInsideALoop_StillEndsThatLoop()
@@ -615,7 +612,7 @@ public sealed class MediumScanRegressionTests
     }
 
     /// <summary>
-    /// A finite transform is still applied — otherwise the fix could be "refuse every matrix".
+    /// A finite transform is still applied — otherwise the rule could be "refuse every matrix".
     /// </summary>
     [Fact]
     public void AFiniteTransform_IsStillApplied()

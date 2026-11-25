@@ -14,13 +14,12 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 
 /// <summary>
-/// A page's <c>/Contents</c> parts were decoded, each up to
-/// <see cref="OptimizationOptions.MaxStreamDecodeBytes"/>, and joined whole before anything compared the
-/// total — by both content scanners and by the optimizer's two passes that rewrite a page's content.
-/// A page listing many small Flate bombs, each under the ceiling, held all of them at once; past 2 GB the
-/// join threw (Wave 22, Maintenance-1:4 and 2:2). Each part is now decoded under what is left of the
-/// ceiling its consumer enforces. And the glyph scan, which skipped a part it could not decode, refuses
-/// instead: the glyphs that part draws were otherwise pruned as unused.
+/// A page's <c>/Contents</c> parts are each decoded under what is left of the ceiling their consumer
+/// enforces — both content scanners and the optimizer's two passes that rewrite a page's content.
+/// Decoded each up to <see cref="OptimizationOptions.MaxStreamDecodeBytes"/> and joined whole before
+/// anything compared the total, a page listing many small Flate bombs, each under the ceiling, would
+/// hold all of them at once, and past 2 GB the join would throw. And the glyph scan refuses a part it
+/// cannot decode rather than skip it: the glyphs that part draws would otherwise be pruned as unused.
 /// </summary>
 public sealed class ContentPartCeilingTests
 {

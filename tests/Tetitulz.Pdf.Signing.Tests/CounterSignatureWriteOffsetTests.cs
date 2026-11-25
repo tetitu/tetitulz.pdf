@@ -17,12 +17,11 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <c>contentsStart = br0 + br1 + 1</c> assumed the byte at <c>br0 + br1</c> is the <c>'&lt;'</c>.
+/// <c>contentsStart = br0 + br1 + 1</c> assumes the byte at <c>br0 + br1</c> is the <c>'&lt;'</c>.
 /// A producer may pad the hole with whitespace — <c>PdfSignatureVerifier</c> explicitly tolerates
-/// that ("allow a small slack for whitespace some writers add around it"), so the two halves of
-/// this assembly disagreed about the hole's shape, and the writing half destroyed the file when it
-/// was wrong: the leading <c>'&lt;'</c> was overwritten with a hex digit and the tail spilled past
-/// the closing <c>'&gt;'</c> into the following dictionary bytes.
+/// that ("allow a small slack for whitespace some writers add around it") — so a writer making that
+/// assumption would destroy the file: the leading <c>'&lt;'</c> overwritten with a hex digit and the
+/// tail spilled past the closing <c>'&gt;'</c> into the following dictionary bytes.
 /// </para>
 /// <para>
 /// The fixture reproduces that shape by widening the declared hole by one byte, which is what a

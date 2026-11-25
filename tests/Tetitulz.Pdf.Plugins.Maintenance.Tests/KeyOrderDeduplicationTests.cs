@@ -19,8 +19,8 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 /// </summary>
 /// <remarks>
 /// <para>The merge trusts its content hash alone — nothing compares the two objects afterwards —
-/// so the hash's canonical form is where key order is decided. It used to hash the serialisation
-/// in stored order, and two producers' copies of one font dictionary never merged.</para>
+/// so the hash's canonical form is where key order is decided: hashing the serialisation in stored
+/// order, two producers' copies of one font dictionary would never merge.</para>
 /// </remarks>
 public sealed class KeyOrderDeduplicationTests
 {

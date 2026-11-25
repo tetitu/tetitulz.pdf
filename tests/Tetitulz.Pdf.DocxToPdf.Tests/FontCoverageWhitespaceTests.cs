@@ -71,7 +71,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void ARealGlyphTheFontLacks_StillDisqualifiesIt()
         {
             // The control: only whitespace was excused. A code point the font genuinely cannot draw
-            // must still lose it the run, or the fix above would be "coverage is never checked".
+            // must still lose it the run, or the rule above could be "coverage is never checked".
             using var ctx = OpenContextWithEmbeddedFont();
 
             var prog = ctx.Context.ResolveEmbeddedFont(Family, false, false, new[] { CyrillicA });

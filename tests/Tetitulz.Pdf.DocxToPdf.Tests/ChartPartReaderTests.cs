@@ -15,8 +15,8 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// <see cref="ChartPartReader"/> read directly from an in-memory chart part, at the places the
-/// overnight sweep found no test: literal data, multi-level categories, the schema's boolean
+/// <see cref="ChartPartReader"/> read directly from an in-memory chart part: literal data,
+/// multi-level categories, the schema's boolean
 /// default, unparseable axis bounds, and a few edges.
 /// </summary>
 public class ChartPartReaderTests

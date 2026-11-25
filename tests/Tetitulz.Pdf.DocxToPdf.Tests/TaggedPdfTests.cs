@@ -61,9 +61,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// Each line's marked content is numbered on the page it is drawn on: a paragraph on page two
-        /// starts that page's identifiers at zero and its element points at page two. The page was found
-        /// by searching the page list once a line (Wave 22, DocxToPdf-2:1); in body flow it is the last
-        /// page, which is now asked first.
+        /// starts that page's identifiers at zero and its element points at page two. In body flow the
+        /// page is the last one, which is asked first rather than searching the page list once a line.
         /// </summary>
         [Fact]
         public void TaggedPdf_NumbersEachPagesMarkedContentOnThatPage()

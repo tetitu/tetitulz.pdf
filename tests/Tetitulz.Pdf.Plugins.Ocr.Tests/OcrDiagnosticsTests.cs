@@ -12,17 +12,16 @@ namespace Tetitulz.Pdf.Plugins.Ocr.Tests;
 /// <summary>
 /// A recognition failure must leave evidence a shipped build can read.
 ///
-/// <para><b>The bug.</b> Every failure was swallowed into
-/// <c>System.Diagnostics.Debug.WriteLine</c>, which is <c>[Conditional("DEBUG")]</c> and therefore
-/// compiled out of the Release assembly. The plugin exposed no <c>Last*Error</c> and no diagnostics
-/// sink, so a missing native <c>libtesseract</c>, a wrong language file or a version mismatch was
-/// indistinguishable from "the page had no text": <see cref="TesseractOcrPlugin.RecognizeText"/>
-/// returned <c>null</c>, and so does <c>PdfOperations.RecognizeTextWithOcr</c> when no OCR plugin
-/// is registered at all. An operator saw empty OCR output on every page, forever, with no message
-/// in any log.</para>
+/// <para><b>The defect.</b> A failure swallowed into <c>System.Diagnostics.Debug.WriteLine</c>,
+/// which is <c>[Conditional("DEBUG")]</c> and therefore compiled out of the Release assembly,
+/// leaves nothing: a missing native <c>libtesseract</c>, a wrong language file or a version
+/// mismatch would be indistinguishable from "the page had no text" —
+/// <see cref="TesseractOcrPlugin.RecognizeText"/> returns <c>null</c>, and so does
+/// <c>PdfOperations.RecognizeTextWithOcr</c> when no OCR plugin is registered at all. An operator
+/// would see empty OCR output on every page, forever, with no message in any log.</para>
 ///
-/// <para>Returning <c>null</c> is still the contract — the caller uses it to fall through to the
-/// next OCR plugin — so the fix is a diagnostic beside it, not a different return.</para>
+/// <para>Returning <c>null</c> is the contract — the caller uses it to fall through to the next
+/// OCR plugin — so the evidence is a diagnostic beside it, not a different return.</para>
 /// </summary>
 public class OcrDiagnosticsTests
 {

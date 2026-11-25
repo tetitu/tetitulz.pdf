@@ -15,10 +15,10 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 /// rejection says so instead of reading as "wrong password".
 /// </summary>
 /// <remarks>
-/// <para><b>The migration cost of correcting Algorithm 2.B, made legible.</b> This library used to
-/// stop the hash one round late, which changed the key for about one input in thirty-eight. Files it
-/// wrote in that window carry a <c>/U</c> no conformant reader can authenticate — not a common viewer, not
-/// an independent checker, not an independent implementation — and after the correction, not this library either.</para>
+/// <para><b>Files written by the superseded derivation, made legible.</b> Stopping the hash one round
+/// late changes the key for about one input in thirty-eight; such a file carries a <c>/U</c> no
+/// conformant reader can authenticate — not a common viewer, not an independent checker, not an
+/// independent implementation, and not this library either.</para>
 ///
 /// <para><b>Rejected rather than accepted, deliberately.</b> A fallback would let this library go on
 /// opening files that are unopenable everywhere else, which hides the damage. What the caller gets

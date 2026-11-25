@@ -418,9 +418,8 @@ public class TabOrderRemediationTests
     public void SkipReason_NoTitleSupplied_DoesNotClaimTheDocumentAlreadyHasOne()
     {
         // /Lang and /MarkInfo are already exactly what the defaults would write, and no Title is
-        // supplied, so the metadata pass writes nothing — the situation that used to print
-        // "the catalog and /Info already carry the requested values" while UA04 was being
-        // reported in the same run.
+        // supplied, so the metadata pass writes nothing — and must not print "the catalog and
+        // /Info already carry the requested values" while UA04 is reported in the same run.
         RemediationReport report = Remediate(UnannotatedPdf(), new RemediationOptions
         {
             Language             = "en-US",

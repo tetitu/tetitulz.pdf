@@ -16,10 +16,8 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 
 /// <summary>
 /// Re-subsetting a CFF font that is <b>already embedded</b> in a document —
-/// <c>OptimizationOptions.SubsetEmbeddedFonts</c> over a <c>CIDFontType0</c>. The TrueType half of
-/// this has existed since 2026-08-13; the CFF half was refused outright
-/// (<c>"the font has CFF outlines, which this pruner does not rewrite"</c>) until the charstring
-/// blanker landed.
+/// <c>OptimizationOptions.SubsetEmbeddedFonts</c> over a <c>CIDFontType0</c>, by blanking
+/// charstrings — the CFF counterpart of the TrueType glyph pruner.
 ///
 /// <para><b>Why blanking is the right mechanism here specifically.</b> An already-embedded font's
 /// glyph indices are load-bearing: the content stream's CIDs and the <c>/W</c> array both address

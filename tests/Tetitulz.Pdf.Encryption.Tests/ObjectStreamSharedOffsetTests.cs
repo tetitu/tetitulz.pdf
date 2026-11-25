@@ -11,9 +11,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Encryption.Tests;
 
 /// <summary>
-/// <c>PdfDecryptor.ExtractObjectsFromStream</c>, the second object-stream reader, parsed a member at an
-/// offset an earlier member already holds as its own copy of those bytes — a few kilobytes of index
-/// could hold a stream's largest object hundreds of times (the review of batch 131, 2026-10-15).
+/// <c>PdfDecryptor.ExtractObjectsFromStream</c>, the second object-stream reader, does not parse a member
+/// at an offset an earlier member already holds as its own copy of those bytes — a few kilobytes of index
+/// could otherwise hold a stream's largest object hundreds of times.
 /// ISO 32000-2 §7.5.7: "The byte offsets shall be in increasing order." The member is not extracted,
 /// and the decrypted output reports it absent, as <c>PdfParser.ParseObjectFromStream</c> refuses it.
 /// </summary>

@@ -19,9 +19,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Accessibility.Tests;
 
 /// <summary>
-/// The font-embedding remediator used to decline every CFF program outright — "only TrueType
-/// (glyf) programs can be subsetted" — and embed it whole. Plan 11 §5e slice 2 replaced that with
-/// charstring blanking for sfnt-wrapped CFF, and left a narrower, different decline for bare CFF.
+/// The font-embedding remediator subsets sfnt-wrapped CFF by charstring blanking, and declines
+/// bare CFF for a narrower, different reason — rather than declining every CFF program and
+/// embedding it whole.
 ///
 /// <para><b>What makes these falsifiable.</b> A blanking subsetter produces a program the same
 /// length as the input, whose cmap is untouched — so both "the output is smaller" and "the output

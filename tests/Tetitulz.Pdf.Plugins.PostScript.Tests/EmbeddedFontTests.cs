@@ -280,7 +280,7 @@ public sealed class EmbeddedFontTests
     ///
     /// <para>Measured, because the shape of the growth is the whole point — a fixed ceiling would
     /// pass just as well on quadratic code with a smaller input. Doubling the input must not
-    /// quadruple the allocation. Before the fix: 273 KiB in produced 334 MiB, and 546 KiB produced
+    /// quadruple the allocation. Unguarded, 273 KiB in produces 334 MiB, and 546 KiB produces
     /// 1.3 GiB.</para>
     ///
     /// <para>Per-thread allocation, not process-wide, so a parallel test run cannot pollute it.</para>
@@ -288,9 +288,8 @@ public sealed class EmbeddedFontTests
     /// <para><b>This is an end-to-end check of three layered guards</b> — the header offset is
     /// cleared once used, the copy is charged to the allocation budget, and the capture count is
     /// capped — so removing any <i>one</i> of them leaves it green. That is the guards being
-    /// redundant, not the test being vacuous: it does go red against code with all three gone,
-    /// which is what the defect actually was. Each guard is pinned individually by its own test
-    /// below.</para>
+    /// redundant, not the test being vacuous: it does go red against code with all three gone.
+    /// Each guard is pinned individually by its own test below.</para>
     /// </summary>
     [Fact]
     public void RepeatedEexecSections_DoNotAllocateQuadratically()

@@ -12,7 +12,7 @@ using static Tetitulz.Pdf.HtmlToPdf.Tests.ManagedTestSupport;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
-/// <c>align-items: baseline</c> for a flex item that starts with a table or a list (2026-10-19): a
+/// <c>align-items: baseline</c> for a flex item that starts with a table or a list: a
 /// table's baseline is its first row's (CSS Tables 3 §3.10.2) — the baseline its
 /// <c>vertical-align: baseline</c> cells share, else the bottom content edge of its lowest cell — and a
 /// list's is its first item's. Each expectation is what Edge draws for the same markup: a middle-aligned

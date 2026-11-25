@@ -325,12 +325,12 @@ public class PdfGraphicsExtractorTests
         return BuildPdf(cs);
     }
 
-    [Fact]
     /// <summary>
     /// Exactly one table, and its four cells hold the text that was drawn in them. Its siblings
     /// below assert the dimensions and the confidence; this one asserts the <b>content</b>, which
     /// is what proves cell text was matched to the right cell rather than merely counted.
     /// </summary>
+    [Fact]
     public void LinesStrategy_BorderedTable_ReadsEachCellsText()
     {
         using var ms = new MemoryStream(Build2x2BorderedTable());
@@ -397,12 +397,12 @@ public class PdfGraphicsExtractorTests
     //  Auto strategy
     // ------------------------------------------------------------------
 
-    [Fact]
     /// <summary>
     /// Auto's contract when rulings are present is "behave like Lines", so compare the two results
     /// rather than merely checking Auto found something — a fall-through to the Text strategy would
     /// also find a table here, just a different one.
     /// </summary>
+    [Fact]
     public void AutoStrategy_WithRulings_MatchesTheLinesStrategy()
     {
         using var autoMs = new MemoryStream(Build2x2BorderedTable());

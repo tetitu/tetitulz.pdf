@@ -331,9 +331,9 @@ public sealed class SvgParityRound2Tests
     }
 
     /// <summary>
-    /// The <c>&lt;text&gt;</c> emitter divides the page width back out by its element transform. It
-    /// used to divide by the font size alone, which is only the whole transform when Tm and the CTM
-    /// are both unscaled — a <c>cm</c> then made stroked text the wrong thickness.
+    /// The <c>&lt;text&gt;</c> emitter divides the page width back out by its element transform, not by
+    /// the font size alone, which is the whole transform only when Tm and the CTM are both unscaled —
+    /// a <c>cm</c> would then make stroked text the wrong thickness.
     /// </summary>
     [Fact]
     public void TextStrokeWidth_AccountsForTheCtmAsWellAsTheFontSize()

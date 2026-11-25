@@ -119,9 +119,7 @@ public class PdfBlockchainSignerTests
     }
 
     /// <summary>
-    /// Renamed from <c>…RequiresAllThreeFlags</c> when <c>IsLastRevision</c> joined the conjunction:
-    /// leaving the old name over an assertion about four flags is the failure mode CLAUDE.md calls
-    /// out as invisible to every guard — a perfectly falsifiable test that falsifies the wrong claim.
+    /// All four flags, <c>IsLastRevision</c> among them, make the conjunction.
     /// </summary>
     [Fact]
     public void BlockchainVerificationResult_IsValid_RequiresAllFourFlags()

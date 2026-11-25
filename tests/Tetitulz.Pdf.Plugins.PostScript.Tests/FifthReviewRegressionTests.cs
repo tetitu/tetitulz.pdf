@@ -10,7 +10,7 @@ using Tetitulz.Pdf.Plugins.PostScript;
 
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
-/// <summary>Regressions from the 2026-11-12 review of the PostScript plugin, each against PLRM's own rule.</summary>
+/// <summary>PostScript plugin rules, each against PLRM's own.</summary>
 public sealed class FifthReviewRegressionTests
 {
     private static string Text(string ps)

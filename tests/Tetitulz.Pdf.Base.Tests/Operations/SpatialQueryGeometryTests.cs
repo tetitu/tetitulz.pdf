@@ -102,10 +102,10 @@ public class SpatialQueryGeometryTests
     /// <b>A negative extent is refused by name, as <c>Crop</c> refuses it.</b>
     /// </summary>
     /// <remarks>
-    /// The two share <c>RectIntersects</c> and used to differ on the contract around it. A negative
-    /// width does not simply return nothing: it inverts the interval, and
+    /// The two share <c>RectIntersects</c> and the contract around it. A negative width does not
+    /// simply return nothing: it inverts the interval, and
     /// <c>bx + bw &gt; x &amp;&amp; bx &lt; x + w</c> still holds for a word that <i>spans</i> the
-    /// gap — so the caller was handed words from a region it never described.
+    /// gap — so the caller would be handed words from a region it never described.
     /// </remarks>
     [Theory]
     [InlineData(-10f, 100f, "width")]

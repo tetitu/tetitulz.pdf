@@ -951,8 +951,8 @@ public class AdversarialStructureTests
     /// <summary>
     /// The checker's walk stops at its 100-level depth cap, and says so: the levels below it were
     /// not examined, so a UA07 figure down there would go unreported, and a clean result that is
-    /// silent about that reads as a clean document. The walk used to stop in silence — a tree
-    /// deeper than the cap and a tree that ends there produced the same result.
+    /// silent about that reads as a clean document. Stopping in silence, a tree deeper than the cap
+    /// and a tree that ends there would produce the same result.
     /// </summary>
     [Fact]
     public void PdfUaChecker_DeeplyNestedAcyclicTree_Completes_AndReportsTheDepthCapAsAPartialScan()

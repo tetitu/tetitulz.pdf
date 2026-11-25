@@ -655,10 +655,10 @@ public class PdfXConverterTests
     //  Input the converter must refuse rather than mangle
     // ================================================================
     //
-    // Both cases used to fall through to PdfSanitizer, one step down and in a different assembly:
-    // encrypted input escaped as a PdfEncryptedDocumentException thrown out of Convert, and a
-    // SIGNED document was renumbered like any other, its signature silently destroyed with nothing
-    // on the result saying so.
+    // Left to PdfSanitizer, one step down and in a different assembly, encrypted input would
+    // escape as a PdfEncryptedDocumentException thrown out of Convert, and a SIGNED document would
+    // be renumbered like any other, its signature silently destroyed with nothing on the result
+    // saying so.
 
     [Fact]
     public void Convert_EncryptedInput_ReportsABlockerRatherThanThrowing()

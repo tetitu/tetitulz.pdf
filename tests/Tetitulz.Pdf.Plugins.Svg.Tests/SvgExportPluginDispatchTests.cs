@@ -40,10 +40,9 @@ public class SvgExportPluginDispatchTests
         {
             PdfPluginHost.Instance.Register(new SvgExportPlugin());
 
-            // THREE pages, deliberately. The fixture used to be a single page, where a stream of
-            // concatenated SVG documents and one well-formed document are indistinguishable — so
-            // the assertion this test's own name makes was never actually made, and the plugin
-            // shipped for its whole life emitting output no XML parser can open.
+            // THREE pages, deliberately. On a single page, a stream of concatenated SVG documents and
+            // one well-formed document are indistinguishable, so the assertion this test's own name
+            // makes would never actually be made.
             using var input = new MemoryStream(MinimalPdfBuilder.CreateMultiPagePdf(3));
             using var output = new MemoryStream();
 

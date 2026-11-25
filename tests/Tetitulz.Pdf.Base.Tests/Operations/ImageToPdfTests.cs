@@ -804,7 +804,7 @@ public sealed class ImageToPdfTests
     /// The opacity mode the file declares is what is written (ISO 32000-2 Table 89): a
     /// premultiplied channel (cdef Typ 2) asks for <c>/SMaskInData 2</c>; an opacity channel for
     /// one colour alone is a form the key cannot express, so no key is written and the image is
-    /// opaque (the review of 2026-09-26, row 6).
+    /// opaque.
     /// </summary>
     [Fact]
     public void Create_APremultipliedOpacityChannel_AsksForSMaskInData2_AndAPerColourOne_GetsNoKey()

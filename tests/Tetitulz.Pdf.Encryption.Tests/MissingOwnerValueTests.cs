@@ -38,7 +38,7 @@ public class MissingOwnerValueTests
 {
     /// <summary>
     /// The <c>Decrypt</c> path refuses with a typed, catchable <c>PdfException</c> that names the
-    /// missing entry — not the <c>NullReferenceException</c> it used to propagate.
+    /// missing entry — not a <c>NullReferenceException</c>.
     /// </summary>
     [Fact]
     public void MalformedEncryptDictWithoutOwnerValue_DecryptThrowsPdfExceptionNamingTheEntry()
@@ -56,7 +56,7 @@ public class MissingOwnerValueTests
     /// <summary>
     /// The <c>TryPassword</c> fast path is the second, separate way into the same key derivation,
     /// and it must refuse with the same typed <c>PdfException</c> the <c>Decrypt</c> path raises —
-    /// not the <c>NullReferenceException</c> it used to propagate, and not a bare
+    /// not a <c>NullReferenceException</c>, and not a bare
     /// <see langword="false"/>.
     /// </summary>
     /// <remarks>
@@ -71,10 +71,8 @@ public class MissingOwnerValueTests
     /// input the identical way (asserted above).
     /// </para>
     /// <para>
-    /// This is the one point where the two sessions that fixed this defect disagreed — the other
-    /// asserted <see langword="false"/> here. The finding this test class documents is that the
-    /// refusal be <em>typed</em> rather than a <c>NullReferenceException</c>, and that is preserved
-    /// either way; the resolution follows the spec's "required entry" reading, and matches
+    /// The refusal being <em>typed</em> rather than a <c>NullReferenceException</c> holds either
+    /// way; throwing follows the spec's "required entry" reading, and matches
     /// <c>MalformedEncryptDictionaryTests.TryPasswordOnADictionaryWithoutO_IsRefusedWithATypedReason</c>.
     /// </para>
     /// </remarks>

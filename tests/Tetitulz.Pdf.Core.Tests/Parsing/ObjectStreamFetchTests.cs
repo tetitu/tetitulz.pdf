@@ -167,8 +167,8 @@ public class ObjectStreamFetchTests
 
     /// <summary>
     /// A real object stream holds 65 542 members, the catalog among them (another reader bug1978317), and
-    /// the old cap of 65 536 refused it (GAPS §19h item 6): a stream of 65 537 members is read under
-    /// the raised default, its last member included, and one declaring twice the default is still
+    /// a cap of 65 536 would refuse it: a stream of 65 537 members is read under the default, its last
+    /// member included, and one declaring twice the default is still
     /// refused by the cap, with the count in the reason.
     /// </summary>
     [Fact]

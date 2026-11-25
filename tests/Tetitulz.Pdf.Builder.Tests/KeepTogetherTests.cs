@@ -103,7 +103,7 @@ public class KeepTogetherTests
     }
 
     /// <summary>
-    /// A keep chain passes into a box (2026-10-19; it stopped at the box, unkept): a heading kept with the box after
+    /// A keep chain passes into a box rather than stopping at it: a heading kept with the box after
     /// it moves to the page the box's first block starts on — the box's top margin, border and padding counted on
     /// the way. The control, unkept, leaves the heading behind.
     /// </summary>
@@ -124,7 +124,7 @@ public class KeepTogetherTests
     }
 
     /// <summary>
-    /// A box kept with the paragraph after it (<see cref="BoxStart.KeepWithNext"/>, 2026-10-19) moves whole to the page
+    /// A box kept with the paragraph after it (<see cref="BoxStart.KeepWithNext"/>) moves whole to the page
     /// that paragraph starts on; its end continues the chain, so the paragraph after it does not decide again. The
     /// control, unkept, leaves the box behind.
     /// </summary>

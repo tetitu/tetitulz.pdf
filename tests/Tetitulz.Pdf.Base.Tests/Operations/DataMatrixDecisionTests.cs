@@ -49,9 +49,9 @@ public class DataMatrixDecisionTests
     /// <summary>
     /// The clock track's phase: along the top, dark from the corner the L owns and alternating; down
     /// the right, dark from the L's bottom corner up — so on an even size the top-right corner is
-    /// light. This is what an independent writer paints (checked 2026-10-18); this test once said the
-    /// opposite, from recollection, and the writer and the reader shared that wrong phase, so the
-    /// library read its own symbols and an independent reader read none. The reader checks the finder with the
+    /// light. This is what an independent writer paints: a phase taken from recollection and shared by the
+    /// writer and the reader would let the library read its own symbols while an independent reader read
+    /// none. The reader checks the finder with the
     /// same painter, so only the modules can say which is right.
     /// </summary>
     [Fact]

@@ -21,7 +21,7 @@ public sealed class PdfLimitsCollection
 }
 
 /// <summary>
-/// Merge and split behaviour the overnight sweep found no test pinning: the output version, an
+/// Merge and split behaviour at the edges: the output version, an
 /// outline chain longer than the walk's cap, and the outline a split writes.
 /// </summary>
 public class MergeSplitOvernightTests

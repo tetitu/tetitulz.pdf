@@ -981,9 +981,9 @@ public class PdfXValidatorTests
     //  X04 — fonts reachable only through a nested construct
     // ------------------------------------------------------------------
     //
-    //  Until 2026-08-08 X04 read `page.Resources` alone, so a non-embedded font used only inside
-    //  a form XObject, a tiling pattern, a Type 3 glyph procedure or an annotation appearance
-    //  stream was never examined and the document validated clean. Each fixture below puts the
+    //  Reading `page.Resources` alone, X04 would never examine a non-embedded font used only
+    //  inside a form XObject, a tiling pattern, a Type 3 glyph procedure or an annotation
+    //  appearance stream, and the document would validate clean. Each fixture below puts the
     //  font ONLY in that place — the page's own /Font resource holds the conforming embedded one.
 
     [Theory]
@@ -1214,9 +1214,9 @@ public class PdfXValidatorTests
     [Fact]
     public void OpiInsideANestedForm_ReportsX06()
     {
-        // Until 2026-08-08 X06 read the page's own /XObject dictionary, so an /OPI on an image
-        // inside a form XObject — where a placed image normally lives in prepress output — was
-        // never seen and the file validated clean.
+        // Reading the page's own /XObject dictionary alone, X06 would never see an /OPI on an
+        // image inside a form XObject — where a placed image normally lives in prepress output —
+        // and the file would validate clean.
         var result = Validate(new XDoc { OpiInNestedForm = true });
         Assert.Contains(result.Violations, v => v.Code == "X06");
     }
@@ -1238,7 +1238,7 @@ public class PdfXValidatorTests
     {
         var result = Validate(new XDoc { CatalogAdditionalActions = true });
         // The fixture's /AA holds a script, which is a second X07 for its type (X07 reads every
-        // action since 2026-09-24): the /AA entry is still exactly one.
+        // action): the /AA entry is still exactly one.
         var x07 = Assert.Single(result.Violations, v => v.Code == "X07" && v.Message.Contains("additional-actions"));
         Assert.Contains("catalog", x07.Message, StringComparison.OrdinalIgnoreCase);
     }
@@ -1251,8 +1251,8 @@ public class PdfXValidatorTests
         Assert.Contains("page", x07.Message, StringComparison.OrdinalIgnoreCase);
     }
 
-    // X07 reached only the catalog and page dictionaries until 2026-08-08. The four cases below
-    // are where actions actually live in a real file.
+    // X07 reaches past the catalog and page dictionaries. The four cases below are where
+    // actions actually live in a real file.
 
     [Fact]
     public void AnnotationAdditionalActions_ReportsX07()
@@ -1291,7 +1291,7 @@ public class PdfXValidatorTests
     public void DocumentLevelJavaScriptNameTree_ReportsX07()
     {
         // /Names /JavaScript is where document-level script actually lives — never in /AA,
-        // which is the only place the check used to look.
+        // which is not the only place the check looks.
         var result = Validate(new XDoc { DocumentJavaScript = true });
         Assert.Contains(result.Violations,
             v => v.Code == "X07" && v.Message.Contains("JavaScript"));
@@ -1371,7 +1371,7 @@ public class PdfXValidatorTests
         Assert.Equal(2, result.Violations.Count);   // one for /AA, one for the /JavaScript /A
         var aa = Assert.Single(result.Violations,
             v => v.Code == "X07" && v.Message.Contains("additional-actions"));
-        // Entries with one message are counted in one (since 2026-09-24), so without the shared
+        // Entries with one message are counted in one, so without the shared
         // reported-set the /AA would still be a single entry, and say "2 found".
         Assert.Contains("; found on", aa.Message, StringComparison.Ordinal);
         Assert.Single(result.Violations,
@@ -1449,8 +1449,8 @@ public class PdfXValidatorTests
 
     /// <summary>
     /// The colour operators <b>inside</b> an /ExtGState soft mask's group are the page's colour
-    /// too (GAPS §12b, 2026-10-14): an RGB fill drawn only to make the mask is X08, where the scan
-    /// read the group's /CS and nothing it painted. The same mask drawing nothing is the control —
+    /// too: an RGB fill drawn only to make the mask is X08, not just the group's /CS read and
+    /// nothing it painted. The same mask drawing nothing is the control —
     /// X09 reports the mask itself at X-1a either way, which is not what these assert.
     /// </summary>
     [Theory]
@@ -1507,12 +1507,11 @@ public class PdfXValidatorTests
     //  X08 at X-3 / X-4 — UNVERIFIED reading of ISO 15930-3 / -7
     // ------------------------------------------------------------------
     //
-    //  These two cases asserted the opposite until 2026-08-09, on the rationale "PDF/X-3 permits
-    //  device-independent colour; the colour restriction is X-1a only." The premise is right and
-    //  does not reach the conclusion: DeviceRGB is device-DEPENDENT, so "device-independent colour
-    //  is permitted" says nothing about it. The reading now implemented is that the later parts
-    //  admit ICCBased / CalRGB / CalGray / Lab, and admit DeviceRGB only when the output intent is
-    //  itself an RGB condition.
+    //  "PDF/X-3 permits device-independent colour; the colour restriction is X-1a only" has a
+    //  right premise that does not reach its conclusion: DeviceRGB is device-DEPENDENT, so
+    //  "device-independent colour is permitted" says nothing about it. The reading implemented is
+    //  that the later parts admit ICCBased / CalRGB / CalGray / Lab, and admit DeviceRGB only when
+    //  the output intent is itself an RGB condition.
     //
     //  Implemented on an explicit accept-the-risk decision without the standard text, and written
     //  to fail safe: an absent or unreadable destination profile counts as not-RGB, so DeviceRGB
@@ -1562,11 +1561,11 @@ public class PdfXValidatorTests
     /// X08 at X-3 or X-4.
     /// </summary>
     /// <remarks>
-    /// The classification used to answer on <c>/N 3</c> alone, without consulting the policy it was
-    /// handed, so the violation message read "PDF/X-4 allows device-independent colour (ICCBased,
-    /// …) … found an ICCBased 3-component (RGB)" — naming the space as allowed and condemning it in
-    /// one sentence. <c>PdfXConverter</c> then folded that blocker in and withheld the
-    /// <c>GTS_PDFXVersion</c> identifier from a file it should have stamped.
+    /// A classification answering on <c>/N 3</c> alone, without consulting the policy it is handed,
+    /// would read "PDF/X-4 allows device-independent colour (ICCBased, …) … found an ICCBased
+    /// 3-component (RGB)" — naming the space as allowed and condemning it in one sentence — and
+    /// <c>PdfXConverter</c> would fold that blocker in and withhold the <c>GTS_PDFXVersion</c>
+    /// identifier from a file it should stamp.
     /// </remarks>
     [Theory]
     [InlineData(PdfXConformanceLevel.X3, "PDF/X-3:2003")]
@@ -1591,7 +1590,7 @@ public class PdfXValidatorTests
     }
 
     /// <summary>
-    /// The counterpart that stops the fix above collapsing X-1a's rule too: X-1a admits 1- and
+    /// The counterpart that stops the rule above collapsing X-1a's too: X-1a admits 1- and
     /// 4-component output only, so the same file is a violation there.
     /// </summary>
     [Fact]
@@ -1607,7 +1606,7 @@ public class PdfXValidatorTests
     [InlineData(PdfXConformanceLevel.X4, "PDF/X-4")]
     public void X3AndX4_DeviceRgb_IsStillReported(PdfXConformanceLevel level, string version)
     {
-        // DeviceRGB is device-DEPENDENT, so admitting ICCBased says nothing about it: the fix must
+        // DeviceRGB is device-DEPENDENT, so admitting ICCBased says nothing about it: the rule must
         // not widen into "the later parts have no colour rule".
         var result = Validate(
             new XDoc { XmpVersion = version, NamedColorSpace = "/DeviceRGB" }, level);
@@ -2056,7 +2055,7 @@ public class PdfXValidatorTests
     [Fact]
     public void X1a_IccProfileWithFourComponentsWrittenIndirectly_DoesNotReportX08()
     {
-        // The control that stops the fix above from meaning "an indirect /N is always RGB".
+        // The control that stops the rule above from meaning "an indirect /N is always RGB".
         var result = Validate(new XDoc
         {
             ImageIccComponents = 4, IndirectIccComponentCount = true,
@@ -2097,9 +2096,9 @@ public class PdfXValidatorTests
     [InlineData(false, true)]   // /SMask-bearing image inside a tiling pattern
     public void X1a_TransparencyInsideANestedConstruct_ReportsX09(bool inForm, bool inPattern)
     {
-        // Until 2026-08-08 X09 read page.Resources alone, so transparency inside a form XObject
-        // or a pattern validated clean — and a form is the ordinary home for placed artwork,
-        // which is exactly the artwork most likely to carry a soft mask.
+        // Reading page.Resources alone, X09 would validate transparency inside a form XObject or
+        // a pattern clean — and a form is the ordinary home for placed artwork, which is exactly
+        // the artwork most likely to carry a soft mask.
         var result = Validate(new XDoc
         {
             ExtGStateSoftMaskInNestedForm = inForm,

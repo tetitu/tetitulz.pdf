@@ -11,11 +11,12 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
 /// A CSS size that is negative or non-finite is declined (the inherited value is kept, as a browser
-/// drops an invalid declaration) rather than reaching the Builder model. <c>font-size:-1px</c> became
-/// a negative <c>TextRun.FontSize</c>, and <c>NaN%</c>, <c>NaNfr</c>, <c>width:Infinity%</c> and
-/// <c>top:Infinity%</c> carried NaN/±∞ into a track width, a float width or a placement offset — each of
-/// which <c>ModelMeasurements.Validate</c> refuses by throwing <c>ArgumentOutOfRangeException</c> naming
-/// an internal parameter (<c>"document"</c>) no caller passed, so no PDF was produced (2026-10-22).
+/// drops an invalid declaration) rather than reaching the Builder model. Let through,
+/// <c>font-size:-1px</c> would be a negative <c>TextRun.FontSize</c>, and <c>NaN%</c>, <c>NaNfr</c>,
+/// <c>width:Infinity%</c> and <c>top:Infinity%</c> would carry NaN/±∞ into a track width, a float width
+/// or a placement offset — each of which <c>ModelMeasurements.Validate</c> refuses by throwing
+/// <c>ArgumentOutOfRangeException</c> naming an internal parameter (<c>"document"</c>) no caller passed,
+/// so no PDF would be produced.
 /// </summary>
 public class NonFiniteCssSizeTests
 {
@@ -27,7 +28,7 @@ public class NonFiniteCssSizeTests
     [InlineData("<div style='position:absolute;top:Infinity%'>a</div>")]
     public void AnInvalidCssSize_IsDeclined_AndTheDocumentConverts(string html)
     {
-        // Pre-fix each of these threw ArgumentOutOfRangeException out of the public door.
+        // Let through, each of these would throw ArgumentOutOfRangeException out of the public door.
         byte[] pdf = HtmlToPdfConverter.ConvertHtmlToBytes(html);
         Assert.NotEmpty(pdf);
     }

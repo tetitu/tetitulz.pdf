@@ -15,29 +15,28 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 {
     /// <summary>
     /// Two independent defences against <see cref="FontResolver"/>'s process-wide file cache growing
-    /// without limit (GAPS §16 item 4b), each tested for what it actually contributes.
+    /// without limit, each tested for what it actually contributes.
     ///
-    /// <para><b>What went wrong.</b> <c>CandidateFiles</c> falls back to matching every installed
+    /// <para><b>What could go wrong.</b> <c>CandidateFiles</c> falls back to matching every installed
     /// font's family name whenever the requested family is outside its 17-entry filename map, and
-    /// <c>FindAnyCovering</c> walks every font when nothing covers the run's text. Both used to
-    /// <c>LoadFile</c> each candidate — a full read whose <c>FontData</c> the cache then held for the
-    /// process lifetime, since <c>Parse</c> keeps the whole file for <c>/FontFile2</c> embedding.
-    /// Measured at <b>210 MiB</b> after one one-paragraph conversion.</para>
+    /// <c>FindAnyCovering</c> walks every font when nothing covers the run's text. A full
+    /// <c>LoadFile</c> of each candidate would leave its <c>FontData</c> in the cache for the process
+    /// lifetime, since <c>Parse</c> keeps the whole file for <c>/FontFile2</c> embedding — measured at
+    /// <b>210 MiB</b> after one one-paragraph conversion.</para>
     ///
-    /// <para><b>Why two tests.</b> The ceiling and the probe fix different halves, and one test would
+    /// <para><b>Why two tests.</b> The ceiling and the probe guard different halves, and one test would
     /// let either rot unnoticed. <see cref="OneParagraph_RejectsFontsWithoutReadingThem"/> is about the
     /// probe and fails if it stops being consulted; <see cref="LoadingManyFonts_StopsAtTheCeiling"/> is
     /// about the bound, loads fonts by path so the probe cannot help, and fails if the ceiling stops
-    /// clamping. Before the probe existed one test covered both — and once the probe landed that test
-    /// passed with the bound deleted, its name still fitting while half its evidence had moved
-    /// elsewhere. Both mutations are verified separately now.</para>
+    /// clamping. One test covering both would pass with the bound deleted once the probe answers; both
+    /// mutations are verified separately.</para>
     ///
     /// <para><b>Host-dependent, stated rather than papered over.</b> The ceiling can only be
     /// <i>exceeded</i> where more than <see cref="FontResolver.MaxCachedFontBytes"/> of fonts are
     /// installed, so on a bare container the second test is vacuously true. Both assertions are
     /// invariants, so a small host cannot turn them green by accident. No cache reset appears here
-    /// either: clearing a process-wide font cache is what made <c>FontFileLocatorTests</c> break
-    /// <c>SystemFontResolverTests</c> (GAPS §14).</para>
+    /// either: clearing a process-wide font cache lets <c>FontFileLocatorTests</c> break
+    /// <c>SystemFontResolverTests</c>.</para>
     /// </summary>
     public class FontCacheBoundTests
     {

@@ -115,9 +115,9 @@ public class MergeSplitScanFindingsTests
     [Fact]
     public void SplitRange_PageWithInheritedResources_ExtractsAFontDictionaryNotANullReference()
     {
-        // The page carries no /Resources of its own; the root /Pages node does. The extracted page
-        // used to get `/Font << /F1 null >>` — every Tj drew nothing — because the font object was
-        // never collected and DeepClone maps an unmapped reference to PdfNull.
+        // The page carries no /Resources of its own; the root /Pages node does. Uncollected, the
+        // font object would leave the extracted page `/Font << /F1 null >>` — every Tj drawing
+        // nothing — since DeepClone maps an unmapped reference to PdfNull.
         using var extracted = Split(TwoPagesWithInheritedResources(), 1, 1);
 
         var page = extracted.Pages[0].Dictionary;
@@ -152,7 +152,7 @@ public class MergeSplitScanFindingsTests
     [Fact]
     public void SplitRange_LinkAnnotationToADroppedPage_LeavesThatPagesContentOutOfTheFile()
     {
-        // Page 1 carries a link whose /Dest names page 2. Extracting page 1 alone used to write
+        // Page 1 carries a link whose /Dest names page 2. Extracting page 1 alone must not write
         // page 2's whole content stream into the output as an orphan object: invisible in a viewer
         // and recoverable with any text extractor.
         byte[] extracted = SplitToBytes(LinkToSecondPagePdf(), 1, 1);
@@ -376,8 +376,8 @@ public class MergeSplitScanFindingsTests
     private const string SecretContent = "BT /F1 12 Tf 72 700 Td (SECRET) Tj ET";
 
     // An /Encrypt dictionary is all this needs: PdfDocument reports IsEncrypted from the trailer,
-    // and loads neither catalog nor page tree — which is precisely why the watermarker used to
-    // stamp zero pages and report success.
+    // and loads neither catalog nor page tree — so a watermarker not refusing it would stamp
+    // zero pages and report success.
     private static byte[] EncryptedPdf()
     {
         var bodies = new List<string>

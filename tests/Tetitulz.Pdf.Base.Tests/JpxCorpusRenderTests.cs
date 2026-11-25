@@ -82,7 +82,7 @@ public sealed class JpxCorpusRenderTests : IDisposable
     /// zoo1 and subsampling_1 are sYCC with 4:2:0 chroma; the reference decoder's PPMs of them are RGB after its
     /// chroma up-sampling and colour conversion. The decoder up-samples by replication and converts
     /// with the ICT's constants, rounding where the reference decoder truncates, over a 9-7 decode that is
-    /// itself within two levels of the reference decoder's. Measured 2026-09-25: peak 2/2/3 and mean
+    /// itself within two levels of the reference decoder's. Measured: peak 2/2/3 and mean
     /// 0.73/0.51/0.91 (zoo1), peak 2/2/3 and mean 0.72/0.53/0.89 (subsampling_1) — the limit is
     /// one level above the measured peak, and the mean must stay below a level.
     /// </summary>
@@ -156,10 +156,10 @@ public sealed class JpxCorpusRenderTests : IDisposable
 
     /// <summary>
     /// file5 (ROMM-RGB at precedence 1 over an ICC profile at 0) takes the enumerated space
-    /// (§7.4.9: highest precedence) and paints it through the ROMM-RGB transform (Stage D of 15k;
-    /// the review of 2026-09-26, row 9): each pixel is <see cref="Jp2ExtendedColour.RommRgbToSRgb8"/>
+    /// (§7.4.9: highest precedence) and paints it through the ROMM-RGB transform: each pixel is
+    /// <see cref="Jp2ExtendedColour.RommRgbToSRgb8"/>
     /// of the codestream's own samples, and not those samples read as sRGB, which is what
-    /// the reference decoder hands back. The baseline's TIFF applied the profile instead, which the rule excludes.
+    /// the reference decoder hands back. The baseline's TIFF applies the profile instead, which the rule excludes.
     /// </summary>
     [JpxCorpusFact]
     public void EnumeratedSpaceOverIcc_File5_PaintsTheSamplesThroughTheRommTransform()

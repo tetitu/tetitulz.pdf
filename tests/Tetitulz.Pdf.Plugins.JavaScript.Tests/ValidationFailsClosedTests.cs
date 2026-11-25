@@ -142,7 +142,7 @@ public class ValidationFailsClosedTests
 
     /// <summary>
     /// A script that runs to completion and rejects nothing must still report success — otherwise
-    /// the fix above would have replaced fail-open with fail-always, which no test asserting only
+    /// the rule above could replace fail-open with fail-always, which no test asserting only
     /// <c>False</c> could detect.
     /// </summary>
     [Fact]

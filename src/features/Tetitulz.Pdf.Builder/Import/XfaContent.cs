@@ -11,6 +11,7 @@ using Tetitulz.Pdf.Core;
 using Tetitulz.Pdf.Core.Document;
 using Tetitulz.Pdf.Core.Forms;
 using Tetitulz.Pdf.Core.Objects;
+using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Builder.Import
 {
@@ -139,7 +140,7 @@ namespace Tetitulz.Pdf.Builder.Import
                 if (!string.IsNullOrEmpty(options.Title))
                     section.AddParagraph(p => p.AddText(options.Title!).Bold().FontSize(16));
 
-                foreach (var group in rows.GroupBy(r => Group(r.Key), StringComparer.Ordinal))
+                foreach (var group in rows.GroupBy(r => Group(r.Key), KeyedHash.Strings))
                 {
                     if (group.Key.Length > 0)
                         section.AddParagraph(p => p.AddText(group.Key).Bold().FontSize(12));

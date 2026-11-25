@@ -116,9 +116,9 @@ public class LayoutHtmlBudgetTests
     /// </summary>
     /// <remarks>
     /// <b>The cross-path pairing is the point.</b> The degrading call is deliberately a
-    /// <c>ConvertToHtml</c> and the clean one a <c>ConvertToLayoutHtml</c>: before the fix the
-    /// layout path never wrote the slot at all, so it reported the raster call's message as its own,
-    /// and a same-path pair could not see that.
+    /// <c>ConvertToHtml</c> and the clean one a <c>ConvertToLayoutHtml</c>: a layout path that never
+    /// wrote the slot would report the raster call's message as its own, and a same-path pair could
+    /// not see that.
     /// </remarks>
     [Fact]
     public void A_clean_layout_conversion_does_not_inherit_a_raster_conversions_warning()

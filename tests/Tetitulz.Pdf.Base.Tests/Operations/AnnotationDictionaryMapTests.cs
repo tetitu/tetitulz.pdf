@@ -215,7 +215,7 @@ public class AnnotationDictionaryMapTests
     }
 
     // ================================================================
-    //  Unrecognised entries written back (GAPS.md §19b, 2026-10-21)
+    //  Unrecognised entries written back
     // ================================================================
 
     private static PdfDictionary Written(PdfDictionary read, Func<PdfObject, PdfObject>? resolve = null)

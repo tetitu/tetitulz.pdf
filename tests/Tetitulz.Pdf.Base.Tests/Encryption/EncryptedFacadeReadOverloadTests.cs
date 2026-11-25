@@ -188,7 +188,7 @@ public sealed class EncryptedFacadeReadOverloadTests
         Assert.Throws<ArgumentNullException>(() => PdfOperations.List3DAnnotations((Stream)null));
         Assert.Throws<ArgumentNullException>(() => PdfOperations.Extract3DStream((Stream)null, 0));
 
-        // Second conversion batch (2026-08-14, after plan 08 decision D-8).
+        // Graphics, structure, usage rights, portfolios, the outline and the calculation order.
         Assert.Throws<ArgumentNullException>(() => PdfOperations.ExtractGraphics((Stream)null));
         Assert.Throws<ArgumentNullException>(() => PdfOperations.ExtractGraphics((Stream)null, 0));
         Assert.Throws<ArgumentNullException>(() => PdfOperations.ReadStructureTree((Stream)null));
@@ -201,7 +201,7 @@ public sealed class EncryptedFacadeReadOverloadTests
     }
 
     /// <summary>
-    /// The second conversion batch really routes through <c>WithDecrypted</c>: the same call
+    /// These read doors really route through <c>WithDecrypted</c>: the same call
     /// <b>without</b> a password fails loudly instead of answering empty.
     /// </summary>
     /// <remarks>
@@ -209,18 +209,18 @@ public sealed class EncryptedFacadeReadOverloadTests
     /// accepted a <c>password</c> and ignored it would still return a page list here — a page COUNT
     /// needs no decryption, since §7.6.2 encrypts strings and streams and not the dictionaries
     /// around them. But it would also not throw when the password is omitted, and that is what the
-    /// second test catches. Before the conversion the no-password call answered <b>empty</b> —
-    /// indistinguishable from a page that genuinely draws nothing, which is the silent-wrong-answer
-    /// shape <c>WithDecrypted</c> exists to prevent.</para>
-    /// <para><b>Honest coverage note.</b> Of the nine readers converted in this batch, this pair
-    /// covers one. The other eight — <c>ReadStructureTree</c>,
+    /// second test catches. A no-password call answering <b>empty</b> would be indistinguishable from
+    /// a page that genuinely draws nothing, which is the silent-wrong-answer shape
+    /// <c>WithDecrypted</c> exists to prevent.</para>
+    /// <para><b>Honest coverage note.</b> Of these nine readers, this pair covers one. The other
+    /// eight — <c>ReadStructureTree</c>,
     /// <c>IsTaggedPdf</c>, <c>ReadUsageRights</c>, <c>IsPortfolio</c>, <c>ListPortfolioItems</c>,
     /// <c>ExportOutlineJson</c>, <c>GetCalculationOrder</c> and the paged <c>ExtractGraphics</c> —
     /// each need a document carrying the feature they read (a structure tree, a collection, an
     /// outline, a <c>/CO</c> array), and a fixture that has none of those would let all of them
-    /// "pass" by returning the same empty answer they returned before. They are covered by the
-    /// argument checks above and by <c>FacadePasswordCoverageTests</c>, and a per-feature fixture is
-    /// the honest way to cover them properly. Recorded rather than papered over.</para>
+    /// "pass" by returning an empty answer. They are covered by the argument checks above and by
+    /// <c>FacadePasswordCoverageTests</c>, and a per-feature fixture is the honest way to cover them
+    /// properly.</para>
     /// </remarks>
     [Fact]
     public void ExtractGraphics_WithThePassword_ReadsTheEncryptedDocument()
@@ -394,9 +394,9 @@ public sealed class EncryptedFacadeReadOverloadTests
 
     /// <summary>
     /// With no decryptor registered, the attachment readers <b>refuse</b> rather than answer. The
-    /// attachment name tree is reachable through the trailer without decryption, so they used to
-    /// come back with an entry whose filename was ciphertext, and an extraction returned encrypted
-    /// bytes as the file: a plausible-looking wrong answer, told apart only by the diagnostic.
+    /// attachment name tree is reachable through the trailer without decryption, so answering would
+    /// list an entry whose filename is ciphertext, and an extraction would return encrypted bytes as
+    /// the file: a plausible-looking wrong answer, told apart only by the diagnostic.
     /// </summary>
     [Fact]
     public void WithNoDecryptorRegistered_AttachmentReadersRefuseRatherThanAnswerWithCiphertext()

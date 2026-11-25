@@ -19,9 +19,9 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// Roman's, Courier New's); for an embedded program, its own.
 /// </summary>
 /// <remarks>
-/// The box was a fixed 0.83 of the size above the baseline and 0.22 below for every face, which
-/// put Arial text 4% of its size higher in a line than a browser does (GAPS §4b, closed in batch
-/// 80). Read from the highlight's rectangle, whose height is the box and whose bottom is the
+/// A box of a fixed 0.83 of the size above the baseline and 0.22 below for every face would put
+/// Arial text 4% of its size higher in a line than a browser does. Read from the highlight's
+/// rectangle, whose height is the box and whose bottom is the
 /// descent below the baseline.
 /// </remarks>
 public class LineMetricsTests

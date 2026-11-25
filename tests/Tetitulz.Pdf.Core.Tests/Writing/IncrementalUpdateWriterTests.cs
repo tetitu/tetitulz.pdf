@@ -20,11 +20,10 @@ namespace Tetitulz.Pdf.Core.Tests.Writing;
 ///
 /// <para>
 /// The capability it adds — appending a cross-reference <i>stream</i> when the section being
-/// superseded is one — used to live in the Accessibility feature assembly, where the Conformance
-/// plugin could not reach it (plugin → feature is a dependency cycle). Handed an xref-stream
+/// superseded is one — is Core's, where both the Accessibility feature and the Conformance plugin
+/// reach it (plugin → feature would be a dependency cycle). Without it, handed an xref-stream
 /// document, the plugin could only append a classic table and warn: that hybrid is rejected by
-/// strict validators and unreadable to a reader that only understands xref streams. These tests
-/// pin the behaviour down in Core, where both callers reach it.
+/// strict validators and unreadable to a reader that only understands xref streams.
 /// </para>
 ///
 /// <para>

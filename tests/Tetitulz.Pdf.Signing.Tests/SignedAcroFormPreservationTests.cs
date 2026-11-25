@@ -84,8 +84,8 @@ public class SignedAcroFormPreservationTests
     }
 
     /// <summary>
-    /// A document with no <c>/AcroForm</c> at all still gets one — the path that always worked, kept
-    /// so the fix cannot have made an existing form a precondition.
+    /// A document with no <c>/AcroForm</c> at all still gets one — the ordinary path, kept so the
+    /// rule cannot make an existing form a precondition.
     /// </summary>
     [Fact]
     public void ADocumentWithNoAcroFormStillGetsOne()

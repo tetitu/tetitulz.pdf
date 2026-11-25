@@ -45,7 +45,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 
         /// <summary>
         /// <c>border-radius: 8px 0 0 0</c> rounds the top-left corner alone: one curve, 6pt each way,
-        /// where the box used to take 6pt at all four. The control, <c>8px</c>, rounds four.
+        /// not 6pt at all four. The control, <c>8px</c>, rounds four.
         /// </summary>
         [Fact]
         public void OneRoundedCorner_IsOneCurve_TheOthersSquare()
@@ -73,7 +73,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// <summary>
         /// A percentage at one corner — <c>border-radius: 0 0 50% 0</c> — rounds that corner by half the
         /// box's width across and half its height down, so on a wide box the one curve is wider than
-        /// tall; such a corner used to read as 0 and leave the box square.
+        /// tall; read as 0, such a corner would leave the box square.
         /// </summary>
         [Fact]
         public void APercentAtOneCorner_IsThatShareOfTheBoxThere()
@@ -96,7 +96,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 
         /// <summary>
         /// An image is clipped to its own corners: <c>border-radius: 8px 0 0 0</c> clips the top-left
-        /// corner alone, one curve of 6pt, where the clip used to round all four.
+        /// corner alone, one curve of 6pt, not all four.
         /// </summary>
         [Fact]
         public void AnImage_IsClippedToItsOwnCorners()

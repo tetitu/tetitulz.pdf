@@ -20,14 +20,13 @@ namespace Tetitulz.Pdf.Base.Tests.Encryption;
 /// </summary>
 /// <remarks>
 /// <para>Base cannot reference <c>Tetitulz.Pdf.Encryption</c> — the dependency runs the other way
-/// — so an encrypted read used to mean calling <c>PdfEncryptedForms.GetFields</c>, which decrypts
-/// and calls straight back into <see cref="PdfFormReader"/>. The inversion through
-/// <see cref="PdfDecryptorHolder"/> that the renderer already used made the detour unnecessary for
-/// <b>reads</b>. Writes still route through Encryption and must: they re-encrypt.</para>
+/// — so a read goes through the inversion in <see cref="PdfDecryptorHolder"/>, as the renderer
+/// does, rather than through <c>PdfEncryptedForms.GetFields</c>, which decrypts and calls straight
+/// back into <see cref="PdfFormReader"/>. Writes route through Encryption and must: they
+/// re-encrypt.</para>
 /// <para>Each assertion names the field or image the document actually contains. An
-/// implementation that returned an empty list for an encrypted document — which is what these
-/// entry points did before, and is indistinguishable from a document with no fields — fails
-/// every one.</para>
+/// implementation that returned an empty list for an encrypted document — indistinguishable from
+/// a document with no fields — fails every one.</para>
 /// </remarks>
 [Collection(Tetitulz.Pdf.Base.Tests.TestInfrastructure.DecryptorHolderCollection.Name)]
 public sealed class EncryptedReadOperationsTests

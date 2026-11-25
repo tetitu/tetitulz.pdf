@@ -513,7 +513,7 @@ namespace Tetitulz.Pdf.Signing.Cms
             {
                 var value = cert.GetExtensionValue(X509Extensions.AuthorityKeyIdentifier);
                 return value == null ? null
-                    : AuthorityKeyIdentifier.GetInstance(X509ExtensionUtilities.FromExtensionValue(value)).GetKeyIdentifier();
+                    : AuthorityKeyIdentifier.GetInstance(X509ExtensionUtilities.FromExtensionValue(value)).KeyIdentifier?.GetOctets();
             }
             catch (Exception) { return null; }
         }

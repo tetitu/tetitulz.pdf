@@ -99,8 +99,8 @@ public sealed class JpxHtConformanceTests
     /// <summary>
     /// Where the reference HT implementation's recorded numbers are its decoder's, not the file's: <c>tall_narrow1</c> has an
     /// image offset of 1 and 16-wide tiles, so its second tile is one column, and the reference HT implementation's
-    /// irreversible decode of it records more error than the reference decoder measures (through an independent tool,
-    /// 2026-10-03) — and than this decoder, which agrees with the reference decoder to the fourth figure. Its
+    /// irreversible decode of it records more error than the reference decoder measures (through an independent tool)
+    /// — and than this decoder, which agrees with the reference decoder to the fourth figure. Its
     /// reversible twin is exact in all three. These are the reference decoder's numbers.
     /// </summary>
     internal static readonly Dictionary<string, (double[] Mse, int[] Pae)> ReferenceMeasured = new()

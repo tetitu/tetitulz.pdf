@@ -14,9 +14,9 @@ namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
 /// <see cref="PdfParser.CrossReferenceSectionPositions"/>: the stream position of every section the
-/// walk read, in the order it read them — what a host after revision boundaries used to re-parse the
-/// whole document once per <c>/Prev</c> hop to learn, and got wrong past the second hop, because each
-/// re-parse re-read the file's own tail.
+/// walk read, in the order it read them — so a host after revision boundaries need not re-parse the
+/// whole document once per <c>/Prev</c> hop, which goes wrong past the second hop, because each
+/// re-parse re-reads the file's own tail.
 /// </summary>
 public class CrossReferenceSectionPositionsTests
 {

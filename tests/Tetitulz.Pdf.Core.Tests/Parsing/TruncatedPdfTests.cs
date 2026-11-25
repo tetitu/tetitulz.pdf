@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
-/// <summary>Wave 5.3 + 5.6 — robustness tests for zero-byte, truncated, and
+/// <summary>Robustness tests for zero-byte, truncated, and
 /// large-object-number PDFs. Confirms the parser raises a clean exception
 /// (not a crash / stack overflow) in the degenerate cases and succeeds in
 /// the large-objnum case.</summary>

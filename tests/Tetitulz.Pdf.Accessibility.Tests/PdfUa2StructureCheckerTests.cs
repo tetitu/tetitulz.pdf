@@ -1762,7 +1762,7 @@ public class PdfUa2StructureCheckerTests
 
     /// <summary>
     /// Past the individual limit (25) a per-annotation check lists the first 25 and counts the rest.
-    /// The scan used to stop one past the limit, so its summary read "…and 1 more" for any number.
+    /// A scan that stopped one past the limit would read "…and 1 more" for any number.
     /// </summary>
     [Fact]
     public void ThirtySoundAnnotations_ListTwentyFive_AndCountTheOtherFive()
@@ -1785,7 +1785,7 @@ public class PdfUa2StructureCheckerTests
 
     /// <summary>
     /// A check that stops looking once past the limit knows only that there is more. The page
-    /// tab-order check stops, and says "at least one more" rather than the "1 more" it used to count.
+    /// tab-order check stops, and says "at least one more" rather than a "1 more" it cannot count.
     /// </summary>
     [Fact]
     public void ThirtyPagesWithoutTabs_ListTwentyFive_AndSayAtLeastOneMore()
@@ -4563,10 +4563,10 @@ public class PdfUa2StructureCheckerTests
         => Validate(pdf).Violations.Where(v => v.Code == "UA2-8.4.5.6" && v.Message.Contains("vertical")).ToList();
 
     /// <summary>
-    /// Wave 17 R13.4: a displacement written as an indirect reference (object 9 holds −900 against
-    /// a <c>vmtx</c> of 1000) is resolved before it is judged — in a <c>/W2</c> entry and in
-    /// <c>/DW2</c> alike. Read as stored, the reference is not a number: the entry fell to Table
-    /// 117's −1000, which matches the program, and the inconsistent font passed.
+    /// A displacement written as an indirect reference (object 9 holds −900 against a <c>vmtx</c>
+    /// of 1000) is resolved before it is judged — in a <c>/W2</c> entry and in <c>/DW2</c> alike.
+    /// Read as stored, the reference is not a number: the entry would fall to Table 117's −1000,
+    /// which matches the program, and the inconsistent font would pass.
     /// </summary>
     [Theory]
     [InlineData("/W2 [1 [9 0 R 305 880]]", "from /W2")]

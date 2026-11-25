@@ -71,7 +71,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// <summary>
         /// A hyperlink relationship is the file's to choose: a <c>javascript:</c> target, or one a leading space
         /// hides from a raw scheme test, gets no <c>/URI</c> action — its text stays — and is reported once; the
-        /// https link beside them, the control, is written (2026-10-20, LinkTargets).
+        /// https link beside them, the control, is written (LinkTargets).
         /// </summary>
         [Fact]
         public void Hyperlink_ToAnUnsafeScheme_WritesNoActionAndIsReportedOnce()

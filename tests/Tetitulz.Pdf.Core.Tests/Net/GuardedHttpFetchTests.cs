@@ -176,8 +176,8 @@ public class GuardedHttpFetchTests
     }
 
     /// <summary>
-    /// A relative <c>Location</c> with no request to resolve it against has no target. It used to
-    /// reach <c>new Uri(relative, relative)</c> and throw out of the redirect walk; it is a refusal.
+    /// A relative <c>Location</c> with no request to resolve it against has no target: it is a
+    /// refusal, not a <c>new Uri(relative, relative)</c> throwing out of the redirect walk.
     /// </summary>
     [Fact]
     public void ARelativeRedirectWithNoRequestUri_IsARefusalNotAnException()

@@ -517,7 +517,7 @@ public sealed class RenderingDeepFixesTests
         // The Form XObject draws a single red rectangle.
         const string formCs = "1 0 0 rg 0 0 100 100 re f";
         // /I is written explicitly: it defaults to FALSE, so a fixture that omits it is asking
-        // for a NON-isolated group, which is what these tests used to do by accident.
+        // for a NON-isolated group.
         string formGroup = includeGroup
             ? $" /Group << /S /Transparency /CS /DeviceRGB /I {(isolated ? "true" : "false")}"
               + (knockout ? " /K true" : "") + " >>"

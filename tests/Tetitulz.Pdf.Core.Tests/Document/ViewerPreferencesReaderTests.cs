@@ -14,20 +14,18 @@ namespace Tetitulz.Pdf.Core.Tests.Document;
 /// (§12.2), taking a resolve delegate rather than a document.
 /// </summary>
 /// <remarks>
-/// <para><b>Why the delegate, and why three checkers used to open-code this.</b> An encrypted
-/// document loads no catalog, so <c>doc.Catalog</c> is null and
-/// <see cref="PdfCatalog.GetViewerPreferences"/> — the only public door — is unreachable. A
-/// checker that has walked to the catalog <i>dictionary</i> by hand therefore had no way in, and
+/// <para><b>Why the delegate.</b> An encrypted document loads no catalog, so <c>doc.Catalog</c> is
+/// null and <see cref="PdfCatalog.GetViewerPreferences"/> — the only public door — is unreachable
+/// for a checker that has walked to the catalog <i>dictionary</i> by hand:
 /// <c>Plugins.Conformance.PdfUaChecker</c> (UA04), <c>Accessibility</c>'s deep checker and its
-/// PDF/UA-2 structure checker each read the two-level entry themselves. Sharing it follows the
-/// precedent CLAUDE.md records for <c>/P</c>: where the two accessibility halves compute a check
-/// independently and merge the results, the one step that could make them disagree is shared
-/// rather than mirrored.</para>
+/// PDF/UA-2 structure checker. Sharing the read follows the precedent CLAUDE.md records for
+/// <c>/P</c>: where the two accessibility halves compute a check independently and merge the
+/// results, the one step that could make them disagree is shared rather than mirrored.</para>
 ///
-/// <para><b>The tri-state is the part that had to survive the merge.</b> "No
-/// <c>/ViewerPreferences</c> dictionary at all" and "a dictionary with no <c>/DisplayDocTitle</c>"
-/// are <i>different findings</i> with different messages in the UA-2 checker, so an accessor that
-/// answered only <c>null</c> would have collapsed them. <see cref="PdfViewerPreferences.Dictionary"/>
+/// <para><b>The tri-state matters.</b> "No <c>/ViewerPreferences</c> dictionary at all" and "a
+/// dictionary with no <c>/DisplayDocTitle</c>" are <i>different findings</i> with different
+/// messages in the UA-2 checker, so an accessor that answered only <c>null</c> would collapse them.
+/// <see cref="PdfViewerPreferences.Dictionary"/>
 /// keeps them apart, and the pair of tests below is what stops that being quietly lost.</para>
 /// </remarks>
 public sealed class ViewerPreferencesReaderTests

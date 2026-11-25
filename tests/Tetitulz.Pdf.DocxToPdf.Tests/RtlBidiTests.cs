@@ -17,9 +17,9 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests
 {
     /// <summary>
-    /// Tests for RTL/bidi/Unicode support: Hebrew/Arabic text — previously dropped to
-    /// spaces — is now embedded as an Identity-H composite font and is selectable
-    /// (round-trips via /ToUnicode), with the font embedded once and shared by all pages.
+    /// Tests for RTL/bidi/Unicode support: Hebrew/Arabic text is embedded as an
+    /// Identity-H composite font and is selectable (round-trips via /ToUnicode), with
+    /// the font embedded once and shared by all pages.
     /// </summary>
     public class RtlBidiTests
     {
@@ -149,7 +149,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
                 var main = doc.AddMainDocumentPart();
                 var body = new Body();
                 // A hyperlink and a simple field (cached page number) — both wrap runs
-                // that the renderer previously skipped entirely.
+                // the renderer must not skip.
                 body.Append(new Paragraph(
                     new Hyperlink(new Run(new Text("ClickHere"))) { Id = "rId1" }));
                 body.Append(new Paragraph(
@@ -194,20 +194,18 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// </summary>
         /// <remarks>
         /// <c>ParagraphRenderer</c> accumulates a line's width from <c>Shape(...).WidthPts</c>
-        /// (shaped) and tests the next word with <c>MeasureWidth</c> (raw, before this fix) — two
-        /// units in one comparison. Joined Arabic forms are narrower than isolated ones, so the
-        /// wrap fired early.
-        /// <para><b>Asserted directly rather than through the wrap.</b> A first attempt compared
-        /// <c>Tj</c> counts between a paragraph and a doubled one; it survived reverting the fix,
-        /// because the ratio it bounded is loose enough to absorb the error.</para>
-        /// <para><b>How strong this test is depends on the host's fonts, and on this machine it is
-        /// a lock rather than a discriminator.</b> Arabic positional forms often carry the same
-        /// advance as their base letter — they do in the Arial this resolves to, where shaped and
-        /// unshaped <c>بيت</c> both measure 18.000 pt at 12 pt — so reverting the fix leaves this
-        /// green here. It goes red on any font that gives the forms distinct advances, which is
-        /// common enough to be worth keeping. Stated explicitly because a reader would otherwise
-        /// assume a passing run proves the fix works; what it proves is that measuring and drawing
-        /// agree, which is the invariant the renderer depends on either way.</para>
+        /// (shaped) and tests the next word with <c>MeasureWidth</c>; were that raw, the comparison
+        /// would mix two units. Joined Arabic forms are narrower than isolated ones, so the wrap
+        /// would fire early.
+        /// <para><b>Asserted directly rather than through the wrap.</b> Comparing <c>Tj</c> counts
+        /// between a paragraph and a doubled one bounds a ratio loose enough to absorb the
+        /// error.</para>
+        /// <para><b>How strong this test is depends on the host's fonts.</b> Arabic positional forms
+        /// often carry the same advance as their base letter — they do in Arial, where shaped and
+        /// unshaped <c>بيت</c> both measure 18.000 pt at 12 pt — so with such a font a raw
+        /// measurement passes too. It goes red on any font that gives the forms distinct advances,
+        /// which is common enough to be worth keeping. What a passing run proves is that measuring
+        /// and drawing agree, which is the invariant the renderer depends on either way.</para>
         /// </remarks>
         [Fact]
         public void MeasuredWidth_MatchesTheWidthOfTheGlyphsThatAreDrawn()

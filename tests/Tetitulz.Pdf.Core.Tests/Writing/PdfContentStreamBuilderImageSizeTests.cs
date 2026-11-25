@@ -10,10 +10,10 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Writing;
 
 /// <summary>
-/// Wave 17 R16.1: <see cref="PdfContentStreamBuilder.AddImage(byte[], int, int, string, string, int, double[], byte[])"/>
+/// <see cref="PdfContentStreamBuilder.AddImage(byte[], int, int, string, string, int, double[], byte[])"/>
 /// and <see cref="PdfContentStreamBuilder.AddJpxImage"/> are where every producer's image is written,
-/// and neither asked the authored-size rule — a JPEG claiming 65 535 × 65 535 pixels went from a DOCX
-/// into the output as declared. Both refuse now, naming the side; a legal image is still added.
+/// and both ask the authored-size rule — else a JPEG claiming 65 535 × 65 535 pixels would go from a
+/// DOCX into the output as declared. Both refuse, naming the side; a legal image is still added.
 /// </summary>
 public sealed class PdfContentStreamBuilderImageSizeTests
 {

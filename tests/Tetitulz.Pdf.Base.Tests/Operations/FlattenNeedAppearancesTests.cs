@@ -95,8 +95,8 @@ public class FlattenNeedAppearancesTests
     }
 
     /// <summary>
-    /// <c>GenerateAppearances = false</c> restores the pre-2026-09-02 behaviour verbatim, for a
-    /// caller who wants the file's own bytes stamped whatever the flag says.
+    /// <c>GenerateAppearances = false</c> stamps the file's own appearance bytes whatever the flag
+    /// says, for a caller who wants exactly that.
     /// </summary>
     [Fact]
     public void GenerateAppearancesFalseStampsTheDocumentsOwnAppearance()

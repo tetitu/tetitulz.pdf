@@ -190,7 +190,6 @@ public class Jbig2ArithmeticGenericRegionTests
             " — the region decoded to a uniform page, so no pixels were produced");
     }
 
-    [Fact]
     /// <summary>
     /// The wrapper filter's contract for a region it decodes only experimentally: it must never
     /// throw on synthetic input, and it must return a <b>usable, deterministic</b> result — either
@@ -200,6 +199,7 @@ public class Jbig2ArithmeticGenericRegionTests
     /// Decode doesn't throw"). That admits garbage of any length, and cannot tell a stable
     /// fallback from one that returns something different on every call.</para>
     /// </summary>
+    [Fact]
     public void Decode_ArithmeticT1_ProducesAUsableDeterministicResult()
     {
         var genericBody = GenericRegionArithBody(16, 4, gbtemplate: 1, tpgdon: false,

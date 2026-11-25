@@ -12,11 +12,10 @@ using Xunit;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
-/// A flex item holding a list or a table is measured (batch 110): its hypothetical main size is
+/// A flex item holding a list or a table is measured: its hypothetical main size is
 /// the list's width at its items' text starts, or the table's stated width or columns, by the
 /// layout that draws it — so a wrapping line breaks after it, a <c>flex: 1</c> list starts a line
-/// at its longest word, and nothing is reported. Before batch 110 such an item had no measurable
-/// width: one line, reported. A nested table is measured too, since 2026-10-19; what is still
+/// at its longest word, and nothing is reported. A nested table is measured too; what is
 /// reported is a table nested past the layout's cap.
 /// </summary>
 public class FlexListTableTests
@@ -88,9 +87,9 @@ public class FlexListTableTests
 
     /// <summary>
     /// A list inside a table cell keeps its <c>padding-left</c>: its text sits 60px in from a
-    /// zero-padded list's, its marker drawn before it — the cell used to draw a list as one paragraph
-    /// per item at the exporter's own indent, which is also why a flex item measured from the list
-    /// disagreed with the list it drew.
+    /// zero-padded list's, its marker drawn before it — not one paragraph per item at the exporter's
+    /// own indent, which would also make a flex item measured from the list disagree with the list it
+    /// draws.
     /// </summary>
     [Fact]
     public void AListInATableCell_KeepsItsPadding()
@@ -106,8 +105,7 @@ public class FlexListTableTests
     /// <summary>
     /// A table whose only column holds a nested table is as wide as the nested table (CSS 2.1
     /// §17.5.2.2: a cell's content, a table included, sizes its column): the item fits beside the
-    /// first half, the third wraps, nothing is reported. Before 2026-10-19 the column was unknown —
-    /// one line, reported.
+    /// first half, the third wraps, nothing is reported.
     /// </summary>
     [Fact]
     public void AnItemWithANestedTable_IsMeasured_AndTheLineBreaksAfterIt()

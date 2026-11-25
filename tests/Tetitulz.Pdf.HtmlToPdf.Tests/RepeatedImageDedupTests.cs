@@ -14,12 +14,12 @@ using static Tetitulz.Pdf.HtmlToPdf.Tests.ManagedTestSupport;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests
 {
     /// <summary>
-    /// One inline image referenced by many elements is decoded and written once. Each <c>&lt;img&gt;</c>
-    /// (and each <c>background-image</c>) decoded a fresh byte array, which the exporter — keying on array
-    /// identity (<c>ImageObjectShare</c>) — then held and wrote as its own XObject, so N references became
-    /// N decodes and N copies (a large repeated <c>data:</c> image ended in OutOfMemoryException). A
-    /// per-conversion cache, keyed by the <c>data:</c> URI (and by the resolved path for local files, as
-    /// <c>LoadRemote</c> caches a URL), hands every reference the same array, so it is written once (2026-10-23).
+    /// One inline image referenced by many elements is decoded and written once. The exporter keys on array
+    /// identity (<c>ImageObjectShare</c>), so a fresh byte array for each <c>&lt;img&gt;</c> (and each
+    /// <c>background-image</c>) would make N references N decodes and N copies (a large repeated <c>data:</c>
+    /// image ending in OutOfMemoryException). A per-conversion cache, keyed by the <c>data:</c> URI (and by the
+    /// resolved path for local files, as <c>LoadRemote</c> caches a URL), hands every reference the same array,
+    /// so it is written once.
     /// </summary>
     public class RepeatedImageDedupTests
     {
@@ -42,7 +42,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
             byte[] pdf = HtmlToPdfConverter.ConvertHtmlToBytes(html, Managed());
 
             Assert.NotEmpty(pdf);
-            // One image XObject, not n — the dedup wrote the shared array once (pre-fix: n distinct arrays,
+            // One image XObject, not n — the dedup writes the shared array once (n distinct arrays would be
             // n XObjects). The image dicts appear plainly in the managed layout's bytes.
             int images = Regex.Matches(Encoding.Latin1.GetString(pdf), @"/Subtype\s*/Image\b").Count;
             Assert.Equal(1, images);

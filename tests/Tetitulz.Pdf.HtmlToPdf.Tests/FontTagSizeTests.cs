@@ -15,9 +15,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 {
     /// <summary>
     /// Legacy <c>&lt;font size&gt;</c>: a leading <c>+</c> or <c>-</c> is relative to the default level 3,
-    /// not an absolute level. <c>ApplyFontTag</c> stripped the sign, so <c>size="+1"</c> read as the
-    /// absolute level 1 (8 pt) instead of level 4 (14 pt), and every relative size came out inverted and
-    /// tiny (2026-10-23).
+    /// not an absolute level. With the sign stripped, <c>size="+1"</c> would read as the absolute level 1
+    /// (8 pt) instead of level 4 (14 pt), and every relative size would come out inverted and tiny.
     /// </summary>
     public class FontTagSizeTests
     {

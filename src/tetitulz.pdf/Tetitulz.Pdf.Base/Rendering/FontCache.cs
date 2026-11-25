@@ -153,7 +153,13 @@ namespace Tetitulz.Pdf.Base.Rendering
         // dict maps "/F1" to a different font than the page's /Resources does not get the
         // wrong cached typeface when both share the same FontCache instance.
         private readonly Dictionary<(int, int, string), FontEntry> _entries
-            = new Dictionary<(int, int, string), FontEntry>();
+            = new Dictionary<(int, int, string), FontEntry>(EntryKeys);
+
+        // A resource name is the file's, so it hashes under a key the file cannot see (KeyedHash):
+        // the tuple's own hash is the runtime's string hash, which .NET Framework does not key.
+        private static readonly IEqualityComparer<(int, int, string)> EntryKeys =
+            Core.Util.KeyedHash.Comparer<(int, int, string)>(
+                k => unchecked((k.Item1 * 31 + k.Item2) * 31 + Core.Util.KeyedHash.Of(k.Item3)));
 
         /// <summary>
         /// How many distinct fonts this cache is holding state for. Exists so the key's

@@ -137,7 +137,7 @@ public sealed class PlacedFollowingBlocksTests
 
     /// <summary>
     /// A paragraph placed against a box among the following blocks is drawn with that box, measured from its
-    /// padding box (<see cref="AbsolutePlacement.CanFollow"/>, 2026-10-19): 40pt in from the box's left and 20pt
+    /// padding box (<see cref="AbsolutePlacement.CanFollow"/>): 40pt in from the box's left and 20pt
     /// below its top, and the block after it still follows in the flow of the group. One placed against a box
     /// that is not among them, or on every page, is not drawn there, and is reported.
     /// </summary>

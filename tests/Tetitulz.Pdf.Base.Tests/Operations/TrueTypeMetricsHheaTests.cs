@@ -37,8 +37,8 @@ public sealed class TrueTypeMetricsHheaTests
     [Fact]
     public void Parse_ReadsNumberOfHMetricsAtOffset34_NotOffset38()
     {
-        // hhea is padded to 40 bytes, and the two bytes at offset 38 — where the parser used to
-        // read — are zero. A zero numberOfHMetrics leaves every advance width at 0, so the two
+        // hhea is padded to 40 bytes, and the two bytes at offset 38 — a misread offset for
+        // numberOfHMetrics — are zero. A zero numberOfHMetrics leaves every advance width at 0, so the two
         // readings are told apart by the width alone.
         byte[] font = BuildFont(numberOfHMetrics: 3,
                                 advanceWidths: new[] { 111, 222, 333 },

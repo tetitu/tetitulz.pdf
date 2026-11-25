@@ -66,7 +66,7 @@ public class PdfAColourConsistencyValidatorTests
     /// <summary>
     /// An uncoloured tiling pattern paints in its base space (ISO 32000-1 §8.7.3.3), so
     /// <c>[/Pattern /DeviceRGB]</c> is DeviceRGB used; a coloured pattern, bare <c>/Pattern</c>,
-    /// names no device family. PdfXValidator's X08 classifier descends the same way (Wave 17, R9.1).
+    /// names no device family. PdfXValidator's X08 classifier descends the same way.
     /// </summary>
     [Theory]
     [InlineData("[/Pattern /DeviceRGB]", true)]
@@ -297,7 +297,7 @@ public class PdfAColourConsistencyValidatorTests
     private const string RgbShading = "<< /ShadingType 2 /ColorSpace /DeviceRGB /Coords [0 0 5 0] /Function << /FunctionType 2 /Domain [0 1] /C0 [0 0 0] /C1 [1 1 1] /N 1 >> >>";
 
     /// <summary>A shading paints in its colour space — by <c>sh</c>, or as a shading pattern by
-    /// <c>scn</c>; the scan used to read neither.</summary>
+    /// <c>scn</c>; the scan reads both.</summary>
     [Theory]
     [InlineData("/Shading << /Sh0 7 0 R >>", "/Sh0 sh", true)]
     [InlineData("/Shading << /Sh0 7 0 R >>", "BT ET", false)]

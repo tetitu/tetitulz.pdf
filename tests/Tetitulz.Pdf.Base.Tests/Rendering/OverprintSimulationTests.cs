@@ -70,10 +70,6 @@ public class OverprintSimulationTests
     /// simulation off the overprint is still <i>reported</i>, so a caller can tell "no overprint in
     /// this file" from "not simulated here".
     /// </summary>
-    /// <remarks>
-    /// Renamed 2026-10-04: it was <c>Overprint_WithNonCmykSource_IsReportedRatherThanSilentlySkipped</c>
-    /// while the per-paint compositor declined a non-CMYK source; the plate-based preview simulates it.
-    /// </remarks>
     [Fact]
     public void Overprint_WithNonCmykSource_IsSimulated_AndReportedWhenSimulationIsOff()
     {

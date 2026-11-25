@@ -49,7 +49,7 @@ public class ListContainerTests
     /// </summary>
     /// <remarks>
     /// The assertion is <c>1. 2. 3.</c> against a fixture of three items at the same level — the
-    /// exact case that used to render "1." three times, because the number was the level plus one.
+    /// exact case a number taken from the level plus one would render as "1." three times.
     /// </remarks>
     [Fact]
     public void AnOrderedList_NumbersItsItemsByPosition()
@@ -226,8 +226,8 @@ public class ListContainerTests
 
     /// <summary>DOCX writes a native Word list, not paragraphs with the markers typed in.</summary>
     /// <remarks>
-    /// <para><b>What "typed in" cost.</b> The exporter used to prepend the marker as a literal text
-    /// run and set an indent per level. That produces a document which <i>looks</i> like a list and
+    /// <para><b>What "typed in" costs.</b> Prepending the marker as a literal text run and setting an
+    /// indent per level produces a document which <i>looks</i> like a list and
     /// is a run of paragraphs beginning with characters: inserting an item renumbers nothing,
     /// deleting one leaves a gap, Word's list commands do not apply, and a copy picks the numbers
     /// up as text.</para>
@@ -393,8 +393,8 @@ public class ListContainerTests
     /// <para><b>The model records a resolved marker string, not the scheme behind it</b> — and a
     /// Word level text is a literal string too. An item marked <c>"א."</c> gets a numbering
     /// instance of its own whose level text IS <c>"א."</c> in bullet format, so Word draws the
-    /// marker the model recorded and still treats the paragraph as a list item. The typed-marker
-    /// fallback this test used to pin survives only for what a level text cannot carry;
+    /// marker the model recorded and still treats the paragraph as a list item. A typed marker is the
+    /// fallback only for what a level text cannot carry;
     /// <c>DocxLiteralMarkerTests</c> pins the definition's shape.</para>
     /// </remarks>
     [Fact]

@@ -624,7 +624,7 @@ public sealed class JpxTier2DecoderTests
         Assert.True(result.Complete, result.StopReason);
         Assert.Equal(100, result.PacketsRead);
         // One unit per packet read, and one per (layer, resolution, component) scan of the
-        // progression (since the review of 2026-09-26, row 3): 100 layers over one resolution
+        // progression: 100 layers over one resolution
         // and one component is 100 packets and 100 scans.
         Assert.Equal(200L, enough.Spent);
         Assert.Throws<WorkBudgetExceededException>(() => Decode(cs, new WorkBudget(199)));

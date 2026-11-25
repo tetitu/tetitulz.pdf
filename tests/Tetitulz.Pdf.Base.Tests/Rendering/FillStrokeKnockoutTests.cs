@@ -390,8 +390,8 @@ public class FillStrokeKnockoutTests
     /// <summary>
     /// A pattern-painted half of <c>B</c> is §11.7.4.4's knockout too: a coloured tiling pattern
     /// whose cell is solid blue as the fill, or solid red as the translucent stroke, gives what the
-    /// solid paint does — pink over the fill's edge, as over the page. The pattern halves used to
-    /// paint the stroke over the fill (purple).
+    /// solid paint does — pink over the fill's edge, as over the page, not the stroke painted over
+    /// the fill (purple).
     /// </summary>
     [Theory]
     [InlineData(true)]

@@ -152,8 +152,8 @@ public class BandDirectionTests
     /// beside content: <c>float:left</c> stays on the left in a right-to-left container.
     /// </summary>
     /// <remarks>
-    /// The band used to lay its float first in reading order whatever the side, and let the RTL
-    /// mirror move it, so a left float in an RTL container landed on the right.
+    /// A band laying its float first in reading order whatever the side, and letting the RTL mirror
+    /// move it, would land a left float in an RTL container on the right.
     /// </remarks>
     [Theory]
     [InlineData("ltr", "left")]
@@ -174,8 +174,7 @@ public class BandDirectionTests
 
     /// <summary>
     /// Two <c>float:right</c> elements in a band: the FIRST is the rightmost, and the second lines up
-    /// to its left — they used to be laid in document order after the content, which put the
-    /// first one inward.
+    /// to its left — laid in document order after the content, the first one would sit inward.
     /// </summary>
     [Fact]
     public void AFloatBandPutsTheFirstRightFloatAtTheRightEdge()

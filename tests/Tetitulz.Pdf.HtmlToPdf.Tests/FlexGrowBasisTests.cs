@@ -101,8 +101,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 
         /// <summary>
         /// <c>flex: 1</c> is <c>1 1 0</c> (§7.1.1): its basis is 0, so the item's <c>width</c> is not
-        /// one — two such growers split the row in halves though one says 200px. The width used to be
-        /// read as the basis, so that item took 150pt more than its neighbour. <c>flex: 1 1 0</c>,
+        /// one — two such growers split the row in halves though one says 200px. Read as the basis, the
+        /// width would give that item 150pt more than its neighbour. <c>flex: 1 1 0</c>,
         /// whose third token is a unitless zero basis rather than a third factor, is the same.
         /// </summary>
         [Theory]
@@ -157,8 +157,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 
         /// <summary>
         /// The full shorthand's basis is the item's: <c>flex: 2 1 100px</c> beside
-        /// <c>flex: 1 1 100px</c> each start at 75pt and share the rest 2 : 1. The basis used to be
-        /// lost, so the two split the whole row 2 : 1.
+        /// <c>flex: 1 1 100px</c> each start at 75pt and share the rest 2 : 1 — not the whole row 2 : 1,
+        /// as they would with the basis lost.
         /// </summary>
         [Fact]
         public void TheShorthandsBasisIsTheItems()

@@ -15,9 +15,9 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 /// <c>currentfont</c> returns the font dictionary in the graphics state (PLRM §8.2) — the same
 /// object <c>setfont</c> was given — so <c>currentfont 0.8 scalefont setfont</c>, the idiom for a
 /// superscript or a footnote, keeps everything the font was: its <c>/Encoding</c>, its Type 3
-/// procedures, its CMap, its embedded program. It used to build a fresh two-entry dictionary
-/// holding the base name and the matrix, so every one of those was lost at the first
-/// <c>currentfont</c> and the text after it drew in plain Helvetica.
+/// procedures, its CMap, its embedded program. A fresh two-entry dictionary holding the base name
+/// and the matrix would lose every one of those at the first <c>currentfont</c>, and the text after
+/// it would draw in plain Helvetica.
 /// </summary>
 public sealed class CurrentFontTests
 {

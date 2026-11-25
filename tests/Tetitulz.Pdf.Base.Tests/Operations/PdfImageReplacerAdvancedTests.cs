@@ -432,7 +432,6 @@ public sealed class PdfImageReplacerAdvancedTests
         Assert.Contains(result.Warnings, w => w.Contains("stretched", StringComparison.Ordinal));
     }
 
-    [Fact]
     /// <summary>
     /// <c>AspectRatioChanged</c>'s own XML doc says it is "Always false when Letterboxed is true —
     /// that is what letterboxing fixes", and the <c>Warnings</c> list is an else-if chain that
@@ -445,6 +444,7 @@ public sealed class PdfImageReplacerAdvancedTests
     /// letterbox test uses images large enough that the rounding disappears, which is why the
     /// contradiction survived them.</para>
     /// </summary>
+    [Fact]
     public void Contain_OnASmallOriginal_DoesNotReportLetterboxedAndStretchedAtOnce()
     {
         byte[] pdf = ImageFixtures.OneImagePdf(ImageFixtures.SolidRgb(7, 3, 255, 0, 0), 7, 3);

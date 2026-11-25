@@ -15,8 +15,8 @@ namespace Tetitulz.Pdf.Core.Tests.IO;
 
 /// <summary>
 /// The content-stream parser reads tokens through <c>PdfTokenizer.Lex</c> — a number as its value,
-/// a string as its bytes, no <see cref="PdfToken"/> — where it built a token and read the value
-/// back from its text (GAPS.md §13b, 2026-10-21). The two readings must agree on every input, so
+/// a string as its bytes, no <see cref="PdfToken"/> — rather than building a token and reading the
+/// value back from its text. The two readings must agree on every input, so
 /// each case reads the same bytes both ways, over a stream and over the array, and compares a
 /// double bit for bit (a sign of zero shows).
 /// </summary>

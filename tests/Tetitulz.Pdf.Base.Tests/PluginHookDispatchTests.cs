@@ -13,18 +13,15 @@ namespace Tetitulz.Pdf.Base.Tests;
 
 /// <summary>
 /// <see cref="IRenderHook"/> and <see cref="ITextExtractionHook"/> are <b>live</b> extension points:
-/// register an implementation and the library really calls it. These pin that, because until
-/// 2026-08-16 nothing did.
+/// register an implementation and the library really calls it. These pin that.
 /// </summary>
 /// <remarks>
 /// <para><b>Why this exists.</b> Both hooks are dispatched by <c>PdfOperations</c> — once for render
 /// (<c>InvokePageRendered</c>) and twice for extraction (<c>InvokeTextExtracted</c>) — but the tree
-/// has <b>zero implementers</b> of either, so deleting the dispatch call would have broken every
-/// host that registered one while the whole suite stayed green.</para>
-/// <para>That is not hypothetical. GAPS §8c described all three hook interfaces as unreached dead
-/// surface and named them "the cheapest thing to delete"; two of the three are live, and no test
-/// would have objected. A dispatch nobody asserts is indistinguishable from a dispatch that was
-/// removed.</para>
+/// has <b>zero implementers</b> of either, so deleting the dispatch call would break every host
+/// that registered one while the rest of the suite stayed green. An interface with no implementer
+/// reads as dead surface, "the cheapest thing to delete"; a dispatch nobody asserts is
+/// indistinguishable from a dispatch that was removed.</para>
 /// <para><b><see cref="IPdfProcessingHook"/> is deliberately excluded</b>, and asserting it is
 /// <i>not</i> called is the point. Its <c>InvokeBeforeProcess</c>/<c>InvokeAfterProcess</c> pair is
 /// for a <b>host</b> to call around its own pipeline; the library never does, as the interface's own

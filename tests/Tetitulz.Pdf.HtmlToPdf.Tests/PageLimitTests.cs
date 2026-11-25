@@ -13,9 +13,8 @@ using Xunit;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
-/// <see cref="HtmlToPdfOptions.MaxPages"/> (2026-10-20, the owner's decision: a parameter, unlimited by default):
-/// markup that would run past the limit ends at it, reported through <see cref="HtmlToPdfOptions.OnDiagnostic"/> —
-/// the channel that until the same day heard the font resolver's reports alone.
+/// <see cref="HtmlToPdfOptions.MaxPages"/> (a parameter, unlimited by default): markup that would run past the
+/// limit ends at it, reported through <see cref="HtmlToPdfOptions.OnDiagnostic"/>.
 /// </summary>
 public class PageLimitTests
 {

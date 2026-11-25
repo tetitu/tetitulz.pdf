@@ -237,7 +237,7 @@ public class GroupBlendSpaceTests
 
     /// <summary>
     /// An ICCBased grey or CMYK group is admitted by its arity and composited in the device family —
-    /// never through its profile — and the raster path now says so, where it used to approximate in
+    /// never through its profile — and the raster path says so rather than approximate in
     /// silence. An ICCBased RGB group composites in the canvas's own space and raises nothing; the
     /// device spaces are the control above. The page's own group is reported the same way.
     /// </summary>

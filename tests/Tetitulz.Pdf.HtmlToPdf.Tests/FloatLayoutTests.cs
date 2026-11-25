@@ -135,11 +135,9 @@ public class FloatLayoutTests
     /// A float that becomes a real float reports nothing, because nothing was approximated.
     /// </summary>
     /// <remarks>
-    /// <b>This test asserted the opposite until the exporter grew real floats</b>, and it was right
-    /// to: content beside a float used to keep its narrower column for its whole length, which is
-    /// an approximation and had to say so. A float whose element is one paragraph of known width is
-    /// now emitted as <c>Paragraph.Float</c> and re-flows exactly, so the report would be false.
-    /// Renamed rather than re-asserted, because the behaviour changed rather than the claim.
+    /// Content beside a two-cell band keeps its narrower column for its whole length, an approximation
+    /// that must say so; a float whose element is one paragraph of known width is emitted as
+    /// <c>Paragraph.Float</c> and re-flows exactly, so a report would be false.
     /// <para>
     /// The channel is <c>HtmlToPdfOptions.OnDiagnostic</c> — a <b>per-call</b> callback, not a
     /// process-wide event. A global sink would make this a claim about the whole test process,
@@ -207,14 +205,14 @@ public class FloatLayoutTests
     /// </summary>
     /// <remarks>
     /// <b>The case a short float cannot test.</b> With a one-line float, whatever follows falls
-    /// below it whether <c>clear</c> was honoured or not — which is why the original
-    /// <c>clear</c> test passed against a mapper that dropped the statement entirely. Here the
+    /// below it whether <c>clear</c> was honoured or not, so a one-line test passes against a mapper
+    /// that drops the statement entirely. Here the
     /// float is several lines tall and the content beside it is one line, so an unhonoured
     /// <c>clear</c> leaves BELOW alongside the float instead of under it.
     /// <para>
     /// A real float does not end until its own bottom, so this had to be carried explicitly as
-    /// <c>Paragraph.ClearFloats</c>; the two-cell band used to get it structurally, because a
-    /// table ends the side-by-side region on its own.
+    /// <c>Paragraph.ClearFloats</c>; a two-cell band gets it structurally, because a table ends the
+    /// side-by-side region on its own.
     /// </para>
     /// </remarks>
     [Fact]

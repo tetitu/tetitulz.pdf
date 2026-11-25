@@ -14,7 +14,7 @@ using static Tetitulz.Pdf.HtmlToPdf.Tests.ManagedTestSupport;
 
 namespace Tetitulz.Pdf.HtmlToPdf.Tests
 {
-    /// <summary>Regressions from the 2026-11-12 review of the managed engine's CSS and image readers.</summary>
+    /// <summary>Rules of the managed engine's CSS and image readers.</summary>
     public class HtmlCssReviewFixesTests
     {
         private static string Text(byte[] pdf)

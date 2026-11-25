@@ -251,7 +251,7 @@ namespace Tetitulz.Pdf.Core.IO.Filters
             => (bits[(y * stride) + (x >> 3)] >> (7 - (x & 7))) & 1;
 
         /// <summary>A symbol's identity: its size and every byte of its bitmap.</summary>
-        private readonly struct SymbolKey : IEquatable<SymbolKey>
+        internal readonly struct SymbolKey : IEquatable<SymbolKey>
         {
             private readonly int _width, _height, _hash;
             private readonly byte[] _bits;
@@ -259,13 +259,9 @@ namespace Tetitulz.Pdf.Core.IO.Filters
             internal SymbolKey(int width, int height, byte[] bits)
             {
                 _width = width; _height = height; _bits = bits;
-                unchecked
-                {
-                    int h = (int)2166136261 ^ width;
-                    h = (h * 16777619) ^ height;
-                    for (int i = 0; i < bits.Length; i++) h = (h * 16777619) ^ bits[i];
-                    _hash = h;
-                }
+                // Keyed: the bitmaps are the image's, and an unkeyed hash of them lets an image draw
+                // components that all share one bucket of the distinct-symbol table.
+                _hash = unchecked((Util.KeyedHash.Of(bits, 0, bits.Length) * 31 + width) * 31 + height);
             }
 
             public bool Equals(SymbolKey other)

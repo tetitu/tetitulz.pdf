@@ -14,7 +14,7 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 /// Level 2 colour (PLRM §4.8): <c>setcolorspace</c> makes the space's initial colour current, and
 /// <c>setcolor</c> sets a colour in it — the device spaces directly, <c>/Indexed</c> through its palette,
 /// <c>/Separation</c> and <c>/DeviceN</c> through the program's tint transform into the alternate space.
-/// <c>setcolor</c> used to consume its operands and change nothing, so every such colour painted black.
+/// A <c>setcolor</c> consuming its operands and changing nothing would paint every such colour black.
 /// </summary>
 public sealed class LevelTwoColourTests
 {

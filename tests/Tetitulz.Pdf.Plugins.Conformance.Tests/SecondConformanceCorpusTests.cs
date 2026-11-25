@@ -12,7 +12,7 @@ namespace Tetitulz.Pdf.Plugins.Conformance.Tests;
 
 /// <summary>
 /// The PDF/A checker against the second committed PDF/A test suite (CC BY 3.0; <c>Fixtures/bfo/README.md</c>), a second set of
-/// files this repository did not write, from another vendor than the published profiles (2026-10-20, GAPS.md §20a): each file named
+/// files this repository did not write, from another vendor than the published profiles: each file named
 /// for the part and clause it tests and whether a conforming validator passes it, read as
 /// <see cref="ConformanceCorpusTests"/> reads the published profile's — every verdict its name's, but for the files
 /// <c>known-disagreements.tsv</c> lists, a list that only shrinks.

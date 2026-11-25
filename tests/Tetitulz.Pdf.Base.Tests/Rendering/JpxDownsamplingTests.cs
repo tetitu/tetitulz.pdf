@@ -230,8 +230,8 @@ public sealed class JpxDownsamplingTests : IDisposable
     /// <summary>
     /// A reduced decode whose build then declines — a /ColorSpace with a dictionary geometry unlike
     /// the codestream's, which the raw path refuses — reports no reduction: nothing was drawn at
-    /// the reduced size (the review of 2026-09-26, row 30: it was reported before the build could
-    /// decline). The control, at the codestream's geometry, reports the one reduction.
+    /// the reduced size, so a reduction is reported only once the build cannot decline. The control,
+    /// at the codestream's geometry, reports the one reduction.
     /// </summary>
     [Fact]
     public void WhenOn_AReducedDecodeWhoseBuildDeclines_ReportsNoReduction()

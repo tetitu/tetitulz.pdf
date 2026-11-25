@@ -70,7 +70,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
             string word = new string('i', n);
 
             // An additive width of one unit per character, maxWidth huge so the whole word is one chunk —
-            // the pre-fix cost is purely re-measuring and re-allocating the growing prefix per character.
+            // a quadratic cost would be purely re-measuring and re-allocating the growing prefix per character.
             // Per-thread, not GC.GetTotalAllocatedBytes: BreakWord runs on this thread, and a process-wide
             // counter would also catch other xUnit classes allocating in parallel.
             long before = GC.GetAllocatedBytesForCurrentThread();

@@ -15,14 +15,13 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 /// <c>rem</c> resolves against the <b>document's</b> root font size, not a hardcoded 12pt.
 /// </summary>
 /// <remarks>
-/// <para>Until 2026-08-16 <c>ParseLength</c> mapped <c>rem</c> to <c>n * DefaultFontSizePt</c> — a
-/// fixed 12pt root — while the real root size was computed two lines away and never consumed. So
+/// <para>Mapped to <c>n * DefaultFontSizePt</c> — a fixed 12pt root — <c>rem</c> would make
 /// <c>html { font-size: 62.5% }</c>, the common "1rem = 10px" idiom, and every other custom root
-/// size produced silently wrong lengths everywhere <c>rem</c> appears: font sizes, margins,
+/// size produce silently wrong lengths everywhere <c>rem</c> appears: font sizes, margins,
 /// padding, indents, letter-spacing.</para>
 /// <para><b>The assertion is on rendered glyph height</b>, measured from the produced PDF, not on
 /// the presence of an element. A length bug changes sizes, and a structural assertion cannot see
-/// that — which is why the defect survived a suite that already covered <c>rem</c>'s existence.</para>
+/// that, however well it covers <c>rem</c>'s existence.</para>
 /// <para><b><c>rem</c> is root-em, so <c>body { font-size }</c> must not move it.</b> That is the
 /// one behaviour separating it from <c>em</c>, and the third test is the one that would fail if the
 /// root size were captured after <c>&lt;body&gt;</c> was folded in — which is exactly where the

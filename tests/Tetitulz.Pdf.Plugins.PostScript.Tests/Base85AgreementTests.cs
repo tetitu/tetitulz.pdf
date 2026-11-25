@@ -62,8 +62,8 @@ public class Base85AgreementTests
     }
 
     /// <summary>
-    /// The wrapping case, named directly: <c>&lt;~uuuu~&gt;</c> must not yield the three bytes the
-    /// uint arithmetic used to produce.
+    /// The wrapping case, named directly: <c>&lt;~uuuu~&gt;</c> must not yield the three bytes wrapped
+    /// uint arithmetic would produce.
     /// </summary>
     [Fact]
     public void ThePaddingOverflowDoesNotWrapIntoPlausibleBytes()

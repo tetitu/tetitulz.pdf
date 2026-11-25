@@ -12,8 +12,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Writing;
 
 /// <summary>
-/// The boundaries of <see cref="PdfStructureTreeWriter"/> the 2026-10-11 overnight sweep found
-/// unpinned: which pages get a <c>/StructParents</c> key, what a top-level element names as its
+/// The boundaries of <see cref="PdfStructureTreeWriter"/>: which pages get a <c>/StructParents</c>
+/// key, what a top-level element names as its
 /// parent, and an MCID that falls outside a page's marked content.
 /// </summary>
 public class PdfStructureTreeWriterBoundaryTests

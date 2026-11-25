@@ -107,11 +107,9 @@ public class ReviewFixFilters_PredictorAndLzwTests
     //  TIFF predictor — sub-byte depths (1/2/4 bpc)
     // ==================================================================
     //
-    // These used to bail and return the input unchanged, and this file asserted exactly that
-    // under the name RemoveTiffPredictor_SubByteDepth_ReturnsInputUnchanged. ISO 32000-1 §7.4.4.4
-    // permits 1, 2 and 4 bits per component, so a 4-bpc indexed image with /Predictor 2 is
-    // ordinary conformant input that rendered as a horizontal colour smear. The behaviour
-    // changed, so the test is renamed rather than having its assertion edited — see CLAUDE.md.
+    // ISO 32000-1 §7.4.4.4 permits 1, 2 and 4 bits per component, so a 4-bpc indexed image with
+    // /Predictor 2 is ordinary conformant input; returned unchanged, it would render as a
+    // horizontal colour smear.
 
     [Theory]
     [InlineData(1)]

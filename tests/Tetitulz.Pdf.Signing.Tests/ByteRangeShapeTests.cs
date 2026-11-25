@@ -15,8 +15,7 @@ namespace Tetitulz.Pdf.Signing.Tests;
 
 /// <summary>
 /// The shape of a <c>/ByteRange</c>: two spans from the start of the file, with the
-/// <c>/Contents</c> hole between them. Found by the overnight sweep, where the hole's own check
-/// survived every mutation.
+/// <c>/Contents</c> hole between them — the hole's own check pinned, which no other test does.
 /// </summary>
 public sealed class ByteRangeShapeTests
 {

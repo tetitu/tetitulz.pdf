@@ -188,7 +188,7 @@ xmlns:wps=""{WpsNs}""><wp:inline><wp:extent cx=""914400"" cy=""914400""/>
             Convert((doc, body) => body.Append(new Paragraph(new Run(new Drawing(ShapeTreeDrawing(cap))))));
             Assert.DoesNotContain("the remainder were skipped", DocxToPdfConverter.LastDiagnostic ?? "");
 
-            // One more, and the truncation is real — so the fix cannot be satisfied by deleting
+            // One more, and the truncation is real — so the guard cannot be satisfied by deleting
             // the report.
             Convert((doc, body) => body.Append(new Paragraph(new Run(new Drawing(ShapeTreeDrawing(cap + 1))))));
             Assert.Contains("the remainder were skipped", DocxToPdfConverter.LastDiagnostic ?? "");

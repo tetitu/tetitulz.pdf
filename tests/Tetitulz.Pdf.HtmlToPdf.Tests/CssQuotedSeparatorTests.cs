@@ -11,8 +11,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 /// <summary>
 /// A separator inside a quoted string separates nothing: the one CSS splitter
 /// (<c>HtmlToBuilderMapper.SplitTopLevel</c>) reads declarations, tokens and comma lists past a
-/// quoted <c>;</c> or <c>,</c>. The dedup sweep's row D10 (2026-10-21) made it ignore quotes and no
-/// test failed. Pure primaries make the fill operator name the colour: <c>1 0 0 rg</c> is red,
+/// quoted <c>;</c> or <c>,</c>. Pure primaries make the fill operator name the colour: <c>1 0 0 rg</c> is red,
 /// <c>0 0 1 rg</c> blue.
 /// </summary>
 public class CssQuotedSeparatorTests

@@ -56,10 +56,10 @@ public class PdfImageExtractorTests
     }
 
     /// <summary>
-    /// Wave 17, R7.1: a raw image whose declared extent overflows <c>width * height * components</c>
+    /// A raw image whose declared extent overflows <c>width * height * components</c>
     /// in an <c>int</c> is still written as a PPM or PGM — header from the dictionary, pixels as many
-    /// as the stream holds. It used to wrap negative, hand <c>Write</c> a negative count, and the bare
-    /// catch then saved the image as <c>.raw</c> with no header and no word said. The small cases pin
+    /// as the stream holds — not a product wrapped negative, a negative count handed to <c>Write</c>,
+    /// and the image saved as <c>.raw</c> with no header and no word said. The small cases pin
     /// the same two writers at an ordinary size.
     /// </summary>
     [Theory]

@@ -14,10 +14,10 @@ namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
 /// <c>PdfParser.GetObject</c> reads an object from its own header when its cross-reference entry
-/// misplaces it (GAPS §19h item 5b) — but only from a header inside the revision whose section
-/// supplied that entry. Taking the file's last header let bytes appended after a signature, listed
-/// by no section, stand in for a signed object, while the change analysis, which reads the entries'
-/// offsets, saw nothing after the signature (the review of batch 131, 2026-10-15).
+/// misplaces it — but only from a header inside the revision whose section supplied that entry.
+/// Taking the file's last header would let bytes appended after a signature, listed by no section,
+/// stand in for a signed object, while the change analysis, which reads the entries' offsets, sees
+/// nothing after the signature.
 /// </summary>
 public class HeaderRecoveryRevisionBoundTests
 {

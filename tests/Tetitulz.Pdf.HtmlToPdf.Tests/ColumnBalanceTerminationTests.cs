@@ -13,10 +13,9 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
 /// The multi-column balancer terminates on a block whose height a huge margin drives past 2^46, where
-/// adjacent doubles are more than the bisection's hundredth-point tolerance apart. It bisected from
-/// nothing to everything until <c>high - low &lt;= 0.01</c>, which that gap makes impossible — <c>mid</c>
-/// rounds to an end of the interval and the loop spins forever, before export validation runs
-/// (2026-10-22).
+/// adjacent doubles are more than the bisection's hundredth-point tolerance apart. Bisecting from
+/// nothing to everything until <c>high - low &lt;= 0.01</c>, which that gap makes impossible, <c>mid</c>
+/// would round to an end of the interval and the loop spin forever, before export validation runs.
 /// </summary>
 public class ColumnBalanceTerminationTests
 {

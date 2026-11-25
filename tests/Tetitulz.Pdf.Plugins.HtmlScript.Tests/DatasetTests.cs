@@ -6,9 +6,9 @@ namespace Tetitulz.Pdf.Plugins.HtmlScript.Tests;
 
 /// <summary>
 /// <c>el.dataset</c>, a string indexer with a getter and a setter. A name with no <c>data-*</c>
-/// attribute was still an own property — <c>'x' in el.dataset</c> true for every x — because the
-/// setter existed (Wave 22, HtmlScript-2:0); a symbol-keyed write reached the indexer as
-/// "Symbol(k)" and its read never found it (2:1).
+/// attribute is not an own property just because the setter exists — <c>'x' in el.dataset</c> is
+/// not true for every x — and a symbol-keyed write is not handed to the indexer as "Symbol(k)",
+/// where its read would never find it.
 /// </summary>
 [Collection(PluginHostCollection.Name)]
 public sealed class DatasetTests

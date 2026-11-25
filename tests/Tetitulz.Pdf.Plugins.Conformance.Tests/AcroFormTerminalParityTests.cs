@@ -106,8 +106,8 @@ public class AcroFormTerminalParityTests
     // A widget that also carries a field type. Producers that merge a single widget into its field
     // and then wrap the result in a group emit this. /FT is inheritable (Table 220), so carrying one
     // says nothing about whether this node is a field: the kid is a widget, the group is terminal.
-    // The walk used to call it a field, so the group escaped UA08 and the fixer wrote the /TU onto
-    // the widget, where — /TU not being inheritable — it names nothing a user reaches.
+    // Called a field, it would let the group escape UA08 and the fixer write the /TU onto the
+    // widget, where — /TU not being inheritable — it names nothing a user reaches.
     [InlineData("ft", true)]
     // /T present but empty, what a generator that writes every key unconditionally emits. An empty
     // partial name contributes nothing to a fully qualified name (§12.7.3.2), so it is not a field.
@@ -143,11 +143,10 @@ public class AcroFormTerminalParityTests
     /// <summary>
     /// <b>The consequence of the <c>/FT</c> shape, at the level a user feels it.</b> With the group
     /// terminal, Core reads the merged widget's <c>/FT</c> through
-    /// <c>PdfFormField.ResolveFieldType</c>'s downward step — this said <c>WidgetFieldType()</c>,
-    /// which exists nowhere in the tree — and types the group as a text field, so a tooltip written
-    /// onto the group names something. That
-    /// is what makes "terminal" the useful answer here rather than merely the permissive one, and
-    /// it is the half of the fix no boolean above can express.
+    /// <c>PdfFormField.ResolveFieldType</c>'s downward step and types the group as a text field, so
+    /// a tooltip written onto the group names something. That is what makes "terminal" the useful
+    /// answer here rather than merely the permissive one, and it is the half no boolean above can
+    /// express.
     /// </summary>
     [Fact]
     public void MergedWidgetsFieldType_ReachesTheGroup()

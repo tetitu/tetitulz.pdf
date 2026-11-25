@@ -13,11 +13,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// A stream whose decode failed is not decoded again by the same render. Both renderers memoised only
-/// successful decodes, so an 88-byte JBIG2 image whose decode fails, drawn 845 times, was decoded 845
-/// times at up to 50 ms each — 11 s for an 11 KB file (the release campaign's slow unit, 2026-10-24) —
-/// and a tiling cell whose stream fails was decoded at every fill. The first attempt's report stands
-/// and no later attempt is made; the evidence is the report count, one where it was one a draw.
+/// A stream whose decode failed is not decoded again by the same render. Memoising only successful
+/// decodes, an 88-byte JBIG2 image whose decode fails, drawn 845 times, would be decoded 845 times at
+/// up to 50 ms each — 11 s for an 11 KB file — and a tiling cell whose stream fails at every fill. The
+/// first attempt's report stands and no later attempt is made; the evidence is the report count, one
+/// rather than one a draw.
 /// </summary>
 public sealed class FailedDecodeMemoTests
 {

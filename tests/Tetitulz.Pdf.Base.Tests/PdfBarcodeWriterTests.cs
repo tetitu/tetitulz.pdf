@@ -18,12 +18,12 @@ namespace Tetitulz.Pdf.Base.Tests
 {
     public class PdfBarcodeWriterTests
     {
-        [Fact]
         /// <summary>
         /// A barcode PDF must actually contain bars, and those bars must depend on the encoded
         /// data. Both halves matter: a blank page is a valid non-empty PDF, and a generator that
         /// ignored its input would still paint <i>something</i>.
         /// </summary>
+        [Fact]
         public void GeneratePdf_Code128_PaintsBarsThatDependOnTheData()
         {
             using var hello = PixelAssert.Render(
@@ -296,12 +296,12 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.Throws<ArgumentNullException>(() => PdfBarcodeWriter.GeneratePdf(null, BarcodeType.Code128));
         }
 
-        [Fact]
         /// <summary>
         /// The <c>PdfOperations</c> entry point is a facade over <see cref="PdfBarcodeWriter"/>,
         /// so it must produce byte-identical output. Comparing the two is what would catch the
         /// facade drifting to different defaults; "returns bytes" would not.
         /// </summary>
+        [Fact]
         public void PdfOperations_GenerateBarcodePdf_MatchesTheDirectWriter()
         {
             byte[] viaFacade = PdfOperations.GenerateBarcodePdf("HELLO", BarcodeType.Code128);

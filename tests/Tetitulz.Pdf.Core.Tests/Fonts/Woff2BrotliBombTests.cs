@@ -139,11 +139,10 @@ public class Woff2BrotliBombTests
     /// buffer is allocated — the attack a tiny file makes by declaring, rather than expanding.
     /// </summary>
     /// <remarks>
-    /// <para><b>One guard stands on this: <c>BrotliInflate</c>'s, at the allocation.</b> There used to
-    /// be three — the summing loop refused as the total crossed <c>MaxSfntBytes</c>, and the
-    /// directory tested each <c>transformLength</c> too — and deleting any one left another to
-    /// refuse, so none of them could be pinned. The two copies were deleted; mutating the survivor
-    /// out is what this test now kills on its own.</para>
+    /// <para><b>One guard stands on this: <c>BrotliInflate</c>'s, at the allocation.</b> Three guards on
+    /// one refusal — a summing loop refusing as the total crosses <c>MaxSfntBytes</c>, and the
+    /// directory testing each <c>transformLength</c> too — would let any one be deleted with another
+    /// still refusing, so none could be pinned; with one, mutating it out is what this test kills.</para>
     ///
     /// <para><b>With it gone, the verdict still does not change</b>, which is why this asserts
     /// allocation exactly as the bomb test above does: the stream is short of the declared total, so

@@ -255,7 +255,7 @@ public class PublicKeyPdfMacTests
     /// <para>§6.5.1 requires the most recent unsigned revision's <c>/ByteRange</c> to cover the
     /// entire file, so the previous token stops covering it the moment anything is appended —
     /// Annex B.2.2.2 names exactly that as what a stale token indicates. A password-protected
-    /// document has always kept a valid token through an append; this is the public-key leg of the
+    /// document keeps a valid token through an append; this is the public-key leg of the
     /// same guarantee.</para>
     ///
     /// <para><b>The assertion is that the token verifies afterwards</b>, not merely that bytes were

@@ -139,11 +139,9 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// no seam through which a font can be supplied, so this one genuinely needs a host font
         /// and is <b>skipped</b>, visibly, where there is none.
         ///
-        /// <para>It used to open with <c>if (!HasHebrewFont()) return;</c>, which reports
-        /// <i>Passed</i> while executing nothing (CLAUDE.md banned pattern 2). The build guard did
-        /// not see it because the guard's regex matched only an inline <c>File.Exists</c>; the
-        /// helper call hid the same shape. Both halves are fixed —
-        /// <c>NoHardcodedPathsTests.NoTestSilentlyReturnsFromAGuardedEarlyReturn</c> now flags a
+        /// <para>Not <c>if (!HasHebrewFont()) return;</c>, which reports <i>Passed</i> while executing
+        /// nothing (CLAUDE.md banned pattern 2) —
+        /// <c>NoHardcodedPathsTests.NoTestSilentlyReturnsFromAGuardedEarlyReturn</c> flags such a
         /// predicate call however it is spelled.</para>
         ///
         /// <para>The companion below covers the same claim with an injected font, so a host with

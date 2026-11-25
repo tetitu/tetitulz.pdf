@@ -39,10 +39,9 @@ public sealed class PdfPluginHostScanDiagnosticTests : IDisposable
     {
         var host = PdfPluginHost.Instance;
 
-        // The exact sequence from the finding: a scan that legitimately drops something, then a
-        // clean scan on the same thread. The host used to hand the second caller the FIRST scan's
-        // failure, so a host checking "was anything skipped?" failed startup over someone else's
-        // problem.
+        // A scan that legitimately drops something, then a clean scan on the same thread. Handing
+        // the second caller the FIRST scan's failure would make a host checking "was anything
+        // skipped?" fail startup over someone else's problem.
         RunScanThatDropsADll();
         Assert.NotNull(PdfPluginHost.LastRegistrationError);
 

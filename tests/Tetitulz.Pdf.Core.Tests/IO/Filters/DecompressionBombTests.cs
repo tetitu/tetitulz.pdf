@@ -19,9 +19,9 @@ namespace Tetitulz.Pdf.Core.Tests.IO.Filters;
 /// <remarks>
 /// In the <c>PdfLimits</c> collection because the cumulative-output tests lower
 /// <see cref="PdfLimits.MaxCumulativeOutputBytes"/>, which is process-global — and lower it through
-/// <c>PdfLimits</c>, as a host would: the pipeline used to copy the value into a static field at type
-/// initialisation, so a host setting it after the first decode was not honoured (the review of
-/// 2026-10-16, R1.5), and these tests set that field directly and so could not see it.
+/// <c>PdfLimits</c>, as a host would: a pipeline copying the value into a static field at type
+/// initialisation would ignore a host setting it after the first decode, and a test setting that
+/// field directly could not see it.
 /// </remarks>
 [Collection(Constants.PdfLimitsCollection.Name)]
 public class DecompressionBombTests
@@ -33,17 +33,11 @@ public class DecompressionBombTests
     [Fact]
     public void RunLengthDecode_MaliciousRepeatRuns_ThrowsBeforeOomRisk()
     {
-        // Each (0x00, byte) pair expands to 129 bytes of output (length=0 →
-        // 257-0=257 hmm actually length byte 0 means "copy 1 literal".
-        // To trigger the repeat path we need length >= 129.  Each "0x81 byte"
-        // pair expands to 128 copies of `byte`.
-        // Build ~1 MB of such pairs → 128 MB of decompressed output.  Our cap
-        // is 512 MiB so we need enough pairs to cross it.
-        // 4 Mi pairs × 128 bytes is 536,870,912 — EXACTLY the 512 MiB cap, not over it, despite
-        // what this line used to claim. The filter's two checks were `>=` where Flate and LZW use
-        // `>`, so landing precisely on the ceiling threw and the off-by-one fixture passed for the
-        // wrong reason. The ceiling is inclusive now (a stream whose /DL is exactly n and which
-        // decodes to exactly n bytes must be accepted), so the bomb has to genuinely exceed it.
+        // RunLength (§7.4.5): a length byte of 0–127 copies that many plus one literal bytes; 129–255
+        // repeats the next byte 257 − length times, so each "0x81 byte" pair expands to 128 copies of
+        // `byte`. 4 Mi pairs × 128 bytes is 536,870,912 — EXACTLY the 512 MiB cap, not over it — and the
+        // ceiling is inclusive (a stream whose /DL is exactly n and which decodes to exactly n bytes must
+        // be accepted, as Flate and LZW accept it), so one more pair makes the bomb genuinely exceed it.
         int pairCount = 4 * 1024 * 1024 + 1;
         byte[] input = new byte[pairCount * 2 + 1];
         for (int i = 0; i < pairCount; i++)

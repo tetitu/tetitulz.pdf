@@ -574,7 +574,7 @@ public class SvgFilterEffectsTests
 
     /// <summary>
     /// The noise is the specification's reference algorithm: one pixel's four channels agree, to four
-    /// places, with an independent port of the reference C (Python, run 2026-09-26) at the same seed,
+    /// places, with an independent port of the reference C (Python) at the same seed,
     /// frequencies, octaves and point — a pixel's centre, moved into user space by <c>ToUser</c>.
     /// </summary>
     [Theory]

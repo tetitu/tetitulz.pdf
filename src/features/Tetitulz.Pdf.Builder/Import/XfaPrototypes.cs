@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Tetitulz.Pdf.Core.Util;
 
 namespace Tetitulz.Pdf.Builder.Import
 {
@@ -214,7 +215,7 @@ namespace Tetitulz.Pdf.Builder.Import
             if (!HasDataContent(target) && HasDataContent(prototype))
                 target.AddFirst(new XText(DataContent(prototype)));
 
-            var targetByType = target.Elements().GroupBy(c => c.Name.LocalName)
+            var targetByType = target.Elements().GroupBy(c => c.Name.LocalName, KeyedHash.Strings)
                 .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.Ordinal);
             var ordinal = new Dictionary<string, int>(StringComparer.Ordinal);
             foreach (XElement child in prototype.Elements().ToList())

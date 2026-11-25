@@ -95,8 +95,8 @@ public class InheritedFieldTypeTests
     /// <summary>
     /// The inheritance climbs are <b>capped</b>, and an unbounded <c>Parent</c> chain is reachable
     /// from public API: <c>Kids</c> materialises a fresh wrapper per read, so descending a
-    /// <c>/Kids</c> cycle builds one as deep as the caller cares to go. The climbs used to recurse
-    /// over that, which is a <c>StackOverflowException</c> the caller cannot catch.
+    /// <c>/Kids</c> cycle builds one as deep as the caller cares to go. A climb recursing over that
+    /// would be a <c>StackOverflowException</c> the caller cannot catch.
     /// </summary>
     /// <remarks>
     /// <b>The assertion is the cap's own evidence, not a wall clock.</b> Only the root carries

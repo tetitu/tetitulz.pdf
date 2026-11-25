@@ -18,10 +18,10 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts;
 ///
 /// <para><b>The gap it closes is a wrong answer, not a slow one.</b> Filename matching is the right
 /// first question and answers most requests for free, but a font's family is the one property its
-/// <i>file</i> need not agree with. When the filename told us nothing the search used to fall
-/// straight through to the exhaustive scan and return the first installed font that happened to
-/// cover the required code points — the right glyphs in the wrong typeface, with nothing anywhere
-/// reporting a substitution had been made.</para>
+/// <i>file</i> need not agree with. When the filename tells nothing, falling straight through to
+/// the exhaustive scan would return the first installed font that happens to cover the required
+/// code points — the right glyphs in the wrong typeface, with nothing anywhere reporting a
+/// substitution had been made.</para>
 ///
 /// <para><b>Host-independent by construction.</b> <c>TETITULZ_PDF_FONTDIR</c> <i>replaces</i> the OS
 /// font search path, so these tests run against two fonts this file wrote and never against

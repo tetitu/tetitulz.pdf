@@ -148,7 +148,6 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.Equal(1, CountOperator(ContentOf(pdf), "re"));
         }
 
-        [Fact]
         /// <summary>
         /// An SVG with no elements must still produce a parseable one-page PDF — and that page must
         /// be <b>empty</b>. Both halves matter: "some bytes came back" is equally true of a
@@ -158,6 +157,7 @@ namespace Tetitulz.Pdf.Base.Tests
         /// from <c>SvgConversionOptions</c>, not from the document — worth pinning, because it is
         /// the kind of default a reader would guess wrong.</para>
         /// </summary>
+        [Fact]
         public void Convert_EmptySvg_ProducesAnEmptyOnePageDocument()
         {
             string svg = @"<svg xmlns=""http://www.w3.org/2000/svg"" width=""200"" height=""200""></svg>";
@@ -353,12 +353,12 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.Equal(3, xs.Distinct().Count());
         }
 
-        [Fact]
         /// <summary>
         /// The name promises the two overloads produce the <b>same</b> PDF, so compare them
         /// byte for byte. The predecessor checked only that each was non-empty — which would hold
         /// if the stream overload silently converted a different document, or an empty one.
         /// </summary>
+        [Fact]
         public void Convert_StreamOverload_ProducesSamePdf()
         {
             string svg = Svg(@"<rect x=""0"" y=""0"" width=""10"" height=""10""/>");
@@ -410,7 +410,6 @@ namespace Tetitulz.Pdf.Base.Tests
             AssertFillColour(content, 1f, 0f, 0xAA / 255f);
         }
 
-        [Fact]
         /// <summary>
         /// <c>PdfOperations.ConvertSvgToPdf(string)</c> takes a FILE PATH, and must produce what the
         /// direct converter produces from the same markup.
@@ -421,6 +420,7 @@ namespace Tetitulz.Pdf.Base.Tests
         /// path parameter would let "the facade matches the direct converter" pass while missing that,
         /// because both sides would be given the same markup.</para>
         /// </summary>
+        [Fact]
         public void PdfOperations_ConvertSvgToPdf_ReadsTheFileAtThePathItIsGiven()
         {
             string svg  = Svg(@"<rect x=""5"" y=""5"" width=""50"" height=""50""/>");
@@ -437,12 +437,12 @@ namespace Tetitulz.Pdf.Base.Tests
             finally { if (File.Exists(path)) File.Delete(path); }
         }
 
-        [Fact]
         /// <summary>
-        /// A missing file reports itself as a missing file. It used to reach the XML parser and come
-        /// back as <c>XmlException: Data at the root level is invalid</c>, which blames the caller's
-        /// SVG for a file that was never opened.
+        /// A missing file reports itself as a missing file, not as the XML parser's
+        /// <c>XmlException: Data at the root level is invalid</c>, which would blame the caller's SVG for
+        /// a file that was never opened.
         /// </summary>
+        [Fact]
         public void PdfOperations_ConvertSvgToPdf_MissingFile_ThrowsFileNotFound()
         {
             string missing = Path.Combine(Path.GetTempPath(), $"tetitulz-absent-{Guid.NewGuid():N}.svg");
@@ -459,7 +459,6 @@ namespace Tetitulz.Pdf.Base.Tests
             RectOperands(content).Split((char[])null, StringSplitOptions.RemoveEmptyEntries)
                 .Select(Num).ToArray();
 
-        [Fact]
         /// <summary>
         /// An outer <c>scale(s)</c> around an inner <c>translate(b)</c> must place a point at
         /// <c>s·(b + x)</c>. The four-field <c>Tx/Ty/Sx/Sy</c> transform composed by
@@ -469,6 +468,7 @@ namespace Tetitulz.Pdf.Base.Tests
         /// <para>The exact coordinate is the assertion on purpose: "the two differ" would also hold
         /// for the wrong answer.</para>
         /// </summary>
+        [Fact]
         public void Convert_ScaleAroundNestedTranslate_ScalesTheChildTranslateToo()
         {
             string content = ContentOf(SvgToPdfConverter.Convert(
@@ -480,13 +480,13 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.Equal(10f, ops[2], 2);   // and the scale still reaches the width
         }
 
-        [Fact]
         /// <summary>
         /// A <c>transform</c> list is applied left to right, so <c>translate</c> then <c>scale</c>
         /// is not the same placement as <c>scale</c> then <c>translate</c>. The predecessor
         /// searched the whole attribute for the first <c>translate(</c> and the first
         /// <c>scale(</c> and merged them component-wise, which made the two identical.
         /// </summary>
+        [Fact]
         public void Convert_TransformListOrder_ChangesThePlacement()
         {
             string translateFirst = ContentOf(SvgToPdfConverter.Convert(
@@ -521,11 +521,11 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.Contains("half-written coordinate pair", SvgToPdfConverter.LastError);
         }
 
-        [Fact]
         /// <summary>
         /// A well-formed path is unaffected by the pair guard and reports nothing — without this
         /// the theory above would pass for a converter that reported on every path.
         /// </summary>
+        [Fact]
         public void Convert_WellFormedPath_ReportsNothing()
         {
             ContentOf(SvgToPdfConverter.Convert(Svg(@"<path d=""M 10 10 L 20 20 Z"" fill=""blue""/>")));
@@ -551,9 +551,9 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.Contains(fill, SvgToPdfConverter.LastError);
         }
 
-        [Fact]
         /// <summary>An 8-digit <c>#RRGGBBAA</c> is valid CSS/SVG 2; the alpha is dropped, the
-        /// colour is not. It used to fall through every branch to the black fallback.</summary>
+        /// colour is not, rather than falling through every branch to the black fallback.</summary>
+        [Fact]
         public void Convert_EightDigitHexColour_KeepsTheRgbAndDropsTheAlpha()
         {
             string content = ContentOf(SvgToPdfConverter.Convert(
@@ -562,13 +562,12 @@ namespace Tetitulz.Pdf.Base.Tests
             AssertFillColour(content, 0x20 / 255f, 0xC0 / 255f, 0x80 / 255f);
         }
 
-        [Fact]
         /// <summary>
-        /// Text above U+00FF used to reach the file as <c>?</c> with the conversion reporting
-        /// success — at the viewer indistinguishable from a font-substitution problem. The
-        /// substitution still happens (the only font offered is Helvetica); what changed is that
-        /// it is now <b>reported</b>, naming the characters.
+        /// Text above U+00FF reaches the file as <c>?</c> — the only font offered is Helvetica — and the
+        /// substitution is <b>reported</b>, naming the characters; silent, it would be indistinguishable
+        /// at the viewer from a font-substitution problem.
         /// </summary>
+        [Fact]
         public void Convert_TextOutsideWinAnsi_ReportsTheCharactersItReplaced()
         {
             const string hebrew = "שלום";
@@ -581,12 +580,12 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.Contains("ש", SvgToPdfConverter.LastError);
         }
 
-        [Fact]
         /// <summary>
         /// The characters WinAnsi <i>can</i> carry must reach the file as WinAnsi codes, and the
         /// font must declare that encoding — otherwise code 0x97 resolves through the font's
         /// built-in StandardEncoding to a different glyph than the em dash that was written.
         /// </summary>
+        [Fact]
         public void Convert_WinAnsiPunctuation_IsEncodedAndDeclared()
         {
             byte[] pdf = SvgToPdfConverter.Convert(
@@ -606,13 +605,13 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.Equal("WinAnsiEncoding", ((PdfName)font[PdfName.Encoding]).Value);
         }
 
-        [Fact]
         /// <summary>
         /// SVG renders <c>stroke="none"</c> as nothing. <c>EmitLine</c> appended <c>S</c>
         /// unconditionally while <c>SetStrokeColor</c> emitted no <c>RG</c>, so the line was drawn
         /// in whatever colour the previous element left in the graphics state — black at the start
         /// of a page.
         /// </summary>
+        [Fact]
         public void Convert_LineWithStrokeNone_IsNotStroked()
         {
             string content = ContentOf(SvgToPdfConverter.Convert(
@@ -623,12 +622,12 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.Equal(1, CountOperator(content, "n"));   // the no-op painter (§8.5.3.1)
         }
 
-        [Fact]
         /// <summary>
         /// SVG's initial values are <c>fill:black; stroke:none</c>, so a <c>&lt;polyline&gt;</c>
         /// with no attributes is filled and not stroked. This converter stroked every open
         /// polyline.
         /// </summary>
+        [Fact]
         public void Convert_PolylineWithNoStrokeAttribute_IsFilledNotStroked()
         {
             string content = ContentOf(SvgToPdfConverter.Convert(
@@ -638,14 +637,13 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.True(CountOperator(content, "f") >= 1, "the polyline was not filled");
         }
 
-        [Fact]
         /// <summary>
         /// Without a <c>viewBox</c> nothing maps the SVG coordinate system onto the page — the user
         /// unit is a point and the graphic is drawn at its own size in the bottom-left corner. That
-        /// is right for a page sized to the graphic and wrong-looking otherwise, and it used to
-        /// happen with no warning: the parsed <c>width</c>/<c>height</c> were stored on the context
-        /// and read by nothing.
+        /// is right for a page sized to the graphic and wrong-looking otherwise, so it is reported,
+        /// from the parsed <c>width</c>/<c>height</c>.
         /// </summary>
+        [Fact]
         public void Convert_OversizedSvgWithNoViewBox_ReportsThatItOverflowsThePage()
         {
             ContentOf(SvgToPdfConverter.Convert(
@@ -662,12 +660,12 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.Null(SvgToPdfConverter.LastError);
         }
 
-        [Fact]
         /// <summary>
         /// A percentage resolves against a containing block this converter does not model, so it is
         /// not a length. <c>TryParseAttrF</c> trimmed the <c>%</c> and yielded the number 100 for
         /// <c>width="100%"</c> — a confidently wrong viewport rather than an absent one.
         /// </summary>
+        [Fact]
         public void Convert_PercentageViewport_IsNotReadAsANumber()
         {
             ContentOf(SvgToPdfConverter.Convert(
@@ -678,11 +676,11 @@ namespace Tetitulz.Pdf.Base.Tests
             Assert.Contains("percentage", SvgToPdfConverter.LastError);
         }
 
-        [Fact]
         /// <summary>
         /// The diagnostic slot is reset at the start of every conversion, on every path — a slot a
         /// caller reads after a call must never hand back the previous document's answer.
         /// </summary>
+        [Fact]
         public void LastError_IsResetByTheNextConversion()
         {
             SvgToPdfConverter.Convert(Svg(@"<path d=""M 10""/>"));

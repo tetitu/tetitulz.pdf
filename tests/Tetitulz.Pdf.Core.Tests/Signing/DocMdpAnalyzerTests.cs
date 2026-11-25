@@ -325,10 +325,10 @@ public class DocMdpAnalyzerTests
 
     // ── LTV (/DSS) blesses additions of its own shape, never a rewrite ──────
     //
-    // The /DSS allow-list used to admit every object reachable from the catalog's /DSS, through any
-    // key, before any other classification — so a revision that rewrote the page's content stream and
-    // listed it under /Certs was reported compliant at P=1, the verdict PdfSignatureVerifier reports
-    // (the review of 2026-10-16, R1.7). LTV data is only ever added, and only in its own shapes.
+    // A /DSS allow-list admitting every object reachable from the catalog's /DSS, through any key,
+    // before any other classification would report a revision that rewrote the page's content
+    // stream and listed it under /Certs compliant at P=1 — the verdict PdfSignatureVerifier
+    // reports. LTV data is only ever added, and only in its own shapes.
 
     [Fact]
     public void P1_ContentStreamRewrittenAndListedUnderDssCerts_ExceedsPermissions()
@@ -773,16 +773,10 @@ public class DocMdpAnalyzerTests
     }
 
     /// <summary>
-    /// Writes <paramref name="value"/> as object <paramref name="objNum"/> in a genuine
-    /// incremental update appended to <paramref name="pdf"/>. Unlike <see cref="AppendPageEdit"/>
-    /// this takes any <see cref="PdfObject"/>, so a revision whose changed object is *not* a
-    /// dictionary can be produced.
-    /// </summary>
-    /// <summary>
     /// Appends an incremental update whose only content is a cross-reference section marking
     /// <paramref name="objNum"/> <b>free</b> — i.e. a deletion, written the way a real editor
     /// writes one. Nothing else changes, so the analyzer sees a revision with no rewritten object
-    /// at all: exactly the shape that used to classify as compliant.
+    /// at all: a shape an analyzer reading objects alone would classify as compliant.
     /// </summary>
     private static byte[] AppendObjectDeletion(byte[] pdf, int objNum)
     {
@@ -820,6 +814,12 @@ public class DocMdpAnalyzerTests
         return outMs.ToArray();
     }
 
+    /// <summary>
+    /// Writes <paramref name="value"/> as object <paramref name="objNum"/> in a genuine
+    /// incremental update appended to <paramref name="pdf"/>. Unlike <see cref="AppendPageEdit"/>
+    /// this takes any <see cref="PdfObject"/>, so a revision whose changed object is *not* a
+    /// dictionary can be produced.
+    /// </summary>
     private static byte[] AppendIndirectObject(byte[] pdf, int objNum, PdfObject value)
     {
         using var src = new MemoryStream(pdf);

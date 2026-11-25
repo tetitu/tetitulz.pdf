@@ -14,8 +14,8 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// QR codes another tool made: every version and error-correction level, and the modes a text
 /// reader meets. The symbols below were made by an independent encoder (Python, an encoder this repository did
 /// not write) and are checked in as their module rows, one hex string a row, no quiet zone — so the
-/// reader is held to an independent encoder's output, not to round trips through its own. Until
-/// 2026-10-18 the reader took only what this library writes (version 1–10, level M, byte mode).
+/// reader is held to an independent encoder's output, not to round trips through its own, and
+/// reads more than this library writes (version 1–10, level M, byte mode).
 /// </summary>
 public class QrThirdPartySymbolTests
 {
@@ -99,8 +99,8 @@ public class QrThirdPartySymbolTests
     }
 
     /// <summary>
-    /// ISO-8859-10 (ECI 12), which no target framework carries a code page for, read through the generated tables
-    /// (2026-10-20; it was refused by its number): an independent encoder's symbol, the text an independent reader reads from it, U+0100
+    /// ISO-8859-10 (ECI 12), which no target framework carries a code page for, read through the generated tables:
+    /// an independent encoder's symbol, the text an independent reader reads from it, U+0100
     /// U+0112 U+0122 — bytes C0, A2, A3 in ISO-8859-10.
     /// </summary>
     [Fact]

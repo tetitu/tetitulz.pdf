@@ -129,7 +129,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// Excel's <c>m</c> is the month, and the minute only beside an hour or a second (ECMA-376
-        /// Part 1 §18.8.31); .NET tells the two by case, so a code passed through as written printed
+        /// Part 1 §18.8.31); .NET tells the two by case, so a code passed through as written would print
         /// minute 00 for every month. Serial 44927 is 2023-01-01, 45000 is 2023-03-15; .5 is noon and
         /// .75 six in the evening. A quoted or escaped literal and a separator are written as the code
         /// has them, and a one-letter code is read as the token, not as one of .NET's standard formats.
@@ -160,7 +160,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         }
 
         /// <summary>
-        /// Codes the overnight sweep found untested: scaling commas, a grouping comma anywhere
+        /// Scaling commas, a grouping comma anywhere
         /// among the placeholders, the <c>?</c> placeholder, and zero in a two-section code.
         /// </summary>
         [Theory]
@@ -203,8 +203,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         }
 
         /// <summary>
-        /// A code of a hundred thousand trailing commas is read in one pass. The search removed one comma
-        /// and copied the code again each time: some ten gigabytes for this code (Wave 22, DocxToPdf-1:1).
+        /// A code of a hundred thousand trailing commas is read in one pass. Removing one comma and copying
+        /// the code again each time would cost some ten gigabytes for this code.
         /// </summary>
         [Fact]
         public void AHundredThousandScalingCommas_AreReadInLinearWork()

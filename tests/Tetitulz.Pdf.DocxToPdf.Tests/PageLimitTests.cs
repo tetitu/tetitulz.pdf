@@ -14,7 +14,7 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests
 {
     /// <summary>
-    /// <see cref="DocxToPdfOptions.MaxPages"/> (2026-10-20, the owner's decision: a parameter, unlimited by default),
+    /// <see cref="DocxToPdfOptions.MaxPages"/> (a parameter, unlimited by default),
     /// on both paths: a document past the limit ends at the last whole page within it — its header drawn on every
     /// page written — and <see cref="DocxToPdfConverter.DiagnosticReported"/> says so.
     /// </summary>

@@ -37,8 +37,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// A table whose width nothing can know: one more table nested in each than
         /// <c>PdfLimits.MaxTableNestingDepth</c> lets the layout draw or measure, so the innermost —
         /// holding <paramref name="innermost"/> — is past the cap, and every column around it holds
-        /// only a table of unknown width. (A nested table within the cap is measured, since
-        /// 2026-10-19; it was the fixture for "unknown" before.)
+        /// only a table of unknown width. (A nested table within the cap is measured, so it cannot be the
+        /// fixture for "unknown".)
         /// </summary>
         internal static string TablesPastTheNestingCap(string innermost)
         {

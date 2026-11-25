@@ -12,10 +12,10 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 /// <summary>
 /// <c>setcolor</c> with a non-finite component is a <c>rangecheck</c>, raised where the components are
 /// consumed, not carried into a colour-space conversion. A NaN or ±∞ component (<c>1e308 1e308 mul</c>,
-/// or a CIEBased Decode of <c>Infinity − Infinity</c>) reached a CIE Decode table that indexes
+/// or a CIEBased Decode of <c>Infinity − Infinity</c>) would reach a CIE Decode table that indexes
 /// <c>(int)pos</c>; <c>(int)NaN</c> is runtime-dependent — <c>int.MinValue</c> on the netstandard2.0 leg,
-/// which threw <c>IndexOutOfRangeException</c> and (uncaught by <c>PsInterpreter.Run</c>) blanked the
-/// whole document, while .NET 10 saturated to 0 and carried on, so the result depended on the host (2026-10-22).
+/// which throws <c>IndexOutOfRangeException</c> and (uncaught by <c>PsInterpreter.Run</c>) blanks the
+/// whole document, while .NET 10 saturates to 0 and carries on, so the result would depend on the host.
 /// </summary>
 public class NonFiniteColorTests
 {

@@ -10,13 +10,13 @@ namespace Tetitulz.Pdf.Core.Tests.IO.Filters;
 
 /// <summary>
 /// The sub-byte TIFF predictor sizes its buffers from the data it was given, never from the
-/// dimensions alone (the review of 2026-10-16, R1.4).
+/// dimensions alone.
 /// </summary>
 /// <remarks>
-/// <para>The row buffer was allocated before the row loop, from <c>/Columns × /Colors</c>: a stream
-/// of ten bytes declaring <c>/Colors 32 /BitsPerComponent 4 /Columns 1000000</c> bought 128 MB — 32 M
-/// samples as <c>int</c>s — for zero rows, and the dimensions pass <c>RejectDimensions</c>, whose
-/// bound is the row's. Reached from any Flate or LZW stream's <c>/DecodeParms</c>.</para>
+/// <para>A row buffer allocated before the row loop, from <c>/Columns × /Colors</c>, would let a
+/// stream of ten bytes declaring <c>/Colors 32 /BitsPerComponent 4 /Columns 1000000</c> buy 128 MB —
+/// 32 M samples as <c>int</c>s — for zero rows, and the dimensions pass <c>RejectDimensions</c>,
+/// whose bound is the row's. Reached from any Flate or LZW stream's <c>/DecodeParms</c>.</para>
 /// <para>What is asserted is the allocation itself, through
 /// <see cref="GC.GetAllocatedBytesForCurrentThread"/>, beside the decoded bytes — never a clock.</para>
 /// </remarks>

@@ -133,7 +133,7 @@ public class InvoiceWorkbookTests
     /// <summary>
     /// The names Excel refuses beyond its characters: an apostrophe at either end — the 31-character
     /// cut may expose one — and the reserved "History"; and a control character, which XML cannot
-    /// carry at all and used to abort the whole workbook.
+    /// carry at all and must not abort the whole workbook.
     /// </summary>
     [Fact]
     public void SheetNamesFollowExcelsApostropheAndHistoryRules()

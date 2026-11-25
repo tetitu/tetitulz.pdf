@@ -84,9 +84,9 @@ public class CertificateEncryptedDetectionTests
     /// as its own object.
     /// </summary>
     /// <remarks>
-    /// <c>GetEncryptionInfo</c> and <c>PdfPublicKeyDecryptor</c> resolved <c>/Filter</c>; the
-    /// password path's handler check did not, so an indirect <c>/Adobe.PubSec</c> passed it as if
-    /// it were <c>/Standard</c> and the caller was told the password was wrong.
+    /// <c>GetEncryptionInfo</c>, <c>PdfPublicKeyDecryptor</c> and the password path's handler check
+    /// all resolve <c>/Filter</c>: unresolved, an indirect <c>/Adobe.PubSec</c> would pass the check
+    /// as if it were <c>/Standard</c> and the caller be told the password was wrong.
     /// </remarks>
     [Theory]
     [InlineData("/Adobe.PubSec")]

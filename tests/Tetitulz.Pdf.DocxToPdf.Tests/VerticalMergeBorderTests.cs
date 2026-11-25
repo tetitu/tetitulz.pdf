@@ -12,8 +12,8 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// A vertically merged cell is drawn without a line across it: the continuation's top edge was left off, and the
-/// cell above still drew its bottom edge there (Wave 22, DocxToPdf-4:2).
+/// A vertically merged cell is drawn without a line across it: the continuation's top edge is left off, and so
+/// is the bottom edge the cell above would draw there.
 /// </summary>
 public sealed class VerticalMergeBorderTests
 {

@@ -45,7 +45,7 @@ public sealed class ExtGStateFontParityTests
     // ====================================================================
 
     /// <summary>
-    /// The raster path used to ignore this shape entirely. The control render — the same page with
+    /// The raster path reads this shape too. The control render — the same page with
     /// the <c>gs</c> removed — is what makes the treatment's assertion mean "F2 was selected"
     /// rather than "something was drawn".
     /// </summary>

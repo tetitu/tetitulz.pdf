@@ -12,20 +12,17 @@ using Xunit;
 namespace Tetitulz.Pdf.Accessibility.Tests;
 
 /// <summary>
-/// This assembly used to carry <b>two</b> hand-copied ISO 32000-1 §7.9.2.2 text-string encoders —
-/// <c>PdfStructureTreeEditor.MakeTextString</c> (with its own <c>IsPdfDocEncodable</c> predicate)
-/// and <c>PdfAutoTagger.MakeTextString</c> — because <c>Core.Objects.PdfString(string)</c> was not
-/// its own inverse: it wrote Latin-1 for every character ≤ U+00FF while <c>GetText</c> decodes an
-/// un-marked string as PDFDocEncoding, and the two disagree at 0x18-0x1F and 0x80-0xA0. Both are
-/// now one-line delegations to that constructor.
+/// <c>PdfStructureTreeEditor.MakeTextString</c> and <c>PdfAutoTagger.MakeTextString</c> — this
+/// assembly's ISO 32000-1 §7.9.2.2 text-string encoders — are one-line delegations to
+/// <c>Core.Objects.PdfString(string)</c>, which is its own inverse: Latin-1 for every character
+/// ≤ U+00FF would disagree with <c>GetText</c>'s PDFDocEncoding at 0x18-0x1F and 0x80-0xA0.
 ///
 /// <para><b>Everything here writes through the real incremental writer and reads back through the
 /// real parser.</b> An in-memory assertion on a <c>PdfString</c> the test constructed itself cannot
-/// see the one thing this change actually alters — the <i>serialised form</i>. The old
-/// <c>MakeTextString</c> emitted its UTF-16BE branch as a <b>hex</b> string; the constructor emits
-/// a <b>literal</b> one. <c>RawBytes</c> is identical either way, so only a write-and-reparse can
-/// tell them apart, and <c>PdfString.IsHex</c> survives that trip (the parser sets it from the
-/// token type) which is what makes the change assertable at all.</para>
+/// see the one thing the encoder decides — the <i>serialised form</i>: the constructor emits its
+/// UTF-16BE branch as a <b>literal</b> string, not a <b>hex</b> one. <c>RawBytes</c> is identical
+/// either way, so only a write-and-reparse can tell them apart, and <c>PdfString.IsHex</c> survives
+/// that trip (the parser sets it from the token type), which is what makes the form assertable.</para>
 /// </summary>
 public class TextStringEncodingDelegationTests
 {

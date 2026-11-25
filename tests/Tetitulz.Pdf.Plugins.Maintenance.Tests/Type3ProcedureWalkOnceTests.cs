@@ -12,9 +12,9 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 
 /// <summary>
 /// The glyph scan walks a Type 3 font's <c>/CharProcs</c> once for the procedures and resources it is
-/// walked under. Fonts sharing one <c>/CharProcs</c> each walked it again, and a font written directly
-/// in the <c>/Font</c> dictionary — which has no object number to cache it under — was analysed and
-/// walked again at every <c>Tf</c> (Wave 22, Maintenance-1:2). The glyphs recorded are the same whether
+/// walked under — not again for each font sharing one <c>/CharProcs</c>, nor, for a font written
+/// directly in the <c>/Font</c> dictionary, which has no object number to cache it under, again at
+/// every <c>Tf</c>. The glyphs recorded are the same whether
 /// the walk ran once or two hundred times, so the evidence is the count of walks.
 /// </summary>
 public sealed class Type3ProcedureWalkOnceTests

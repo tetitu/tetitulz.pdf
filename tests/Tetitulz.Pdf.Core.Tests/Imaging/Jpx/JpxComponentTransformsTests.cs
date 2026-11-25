@@ -656,9 +656,9 @@ public sealed class JpxComponentTransformsTests
     /// Through the whole decode: the nine-tile grey fixture with a 1x1 identity transformation in
     /// its main header under a Part 2 Rsiz that lacks the MCT capability bit decodes to the
     /// fixture's samples, and the result's deviations hold the note once — every tile resolves
-    /// the same headers, and the spine merges the note once (the review of 2026-09-26, row 15:
-    /// it went to the codestream's list after that list had been merged, and reached nothing).
-    /// Four workers, so the merge is across threads.
+    /// the same headers, and the spine merges the note once, into the codestream's list before that
+    /// list is merged — after it, the note would reach nothing. Four workers, so the merge is across
+    /// threads.
     /// </summary>
     [Fact]
     public void SegmentsWithoutTheCapabilityBit_ReachTheDecodesDeviations_Once()
@@ -684,8 +684,8 @@ public sealed class JpxComponentTransformsTests
     /// <summary>
     /// A tile whose own MCO reconstructs another number of components than the first tile's — a
     /// two-output CBD reached through tile 1's tile-part header alone — is refused by name; the
-    /// image's planes were sized by the first tile (the review of 2026-09-26, row 30: it assembled
-    /// silently). The control puts the MCO in the main header, and every tile reconstructs two.
+    /// image's planes are sized by the first tile, so it must not assemble silently. The control puts
+    /// the MCO in the main header, and every tile reconstructs two.
     /// </summary>
     [Fact]
     public void ATileWhoseTransformationReconstructsAnotherComponentCount_IsRefused_ButOneForEveryTileDecodes()

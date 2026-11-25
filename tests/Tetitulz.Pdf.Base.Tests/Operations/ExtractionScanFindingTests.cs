@@ -79,9 +79,9 @@ public class ExtractionScanFindingTests
     // ==================================================================
 
     /// <summary>
-    /// The listing API is a metadata query. It used to call <c>GetDecodedData()</c> on every /3DD
-    /// stream purely to read <c>.Length</c>, so ten Flate bombs allocated tens of gigabytes from a
-    /// call that returns three ints per annotation.
+    /// The listing API is a metadata query. Calling <c>GetDecodedData()</c> on every /3DD stream
+    /// purely to read <c>.Length</c> would let ten Flate bombs allocate tens of gigabytes from a call
+    /// that returns three ints per annotation.
     /// </summary>
     [Fact]
     public void List3DAnnotations_OversizedStream_ReportsRefusalInsteadOfDecodingIt()
@@ -316,11 +316,10 @@ public class ExtractionScanFindingTests
     // ==================================================================
 
     /// <summary>
-    /// Glyphs whose advance width and height span the page used to mark the entire clamped grid
-    /// each — ~337M cell marks/s, so 50 000 of them cost ~148 s for one page, on the default
-    /// extraction path. A ceiling bounded that by <b>truncating the analysis</b>; the difference
-    /// array that replaced the painting bounds it by construction, so the same input is now
-    /// analysed rather than refused.
+    /// Glyphs whose advance width and height span the page: marking the entire clamped grid for each
+    /// — ~337M cell marks/s — 50 000 of them would cost ~148 s for one page, on the default extraction
+    /// path. A difference array bounds that by construction, so the input is analysed rather than
+    /// refused or truncated.
     /// </summary>
     [Fact]
     public void FullPageSpanningGlyphs_AreAnalysedRatherThanRefused()

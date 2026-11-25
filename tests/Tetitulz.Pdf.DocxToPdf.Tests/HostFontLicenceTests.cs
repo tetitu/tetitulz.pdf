@@ -16,13 +16,12 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
     /// The <c>OS/2</c> <c>fsType</c> gate on fonts <see cref="FontResolver"/> picks up off the host.
     /// </summary>
     /// <remarks>
-    /// <para><b>What this closes.</b> Embedding a font redistributes it, and <c>fsType</c> is where
-    /// the foundry records what it permits. This resolver never read the field, while
-    /// <c>Builder.Export.BuilderFontResolver</c> gated the identical decision — so the same font on
-    /// the same machine was refused by one converter and shipped inside the PDF by the other. GAPS.md
-    /// §3 carried it as open because a gate alone is not the fix: refusing changes layout (the run
-    /// falls back to standard-14), so a deployment that <i>does</i> hold the licence needed a way
-    /// through. <c>DocxToPdfOptions.AllowRestrictedSystemFonts</c> is that way.</para>
+    /// <para><b>What this holds.</b> Embedding a font redistributes it, and <c>fsType</c> is where
+    /// the foundry records what it permits. <c>Builder.Export.BuilderFontResolver</c> gates the
+    /// identical decision, so the same font on the same machine is refused or shipped alike by both
+    /// converters. A gate alone is not enough: refusing changes layout (the run falls back to
+    /// standard-14), so a deployment that <i>does</i> hold the licence needs a way through, and
+    /// <c>DocxToPdfOptions.AllowRestrictedSystemFonts</c> is that way.</para>
     ///
     /// <para><b>Why a refusal file needs its acceptance control.</b> A resolution can return
     /// <c>null</c> for want of coverage, for an unparseable file, or for the licence. Every refusal

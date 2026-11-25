@@ -181,12 +181,19 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Interpreter
         /// </summary>
         internal PsObject AsKey() => Type == PsType.String ? LitName(((PsString)_ref).AsLatin1()) : this;
 
+        /// <summary>
+        /// This object's hash as a dictionary key. A number, a name and a string are keys a program
+        /// chooses, so they hash under this process's key (<see cref="KeyedHash"/>): under
+        /// <c>double.GetHashCode</c>, which XORs the value's two halves, a program can choose reals
+        /// that all share one bucket and make every <c>def</c> walk them. A string hashes as the name of
+        /// its characters, which it equals.
+        /// </summary>
         public override int GetHashCode() => Type switch
         {
-            PsType.Integer or PsType.Real => _num.GetHashCode(),
+            PsType.Integer or PsType.Real => KeyedHash.Of(_num),
             PsType.Boolean or PsType.Save => _num.GetHashCode(),
-            PsType.Name                   => ((string)_ref).GetHashCode(),
-            PsType.String                 => ((PsString)_ref).ContentHashCode(),
+            PsType.Name                   => KeyedHash.Of((string)_ref),
+            PsType.String                 => KeyedHash.Of(((PsString)_ref).AsLatin1()),
             PsType.Null or PsType.Mark    => (int)Type,
             _                             => _ref == null ? 0 : System.Runtime.CompilerServices
                                                  .RuntimeHelpers.GetHashCode(_ref)

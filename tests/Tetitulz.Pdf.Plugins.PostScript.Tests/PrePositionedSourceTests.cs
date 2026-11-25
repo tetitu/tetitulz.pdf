@@ -57,8 +57,8 @@ public class PrePositionedSourceTests
     }
 
     /// <summary>
-    /// The extreme: a caller that read to the end used to hand over zero bytes, and the conversion
-    /// reported success for a blank document.
+    /// The extreme: a caller that has read to the end hands over zero bytes, and the conversion must
+    /// not report success for a blank document.
     /// </summary>
     [Fact]
     public void ASourceReadToItsEndStillConvertsTheWholeProgram()

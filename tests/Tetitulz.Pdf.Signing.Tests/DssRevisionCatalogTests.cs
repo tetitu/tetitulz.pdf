@@ -20,13 +20,12 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// revision left behind, because a PDF incremental update REPLACES an object rather than merging
 /// into it: any entry missing from the DSS catalog is deleted from the document.
 ///
-/// <para><b>The residual defect.</b> The DSS revision no longer writes a two-key
-/// <c>&lt;&lt; /Type /Catalog /DSS n 0 R &gt;&gt;</c> stub — it carries the original catalog plus
-/// the new <c>/AcroForm</c>. But <c>/Perms /DocMDP</c> is created by the <i>signature</i> revision
-/// and therefore appears in neither of those two sources, so it was still being dropped. A document
-/// signed with <see cref="SignatureParameters.DocMdpPermission"/> set and
-/// <see cref="SignatureParameters.EmbedLtv"/> on had its certification silently removed by the very
-/// revision meant to strengthen it.</para>
+/// <para><b>Not the original catalog plus the new <c>/AcroForm</c>.</b> <c>/Perms /DocMDP</c> is
+/// created by the <i>signature</i> revision and so appears in neither of those two sources: built
+/// from them, the DSS catalog would drop it, and a document signed with
+/// <see cref="SignatureParameters.DocMdpPermission"/> set and
+/// <see cref="SignatureParameters.EmbedLtv"/> on would have its certification silently removed by
+/// the very revision meant to strengthen it.</para>
 ///
 /// <para><see cref="PdfSigner.BuildSignedCatalog"/> is exercised directly because the LTV path that
 /// follows it can only run against a live OCSP/CRL responder, and a test must not need the network.
@@ -34,10 +33,8 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// <c>EmbedLtv</c> branch clones the catalog it reads back out of that output —
 /// <c>SignerDssRevisionTests</c> covers that half by handing <c>EmbedDss</c> evidence directly.</para>
 ///
-/// <para><b>Parity.</b> Those two used to be separate implementations — step 3 streamed the
-/// equivalent bytes to the <c>PdfWriter</c> by hand, and a doc comment on
-/// <c>BuildSignedCatalog</c> asked the next editor to keep them in step. They now share one code
-/// path, and <see cref="TheSignatureRevisionsCatalogIsExactlyWhatBuildSignedCatalogReturns"/> is
+/// <para><b>Parity.</b> Those two share one code path, and
+/// <see cref="TheSignatureRevisionsCatalogIsExactlyWhatBuildSignedCatalogReturns"/> is
 /// what holds that: it signs a document and compares the catalog the signature revision actually
 /// wrote against this method's output, so re-inlining a hand-rolled writer that drifts by even one
 /// key fails the build.</para>

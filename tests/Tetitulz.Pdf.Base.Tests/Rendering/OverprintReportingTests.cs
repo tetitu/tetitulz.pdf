@@ -76,12 +76,8 @@ public class OverprintReportingTests
     /// An overprinting RGB image reports <b>nothing</b>: §8.6.7 keeps non-zero overprint mode off
     /// images, and an RGB image converts into every process colorant, so its ordinary draw is the
     /// overprinted result. The RGB fill drawn first is the potency control — it is reported — so
-    /// the image's silence is not a sink that heard nothing.
-    ///
-    /// <para><b>Renamed twice, never re-asserted under an old name.</b> It was
-    /// <c>OverprintOnAnImage_IsReported</c> (every image reported), then
-    /// <c>OverprintOnANonCmykImage_IsReported</c> while DeviceCMYK images were composited per sample
-    /// (2026-08-18 to 2026-10-03), which the clause forbids.</para>
+    /// the image's silence is not a sink that heard nothing. Compositing a DeviceCMYK image per sample
+    /// would be what the clause forbids.
     /// </summary>
     [Fact]
     public void OverprintOnAnRgbImage_ReportsNothing()
@@ -138,12 +134,12 @@ public class OverprintReportingTests
     /// <para><b>The fill is DeviceCMYK on purpose.</b> Mode 1 paints no fill, so the report must
     /// come from the <i>stroke</i> side's ladder; with a CMYK fill in the state, a reporter that
     /// consulted the fill's colorants by mistake would find nothing to say and this test would
-    /// fail. With the default black fill both sides declined for the same reason and the mistake
-    /// was invisible.</para>
+    /// fail. With the default black fill both sides would decline for the same reason and the mistake
+    /// would be invisible.</para>
+    /// <para>With simulation on, a non-CMYK pen is simulated on the plates like any other, so the
+    /// control is the opt-in: off, the stroke side reports, and never the render mode; on,
+    /// nothing.</para>
     /// </remarks>
-    /// <para><b>Restated 2026-10-04.</b> A non-CMYK pen was the reason this control reported; with
-    /// simulation on it is now simulated on the plates like any other, so the control is the
-    /// opt-in instead: off, the stroke side reports, and never the render mode; on, nothing.</para>
     [Fact]
     public void OverprintOnANonCmykPen_IsSimulated_AndReportsTheOptInNotTheRenderModeWhenOff()
     {

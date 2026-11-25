@@ -63,8 +63,8 @@ public class OfficeConversionBoundaryTests
 
         Table table = Assert.Single(body.Elements<Table>());
         Assert.Equal(3, table.Elements<TableRow>().Count());
-        // The sentence is a paragraph of its own, whole: until 2026-10-14 the detector took it into
-        // the grid as a fourth row split at a column boundary (GAPS §4a).
+        // The sentence is a paragraph of its own, whole — not a fourth row of the grid split at a
+        // column boundary.
         Assert.Contains(paragraphs, p => p.Contains("A closing sentence of prose."));
         string squeezed = string.Concat(body.InnerText.Where(c => !char.IsWhiteSpace(c)));
         Assert.Equal(1, CountOf(squeezed, "Aclosingsentenceofprose."));
@@ -114,8 +114,7 @@ public class OfficeConversionBoundaryTests
     /// <summary>
     /// The coverage rule with no page lines to place: a line is covered when it is a whole emitted
     /// row, whitespace aside, and not when it is merely part of one — a part of a row is covered
-    /// only by standing inside it (<see cref="TableCoverageTests"/>). Until Wave 22 (1:5) any part
-    /// was, wherever it stood.
+    /// only by standing inside it (<see cref="TableCoverageTests"/>), not wherever it stands.
     /// </summary>
     [Theory]
     [InlineData("North  12 340", true)]     // a whole row, spaced differently

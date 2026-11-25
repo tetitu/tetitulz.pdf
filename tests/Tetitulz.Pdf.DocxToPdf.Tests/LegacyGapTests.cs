@@ -106,8 +106,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// A dot-leader tab whose stop is two billion twips away draws its leader across the page and
-        /// no further: one string of the tab's width over a dot's was some forty million characters
-        /// (Wave 22, DocxToPdf-3:0). The leader is still drawn, the page's width of it.
+        /// no further — one string of the tab's width over a dot's would be some forty million characters.
+        /// The leader is still drawn, the page's width of it.
         /// </summary>
         [Fact]
         public void ATabStopBeyondThePage_DrawsItsLeaderOnlyAcrossThePage()
@@ -159,8 +159,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// Two hundred references to one footnote lay its body once, and every reference shows its
-        /// number. Each reference rebuilt the note's text and queued another copy, numbered 1 to 200
-        /// (Wave 22, DocxToPdf-3:1). The control: a second note, a reference of its own, is numbered 2.
+        /// number, rather than each reference rebuilding the note's text and queuing another copy, numbered
+        /// 1 to 200. The control: a second note, a reference of its own, is numbered 2.
         /// </summary>
         [Fact]
         public void AFootnoteReferencedManyTimes_IsLaidOutOnce()
@@ -206,12 +206,12 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// destination that happen to be in the same file.
         /// </summary>
         /// <remarks>
-        /// <para><b>This test used to be three substring checks on the Latin1 bytes</b> —
-        /// <c>/Dests</c>, <c>/target</c>, <c>/GoTo</c> — and the middle one was satisfied by the
-        /// <i>destination dictionary's own key</i>, which is written <c>/target</c> no matter what
-        /// the link points at. So it never looked at the link's <c>/D</c>, and changing that <c>/D</c>
-        /// from a name to a string left all 411 DocxToPdf tests green while making every internal
-        /// link in every converted document dead.</para>
+        /// <para><b>Substring checks on the bytes cannot hold this.</b> Of <c>/Dests</c>,
+        /// <c>/target</c> and <c>/GoTo</c>, the middle one is satisfied by the <i>destination
+        /// dictionary's own key</i>, which is written <c>/target</c> no matter what the link points
+        /// at; they never look at the link's <c>/D</c>, and a <c>/D</c> changed from a name to a
+        /// string would pass them while making every internal link in every converted document
+        /// dead.</para>
         ///
         /// <para><b>The type is the whole point.</b> §12.3.2.3 gives two containers: the catalog
         /// <c>/Dests</c> <i>dictionary</i>, keyed by names, and the <c>/Names /Dests</c> name
@@ -312,10 +312,10 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// The outline tree's shape: each parent's <c>/First</c>, <c>/Last</c> and <c>/Count</c>, the root's
-        /// included, from headings H1 H2 H2 H1 H2 H3. The parent of each group of children was found by a
-        /// scan of every item (Wave 22, DocxToPdf-2:0); it is now kept beside them, and the links must come
-        /// out the same. <c>/Count</c> is §12.3.3 Table 152's — every visible descendant, the root's all six
-        /// items — where it was each parent's direct children.
+        /// included, from headings H1 H2 H2 H1 H2 H3. The parent of each group of children is kept beside
+        /// them rather than found by a scan of every item, and the links must come out as such a scan would
+        /// make them. <c>/Count</c> is §12.3.3 Table 152's — every visible descendant, the root's all six
+        /// items — not each parent's direct children.
         /// </summary>
         [Fact]
         public void Headings_BuildTheOutlineTreesShape()

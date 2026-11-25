@@ -15,10 +15,10 @@ using Xunit;
 namespace Tetitulz.Pdf.Signing.Tests;
 
 /// <summary>
-/// Signing refuses a form it cannot read. An unreadable <c>/AcroForm</c>, or an unreadable
-/// <c>/Fields</c> array, used to read as none. The signed revision then wrote a form holding only
-/// the signature field, judged against no existing signatures. A reader whose parser can read the
-/// old form shows every field gone from the signed document.
+/// Signing refuses a form it cannot read. Read as none, an unreadable <c>/AcroForm</c> or
+/// <c>/Fields</c> array would make the signed revision write a form holding only the signature
+/// field, judged against no existing signatures — and a reader whose parser can read the old form
+/// would show every field gone from the signed document.
 /// </summary>
 public sealed class UnreadableFormRefusalTests
 {

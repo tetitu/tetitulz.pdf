@@ -306,10 +306,9 @@ public class DuplicatedHelperBehaviourTests
     }
 
     /// <summary>
-    /// <b>The divergence, now closed.</b> The SVG renderer tested <c>89 'P'</c> — two bytes —
-    /// while the raster renderer tested all four. Both now call the same predicate, so a header
-    /// that is right for two bytes and wrong for the third is rejected identically by each. They
-    /// used to agree by accident; they agree by construction.
+    /// <b>One predicate.</b> Testing <c>89 'P'</c> — two bytes — in one renderer and all four in the
+    /// other would agree only by accident. Both call the same predicate, so a header that is right for
+    /// two bytes and wrong for the third is rejected identically by each — by construction.
     /// </summary>
     [Fact]
     public void Both_renderers_use_one_predicate_for_a_png_header()

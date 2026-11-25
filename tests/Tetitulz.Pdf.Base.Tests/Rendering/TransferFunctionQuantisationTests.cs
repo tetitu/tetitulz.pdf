@@ -32,7 +32,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// </summary>
 public class TransferFunctionQuantisationTests
 {
-    /// <summary>The truncating form the SVG path used to use, kept only as the control below.</summary>
+    /// <summary>A truncating quantiser, kept only as the control below.</summary>
     private static byte OldTruncatingQuantise(float v)
     {
         if (v < 0f) v = 0f; else if (v > 1f) v = 1f;

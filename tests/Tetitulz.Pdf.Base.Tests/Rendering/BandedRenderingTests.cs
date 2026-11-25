@@ -43,14 +43,13 @@ public class BandedRenderingTests
         => AssertBandsMatchWholePage(AsymmetricPagePdf(), bandHeight);
 
     /// <summary>
-    /// The same property, on content that reaches Wave 8.1 Stage D's five gated paint methods
+    /// The same property, on content that reaches the five gated paint methods
     /// — <c>AsymmetricPagePdf</c> above is all plain fills, which
     /// <c>IsCurrentPathOutsideClip</c> culls without ever consulting
     /// <see cref="PdfRenderContext.PaintSuppressed"/>, so it cannot exercise
-    /// <see cref="PdfRenderSession.RenderPageBands"/>'s <c>DisplayListIndex</c> wiring at all — a
-    /// first version of this suite proved that the hard way: a deliberately wrong Y-flip in the
-    /// band-to-index coordinate conversion passed every existing test here, because none of them
-    /// ever reach a gated method. This fixture spreads an image <c>Do</c>, a text run, a
+    /// <see cref="PdfRenderSession.RenderPageBands"/>'s <c>DisplayListIndex</c> wiring at all: a
+    /// deliberately wrong Y-flip in the band-to-index coordinate conversion passes every test that
+    /// never reaches a gated method. This fixture spreads an image <c>Do</c>, a text run, a
     /// shading-pattern fill and a direct <c>sh</c> across four different 64-row bands of a
     /// 792-tall page, so a wrong band-to-index mapping puts the wrong content (or none) in at
     /// least one band.
@@ -62,7 +61,7 @@ public class BandedRenderingTests
         => AssertBandsMatchWholePage(MixedGatedContentPagePdf(), bandHeight);
 
     /// <summary>
-    /// Wave 8.1 Stage E: tiles of the gated fixture reassemble into the whole-page render. The tile
+    /// Tiles of the gated fixture reassemble into the whole-page render. The tile
     /// path asks the display-list index for its rectangle, so an X conversion or comparison gone
     /// wrong drops the image, the text, the pattern or the shading from a tile they cross — the
     /// fixture's four sit across the grid's column boundaries (x 150 to 290 against columns at 204
@@ -332,8 +331,8 @@ public class BandedRenderingTests
 
     /// <summary>
     /// A 612x792 page whose content spreads an image <c>Do</c>, a text run, a shading-pattern
-    /// fill and a direct <c>sh</c> at four well-separated heights — the operators Wave 8.1 Stage D
-    /// gates, which <see cref="AsymmetricPagePdf"/> above never reaches.
+    /// fill and a direct <c>sh</c> at four well-separated heights — the gated operators, which
+    /// <see cref="AsymmetricPagePdf"/> above never reaches.
     /// </summary>
     private static byte[] MixedGatedContentPagePdf()
     {

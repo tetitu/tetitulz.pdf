@@ -17,7 +17,7 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 
 /// <summary>
 /// An FDF annotation imported into a document keeps the plain entries the model does not name —
-/// rich text, line endings — and loses what runs (GAPS.md §19b, 2026-10-21). Read from the document's
+/// rich text, line endings — and loses what runs. Read from the document's
 /// own annotation dictionary, as another reader would see it.
 /// </summary>
 public class FdfAnnotationCarryTests

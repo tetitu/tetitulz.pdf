@@ -14,7 +14,7 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// <see cref="PdfExportOptions.MaxPages"/> (2026-10-20, the owner's decision: a parameter, unlimited by default).
+/// <see cref="PdfExportOptions.MaxPages"/>: a parameter, unlimited by default.
 /// A document longer than the limit ends at the last whole page within it — its footer drawn, the page count it
 /// shows the pages written — and a <see cref="BuilderDiagnosticKind.PageLimitReached"/> diagnostic says so.
 /// </summary>

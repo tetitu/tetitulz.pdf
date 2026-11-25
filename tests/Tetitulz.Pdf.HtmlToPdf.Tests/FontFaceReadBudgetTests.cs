@@ -10,12 +10,11 @@ using Xunit;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests
 {
     /// <summary>
-    /// A hostile <c>@font-face</c> cannot make the engine read a file once per reference. The <c>src</c>
-    /// list was walked with no entry budget and local reads were never cached, so one block with N
-    /// <c>url(bigfile)</c> entries — or N blocks each naming it — read and allocated the file N times
-    /// (≈160 GB for 100 000 entries of a 1.6 MB file, and worse for a 50 MB one). Entries now count
-    /// against a per-conversion budget, a file is read once per resolved path, and a file past the font
-    /// decoders' 64 MiB bound is refused unread (2026-10-23).
+    /// A hostile <c>@font-face</c> cannot make the engine read a file once per reference. Walked with no
+    /// entry budget and no cache of local reads, one block with N <c>url(bigfile)</c> entries — or N blocks
+    /// each naming it — would read and allocate the file N times (≈160 GB for 100 000 entries of a 1.6 MB
+    /// file, and worse for a 50 MB one). Entries count against a per-conversion budget, a file is read once
+    /// per resolved path, and a file past the font decoders' 64 MiB bound is refused unread.
     /// </summary>
     public class FontFaceReadBudgetTests
     {
@@ -26,8 +25,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
             Directory.CreateDirectory(dir);
             try
             {
-                // 500 KB that is not a font: TrueTypeFontProgram.Parse rejects it, which is the path that
-                // used to re-read the file on every one of the src entries below.
+                // 500 KB that is not a font: TrueTypeFontProgram.Parse rejects it, the path that would
+                // re-read the file on every one of the src entries below without the cache.
                 File.WriteAllBytes(Path.Combine(dir, "notafont.ttf"), new byte[500_000]);
 
                 string src = string.Join(",", Enumerable.Repeat("url(notafont.ttf)", 500));
@@ -41,8 +40,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
                 long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 
                 Assert.NotEmpty(pdf);
-                // Pre-fix 500 × 500 KB ≈ 250 MB of reads; post-fix the file is read once (cache) and the
-                // entries are capped. The allocation, measured per thread, is the work signal.
+                // Unguarded, 500 × 500 KB ≈ 250 MB of reads; the file is read once (cache) and the entries
+                // are capped. The allocation, measured per thread, is the work signal.
                 Assert.True(allocated < 40_000_000,
                     $"500 @font-face entries naming one 500 KB file allocated {allocated:N0} bytes — it was read per entry");
             }

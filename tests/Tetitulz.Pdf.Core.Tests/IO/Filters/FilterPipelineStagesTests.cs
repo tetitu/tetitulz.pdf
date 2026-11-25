@@ -14,7 +14,7 @@ namespace Tetitulz.Pdf.Core.Tests.IO.Filters;
 /// <summary>
 /// <see cref="FilterPipeline.TryGetStages"/> and <see cref="FilterPipeline.DecodeStages"/>: the stages
 /// <see cref="FilterPipeline.Decode(byte[], PdfObject, PdfObject)"/> runs, for a caller that runs some of
-/// them itself (the raster renderer's decimating decode, 2026-10-19) — paired as Decode pairs them, and
+/// them itself (the raster renderer's decimating decode) — paired as Decode pairs them, and
 /// refused wherever Decode would report or refuse.
 /// </summary>
 /// <remarks>Joins the limits collection: the chain-length case reads <see cref="PdfLimits.MaxFilterChainLength"/>.</remarks>

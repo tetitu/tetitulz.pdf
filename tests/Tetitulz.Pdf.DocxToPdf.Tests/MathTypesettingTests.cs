@@ -740,23 +740,20 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
             Assert.Contains(reports, m => m.Contains("ceiling"));
         }
 
-        // ------------------------------------------------------------------ the last five
+        // ------------------------------------------------------------------ five more 2-D forms
         //
-        // m:sPre, m:groupChr, m:box, m:borderBox and m:phant -- the constructs that had no 2-D
-        // form and were linearised.
+        // m:sPre, m:groupChr, m:box, m:borderBox and m:phant, each in its 2-D form rather than
+        // linearised.
         //
         // These live HERE rather than in a file of their own, and that is the point rather than
-        // filing convenience: they need exactly the Glyphs / Rules / Find probes above, and a
-        // second copy of those had already gone wrong once while being written -- it read `Td` as
-        // relative where the math boxes emit it absolute, which quietly reported every script at
-        // the wrong height. Two probes disagreeing about what the output says is the same defect
-        // class this repository keeps finding in its renderers.
+        // filing convenience: they need exactly the Glyphs / Rules / Find probes above, and a second
+        // copy of those can go wrong — reading `Td` as relative where the math boxes emit it
+        // absolute quietly reports every script at the wrong height. Two probes disagreeing about
+        // what the output says is the same defect class this repository keeps finding in its
+        // renderers.
         //
-        // The fallback branch in MathBoxBuilder used to name the unhandled constructs as
-        // "matrices, equation arrays, boxes, group characters, limits" -- five things, every one
-        // of which the dispatch above it already handled. The list had rotted one construct at a
-        // time while reading as authoritative, and is now deleted rather than corrected: the
-        // dispatch is the list.
+        // MathBoxBuilder's fallback branch names no list of unhandled constructs: such a list rots
+        // one construct at a time while reading as authoritative. The dispatch is the list.
 
         /// <summary>
         /// <c>m:sPre</c> puts its scripts <b>before</b> the base. The ordering of x positions is
@@ -851,8 +848,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         {
             // The page the default draws is the page an explicit U+23DF draws, whatever this host can draw it
             // with: a glyph, the bracket drawn to the base's width as a path, or space reserved and
-            // reported. Asserting one of those outcomes was host-dependent \u2014 the equation path's asking the
-            // host's fonts (Wave 22, DocxToPdf-3:8) turned "reported" into "a path" on this one. The
+            // reported. Asserting one of those outcomes would be host-dependent — whether the host's fonts can
+            // draw it decides between "reported" and "a path". The
             // controls: an explicit U+23DE (top bracket) and an explicit '_' each draw another page, so the
             // comparison can see a different character.
             string Page(string chrPr)
@@ -1023,7 +1020,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// <c>m:box</c> has no visual form, so its content is typeset exactly as if the box were
-        /// absent -- <b>not</b> linearised, which is what it used to get and which flattens
+        /// absent -- <b>not</b> linearised, which would flatten
         /// whatever 2-D structure it contains. A fraction inside draws a rule; a linearised one
         /// draws "a/b" and no rule, so the rule count is precisely the difference.
         /// </summary>
@@ -1124,8 +1121,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// <summary>
         /// The vertical metrics of the faces a fixture drew in, by their <c>/BaseFont</c> — one family's, the
         /// upright face and the italic one the variables are drawn in, which share them. Each glyph is drawn in
-        /// the face it was measured in (Wave 22, DocxToPdf-3:9); before, every glyph was drawn upright, and the
-        /// fixture held one face.
+        /// the face it was measured in.
         /// </summary>
         private static (double h, double d) Vertical(string pdf, double size)
             => SharedByTheFacesDrawn(pdf, f => Rendering.MathTypesetting.MathMeasure.VerticalOf(f, size));

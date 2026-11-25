@@ -62,18 +62,13 @@ public sealed partial class JpxEncoderTests
     }
 
     /// <summary>
-    /// With no decomposition level a coefficient is the sample less the DC shift, so tier 1 alone has
-    /// an oracle the test computes by hand: one packet, read to the byte; one 40x24 block; every
-    /// coefficient back exactly.
-    /// </summary>
-    /// <summary>
     /// How many magnitude bit-planes any content can need. The 5-3 analysis low-pass (−⅛, ¼, ¾, ¼,
     /// −⅛) composed over any number of levels has an absolute tap sum that converges to 1.716 per
-    /// dimension (1.5, 1.625, 1.6875, … — computed for the review of 2026-09-26), 2.94 in two, so
+    /// dimension (1.5, 1.625, 1.6875, …), 2.94 in two, so
     /// the LL band of an R<sub>b</sub>-bit component never needs more than R<sub>b</sub> + 2 planes
     /// — in practice R<sub>b</sub> + 1, since 2.94 · 2^(R<sub>b</sub> − 1) is below 2^(R<sub>b</sub> + 1)
     /// — and the default two guard bits (G + ε<sub>b</sub> − 1 ≥ planes, E-2) hold for every input;
-    /// the reason 15j's "lossless to 35 bits for any content" stands with ε<sub>b</sub> capped at 31.
+    /// the reason the encoder's "lossless to 35 bits for any content" stands with ε<sub>b</sub> capped at 31.
     /// Pinned by the worst-case input itself: the sign pattern of the composed filter drives the LL
     /// band past 2^8 (nine planes for 8-bit samples, a flat image's LL is its level-shifted value)
     /// and the QCD still carries the default guard bits.
@@ -126,6 +121,11 @@ public sealed partial class JpxEncoderTests
         return largest;
     }
 
+    /// <summary>
+    /// With no decomposition level a coefficient is the sample less the DC shift, so tier 1 alone has
+    /// an oracle the test computes by hand: one packet, read to the byte; one 40x24 block; every
+    /// coefficient back exactly.
+    /// </summary>
     [Fact]
     public void LevelZero_OnePacketReadToTheByte_AndTier1ReturnsTheShiftedSamples()
     {

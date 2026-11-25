@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Tetitulz.Pdf.Encryption.Tests;
 
-/// <summary>Regressions from the 2026-11-12 review of the encryption handlers, each against ISO 32000-2's text.</summary>
+/// <summary>The encryption handlers' rules, each against ISO 32000-2's text.</summary>
 public sealed class EncryptionReviewFixesTests
 {
     private static readonly byte[] FileId =

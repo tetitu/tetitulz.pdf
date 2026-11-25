@@ -16,8 +16,8 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 /// What PdfRepair's header scan is bounded by, and that reaching a bound is said.
 /// </summary>
 /// <remarks>
-/// The scan used to stop accumulating once 10 000 distinct objects had been recorded, and said
-/// nothing: a document with more objects came out of repair missing the rest, reported clean. The
+/// A scan that stopped accumulating once 10 000 distinct objects had been recorded, saying nothing,
+/// would bring a document with more objects out of repair missing the rest, reported clean. The
 /// table is bounded by the object-number range instead, and the list of headers by a count that is
 /// reported when a file reaches it.
 /// </remarks>

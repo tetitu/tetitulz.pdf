@@ -78,8 +78,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// <summary>
         /// A <c>first</c> reference is the first page's alone: a titlePg section referencing only a
         /// first header shows it on its cover and nothing on the pages after, where the default band
-        /// — none — applies. The first reference used to stand in for the default when the section
-        /// named no default.
+        /// — none — applies. The first reference does not stand in for the default when the section
+        /// names no default.
         /// </summary>
         [Theory]
         [InlineData(true)]

@@ -326,7 +326,7 @@ namespace Tetitulz.Pdf.HtmlToPdf
             // and restore it on Abandon; a successful map keeps it.
             var savedFieldNames = new HashSet<string>(_fieldNames, StringComparer.Ordinal);
             var savedNextField = new Dictionary<string, int>(_nextFieldSuffix, StringComparer.Ordinal);
-            var savedNextRadioValue = new Dictionary<(string, string), int>(_nextRadioValueSuffix);
+            var savedNextRadioValue = new Dictionary<(string, string), int>(_nextRadioValueSuffix, RadioValueKeys);
             var savedRadioGroups = new Dictionary<string, string>(_radioGroups, StringComparer.Ordinal);
             var savedRadioValues = _radioValues.ToDictionary(
                 kv => kv.Key, kv => new HashSet<string>(kv.Value, StringComparer.Ordinal), StringComparer.Ordinal);

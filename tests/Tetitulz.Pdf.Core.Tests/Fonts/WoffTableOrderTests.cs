@@ -14,22 +14,22 @@ namespace Tetitulz.Pdf.Core.Tests.Fonts
     /// <summary>
     /// A decoded WOFF puts its <b>directory</b> in tag order (OpenType §5.1) and its <b>table
     /// data</b> in the container's order (WOFF 1.0 §6: "the same order as the well-formed input
-    /// font"). Those are two different orders, and the decoder used to apply one to both.
+    /// font"). Those are two different orders, and one applied to both breaks the round trip.
     /// </summary>
     /// <remarks>
     /// <b>Why the data order is not cosmetic here.</b> This decoder passes each table's checksum
     /// AND <c>head.checkSumAdjustment</c> through verbatim instead of recomputing them — that is
     /// deliberate, and it is what makes a byte-identical round trip possible at all. But the
-    /// adjustment is a function of the whole file, offsets included. Re-laying the data changed
-    /// every offset after the first moved table, so the carried adjustment no longer described the
-    /// font, and §5's byte-identical promise was unreachable.
+    /// adjustment is a function of the whole file, offsets included. Re-laying the data would change
+    /// every offset after the first moved table, so the carried adjustment would no longer describe
+    /// the font, and §5's byte-identical promise would be unreachable.
     ///
     /// <para><b>A container already in tag order cannot detect this</b>, because the reorder is
-    /// then a no-op — which is exactly why it stayed green: <c>MinimalWoff</c> wraps a font whose
+    /// then a no-op — and <c>MinimalWoff</c> wraps a font whose
     /// tables are already sorted. <c>Wrap(sfnt, reverseTableOrder: true)</c> is the missing shape.</para>
     ///
-    /// <para><b>This is also why <c>WoffDecoder</c> is NOT routed through <c>SfntBuilder</c></b>,
-    /// which the consolidation backlog considered and rejected: <c>SfntBuilder</c> lays data out in
+    /// <para><b>This is also why <c>WoffDecoder</c> is NOT routed through <c>SfntBuilder</c></b>:
+    /// <c>SfntBuilder</c> lays data out in
     /// its own sorted order and structurally cannot express "directory in tag order, data in
     /// container order", quite apart from recomputing the checksums this decoder must preserve.</para>
     /// </remarks>

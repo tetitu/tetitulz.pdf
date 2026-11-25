@@ -13,8 +13,8 @@ namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
 /// What an ODT table cell holds. A cell must hold at least one paragraph, so one with no
-/// blocks gets an empty one; a cell that already holds a paragraph gets no extra one.
-/// The 2026-10-11 overnight sweep found neither direction pinned.
+/// blocks gets an empty one; a cell that already holds a paragraph gets no extra one. Both
+/// directions are pinned.
 /// </summary>
 public class OdtTableCellContentTests
 {

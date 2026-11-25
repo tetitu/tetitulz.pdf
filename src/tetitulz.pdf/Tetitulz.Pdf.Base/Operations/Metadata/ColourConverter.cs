@@ -134,7 +134,13 @@ namespace Tetitulz.Pdf.Base.Operations.Metadata
 
         // A space's conversion, once per object; a resource entry's, by its dictionary and name.
         private readonly Dictionary<PdfObject, Conversion> _bySpace = new Dictionary<PdfObject, Conversion>(PdfReferenceEquality.Instance);
-        private readonly Dictionary<(PdfDictionary, string), Conversion> _byEntry = new Dictionary<(PdfDictionary, string), Conversion>();
+        private readonly Dictionary<(PdfDictionary, string), Conversion> _byEntry = new Dictionary<(PdfDictionary, string), Conversion>(EntryKeys);
+
+        // A resource name is the file's, so it hashes under a key the file cannot see (KeyedHash): the
+        // tuple's own hash is the runtime's string hash, which .NET Framework does not key.
+        private static readonly IEqualityComparer<(PdfDictionary, string)> EntryKeys =
+            Core.Util.KeyedHash.Comparer<(PdfDictionary, string)>(
+                k => unchecked((k.Item1?.GetHashCode() ?? 0) * 31 + Core.Util.KeyedHash.Of(k.Item2)));
         private readonly HashSet<PdfObject> _done = new HashSet<PdfObject>(PdfReferenceEquality.Instance);
         private readonly Dictionary<uint, float[]> _converted = new Dictionary<uint, float[]>();
         private readonly HashSet<string> _notes = new HashSet<string>(StringComparer.Ordinal);

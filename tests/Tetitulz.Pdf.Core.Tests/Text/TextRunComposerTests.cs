@@ -140,9 +140,8 @@ public class TextRunComposerTests
     }
 
     /// <summary>
-    /// The assertion that proves the space fallback stopped being silent. Both of the callers this
-    /// policy exists for used to substitute a space and report nothing, so a Hebrew name could lose
-    /// a letter with no trace anywhere.
+    /// The assertion that proves the space fallback is not silent: substituting a space and reporting
+    /// nothing, a caller would let a Hebrew name lose a letter with no trace anywhere.
     /// </summary>
     [HebrewFontFact]
     public void UncoveredCodePoint_UnderSubstituteSpace_DrawsASpaceAndStillReportsIt()

@@ -10,12 +10,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// Pixel coverage for rendering features the 2026-08-06 audit found had <b>none</b> — not a weak
-/// test, no test at all. Each is a feature the renderer implements and nothing checked.
-///
-/// <para>Listed in GAPS.md §2 under "What the audit says about the tests": shading types 5/6/7,
-/// every blend mode except Multiply (including all four non-separable ones), an <c>/SMask /S /Alpha</c>
-/// on the raster path, and text render mode 6.</para>
+/// Pixel coverage for rendering features no other test reaches: shading types 5/6/7, every blend
+/// mode except Multiply (including all four non-separable ones), an <c>/SMask /S /Alpha</c> on the
+/// raster path, and text render mode 6.
 /// </summary>
 public sealed class UncoveredRenderFeatureTests
 {

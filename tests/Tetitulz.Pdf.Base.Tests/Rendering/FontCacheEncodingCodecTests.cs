@@ -86,7 +86,7 @@ public class FontCacheEncodingCodecTests
     }
 
     /// <summary>
-    /// The mutation that used to survive: the codec's <b>writing mode</b>. Identity-H is
+    /// The mutation a weaker test lets survive: the codec's <b>writing mode</b>. Identity-H is
     /// horizontal, and a wrapper that quietly handed back <c>Identity(1)</c> would turn every
     /// composite font in the document vertical with nothing noticing.
     /// </summary>

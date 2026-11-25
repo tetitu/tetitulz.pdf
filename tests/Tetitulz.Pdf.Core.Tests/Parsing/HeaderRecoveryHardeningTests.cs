@@ -14,7 +14,7 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
-/// The header recovery (GAPS §19h item 5b) hardened after the review of batch 131: a header of
+/// The header recovery's bounds: a header of
 /// another generation is another object; a header inside a stream's data is not this file's object;
 /// a recovery is reported and fills the table's gaps; the object fetch is bounded in depth and does
 /// not parse a failing object once per reference.

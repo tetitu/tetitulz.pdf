@@ -12,13 +12,13 @@ using static Tetitulz.Pdf.HtmlToPdf.Tests.ManagedTestSupport;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests
 {
     /// <summary>
-    /// The managed engine's CSS/HTML correctness fixes: cases where it used to emit output that
-    /// was confidently <b>wrong</b> rather than merely missing.
+    /// The managed engine's CSS/HTML correctness: cases where a wrong reading emits output that is
+    /// confidently <b>wrong</b> rather than merely missing.
     ///
     /// <para>Every assertion here is two-sided — the correct ink is present <i>and</i> the
-    /// incorrect ink is absent. Asserting only the former would pass against the old behaviour in
-    /// several of these cases, because the wrong output was a superset of the right one (a black
-    /// box is drawn <i>in addition to</i> the text).</para>
+    /// incorrect ink is absent. Asserting only the former would pass against a wrong reading in
+    /// several of these cases, because the wrong output is a superset of the right one (a black
+    /// box drawn <i>in addition to</i> the text).</para>
     /// </summary>
     public class HtmlManagedCssCorrectnessTests
     {
@@ -235,7 +235,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         [Fact]
         public void TheadRowWithTdCells_IsStillAHeaderRow()
         {
-            // Header-ness used to come only from <th>, so a <thead> of <td> was never repeated.
+            // Header-ness comes from <thead> too, not only from <th>: a <thead> of <td> repeats.
             var sb = new System.Text.StringBuilder(
                 "<table><thead><tr><td>REPEATEDHEADER</td></tr></thead><tbody>");
             for (int i = 0; i < 80; i++) sb.Append("<tr><td>Row ").Append(i).Append("</td></tr>");
@@ -253,7 +253,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         public void Noscript_BodyText_IsNotEmittedWhenScriptingIsEnabled()
         {
             // JavaScriptEnabled defaults to true, matching a browser with scripting on — where
-            // <noscript> content is not rendered. It used to leak into every document.
+            // <noscript> content is not rendered, and must not leak into the document.
             string dec = DecodeStreams(ToPdf("<p>Visible</p><noscript><p>NOSCRIPTTEXT</p></noscript>"));
 
             Assert.Contains("Visible", dec);

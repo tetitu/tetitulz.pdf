@@ -161,8 +161,8 @@ public class PageBreakTests
     private const string Boxed = "border:1px solid #000;padding:6px;";
 
     /// <summary>
-    /// A bordered block is one box, kept as a box (2026-10-19): <c>break-inside: avoid</c> moves it whole — the
-    /// exporter measuring its content, where a box was judged by its stated least height alone, which it has none of.
+    /// A bordered block is one box, kept as a box: <c>break-inside: avoid</c> moves it whole — the exporter
+    /// measuring its content, since a stated least height, which it has none of, says nothing.
     /// </summary>
     [Fact]
     public void BreakInsideAvoid_OnABox_MovesItWhole()
@@ -176,8 +176,8 @@ public class PageBreakTests
     }
 
     /// <summary>
-    /// <c>break-after: avoid</c> on a box keeps it with the block after it (2026-10-19; the keep fell on the box's
-    /// end and was lost), and a heading kept with the block after it stays with a box there — the chain entering it.
+    /// <c>break-after: avoid</c> on a box keeps it with the block after it — the keep is not lost on the box's
+    /// end — and a heading kept with the block after it stays with a box there — the chain entering it.
     /// </summary>
     [Theory]
     [InlineData("box")]
@@ -220,9 +220,9 @@ public class PageBreakTests
         Regex.Matches(DecodeStreams(pdf), @"\(" + Regex.Escape(word) + @"\)").Count;
 
     /// <summary>
-    /// A row whose first cell is a <c>&lt;th&gt;</c> row LABEL is body content, not a header. It
-    /// used to count as a header row, and every header row above a page break is repeated — so each
-    /// page re-drew every row placed so far and sixty labelled rows became thirty-one pages.
+    /// A row whose first cell is a <c>&lt;th&gt;</c> row LABEL is body content, not a header. Every
+    /// header row above a page break is repeated, so counted as one, each page would re-draw every row
+    /// placed so far and sixty labelled rows would become thirty-one pages.
     /// </summary>
     [Fact]
     public void RowsLabelledWithTh_AreNotRepeatedAsHeaders()

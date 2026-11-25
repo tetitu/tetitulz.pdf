@@ -22,28 +22,25 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// no previous section I can name" is to omit the key.
 /// </summary>
 /// <remarks>
-/// <para><c>IncrementalUpdateWriter</c> has applied that rule for some time, under a comment
-/// explaining it. <c>PdfSigner</c> and <c>VisualSignatureBuilder</c> build and write their own
-/// trailers straight through <c>PdfWriter.WriteTrailer</c>, so the guard never ran for them and
-/// they wrote <c>/Prev</c> unconditionally. The value reaches them as 0 whenever <c>startxref</c>
-/// cannot be located — <c>PdfSigner</c> had its own tail scan for that, and
-/// <c>VisualSignatureBuilder</c> takes <c>parser.StartXrefOffset</c>, which is 0 when the parser
-/// had to recover the file by scanning.</para>
+/// <para><c>IncrementalUpdateWriter</c> applies that rule. <c>PdfSigner</c> and
+/// <c>VisualSignatureBuilder</c> build and write their own trailers straight through
+/// <c>PdfWriter.WriteTrailer</c>, where the value reaches them as 0 whenever <c>startxref</c>
+/// cannot be located — <c>VisualSignatureBuilder</c> takes <c>parser.StartXrefOffset</c>, which is
+/// 0 when the parser had to recover the file by scanning.</para>
 ///
-/// <para><b>That remaining gap is now closed, and it changed what this file can test.</b> Omitting
-/// the key never rescued the document: the appended revision declared only the objects the
-/// signature wrote, nothing re-declared the rest, and the result reopened with a catalog and
-/// <b>zero pages</b> — while the signature over it still verified, because
-/// <c>PdfSignatureVerifier</c> never consults the page tree. As of 2026-08-24 all three writers that
-/// build their own trailer refuse such a document outright
-/// (<c>SigningHelpers.RefuseUnnameableCrossReferenceChain</c>), so <b>signing can no longer reach
-/// the <c>/Prev</c>-omission path at all</b>. The test that used to assert it here has moved to
-/// <see cref="UnnameableXrefSigningTests"/> as a refusal; what remains below is the floor, which is
-/// the half that stops the guard degenerating into "never write <c>/Prev</c>".</para>
+/// <para><b>Signing refuses such a document outright</b>
+/// (<c>SigningHelpers.RefuseUnnameableCrossReferenceChain</c>, in all three writers that build their
+/// own trailer): omitting the key does not rescue it, since the appended revision declares only the
+/// objects the signature wrote, nothing re-declares the rest, and the result reopens with a catalog
+/// and <b>zero pages</b> — while the signature over it still verifies, because
+/// <c>PdfSignatureVerifier</c> never consults the page tree. So <b>signing cannot reach the
+/// <c>/Prev</c>-omission path at all</b>; <see cref="UnnameableXrefSigningTests"/> holds the
+/// refusal, and what remains below is the floor, the half that stops the guard degenerating into
+/// "never write <c>/Prev</c>".</para>
 ///
-/// <para>The guard itself is still live and still needed — <c>IncrementalUpdateWriter</c> reaches
-/// it on the edit path, where the answer is to recover rather than refuse, because a broken edit is
-/// loudly broken and retryable while a broken signature is quietly authoritative.</para>
+/// <para>The guard itself is live and needed — <c>IncrementalUpdateWriter</c> reaches it on the edit
+/// path, where the answer is to recover rather than refuse, because a broken edit is loudly broken
+/// and retryable while a broken signature is quietly authoritative.</para>
 ///
 /// <para>So what is asserted is exactly what the guard changes: the trailer stops making a claim
 /// that cannot be followed. That is worth having on its own — a <c>/Prev 0</c> is indistinguishable
@@ -57,9 +54,7 @@ public sealed class UnusablePreviousXrefTests
     /// is written to the caller's stream.
     /// </summary>
     /// <remarks>
-    /// This asserted the <c>/Prev</c> omission until 2026-08-24. Omitting the key was correct and
-    /// insufficient — see the class remarks. The summary moved with the behaviour, rather than the
-    /// assertion being edited under the old one.
+    /// Omitting the <c>/Prev</c> key is correct and insufficient — see the class remarks.
     /// </remarks>
     [Fact]
     public void SigningAFileWithNoNameablePreviousSection_IsRefusedRatherThanWrittenUnchained()
@@ -77,10 +72,8 @@ public sealed class UnusablePreviousXrefTests
         using (var doc = PdfDocument.Open(probe))
             Assert.Equal(0, doc.Parser.StartXrefOffset);
 
-        // This test used to assert that the appended trailer omitted /Prev — true, and not enough:
-        // the resulting file reopened with a catalog and zero pages, and the signature over it
-        // still verified. Signing now refuses. The name changed with the behaviour rather than the
-        // assertion being edited under the old one.
+        // An appended trailer omitting /Prev is not enough: the resulting file would reopen with a
+        // catalog and zero pages, and the signature over it would still verify. Signing refuses.
         using var toSign = new MemoryStream(input);
         using var output = new MemoryStream();
         Assert.Throws<PdfSigningException>(() => new PdfSigner().Sign(

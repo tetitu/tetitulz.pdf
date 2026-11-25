@@ -137,8 +137,8 @@ public sealed class GlyphRunBatchingTests
 
     /// <summary>
     /// Text rendering mode 7 (<c>Clip</c>, §9.3.6) paints nothing itself and makes the run's glyph
-    /// outlines the clip for everything after <c>ET</c>. The accumulation used to happen once per
-    /// glyph; batched, it happens once per run, and the two failure directions are opposite —
+    /// outlines the clip for everything after <c>ET</c>. Batched, the accumulation happens once per
+    /// run rather than once per glyph, and the two failure directions are opposite —
     /// clipping to nothing (the rectangle vanishes) or to everything (the rectangle survives
     /// whole). Both are caught by probing inside a glyph and inside the gap beside it.
     /// </summary>

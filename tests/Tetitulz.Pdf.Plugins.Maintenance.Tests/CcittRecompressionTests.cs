@@ -136,13 +136,11 @@ public class CcittRecompressionTests
     }
 
     /// <summary>
-    /// Under <see cref="OptimizationOptions.Lossless"/> this pass no longer has bilevel images to
-    /// itself, and the test that used to demand a CCITT result here has been renamed rather than
-    /// re-asserted, because the behaviour genuinely changed.
+    /// Under <see cref="OptimizationOptions.Lossless"/> this pass does not have bilevel images to
+    /// itself, so no CCITT result is demanded here.
     ///
-    /// <para><b>What changed.</b> The PNG predictor pass (step 1i) used to require
-    /// <c>/BitsPerComponent 8</c>, so it never saw a bilevel raster; it now runs on every permitted
-    /// depth and on <c>/ImageMask</c> stencils, and the palette pass (step 1h2) can turn a
+    /// <para><b>Why.</b> The PNG predictor pass (step 1i) runs on every permitted depth and on
+    /// <c>/ImageMask</c> stencils, and the palette pass (step 1h2) can turn a
     /// two-tone image into a 1-bit <c>/Indexed</c> one. Both run <i>before</i> this pass, and this
     /// pass commits only when Group 4 beats what is in the stream at that moment — so the file ends
     /// up with the smallest of the three rather than with CCITT unconditionally. That ordering is
@@ -216,9 +214,9 @@ public class CcittRecompressionTests
     /// that are <b>not sample data</b> (§8.9.3), and a Group 4 round trip does not preserve them:
     /// the coder codes exactly <c>/Columns</c> pixels and the decoder regenerates the tail as white.
     ///
-    /// <para>This pins the distinction the pass's own summary used to blur. It said the encoder and
-    /// decoder round-trip "byte-for-byte", which is true only when the width divides by eight —
-    /// every other fixture in this file is 64 wide, so nothing here could see it. What the pass
+    /// <para>This pins a distinction: an encoder and decoder round-tripping "byte-for-byte" is true
+    /// only when the width divides by eight — every other fixture in this file is 64 wide, so nothing
+    /// else here can see it. What the pass
     /// actually guarantees, and all it needs to guarantee, is that <b>every pixel</b> survives; the
     /// bits past the last pixel of a row are ignored by any reader.</para>
     ///

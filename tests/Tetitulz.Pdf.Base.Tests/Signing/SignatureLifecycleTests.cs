@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Tetitulz.Pdf.Base.Tests.Signing;
 
-/// <summary>Wave 5.5 — end-to-end signature lifecycle: sign → counter-sign →
+/// <summary>End-to-end signature lifecycle: sign → counter-sign →
 /// verify. (DSS / DocTimeStamp paths require a real TSA endpoint and are
 /// exercised separately; this test covers the chain that runs entirely
 /// in-process with BouncyCastle test certs.)</summary>

@@ -77,7 +77,7 @@ namespace Tetitulz.Pdf.HtmlToPdf
             if (rules.Count == 0) return;
 
             var acc = new Dictionary<IElement, List<(int spec, int order, string decls)>>();
-            var pseudo = new Dictionary<(IElement el, string attribute), List<(int spec, int order, string decls)>>();
+            var pseudo = new Dictionary<(IElement el, string attribute), List<(int spec, int order, string decls)>>(PseudoKeys);
 
             // The fold collects one (spec, order, decls) tuple per rule and matching element, and
             // ResolveCascade then reads each tuple's declaration text: both are the product of a rule's
@@ -179,6 +179,14 @@ namespace Tetitulz.Pdf.HtmlToPdf
             foreach (var kv in pseudo)
                 kv.Key.el.SetAttribute(kv.Key.attribute, ResolveCascade(kv.Value, null));
         }
+
+        /// <summary>
+        /// A pseudo-element's rules by element and private attribute, the attribute's hash under
+        /// <see cref="Core.Util.KeyedHash"/> as every tuple key holding a string has it.
+        /// </summary>
+        private static readonly IEqualityComparer<(IElement el, string attribute)> PseudoKeys =
+            Core.Util.KeyedHash.Comparer<(IElement el, string attribute)>(
+                k => unchecked(k.el.GetHashCode() * 31 + Core.Util.KeyedHash.Of(k.attribute)));
 
         /// <summary>Private attribute carrying a resolved <c>::before</c> declaration block.</summary>
         internal const string BeforeStyleAttribute = "data-tetitulz-before";

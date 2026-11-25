@@ -15,7 +15,7 @@ infinite loop in a page script could not be stopped in-process at all: .NET cann
 The owner chose this route on 2026-09-29 over attaching constraints by reflection into Jint's
 private fields (fragile) or waiting on an upstream change.
 
-## What was changed — ten things
+## What was changed — eleven things
 
 Everything is byte-for-byte the tag's, visibility included, except these, each marked
 `TETITULZ MODIFICATION`:
@@ -72,11 +72,15 @@ Everything is byte-for-byte the tag's, visibility included, except these, each m
    the entry served least gives way. It kept the first 32 sources the process ever prepared, of any size,
    for good: the first page a server converted could fill every slot with its own scripts, pinned, and
    every library after it paid a full preparation on every run.
+11. **A source's hash is keyed** (2026-11-25). `ScriptCache` hashes a source through
+   `Core.Util.KeyedHash`, for the cache and for the sources seen once: on .NET Framework a string's own
+   hash is one fixed function, so a page could choose a source that shares a library's length and hash
+   and pass for it. `TupleKeyComparerGuardTests` fails if the cache's comparer is lost.
 
 ## Re-vendoring a newer release
 
 Copy `src/AngleSharp.Js/*.cs` from the new tag over `Vendor/AngleSharp.Js/`, replace `LICENSE`,
-re-apply the eight modifications (search for the marker; the namespace move is a script's work —
+re-apply the eleven modifications (search for the marker; the namespace move is a script's work —
 every `namespace` line and every `using AngleSharp.Js…`), and check the Jint version range it wants against
 `Directory.Packages.props`. The limit tests in `Tetitulz.Pdf.Plugins.HtmlScript.Tests` fail if the
 hook is lost, `ScriptGlobalsTests` if the filter or the getters are, and `NamespaceIsolationTests` if a

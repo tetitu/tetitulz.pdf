@@ -296,8 +296,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         // ------------------------------------------------------------------ honest omissions
 
-        // Gradients used to be listed here as "not painted and reported". They are now painted as
-        // real PDF shadings, so that claim is gone rather than reworded — see ShapeGradientTests.
+        // Gradients are painted as real PDF shadings — see ShapeGradientTests.
 
         [Fact]
         public void PictureFill_IsNotPaintedAndIsReported()

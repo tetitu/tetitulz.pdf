@@ -23,13 +23,12 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 /// the one every reader of a remediated file lands on first.
 ///
 /// <para>
-/// The regression these tests exist for: the writer used to delegate to
-/// <c>PdfMetadataWriter.WriteXmpMetadata</c>, which calls the legacy six-argument
-/// <c>IncrementalUpdateWriter.WriteUpdate</c>. That overload <i>always</i> emits a classic
-/// <c>xref</c> table plus a <c>trailer</c> copied wholesale from the parser's merged trailer. Run
-/// over a document whose cross-reference section is a <b>stream</b>, it produced a hybrid whose
-/// classic trailer carried <c>/Type /XRef</c>, <c>/W [1 2 2]</c> and a stale <c>/Length</c>, with
-/// <c>/Prev</c> pointing at an xref stream — and returned <c>true</c>. Independent checkers reject that,
+/// The defect these tests exist for: a write through the legacy six-argument
+/// <c>IncrementalUpdateWriter.WriteUpdate</c> <i>always</i> emits a classic <c>xref</c> table plus
+/// a <c>trailer</c> copied wholesale from the parser's merged trailer. Run over a document whose
+/// cross-reference section is a <b>stream</b>, it would produce a hybrid whose classic trailer
+/// carries <c>/Type /XRef</c>, <c>/W [1 2 2]</c> and a stale <c>/Length</c>, with <c>/Prev</c>
+/// pointing at an xref stream — and return <c>true</c>. Independent checkers reject that,
 /// and a reader that only understands xref streams cannot follow the chain at all.
 /// </para>
 ///

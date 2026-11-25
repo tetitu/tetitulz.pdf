@@ -18,12 +18,10 @@ using Xunit;
 namespace Tetitulz.Pdf.Accessibility.Tests;
 
 /// <summary>
-/// <see cref="PdfUaXmpWriter"/> used to restate the <c>xpacket</c> wrapper — both processing
-/// instructions, the fixed packet id and the byte-order mark — instead of taking them from
-/// <see cref="XmpPacket"/> in Core, which its sibling packet builder in
-/// <c>Plugins.Conformance</c> already uses. The strings were byte-identical, so routing through
-/// the shared constants is hygiene rather than a bug fix; what these tests exist for is the thing
-/// that makes it <i>safe</i> hygiene.
+/// <see cref="PdfUaXmpWriter"/> takes the <c>xpacket</c> wrapper — both processing instructions,
+/// the fixed packet id and the byte-order mark — from <see cref="XmpPacket"/> in Core, as its
+/// sibling packet builder in <c>Plugins.Conformance</c> does, rather than restating it. What these
+/// tests exist for is what makes sharing the constants <i>safe</i>.
 ///
 /// <para><b>Two invariants ride on the emitted bytes, and neither is visible from the source
 /// diff.</b> The packet is the document's PDF/UA conformance assertion, so a checker has to find

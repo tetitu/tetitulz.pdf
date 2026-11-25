@@ -131,7 +131,7 @@ public class DateAndNumberFormattingTests
 
     /// <summary>
     /// The same call on an en-US host must give the same answer — that agreement is the property
-    /// the fix buys, and asserting only one culture could not detect its loss.
+    /// the invariant formatting buys, and asserting only one culture could not detect its loss.
     /// </summary>
     [Fact]
     public void AFDateFormat_GivesTheSameAnswerInEveryCulture()

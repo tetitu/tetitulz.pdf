@@ -19,10 +19,10 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 /// no width and is not kept; a row reaches a far rowspan in one step.
 /// </summary>
 /// <remarks>
-/// A row of a hundred <c>colspan="1000"</c> cells over fifty thousand one-cell rows padded five billion
-/// cells, the fill charged to nothing: 3.9 KB of markup allocated 8.4 GB and wrote a 92 MB file
-/// (2026-10-22). And <c>&lt;td colspan="100"&gt;</c> across a two-column table — the "span every column"
-/// idiom — drew ninety-eight empty boxes beside the two real columns; at 1000 the real ones were slivers.
+/// A row of a hundred <c>colspan="1000"</c> cells over fifty thousand one-cell rows would pad five billion
+/// cells with the fill charged to nothing: 3.9 KB of markup allocating 8.4 GB and writing a 92 MB file.
+/// And <c>&lt;td colspan="100"&gt;</c> across a two-column table — the "span every column" idiom — would
+/// draw ninety-eight empty boxes beside the two real columns, and at 1000 the real ones would be slivers.
 /// Chrome draws both as two columns.
 /// </remarks>
 [Collection("HtmlMapperLimits")]

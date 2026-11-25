@@ -17,7 +17,7 @@ namespace Tetitulz.Pdf.Accessibility.Tests;
 
 /// <summary>
 /// The boundaries of UA24's reporting and of the occurrence helpers it shares with the other
-/// checks, which the 2026-10-10 overnight sweep found unpinned: the single-page detail, the
+/// checks: the single-page detail, the
 /// individual-to-aggregate threshold, what an aggregate names and where it points, and the join
 /// cap of the coverage notice.
 ///

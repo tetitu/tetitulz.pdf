@@ -13,26 +13,25 @@ using Tetitulz.Pdf.Plugins.PostScript.Tests.TestInfrastructure;
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
-/// Regressions from the fourth review (2026-08-13). Four unrelated defects, but three of them share
-/// a shape this repo keeps rediscovering: a bound that <i>looks</i> present and is evaluated in the
-/// wrong arithmetic, in the wrong place, or on the wrong quantity.
+/// Four unrelated defects, three of them sharing one shape: a bound that <i>looks</i> present and
+/// is evaluated in the wrong arithmetic, in the wrong place, or on the wrong quantity.
 ///
 /// <list type="number">
 ///   <item><b>32-bit bounds on a file-controlled index.</b> <c>getinterval</c>/<c>putinterval</c>
-///     tested <c>index + count &gt; Length</c> unchecked, so a saturated <c>int.MaxValue</c> index
-///     wrapped the sum negative and the check passed — turning a conforming <c>rangecheck</c> into
-///     an <c>IndexOutOfRangeException</c> that escapes <c>PsInterpreter.Run</c> and discards the
+///     testing <c>index + count &gt; Length</c> unchecked would let a saturated <c>int.MaxValue</c>
+///     index wrap the sum negative and pass — turning a conforming <c>rangecheck</c> into an
+///     <c>IndexOutOfRangeException</c> that escapes <c>PsInterpreter.Run</c> and discards the
 ///     whole conversion.</item>
-///   <item><b>A validity test that admits infinity.</b> <c>PsBoundingBox.IsValid</c> asked only
-///     <c>Width &gt; 0 &amp;&amp; Height &gt; 0</c>, and <c>Infinity &gt; 0</c> is true, so
-///     <c>%%BoundingBox: 0 0 1e400 1e400</c> reached <c>/MediaBox</c> as the literal
-///     <c>Infinity</c> — a page this library's own parser cannot read back.</item>
-///   <item><b>A diagnostic charged per byte.</b> The scanner reported one uncapped
-///     <c>PostScriptDiagnostics.Report</c> per stray <c>&gt;</c>, per unbalanced <c>)</c> and per
-///     non-hex byte — the exact amplification <c>ReportOversizedNumericToken</c>'s doc comment
-///     already names as "making the diagnostics themselves the attack".</item>
-///   <item><b>A required entry omitted.</b> The CJK descendant CIDFont carried no
-///     <c>/FontDescriptor</c>, which Table 117 lists as Required for every CIDFont.</item>
+///   <item><b>A validity test that admits infinity.</b> <c>Width &gt; 0 &amp;&amp; Height &gt; 0</c>
+///     alone is true of <c>Infinity</c>, so <c>%%BoundingBox: 0 0 1e400 1e400</c> would reach
+///     <c>/MediaBox</c> as the literal <c>Infinity</c> — a page this library's own parser cannot
+///     read back.</item>
+///   <item><b>A diagnostic charged per byte.</b> One uncapped <c>PostScriptDiagnostics.Report</c>
+///     per stray <c>&gt;</c>, per unbalanced <c>)</c> and per non-hex byte would be the exact
+///     amplification <c>ReportOversizedNumericToken</c>'s doc comment names as "making the
+///     diagnostics themselves the attack".</item>
+///   <item><b>A required entry.</b> The CJK descendant CIDFont carries a <c>/FontDescriptor</c>,
+///     which Table 117 lists as Required for every CIDFont.</item>
 /// </list>
 /// </summary>
 public sealed class FourthReviewRegressionTests

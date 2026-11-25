@@ -15,8 +15,8 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// </summary>
 /// <remarks>
 /// <para><b>Public because <c>HtmlToPdf</c> needs it and cannot see this assembly's internals.</b>
-/// A <c>float</c> with no declared width used to fall back to a two-cell band because "CSS
-/// shrink-to-fit needs a measurement pass the mapper does not run"; this is that pass, answered
+/// A <c>float</c> with no declared width needs CSS shrink-to-fit's measurement pass, without which
+/// it would fall back to a two-cell band; this is that pass, answered
 /// by the layout that will draw the float, so the reserved width holds exactly the lines that were
 /// measured.</para>
 ///

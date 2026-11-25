@@ -14,8 +14,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
 /// A DOCX table row lays out at most <see cref="PdfLimits.MaxDocxTableColumns"/> cells: a row taller than a page
-/// strokes every cell's borders on every page it spans, so cells times pages, both the file's, wrote gigabytes of
-/// borders (Wave 22, DocxToPdf-4:1). The cells past the limit are dropped and reported.
+/// strokes every cell's borders on every page it spans, so cells times pages, both the file's, could write
+/// gigabytes of borders. The cells past the limit are dropped and reported.
 /// </summary>
 [Collection(PdfLimitsCollection.Name)]
 public sealed class TableColumnCapTests

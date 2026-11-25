@@ -16,13 +16,13 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// <see cref="HtmlRenderEngine.Managed"/> must be honoured on every entry point that can
     /// serve it, not only the two synchronous byte methods.
     ///
-    /// <para>It used to be checked at <c>ConvertFileToBytes</c> and <c>ConvertHtmlToBytes</c>
-    /// alone, so every <c>…Async</c> overload launched Playwright regardless. Because
+    /// <para>Checked at <c>ConvertFileToBytes</c> and <c>ConvertHtmlToBytes</c> alone, every
+    /// <c>…Async</c> overload would launch Playwright regardless. Because
     /// <see cref="HtmlToPdfConverterService"/> — and therefore <see cref="IHtmlToPdfConverter"/>,
     /// the DI surface — delegates exclusively to the async methods, selecting the managed engine
-    /// through dependency injection did nothing at all. These tests run with no browser
-    /// installed, which is what makes them falsifiable: before the fix the async cases either
-    /// throw (no Playwright) or produce browser output.</para>
+    /// through dependency injection would do nothing at all. These tests run with no browser
+    /// installed, which is what makes them falsifiable: an async case that ignored the selection
+    /// would either throw (no Playwright) or produce browser output.</para>
     /// </summary>
     public class RenderEngineSelectionTests
     {

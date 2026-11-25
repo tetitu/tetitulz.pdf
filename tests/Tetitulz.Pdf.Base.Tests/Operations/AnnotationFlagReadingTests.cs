@@ -62,7 +62,7 @@ public class AnnotationFlagReadingTests
     }
 
     /// <summary>
-    /// The verdict that used to differ: neither fixture is hidden on screen. The non-integer one is
+    /// The verdict two readings of the flags could differ on: neither fixture is hidden on screen. The non-integer one is
     /// hidden in print, since its default of 0 leaves Print clear; the Print one prints.
     /// </summary>
     [Theory]

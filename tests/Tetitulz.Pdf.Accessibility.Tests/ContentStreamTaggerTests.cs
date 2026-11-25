@@ -384,14 +384,13 @@ public class ContentStreamTaggerTests
 
     /// <summary>
     /// The binary payoff of measuring a self-delimiting payload. A filtered inline image with no
-    /// declared <c>/L</c> used to make its whole page permanently untaggable: the scanner could only
-    /// guess where the samples ended, so the tagger refused with the "payload length could not be
-    /// determined" skip reason rather than splice at an offset it could not prove. <c>/A85</c>
-    /// carries its own <c>~&gt;</c> end-of-data marker (§7.4.3), so the length is now known and the
-    /// page is tagged — with the samples still untouched.
+    /// declared <c>/L</c>, its end only guessed, would make its whole page untaggable: the tagger
+    /// refuses with the "payload length could not be determined" skip reason rather than splice at an
+    /// offset it cannot prove. <c>/A85</c> carries its own <c>~&gt;</c> end-of-data marker (§7.4.3),
+    /// so the length is known and the page is tagged — with the samples still untouched.
     ///
     /// <para>
-    /// The payload is the case the old heuristic provably could not survive: an ASCII85 stream is
+    /// The payload is the case a heuristic provably cannot survive: an ASCII85 stream is
     /// printable ASCII by construction, and <c>E</c> and <c>I</c> are both in the base-85 alphabet,
     /// so the <c>" EI "</c> inside it satisfies every condition the heuristic tests.
     /// </para>
@@ -1545,9 +1544,9 @@ public class ContentStreamTaggerTests
     }
 
     /// <summary>
-    /// Adversarial input: a single paragraph of thousands of lines. Merging used to rebuild the
+    /// Adversarial input: a single paragraph of thousands of lines. Merging that rebuilt the
     /// whole accumulated run text on every line — <c>sb.Length = 0; sb.Append(last.Text)…;
-    /// last.Text = sb.ToString()</c> — which copies the run twice per line and allocates a
+    /// last.Text = sb.ToString()</c> — would copy the run twice per line and allocate a
     /// progressively larger string each time. That is O(lines² × charsPerLine) work and
     /// O(lines² × charsPerLine) bytes, most of it landing straight on the large object heap; at the
     /// size below it allocates on the order of 3 GB for a half-megabyte content stream, and nothing
@@ -1757,7 +1756,7 @@ public class ContentStreamTaggerTests
     /// <summary>
     /// Adversarial input for the other half of the guard: <c>/Contents</c> is an array, and Core
     /// caps each stream individually, so the concatenation is otherwise unbounded — forty 512 MiB
-    /// parts ask for a 20 GiB array, and merely crossing <c>int.MaxValue</c> used to wrap the length
+    /// parts ask for a 20 GiB array, and merely crossing <c>int.MaxValue</c> would wrap 32-bit length
     /// arithmetic and throw out of a method whose contract is to return <c>null</c>. The ceiling is
     /// exercised at a tractable size here; the production one is
     /// <see cref="ContentStreamTagger.MaxConcatenatedContentBytes"/>.

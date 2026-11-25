@@ -18,17 +18,17 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 /// Adobe Type 1 Font Format's own example ends the <c>eexec</c> portion with
 /// <c>dup /FontName get exch definefont pop</c> — and this scanner skips that section whole. So
 /// the only clear-text trace of the font is its header's <c>/FontName</c>, and the document's
-/// <c>/CMR10 findfont</c> must find the captured program by that name. It did not: <c>findfont</c>
-/// consulted only the fonts a program defined in clear text, which real files never do, so every
-/// embedded font drew as the Helvetica substitute with a report blaming the program for naming a
-/// font that is "not one of the standard 14".</para>
+/// <c>/CMR10 findfont</c> must find the captured program by that name. A <c>findfont</c> consulting
+/// only the fonts a program defined in clear text, which real files never do, would draw every
+/// embedded font as the Helvetica substitute with a report blaming the program for naming a font
+/// that is "not one of the standard 14".</para>
 ///
-/// <para>The association between a font dictionary and its program also used to live in a
-/// thread-static "the font <c>findfont</c> just returned", consumed by the next <c>setfont</c>.
-/// Two fonts looked up before either was set therefore swapped programs, and every later
-/// <c>definefont</c> whose name matched no captured header was handed the <i>last</i> captured
-/// program whatever it was. The association now travels in the font dictionary, so it survives
-/// <c>scalefont</c>, <c>makefont</c>, a <c>def</c> and the re-encoding idiom's copy.</para>
+/// <para>The association between a font dictionary and its program travels in the font dictionary,
+/// so it survives <c>scalefont</c>, <c>makefont</c>, a <c>def</c> and the re-encoding idiom's copy.
+/// Held in a thread-static "the font <c>findfont</c> just returned", consumed by the next
+/// <c>setfont</c>, two fonts looked up before either was set would swap programs, and every later
+/// <c>definefont</c> whose name matched no captured header would be handed the <i>last</i>
+/// captured program whatever it was.</para>
 /// </summary>
 public sealed class EmbeddedFontDiscoveryTests
 {

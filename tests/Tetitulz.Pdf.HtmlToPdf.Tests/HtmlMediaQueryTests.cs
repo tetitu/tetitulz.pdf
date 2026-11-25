@@ -77,10 +77,10 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
             => Assert.Equal(applies, HtmlToBuilderMapper.MediaApplies(list));
 
         /// <summary>
-        /// A stray <c>)</c> in one query does not join the rest of the list to it. The list's own
-        /// splitter let its depth go below zero there, and no comma after it split the list, so the
-        /// <c>print</c> query was never evaluated (the dedup pass of 2026-10-21 gave the list the
-        /// one top-level splitter, which passes over a <c>)</c> with nothing open). The control is
+        /// A stray <c>)</c> in one query does not join the rest of the list to it: the one top-level
+        /// splitter passes over a <c>)</c> with nothing open, where a splitter letting its depth go below
+        /// zero would split at no comma after it, and the <c>print</c> query would never be evaluated. The
+        /// control is
         /// the same list without its <c>print</c> query.
         /// </summary>
         [Fact]

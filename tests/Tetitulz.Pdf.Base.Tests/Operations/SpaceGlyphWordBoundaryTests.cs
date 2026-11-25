@@ -16,14 +16,13 @@ namespace Tetitulz.Pdf.Base.Tests.Operations;
 /// A space glyph drawn between two glyphs ends a word, however narrow the gap it leaves.
 /// </summary>
 /// <remarks>
-/// <para><b>Structured extraction used to see only the gap.</b> It removed blank glyphs before
-/// grouping, so a word ended only where the gap beat 0.8 of the preceding glyph's advance. A 12 pt
-/// Helvetica space is 3.3 pt, and 0.8 of an "o" is 5.3 pt, so ordinary single-spaced text came
-/// back joined. Real files did too: <c>InvoiceTotal:</c>, <c>BillingStartDate:</c>,
-/// <c>disclaimerofliability,</c>. Table cells, field values, search-driven redaction and the HTML
-/// exports all read those words.</para>
+/// <para><b>Not the gap alone.</b> With blank glyphs removed before grouping, a word would end
+/// only where the gap beat 0.8 of the preceding glyph's advance. A 12 pt Helvetica space is 3.3 pt,
+/// and 0.8 of an "o" is 5.3 pt, so ordinary single-spaced text would come back joined — in real
+/// files too: <c>InvoiceTotal:</c>, <c>BillingStartDate:</c>, <c>disclaimerofliability,</c>. Table
+/// cells, field values, search-driven redaction and the HTML exports all read those words.</para>
 ///
-/// <para><c>WordAssemblyOptions.KeepBlankChars</c> already said, for its default, that blank
+/// <para><c>WordAssemblyOptions.KeepBlankChars</c> says, for its default, that blank
 /// glyphs "are used only for spacing". pdfplumber, which that option mirrors, treats them as the
 /// space between words.</para>
 /// </remarks>

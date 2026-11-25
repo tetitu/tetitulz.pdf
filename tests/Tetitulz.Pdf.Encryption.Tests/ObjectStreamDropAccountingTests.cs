@@ -76,7 +76,7 @@ public class ObjectStreamDropAccountingTests
 
     /// <summary>
     /// Stream 6 is refused for its declared <c>/N</c> and stream 8 then expands cleanly. Their members' object numbers
-    /// (4, then 7) put 6 before 8 in the expansion order, so 8's clean expansion is what used to erase 6's refusal.
+    /// (4, then 7) put 6 before 8 in the expansion order, so 8's clean expansion must not erase 6's refusal.
     /// </summary>
     [Fact]
     public void ObjectStreamRefusedForItsDeclaredCount_IsReportedEvenWhenALaterStreamExpandsCleanly()

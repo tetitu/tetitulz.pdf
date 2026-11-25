@@ -312,6 +312,12 @@ What a service does once, at startup. Each item is something a host has got wron
    fetcher: private, loopback and link-local addresses are refused, redirects are re-checked per hop,
    and a credential rides only to the host it was scoped to. Verification asks online only when
    `SignatureVerificationOptions.OnlineRevocation` is set; a failed fetch is a warning, never a verdict.
+8. **.NET Framework.** There a string's hash is the same in every process, so a file can choose names
+   that share one bucket of a hash table and make filling it quadratic. Every table the library keys by
+   a file's strings (PDF names, PostScript keys, tuple keys, groupings) hashes under a key drawn once a
+   process. For the packages it depends on and your own code, put
+   `<UseRandomizedStringHashAlgorithm enabled="1" />` in the `<runtime>` section of the executable's
+   configuration file. .NET Core and later key string hashes already.
 
 ---
 

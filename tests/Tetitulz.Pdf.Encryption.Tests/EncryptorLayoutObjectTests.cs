@@ -16,11 +16,11 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 
 /// <summary>
 /// The whole-file encryptors carry a source's content, not its layout: an input written with object streams and a
-/// cross-reference stream used to come out with every container and the stale cross-reference stream written back,
-/// encrypted and unreferenced, beside the members the parser had already handed over — one rule with the decryptor,
-/// <see cref="FileLayoutObjects"/>. Since the compressed layout is kept (GAPS §19h item 7), the output holds layout
-/// objects of its <b>own</b> — one object stream and one cross-reference stream, numbered past the source's — and
-/// none of the source's; written classic, it holds none at all.
+/// cross-reference stream does not come out with its containers and stale cross-reference stream written back,
+/// encrypted and unreferenced, beside the members the parser already handed over — one rule with the decryptor,
+/// <see cref="FileLayoutObjects"/>. With the compressed layout kept, the output holds layout objects of its
+/// <b>own</b> — one object stream and one cross-reference stream, numbered past the source's — and none of the
+/// source's; written classic, it holds none at all.
 /// </summary>
 public class EncryptorLayoutObjectTests
 {
@@ -127,8 +127,8 @@ public class EncryptorLayoutObjectTests
     {
         // An encrypted classic document; the operation rewrites the decrypted copy with object streams and a
         // cross-reference stream, as the optimizer does, and the round trip encrypts that again — in the
-        // layout the operation chose, with the file's own containers, not the operation's (the round trip
-        // used to unpack every object and write it back out under a classic table, larger than its input).
+        // layout the operation chose, with the file's own containers, not the operation's — not every
+        // object unpacked and written back out under a classic table, larger than its input.
         using var plain = new MemoryStream(PublicKeyRoundTripTests.SourcePdf());
         using var protectedCopy = new MemoryStream();
         PdfEncryptor.Encrypt(plain, protectedCopy, new EncryptionParameters

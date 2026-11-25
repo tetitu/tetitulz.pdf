@@ -15,26 +15,25 @@ using Xunit;
 namespace Tetitulz.Pdf.Accessibility.Tests;
 
 /// <summary>
-/// The two normative indirections a structure element may use, and which the deep checker used to
-/// ignore.
+/// The two normative indirections a structure element may use, which the deep checker follows.
 ///
 /// <para>
 /// <b><c>/RoleMap</c>.</b> ISO 32000-1 §14.7.3 / §14.8.4 make it the sanctioned way for a producer
 /// to use its own structure types, and a conforming consumer must treat a <c>/Bullet</c> mapped to
-/// <c>/LI</c> exactly as an <c>/LI</c>. UA10/UA11/UA12/UA15 compared the raw <c>/S</c>, so a fully
-/// conformant role-mapped document collected manufactured Errors — "List (L) element contains a
+/// <c>/LI</c> exactly as an <c>/LI</c>. Compared on the raw <c>/S</c>, UA10/UA11/UA12/UA15 would
+/// give a fully conformant role-mapped document manufactured Errors — "List (L) element contains a
 /// child of type Bullet", "Table row (TR) contains a child of type HeaderCell", "Table has no TH
-/// (header) cells" — and the real substructure of those elements was then never validated at all.
-/// The sibling <c>PdfUaChecker.CanonicalRole</c> in the Conformance plugin always resolved the
-/// role, so the two checkers in this repository disagreed about the same file.
+/// (header) cells" — and never validate the real substructure of those elements, while the
+/// sibling <c>PdfUaChecker.CanonicalRole</c> in the Conformance plugin resolves the role: the two
+/// checkers in this repository would disagree about the same file.
 /// </para>
 ///
 /// <para>
 /// <b><c>/ClassMap</c>.</b> §14.7.5.2 defines a second, equally normative way to attach attributes:
 /// the element carries <c>/C &lt;class name&gt;</c> and <c>/StructTreeRoot /ClassMap</c> maps each
-/// name to an attribute object with the same <c>/O</c> owner semantics as <c>/A</c>. UA12 read only
-/// <c>/A</c>, so a checker-clean table that declared its merges and header scopes through a
-/// class had every span read as 1 and every <c>/Scope</c> read as absent.
+/// name to an attribute object with the same <c>/O</c> owner semantics as <c>/A</c>. Reading only
+/// <c>/A</c>, UA12 would read every span of a table that declares its merges and header scopes
+/// through a class as 1, and every <c>/Scope</c> as absent.
 /// </para>
 ///
 /// <para>Each rule gets both directions, and each "is silent" case is paired with a control that
@@ -239,8 +238,8 @@ public class RoleMapAndClassMapChecksTests
     }
 
     /// <summary>
-    /// A role-mapped illustration type has its alt text judged like any other Figure — UA15 used to
-    /// see only a literal <c>/S /Figure</c>.
+    /// A role-mapped illustration type has its alt text judged like any other Figure — UA15 sees
+    /// more than a literal <c>/S /Figure</c>.
     /// </summary>
     [Fact]
     public void Ua15_RoleMappedFigureWithGenericAltText_IsReported()

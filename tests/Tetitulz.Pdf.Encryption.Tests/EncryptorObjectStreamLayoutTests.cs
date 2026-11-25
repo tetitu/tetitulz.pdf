@@ -16,9 +16,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Encryption.Tests;
 
 /// <summary>
-/// An encrypted document in the compressed layout (GAPS §19h item 7). The encryptors wrote every
-/// object back out individually under a classic table, so the optimizer's object streams were
-/// undone by the round trip and the output grew past its input. The layout the input has is kept —
+/// An encrypted document in the compressed layout. Writing every object back out individually under
+/// a classic table would undo the optimizer's object streams in the round trip and grow the output
+/// past its input, so the layout the input has is kept —
 /// <see cref="EncryptionParameters.UseObjectStreams"/> overrides it either way — through
 /// <c>PdfCompressedFileWriter</c>'s encryptor seam: the object streams encrypted whole, their members
 /// in the clear inside, the <c>/Encrypt</c> dictionary and the cross-reference stream unencrypted.

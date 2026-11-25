@@ -18,12 +18,11 @@ namespace Tetitulz.Pdf.Builder.Tests;
 /// becomes the <b>level text</b> of a numbering instance of its own, so Word still sees a list.
 /// </summary>
 /// <remarks>
-/// <para><b>What this replaces.</b> One overriding item used to demote the WHOLE list to typed
-/// markers — paragraphs beginning with characters, which Word will not renumber, indent or
-/// recognise as a list — and a diagnostic said so once per export. The premise was that a literal
-/// marker has no scheme to rebuild a definition from. It does not need one: Word's own level text
-/// is a literal string too (<c>w:lvlText</c>), and a bullet-format level whose text is the marker
-/// draws exactly the marker the model recorded.</para>
+/// <para><b>Not typed markers.</b> Demoting the WHOLE list to typed markers for one overriding
+/// item would give paragraphs beginning with characters, which Word will not renumber, indent or
+/// recognise as a list. A literal marker needs no scheme to rebuild a definition from: Word's own
+/// level text is a literal string too (<c>w:lvlText</c>), and a bullet-format level whose text is
+/// the marker draws exactly the marker the model recorded.</para>
 ///
 /// <para><b>The instance shares the list's abstract definition</b>, and that is what keeps the
 /// four exporters agreeing about the items AROUND the override. Instances that share an
@@ -190,8 +189,8 @@ public sealed class DocxLiteralMarkerTests
     /// <remarks>
     /// <c>%1</c> in <c>w:lvlText</c> is Word's own placeholder for the level-1 counter and the
     /// format has no escape for a literal percent sign — a producer's "50% off" marker would be
-    /// drawn as "50<i>counter</i> off". The one case the definition cannot express falls back to
-    /// exactly what every case used to get, and only that case is reported.
+    /// drawn as "50<i>counter</i> off". The one case the definition cannot express falls back to a
+    /// typed run, and only that case is reported.
     /// </remarks>
     [Fact]
     public void AMarkerWithAPercentSign_KeepsTheTypedRunAndReportsTheReason()

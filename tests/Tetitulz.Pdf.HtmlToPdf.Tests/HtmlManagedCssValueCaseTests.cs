@@ -199,14 +199,13 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         // ------------------------------------------------------ BasePath's documented contract
 
         /// <summary>
-        /// <see cref="HtmlToPdfOptions.BasePath"/>'s doc used to say a <c>null</c> value meant the
-        /// managed engine "does no file I/O". That is true for <c>ConvertHtml*</c> and false for
-        /// <c>ConvertFile*</c>, which supplies the input file's own directory as an implicit base —
-        /// so a caller who read the doc and left it null still got local subresources embedded.
+        /// <see cref="HtmlToPdfOptions.BasePath"/>'s doc states both halves: a <c>null</c> value means the
+        /// managed engine does no file I/O for <c>ConvertHtml*</c>, while <c>ConvertFile*</c> supplies the
+        /// input file's own directory as an implicit base — so a caller who leaves it null there still gets
+        /// local subresources embedded.
         ///
-        /// <para>The doc now states both halves. This test is what keeps the two from drifting apart
-        /// again: it asserts the behaviour the amended wording describes, from both entry points, in
-        /// one place.</para>
+        /// <para>This test keeps the doc and the behaviour from drifting apart: it asserts what the wording
+        /// describes, from both entry points, in one place.</para>
         /// </summary>
         [Fact]
         public void NullBasePath_ReadsLocalImagesFromConvertFileButNotFromConvertHtml()

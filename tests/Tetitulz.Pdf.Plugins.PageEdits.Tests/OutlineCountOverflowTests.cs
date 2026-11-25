@@ -14,15 +14,15 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.PageEdits.Tests;
 
 /// <summary>
-/// A source document's <c>/Outlines /Count</c> is a number the file chooses, and merge used to
+/// A source document's <c>/Outlines /Count</c> is a number the file chooses, so merge cannot
 /// convert it with <c>Math.Abs((long)cn.DoubleValue)</c>.
 ///
 /// <para>Both halves of that expression are unsafe on hostile input: a <c>double</c> outside
 /// <c>long</c>'s range has an <b>unspecified</b> conversion result, which on x64 is
 /// <c>long.MinValue</c>, and <c>Math.Abs(long.MinValue)</c> raises
-/// <see cref="System.OverflowException"/>. One crafted number in one merged document therefore
-/// aborted the whole merge with a message that named nothing about the input — a denial of service
-/// on a merge service that accepts uploads.</para>
+/// <see cref="System.OverflowException"/>. One crafted number in one merged document would abort
+/// the whole merge with a message that named nothing about the input — a denial of service on a
+/// merge service that accepts uploads.</para>
 ///
 /// <para>The guard's own evidence is asserted, not a wall clock: the merge completes AND the
 /// emitted <c>/Count</c> is a finite value inside <c>int</c>'s range.</para>

@@ -20,10 +20,10 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 /// with a row span as a vertical merge.
 /// </summary>
 /// <remarks>
-/// <para><b>The decline said honouring one item's position "means re-flowing every item after
-/// it".</b> It does; that re-flow is §8.5 of the Grid specification and it is a dozen lines over a
-/// grid of booleans. The table the grid maps to has always carried column spans and vertical
-/// merges, so every cell the algorithm produces already had a place to go.</para>
+/// <para><b>Honouring one item's position means re-flowing every item after it.</b> That re-flow
+/// is §8.5 of the Grid specification and it is a dozen lines over a grid of booleans. The table
+/// the grid maps to carries column spans and vertical merges, so every cell the algorithm
+/// produces has a place to go.</para>
 ///
 /// <para><b>Measured glyph positions, for the same reason as every grid test here.</b> A placed
 /// grid and a dealt grid are both valid PDFs full of the same words; only where a word landed

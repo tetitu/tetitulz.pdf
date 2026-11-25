@@ -93,9 +93,9 @@ public class DirectRootSigningRefusalTests
     // ================================================================ the document timestamper
 
     /// <summary>
-    /// The same refusal from <c>PdfDocumentTimestamper</c>, which never had it (Wave 17, R6.3): it
-    /// wrote the updated catalog as object 0 and pointed the new trailer's <c>/Root</c> at it, so the
-    /// output opened to nothing. Refused before a byte is copied, so the output stays empty — and
+    /// The same refusal from <c>PdfDocumentTimestamper</c>, which would otherwise write the updated
+    /// catalog as object 0 and point the new trailer's <c>/Root</c> at it, so the output opened to
+    /// nothing. Refused before a byte is copied, so the output stays empty — and
     /// before the TSA is contacted, so the URL here is never dialled.
     /// </summary>
     [Fact]

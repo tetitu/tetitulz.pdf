@@ -34,13 +34,11 @@ public sealed class Jpeg2000RenderingTests
     /// <summary>
     /// A <c>/JPXDecode</c> image the in-house decoder cannot read, with no plugin registered to
     /// try after it, cannot be painted as the document intended — and the renderer must <b>say
-    /// so</b>: the decoder's refusal, and that nothing else was asked. Before the in-house decoder
-    /// existed (Wave 15g) this was the "no JPEG 2000 codec is available" configuration report;
-    /// there is always a codec now, so what the report names is the codestream.
+    /// so</b>: the decoder's refusal, and that nothing else was asked. There is always a codec, so
+    /// what the report names is the codestream, not a missing configuration.
     ///
-    /// <para>The predecessor rendered exactly this file and asserted only that a PNG came back.
-    /// Until the <c>libopenjp2</c> probe was removed this test skipped on hosts that had the
-    /// library; with no native codec it runs everywhere.</para>
+    /// <para>A test that asserted only that a PNG came back would pass on this file whatever was
+    /// drawn. With no native codec this runs on every host.</para>
     /// </summary>
     [Fact]
     public void PageWithJpxImage_UndecodableAndNoPlugin_ReportsTheDecoderRefusalAndThatNoPluginIsRegistered()

@@ -14,7 +14,7 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.PageEdits.Tests;
 
 /// <summary>
-/// Boundaries of the merge/split helper that the 2026-10-10 overnight sweep found nothing pinning:
+/// Boundaries of the merge/split helper:
 /// what a page keeps of its own, the clone and hop ceilings, the destination step budget, and the
 /// numbers the assembled page tree and catalog carry.
 /// </summary>

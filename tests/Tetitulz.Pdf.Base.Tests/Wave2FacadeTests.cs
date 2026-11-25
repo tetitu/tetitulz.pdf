@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Tetitulz.Pdf.Base.Tests;
 
-/// <summary>Wave 2 facade API regression tests.</summary>
+/// <summary>Facade API tests.</summary>
 public sealed class Wave2FacadeTests
 {
     // -------- ExtractImage --------

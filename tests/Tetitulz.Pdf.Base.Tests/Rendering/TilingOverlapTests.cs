@@ -23,7 +23,7 @@ namespace Tetitulz.Pdf.Base.Tests.Rendering;
 /// <para><b>The overlap fixture</b>: a cell 20 wide on a step of 10, painting red only at
 /// x 12–18. Tiled, cells sit every 10 units, so red lands at 2–8 in every period — all of it spilled
 /// in from the cell to the left. Clipping each cell to its own tile leaves nothing; repeating it at
-/// its own width (what the raster renderer used to do) puts red at 12–18 every 20 units.</para>
+/// its own width puts red at 12–18 every 20 units.</para>
 /// </remarks>
 public class TilingOverlapTests
 {

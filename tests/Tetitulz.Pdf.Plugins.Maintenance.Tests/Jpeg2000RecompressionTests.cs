@@ -15,11 +15,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 
 /// <summary>
-/// The optimiser's <see cref="ImageFormat.Jpeg2000"/> target (Wave 15j): a raw RGB image is
+/// The optimiser's <see cref="ImageFormat.Jpeg2000"/> target: a raw RGB image is
 /// re-encoded as a <c>/JPXDecode</c> JP2 file the in-house decoder reads back close to the
 /// original, a lower quality costs quality and saves bytes, a greyscale image stays greyscale,
 /// and a JPEG 2000 image under <see cref="ImageFormat.Original"/> stays JPEG 2000 rather than
-/// becoming a JPEG, as it did while nothing here could write one.
+/// becoming a JPEG.
 /// </summary>
 public sealed class Jpeg2000RecompressionTests
 {
@@ -171,7 +171,7 @@ public sealed class Jpeg2000RecompressionTests
         Assert.Equal(1, components);
     }
 
-    /// <summary>Under <see cref="ImageFormat.Original"/> a JPEG 2000 image is re-encoded as JPEG 2000 at the quality asked, not as a JPEG — the arm that used to send it to DCTDecode.</summary>
+    /// <summary>Under <see cref="ImageFormat.Original"/> a JPEG 2000 image is re-encoded as JPEG 2000 at the quality asked, not sent to DCTDecode as a JPEG.</summary>
     [Fact]
     public void OriginalFormat_KeepsAJpeg2000Image_JpxDecode()
     {

@@ -77,7 +77,7 @@ public class FontResolutionTests
 
         Assert.NotEmpty(requests);
         // Every request carries only the code points of the run that triggered it — never the
-        // document's union. Resolution used to demand one font cover the whole document.
+        // document's union, so resolution does not demand one font cover the whole document.
         foreach (var req in requests)
         {
             var cps = req.RequiredCodePoints.ToHashSet();

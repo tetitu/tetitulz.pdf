@@ -107,8 +107,8 @@ public class FieldExtractorMatchingTests
 
     /// <summary>
     /// "Invoice #1001": the label ends inside the word holding the value, whose rest has no
-    /// letters, so the rest is the value. It used to count as label text — and the line below
-    /// supplied a date as the invoice number.
+    /// letters, so the rest is the value. Counted as label text, it would let the line below
+    /// supply a date as the invoice number.
     /// </summary>
     [Fact]
     public void AValueSetInTheLabelsLastWordIsTheValue()

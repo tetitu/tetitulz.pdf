@@ -227,8 +227,8 @@ public sealed class VisualSignatureTextAppearanceTests
     /// </summary>
     /// <remarks>
     /// The generator's own <c>error</c> string ends "set
-    /// <c>FontResolutionRequest.AllowRestrictedSystemFonts</c>…", which until 2026-09-04 named a
-    /// property no signature caller could set — the remedy was unactionable from the one API that
+    /// <c>FontResolutionRequest.AllowRestrictedSystemFonts</c>…", which a signature caller reaches
+    /// through <c>SignatureAppearanceOptions</c>, so the remedy is actionable from the one API that
     /// reports it. Asserted through <b>drawn glyphs</b>, because a signature whose block is present
     /// but empty is exactly what a still-refusing gate would leave behind.
     /// </remarks>
@@ -288,11 +288,10 @@ public sealed class VisualSignatureTextAppearanceTests
     /// are the alpha plane.
     /// </summary>
     /// <remarks>
-    /// <para>This is the half of Phase 14 item 4 that the text work left open. <c>LogoJpegBytes</c>
-    /// goes through as <c>/DCTDecode</c> — three opaque channels, nowhere to put an alpha — so a
-    /// corporate mark with a transparent background had to be pre-flattened against whatever colour
-    /// the caller guessed the block would be, and came out as a coloured rectangle wherever that
-    /// guess was wrong.</para>
+    /// <para><c>LogoJpegBytes</c> goes through as <c>/DCTDecode</c> — three opaque channels, nowhere
+    /// to put an alpha — so a corporate mark with a transparent background given as a JPEG must be
+    /// pre-flattened against whatever colour the caller guesses the block will be, and comes out as a
+    /// coloured rectangle wherever that guess is wrong. A PNG logo carries its alpha.</para>
     ///
     /// <para><b>Asserts the mask's samples, not its presence.</b> An <c>/SMask</c> that exists and
     /// is uniformly opaque is exactly what a decoder that dropped the alpha would leave behind, and

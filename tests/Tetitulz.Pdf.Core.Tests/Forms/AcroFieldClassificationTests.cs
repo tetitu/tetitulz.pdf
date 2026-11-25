@@ -14,9 +14,9 @@ namespace Tetitulz.Pdf.Core.Tests.Forms;
 /// and the Conformance plugin's AcroForm walk.
 /// </summary>
 /// <remarks>
-/// <para><b>The <c>/Kids</c> half had no coverage.</b> A 2026-08-29 liveness sweep replaced the raw
-/// presence test with a resolved <c>is PdfArray</c> one and nothing reddened — not in Core, not in
-/// Base, not in the Conformance plugin, the three assemblies that reach it.</para>
+/// <para><b>The <c>/Kids</c> half needs its own case.</b> A resolved <c>is PdfArray</c> test in
+/// place of the raw presence test reddens nothing else in Core, Base or the Conformance plugin, the
+/// three assemblies that reach it.</para>
 ///
 /// <para><b>Why raw is the correct reading, and the mutation is not.</b> The method's own comment
 /// says it: "<c>/Kids</c> written as a reference is still <c>/Kids</c>, and a caller with no

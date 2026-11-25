@@ -19,8 +19,8 @@ namespace Tetitulz.Pdf.Signing.Tests;
 /// Table 258, where <c>/Form</c> is <b>one</b> array of names.
 /// </summary>
 /// <remarks>
-/// <para>Each form right used to write a <c>/Form</c> array of its own, so a caller granting fill-in and
-/// import/export got a <c>/TransformParams</c> dictionary with the key twice. §7.3.7 leaves which one a
+/// <para>A <c>/Form</c> array for each form right would give a caller granting fill-in and
+/// import/export a <c>/TransformParams</c> dictionary with the key twice. §7.3.7 leaves which one a
 /// reader keeps undefined, and whichever it keeps, the other grant is gone.
 /// <c>SignatureDictionaryKeyUniquenessTests</c> reads the raw bytes for the duplicate; this reads the
 /// parsed document for what a reader is left with.</para>

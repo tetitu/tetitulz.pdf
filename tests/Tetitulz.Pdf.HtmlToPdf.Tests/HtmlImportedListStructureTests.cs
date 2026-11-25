@@ -21,13 +21,12 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// so the tagged output carries <c>/L</c> → <c>/LI</c> → <c>/Lbl</c> + <c>/LBody</c>.
     /// </summary>
     /// <remarks>
-    /// <para><b>It used to flatten.</b> Every <c>&lt;li&gt;</c> went into the section as a sibling
-    /// carrying an <c>int Level</c>, and a nested list's items followed as more siblings one level
-    /// deeper — so nothing in the model recorded where a sublist began or ended. Tagged output was
-    /// a run of <c>/P</c> elements with the bullet drawn as literal text: it looked like a list on
-    /// the page and was not one to a screen reader, and a copy picked the markers up as
-    /// characters. PDF/UA-1 §7.6 is exactly this shape, and this repository's own deep checker
-    /// validates it.</para>
+    /// <para><b>Not flattened.</b> Every <c>&lt;li&gt;</c> as a section sibling carrying an
+    /// <c>int Level</c>, a nested list's items as more siblings one level deeper, would record nowhere
+    /// in the model where a sublist begins or ends. Tagged output would be a run of <c>/P</c> elements
+    /// with the bullet drawn as literal text: a list on the page and not one to a screen reader, and a
+    /// copy would pick the markers up as characters. PDF/UA-1 §7.6 is exactly this shape, and this
+    /// repository's own deep checker validates it.</para>
     ///
     /// <para><b>The structure tree is the right place to assert.</b> The mapper's entry point
     /// returns bytes, not a model, so there is no seam to inspect the container through — and the
@@ -68,8 +67,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         }
 
         /// <summary>
-        /// A list cut round a positioned item — the item and its positioned block in a box of their own
-        /// (2026-10-19) — is still one <c>/L</c> of its three items, the first item's sublist its own
+        /// A list cut round a positioned item — the item and its positioned block in a box of their own —
+        /// is still one <c>/L</c> of its three items, the first item's sublist its own
         /// <c>/L</c> inside that item, not the one the parts after it go on; the control, the same list
         /// with a second list after it, is two.
         /// </summary>
@@ -85,7 +84,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
 
         /// <summary>
         /// A sublist taken out of its item because it, or an item of it, is the containing block of a
-        /// positioned block (2026-10-20) is still tagged inside its item: each <c>/L</c> of two
+        /// positioned block is still tagged inside its item: each <c>/L</c> of two
         /// <c>/LI</c>s, each nested <c>/L</c> a child of the item before it — the outer list's first item
         /// holding a label, a body and the sublist — and the outer list's later item in the outer
         /// <c>/L</c>. Shapes: a positioned sublist; a positioned item two levels down; two sublists of one
@@ -319,7 +318,7 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// <summary>
         /// An ordered list's <c>list-style-type</c> numbers it, and outranks the <c>type</c> attribute
         /// as a browser's cascade does — <c>hebrew</c> by CSS Counter Styles 3 §6.1 (15 is טו).
-        /// Until 2026-10-21 only the attribute was read, so every one of these was decimal.
+        /// Read from the attribute alone, every one of these would be decimal.
         /// </summary>
         [Theory]
         [InlineData("<ol style=\"list-style-type:lower-roman\">", "i. ", "ii. ")]

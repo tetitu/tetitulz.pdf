@@ -17,10 +17,10 @@ namespace Tetitulz.Pdf.Plugins.PageEdits.Tests;
 
 /// <summary>
 /// The merger's renaming of colliding names spends one search a name a source holds, and drops
-/// nothing. A key or a field a source repeats is one entry; each repeat used to search the suffixes
-/// it had itself minted, a thousand attempts a copy. A key whose thousand suffixes were all taken was
-/// dropped, its own document's links left naming it — so they opened the earlier document's entry —
-/// under a warning the next line overwrote.
+/// nothing. A key or a field a source repeats is one entry, rather than each repeat searching the
+/// suffixes it had itself minted, a thousand attempts a copy; and a key whose thousand suffixes are
+/// all taken is not dropped, which would leave its own document's links naming it — so they would
+/// open the earlier document's entry — under a warning the next line overwrites.
 /// </summary>
 public sealed class MergeNameRepeatTests
 {

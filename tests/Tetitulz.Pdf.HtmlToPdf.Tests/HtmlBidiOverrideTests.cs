@@ -67,8 +67,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// <summary>
         /// A <c>&lt;bdo&gt;</c> holds text drawn through an embedded font in its direction too: Hebrew under
         /// <c>dir="ltr"</c> is drawn alef, bet, gimel from the left, and "alef-bet cd" under <c>dir="rtl"</c>
-        /// is drawn "dc" then the two letters. A token shaped through an embedded font was shaped in its
-        /// paragraph's direction until 2026-10-22, so the Hebrew kept the order an override exists to undo.
+        /// is drawn "dc" then the two letters. Shaped in its paragraph's direction, a token drawn through an
+        /// embedded font would keep the order an override exists to undo.
         /// </summary>
         /// <remarks>
         /// Read back through the plain extractor, which takes a line's drawn order as visual and its

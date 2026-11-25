@@ -99,21 +99,18 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         }
 
         /// <summary>
-        /// A declared <c>format('woff2')</c> is no longer a reason to decline anything.
+        /// A declared <c>format('woff2')</c> is not a reason to decline anything.
         /// </summary>
         /// <remarks>
         /// <para><b>The engine reads the container's signature, not the stylesheet's claim.</b>
-        /// WOFF 2.0 is now unwrapped by <c>Core.Fonts.Woff2Decoder</c> at
-        /// <c>TrueTypeFontProgram.Parse</c>, so the <c>format()</c> test that used to gate it is
-        /// gone — and it was always the weaker test, since <c>format()</c> is optional in CSS and
-        /// stylesheets routinely omit it.</para>
+        /// WOFF 2.0 is unwrapped by <c>Core.Fonts.Woff2Decoder</c> at <c>TrueTypeFontProgram.Parse</c>,
+        /// so no <c>format()</c> test gates it — the weaker test, since <c>format()</c> is optional in CSS
+        /// and stylesheets routinely omit it.</para>
         ///
         /// <para><b>The fixture is a TrueType file behind a <c>format('woff2')</c> declaration</b>,
-        /// which is a stylesheet lying about its own asset. That is the case that isolates the
-        /// removed decline: nothing but the declared format could have refused it, so the font
-        /// loading is the assertion. This replaces
-        /// <c>FontFace_DeclaringWoff2_IsRejectedWithADiagnostic</c>, whose claim the engine no
-        /// longer makes.</para>
+        /// which is a stylesheet lying about its own asset. That is the case that isolates a decline
+        /// by declared format: nothing but the declared format could refuse it, so the font loading
+        /// is the assertion.</para>
         /// </remarks>
         [Fact]
         public void FontFace_DeclaringWoff2_NoLongerDeclinesOnTheDeclaredFormatAlone()
@@ -231,10 +228,9 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// embedded.
         /// </summary>
         /// <remarks>
-        /// <para><b>The claim moved, so the test did.</b> It used to assert that the <c>wOF2</c>
-        /// signature was itself the refusal; now the signature routes the bytes to the decoder,
-        /// which refuses them because they are not a WOFF 2.0 container. What must not change is the
-        /// outcome for the caller: a diagnostic, and no <c>/FontFile2</c>. A malformed web font that
+        /// <para>The <c>wOF2</c> signature routes the bytes to the decoder, which refuses them because
+        /// they are not a WOFF 2.0 container. What the caller sees is a diagnostic, and no
+        /// <c>/FontFile2</c>. A malformed web font that
         /// is silently ignored is indistinguishable from one that loaded — the caller sees a
         /// fallback face with nothing to explain it.</para>
         ///
@@ -271,9 +267,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
             o.BasePath = dir.Path;
 
             // The first entry names a file that does not exist, so it is declined and the
-            // truetype entry after it must still be used. It is spelled .woff2 because that
-            // used to be the reason it was declined; the reason is now the missing file, and
-            // the fall-through this asserts is the same either way.
+            // truetype entry after it must still be used. Its .woff2 spelling does not matter:
+            // the missing file is the reason, and the fall-through is the same either way.
             string raw = Raw(ToPdf(
                 "<style>@font-face{font-family:'MyHebrew';" +
                 "src:url(h.woff2) format('woff2'), url(hebrew.ttf) format('truetype')}" +
@@ -289,8 +284,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         /// browser passes over a format it does not support.
         /// </summary>
         /// <remarks>
-        /// It used to be returned because it could be <i>read</i>, so the TTF after it was never
-        /// reached and every Bootstrap 3 icon fell back to a host font.
+        /// Taken because it can be <i>read</i>, it would hide the TTF after it, and every Bootstrap 3
+        /// icon would fall back to a host font.
         /// </remarks>
         [Fact]
         public void FontFace_PassesOverASourceThatIsNotAFont()
@@ -467,8 +462,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
         [Fact]
         public void OptionsFontProvider_ReceivesTheRequestedFamilyName()
         {
-            // font-family used to collapse to a sans/serif/mono bucket, so the name a document
-            // asked for never reached anything that could act on it.
+            // font-family does not collapse to a sans/serif/mono bucket: the name a document asks
+            // for reaches something that can act on it.
             var families = new List<string>();
             var o = NoHostFonts();
             o.FontProvider = req => { families.Add(req.FamilyName); return MinimalTrueType.Build(Shalom); };

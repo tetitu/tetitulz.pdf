@@ -292,14 +292,12 @@ public class HollowTreeClaimHonestyTests
     // =====================================================================
 
     /// <summary>
-    /// The pipeline now repairs a hollow tree instead of describing why it will not.
+    /// The pipeline repairs a hollow tree instead of describing why it will not.
     /// </summary>
     /// <remarks>
-    /// <b>This replaces a test that asserted the skip.</b> The skip reason used to end by telling
-    /// the caller to call <c>PdfAccessibility.AutoTag</c> by hand on exactly this input class; the
-    /// pipeline now does it, so the advice has become the behaviour. The supersession is reported
-    /// rather than silent, which is the property worth pinning: a tree disappearing without a word
-    /// is the failure mode a caller cannot audit.
+    /// It does what a skip reason telling the caller to call <c>PdfAccessibility.AutoTag</c> by hand
+    /// would advise. The supersession is reported rather than silent, which is the property worth
+    /// pinning: a tree disappearing without a word is the failure mode a caller cannot audit.
     /// </remarks>
     [Fact]
     public void Remediate_HollowStructureTree_TagsItAndReportsTheSupersession()
@@ -387,7 +385,7 @@ public class HollowTreeClaimHonestyTests
     [Fact]
     public void AutoTag_OnAHollowTaggedDocument_SupersedesTheTreeAndSaysSo()
     {
-        // The fact the skip reason used to deny: AutoTag *does* replace an existing tree.
+        // AutoTag *does* replace an existing tree.
         byte[] input = HollowTaggedPdf();
 
         using var output = new MemoryStream();

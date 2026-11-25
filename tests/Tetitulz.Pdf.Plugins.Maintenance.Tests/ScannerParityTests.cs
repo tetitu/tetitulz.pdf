@@ -26,9 +26,9 @@ namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 public class ScannerParityTests
 {
     /// <summary>
-    /// A malformed document with no trailer at all. <c>ImagePlacementScanner</c> used to
-    /// dereference it and throw <see cref="NullReferenceException"/> straight out of <c>Scan</c>,
-    /// while its sibling four files away had always written <c>trailer?[…]</c>.
+    /// A malformed document with no trailer at all. <c>ImagePlacementScanner</c>, like its sibling,
+    /// reads it as <c>trailer?[…]</c> rather than throwing <see cref="NullReferenceException"/>
+    /// straight out of <c>Scan</c>.
     /// </summary>
     [Fact]
     public void BothScanners_GiveTheSameAnswer_OnAMalformedDocumentWithNoTrailer()

@@ -12,14 +12,14 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// Wave 17 R15: what the exporters do with a measurement a caller set to NaN, an infinity or a
-/// negative — the fluent API accepts any <c>double</c>, and so does the model. Every measurement is
-/// checked by one walk over the document before any exporter reads it (R15.2,
-/// <c>ModelMeasurements</c>), a page side not a positive finite number among them — it was left to
-/// <c>PdfDocumentBuilder.AddPage</c> (R15.1), which only the PDF exporter reaches: a NaN or an infinity is
-/// refused wherever it is, a size below 0 too, and the refusal names the element's path and the
-/// property — where <c>FontSize(double.NaN)</c> used to export text drawn at size 0 and report
-/// success. A measurement that may be negative (a margin, an indent, a spacing) is only required
+/// What the exporters do with a measurement a caller set to NaN, an infinity or a negative — the
+/// fluent API accepts any <c>double</c>, and so does the model. Every measurement is checked by one
+/// walk over the document before any exporter reads it (<c>ModelMeasurements</c>), a page side not
+/// a positive finite number among them — not left to <c>PdfDocumentBuilder.AddPage</c>, which only
+/// the PDF exporter reaches: a NaN or an infinity is refused wherever it is, a size below 0 too, and
+/// the refusal names the element's path and the property, so <c>FontSize(double.NaN)</c> does not
+/// export text drawn at size 0 and report success. A measurement that may be negative (a margin,
+/// an indent, a spacing) is only required
 /// finite, and the layout terminates on whatever finite value it is handed.
 /// </summary>
 public sealed class DegenerateMeasurementTests
@@ -104,9 +104,8 @@ public sealed class DegenerateMeasurementTests
     }
 
     /// <summary>
-    /// R15.2: a font size that is NaN, infinite or negative is refused before layout, naming the run.
-    /// It used to export — text drawn at <c>PdfRealFormat</c>'s 0 for the non-finite values — and
-    /// report success.
+    /// A font size that is NaN, infinite or negative is refused before layout, naming the run, rather
+    /// than exported — text drawn at <c>PdfRealFormat</c>'s 0 for the non-finite values — as a success.
     /// </summary>
     [Theory]
     [InlineData(double.NaN)]

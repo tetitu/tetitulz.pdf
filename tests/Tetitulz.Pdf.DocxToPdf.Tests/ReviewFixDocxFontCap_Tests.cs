@@ -27,7 +27,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         public void OversizedEmbeddedFont_IsSkipped_NoOutOfMemory()
         {
             // 96 MB of zeros: trivially compressible inside the DOCX ZIP, but expands well past
-            // the 64 MB font cap on read. Pre-fix this CopyTo'd the whole blob into memory.
+            // the 64 MB font cap on read; a plain CopyTo would take the whole blob into memory.
             const int decompressedSize = 96 * 1024 * 1024;
             byte[] docx = BuildDocxWithEmbeddedFont("BombFamily", Key, decompressedSize);
 

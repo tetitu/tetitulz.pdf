@@ -77,7 +77,7 @@ public class HtmlImageEmbeddingTests
     }
 
     /// <summary>
-    /// The cap is reachable at all — it used to be a private <c>const</c>. A generous budget embeds
+    /// The cap is a caller's setting, not a private <c>const</c>. A generous budget embeds
     /// every page, which is the contrast that makes the test above mean something.
     /// </summary>
     [Fact]
@@ -133,7 +133,7 @@ public class HtmlImageEmbeddingTests
 
     /// <summary>
     /// The one path that really does write <c>page_N.png</c> keeps referencing them — and the files
-    /// are there. This is what stops the fix above from being "delete the external-file mode".
+    /// are there. This is what stops the rule above from being "delete the external-file mode".
     /// </summary>
     [Fact]
     public void ConvertToHtmlFiles_still_references_the_png_files_it_writes()
@@ -162,7 +162,7 @@ public class HtmlImageEmbeddingTests
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    //  The render that used to happen anyway
+    //  No render where none is needed
     // ────────────────────────────────────────────────────────────────────────
 
     /// <summary>

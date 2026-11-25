@@ -50,7 +50,7 @@ public sealed class SigningRefusalAndChainTests
         var viaCurrent = SigningTestCrypto.IssuedIntermediate(currentRoot, intermediateKeys, "CN=Rolled Intermediate");
         var leaf = SigningTestCrypto.Leaf(viaLegacy, "CN=Rollover Signer");
 
-        // The legacy-root copy first: the order that used to dead-end at an unanchored root.
+        // The legacy-root copy first: the order that could dead-end at an unanchored root.
         var store = CollectionUtilities.CreateStore(new List<X509Certificate>
         {
             leaf.Cert, viaLegacy.Cert, viaCurrent.Cert, legacyRoot.Cert, currentRoot.Cert,

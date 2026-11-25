@@ -198,10 +198,9 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         }
 
         /// <summary>
-        /// Line breaks in a paragraph beside a float are kept. The float-aware loop wrapped the rest of the
-        /// paragraph again for each line, from the pieces the last wrap made, and a line break is consumed by
-        /// the wrap — so every break after the first line was lost and "two" and "three" ran together (found
-        /// with Wave 22, DocxToPdf-3:3).
+        /// Line breaks in a paragraph beside a float are kept. A line break is consumed by the wrap, so a
+        /// float-aware loop wrapping the rest of the paragraph again for each line, from the pieces the last
+        /// wrap made, would lose every break after the first line and run "two" and "three" together.
         /// </summary>
         [Fact]
         public void FloatingImage_LineBreaksInTheParagraphBesideIt_AreKept()
@@ -218,9 +217,9 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         }
 
         /// <summary>
-        /// A long paragraph beside a float is wrapped once for each width the float gives it, not once a line:
-        /// each line wrapped all the remaining text again, quadratic in the paragraph's lines (Wave 22,
-        /// DocxToPdf-3:3). The conversion's allocation on this thread is compared with the same paragraph and
+        /// A long paragraph beside a float is wrapped once for each width the float gives it, not once a line —
+        /// wrapping all the remaining text again for each line would be quadratic in the paragraph's lines. The
+        /// conversion's allocation on this thread is compared with the same paragraph and
         /// no float.
         /// </summary>
         [Fact]

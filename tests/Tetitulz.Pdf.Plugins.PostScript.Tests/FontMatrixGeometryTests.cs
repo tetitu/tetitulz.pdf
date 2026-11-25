@@ -10,16 +10,16 @@ using Tetitulz.Pdf.Plugins.PostScript.Tests.TestInfrastructure;
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
-/// Where the pen goes after text under a font matrix that rotates or skews (Wave 17 R10.1).
+/// Where the pen goes after text under a font matrix that rotates or skews.
 ///
 /// <para>PLRM §5.3: <c>show</c> advances the current point by each glyph's width vector
 /// <i>transformed through the font matrix</i>, so a font made with
 /// <c>[0 10 -10 0 0 0] makefont</c> writes upward and the next string starts above the first,
-/// not to its right. Every site that moved the pen read only the matrix's A term — <c>show</c>
-/// and its <c>ashow</c>/<c>widthshow</c> family, <c>xshow</c>'s own-width fallback,
-/// <c>glyphshow</c>, a Type 3 font, <c>stringwidth</c> and <c>charpath</c>'s metric box — so a
-/// rotated line's strings piled up along x, and a program that positions the rest of its page by
-/// <c>currentpoint</c> or <c>stringwidth</c> laid it out from the wrong place.</para>
+/// not to its right. A site moving the pen by the matrix's A term alone — <c>show</c> and its
+/// <c>ashow</c>/<c>widthshow</c> family, <c>xshow</c>'s own-width fallback, <c>glyphshow</c>, a
+/// Type 3 font, <c>stringwidth</c> and <c>charpath</c>'s metric box — would pile a rotated line's
+/// strings up along x, and a program that positions the rest of its page by <c>currentpoint</c> or
+/// <c>stringwidth</c> would lay it out from the wrong place.</para>
 ///
 /// <para>The advance is read back through the language: <c>currentpoint</c> after the show, fed
 /// to <c>moveto</c>, puts the pen position into the emitted stream as the <c>m</c> operands.

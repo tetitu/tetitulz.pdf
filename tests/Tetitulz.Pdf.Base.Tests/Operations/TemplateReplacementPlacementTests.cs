@@ -170,8 +170,8 @@ public class TemplateReplacementPlacementTests
     /// the one page content ends with.
     /// </summary>
     /// <remarks>
-    /// With the <c>cm</c> inside <c>q … Q</c> the page ends at identity, which is what the run used to
-    /// assume; without the <c>Q</c> the translation is still in force where the run is appended.
+    /// With the <c>cm</c> inside <c>q … Q</c> the page ends at identity, which a run assuming it would
+    /// get right; without the <c>Q</c> the translation is still in force where the run is appended.
     /// </remarks>
     [Theory]
     [InlineData("q 1 0 0 1 100 50 cm /Fm0 Do Q")]

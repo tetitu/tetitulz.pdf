@@ -320,7 +320,7 @@ public class PdfXPublicSourceRulesTests
     /// <summary>
     /// The same ink defined a second time as an uncoloured pattern's base space
     /// (<c>[/Pattern [/Separation …]]</c>, §8.7.3.3) is the same ink, and a different tint there is
-    /// the same inconsistency. The base was not descended until Wave 17 R9.1.
+    /// the same inconsistency, so the base is descended.
     /// </summary>
     [Fact]
     public void SpotColour_DefinedAgainInsideAPatternBase_ReportsX18()

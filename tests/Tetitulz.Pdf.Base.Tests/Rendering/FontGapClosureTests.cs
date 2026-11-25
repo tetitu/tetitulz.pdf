@@ -16,14 +16,12 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// Closes the three font gaps left open by the 2026-08-06 rendering audit (GAPS.md §2,
-/// "Still open" under group 2):
+/// Three font rules:
 ///
 /// <list type="number">
 ///   <item>a symbolic TrueType font must select glyphs through its built-in <c>(3,0)</c> cmap
 ///         (§9.6.6.4), and a nonsymbolic one with no <c>/Encoding</c> defaults to
-///         StandardEncoding, not WinAnsi — the <c>/Flags</c> Symbolic bit was read nowhere in
-///         the tree;</item>
+///         StandardEncoding, not WinAnsi — the <c>/Flags</c> Symbolic bit is read;</item>
 ///   <item>a TrueType <c>/Differences</c> name that is not in the Adobe glyph list must still
 ///         resolve — through the font's own <c>post</c> table, or the <c>gNN</c>/<c>cidNN</c>
 ///         subset convention;</item>
@@ -440,9 +438,9 @@ public sealed class FontGapClosureTests
     }
 
     /// <summary>
-    /// Wave 17 R13.4: a number inside <c>/DW2</c> or a <c>/W2</c> entry may be an indirect
-    /// reference, as one inside <c>/W</c> may — and <c>/W</c>'s reader resolved its elements while
-    /// these two read them as stored. CID 1 has a <c>/W2</c> entry made of references; CID 2 falls
+    /// A number inside <c>/DW2</c> or a <c>/W2</c> entry may be an indirect reference, as one inside
+    /// <c>/W</c> may, and all three are read through one resolver. CID 1 has a <c>/W2</c> entry made
+    /// of references; CID 2 falls
     /// to a <c>/DW2</c> made of references. Read raw, both come back as Table 117's defaults
     /// (advance 1.0, position y 0.88), which is what this test must not see.
     /// </summary>

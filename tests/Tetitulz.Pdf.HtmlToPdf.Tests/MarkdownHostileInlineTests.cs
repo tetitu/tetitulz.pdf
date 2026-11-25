@@ -13,9 +13,9 @@ using Xunit;
 namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 
 /// <summary>
-/// The Markdown converter's inline rules on hostile text (2026-10-20): links and images, code spans and
-/// attribute values. The patterns and the per-span replace they replaced were quadratic; a quote in a link's
-/// target wrote an attribute of its own.
+/// The Markdown converter's inline rules on hostile text: links and images, code spans and attribute
+/// values — each linear, where a backtracking pattern or a per-span replace is quadratic — and a quote in a
+/// link's target escaped rather than writing an attribute of its own.
 /// </summary>
 public class MarkdownHostileInlineTests
 {

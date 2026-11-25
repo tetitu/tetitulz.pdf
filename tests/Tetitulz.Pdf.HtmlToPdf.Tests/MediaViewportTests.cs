@@ -19,8 +19,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests;
 /// evaluates them against — or <see cref="HtmlToPdfOptions.ViewportWidth"/>.
 /// </summary>
 /// <remarks>
-/// <para>Every breakpoint used to apply at once: a responsive stylesheet's last tier won and every
-/// <c>hidden-*</c> rule hid. The fixtures are Bootstrap 3's own shapes — a column that floats at
+/// <para>Every breakpoint applying at once would let a responsive stylesheet's last tier win and
+/// every <c>hidden-*</c> rule hide. The fixtures are Bootstrap 3's own shapes — a column that floats at
 /// <c>min-width: 768px</c>, an element hidden at <c>max-width: 767px</c> — and each is asserted
 /// both ways round, so a result that never changes cannot pass.</para>
 /// <para>US Letter portrait with the default margins is 739 CSS px of content: below Bootstrap's

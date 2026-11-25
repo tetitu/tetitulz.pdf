@@ -86,9 +86,9 @@ public class UnsupportedFieldRequestTests
     }
 
     /// <summary>
-    /// The report is <b>capped</b> (Wave 17 R12.1): the script decides how often a request is made,
-    /// and a loop setting <c>hidden</c> five thousand times appended five thousand entries, each
-    /// append copying the whole report. The first 32 (<c>PdfJsEngine.MaxRecordedUnsupportedRequests</c>)
+    /// The report is <b>capped</b>: the script decides how often a request is made, and uncapped, a
+    /// loop setting <c>hidden</c> five thousand times would append five thousand entries, each append
+    /// copying the whole report. The first 32 (<c>PdfJsEngine.MaxRecordedUnsupportedRequests</c>)
     /// are kept verbatim and the rest are counted into one trailing note — so the report still says
     /// every request happened, in bounded space.
     /// </summary>

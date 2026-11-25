@@ -213,9 +213,9 @@ public class PdfUaSpecComplianceTests
     /// assertion. A hung walk fails the test instead of hanging the run.
     ///
     /// <para><b>A dedicated <see cref="Thread"/>, not <c>Task.Run</c>.</b> A pool work item is not
-    /// scheduled promptly when 26 test assemblies share the same cores, so the elapsed time would
-    /// measure the machine's backlog rather than the walk — the mechanism behind three measured
-    /// flakes on 2026-08-23. A dedicated thread starts regardless of pool pressure, and blocking on
+    /// scheduled promptly when a whole solution's test assemblies share the same cores, so the
+    /// elapsed time would measure the machine's backlog rather than the walk. A dedicated thread
+    /// starts regardless of pool pressure, and blocking on
     /// <see cref="Thread.Join(TimeSpan)"/> cannot deadlock a test the way <c>Task.Wait</c> can.</para>
     /// </summary>
     private static T RunWithinTimeout<T>(Func<T> work, string what)
@@ -248,8 +248,8 @@ public class PdfUaSpecComplianceTests
     [Fact]
     public void Validate_AnnotatedPageDeclaringTabsS_ReportsNoTabOrderViolation()
     {
-        // The whole point of the rename: a file produced by any conforming producer declares
-        // /Tabs, and used to be reported non-conforming because the checker wanted /TabOrder.
+        // A file produced by any conforming producer declares /Tabs, and is conforming: the key
+        // is /Tabs, not /TabOrder.
         var result = Validate(BuildAnnotatedPagePdf("/Tabs /S"));
         Assert.DoesNotContain(result.Violations, v => v.Code == "UA09");
     }
@@ -274,8 +274,8 @@ public class PdfUaSpecComplianceTests
     }
 
     /// <summary>
-    /// Earlier versions of this library emitted the non-existent /TabOrder key. Tolerating it on
-    /// read looked charitable and was the one thing a conformance checker must never do: /TabOrder
+    /// A page may carry the non-existent /TabOrder key. Tolerating it on read would look
+    /// charitable and is the one thing a conformance checker must never do: /TabOrder
     /// is not in ISO 32000-1 Table 30, no reader honours it, and a page carrying only it genuinely
     /// fails ISO 14289-1 §7.18.3 — an independent checker, the published profiles and this library's own SetStructureTabOrder all
     /// say so. It is reported, and the message names the legacy key so the fix is obvious.
@@ -313,7 +313,7 @@ public class PdfUaSpecComplianceTests
     }
 
     /// <summary>
-    /// The fix must be visible to a reader, not just to a text search: re-open the output and
+    /// The repair must be visible to a reader, not just to a text search: re-open the output and
     /// read the key off the page dictionary the parser resolves.
     /// </summary>
     [Fact]
@@ -540,8 +540,8 @@ public class PdfUaSpecComplianceTests
     }
 
     /// <summary>
-    /// An indirect /AcroForm used to make the whole form invisible to the audit, which
-    /// reported a clean bill of health for a file full of unlabelled fields.
+    /// An indirect /AcroForm must not make the whole form invisible to the audit, which would
+    /// report a clean bill of health for a file full of unlabelled fields.
     /// </summary>
     [Fact]
     public void Validate_IndirectAcroForm_StillFindsTheUnlabelledField()
@@ -638,17 +638,16 @@ public class PdfUaSpecComplianceTests
     /// Integration: a document in which <i>every</i> entry the checker reads is an indirect
     /// reference — /MarkInfo (and its /Marked boolean), /Lang, /ViewerPreferences (and its
     /// /DisplayDocTitle boolean), /StructTreeRoot, /Metadata and the trailer's /Info — and
-    /// which is otherwise correct, must come back conforming. Before the resolver fixes this
-    /// exact file produced a fistful of fabricated violations.
+    /// which is otherwise correct, must come back conforming. A checker that reads any of them
+    /// without resolving fabricates a fistful of violations from this exact file.
     ///
     /// <para>
     /// The structure tree here is deliberately a <em>connected</em> one: the Document element
     /// carries an MCID, the page carries the matching /StructParents, and the /StructTreeRoot
-    /// carries a /ParentTree joining them. An earlier version of this fixture had a bare
-    /// <c>&lt;&lt; /Type /StructElem /S /Document &gt;&gt;</c> with no /K and no /ParentTree —
-    /// i.e. a hollow tree, which UA29 now correctly reports. That made this test assert that a
-    /// hollow document conforms, which is the opposite of what it is for; the fixture, not the
-    /// check, was wrong.
+    /// carries a /ParentTree joining them. A bare
+    /// <c>&lt;&lt; /Type /StructElem /S /Document &gt;&gt;</c> with no /K and no /ParentTree would be
+    /// a hollow tree, which UA29 correctly reports, and the test would then assert that a hollow
+    /// document conforms — the opposite of what it is for.
     /// </para>
     /// </summary>
     [Fact]
@@ -966,7 +965,7 @@ public class PdfUaSpecComplianceTests
     }
 
     // ==================================================================
-    //  4. Unicode safety — the fixer's writer used to go through Latin-1
+    //  4. Unicode safety — the fixer's writer does not go through Latin-1
     // ==================================================================
 
     // Written as escapes rather than literals so the assertions cannot be weakened by
@@ -977,10 +976,9 @@ public class PdfUaSpecComplianceTests
     private const string HebrewNameWord  = "\u05E9\u05DD";
 
     /// <summary>
-    /// Code page 28591 maps every character above U+00FF to '?', so the previous writer
-    /// turned a Hebrew tooltip into question marks — the accessible name the fix added was
-    /// less useful than the missing one it replaced. Equality, not "contains", is the
-    /// assertion: '?' passes any weaker check.
+    /// Code page 28591 maps every character above U+00FF to '?', so a writer using it would turn
+    /// a Hebrew tooltip into question marks — an accessible name less useful than none. Equality,
+    /// not "contains", is the assertion: '?' passes any weaker check.
     /// </summary>
     [Fact]
     public void Fix_HebrewTooltipTemplate_RoundTripsCharacterForCharacter()

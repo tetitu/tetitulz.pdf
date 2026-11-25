@@ -25,11 +25,11 @@ public class BarcodeEncoderFindingsTests
     [Fact]
     public void QrCodeEncoder_HasNoMutableStaticCollection()
     {
-        // The generator polynomials used to live in a lazily filled Dictionary<int,int[]>,
-        // mutated from BuildGenerator, which is reached from the *public static*
-        // PdfBarcodeWriter.GeneratePdf with nothing serialising the write. Concurrent inserts
-        // during a resize corrupt the bucket chain: either a torn read (a wrong generator, so a
-        // silently unscannable symbol) or an endless loop inside TryGetValue.
+        // The generator polynomials are not a lazily filled Dictionary<int,int[]> mutated from
+        // BuildGenerator, which is reached from the *public static* PdfBarcodeWriter.GeneratePdf
+        // with nothing serialising the write: concurrent inserts during a resize would corrupt the
+        // bucket chain — either a torn read (a wrong generator, so a silently unscannable symbol)
+        // or an endless loop inside TryGetValue.
         //
         // Asserting on the shape rather than on a race is deliberate: a race reproduces only
         // sometimes, and "the test passed" would mean nothing. This is the guard's own evidence.

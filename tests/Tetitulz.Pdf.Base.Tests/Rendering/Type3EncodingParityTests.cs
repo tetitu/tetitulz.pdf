@@ -78,8 +78,8 @@ public sealed class Type3EncodingParityTests
     // ── the missing-glyph half ───────────────────────────────────────────
 
     /// <summary>
-    /// A code whose name is absent from <c>/CharProcs</c> draws nothing. The SVG export used to
-    /// stroke a hairline box for it — ink for a glyph the file never defined.
+    /// A code whose name is absent from <c>/CharProcs</c> draws nothing in either renderer — not a
+    /// hairline box, which would be ink for a glyph the file never defined.
     /// </summary>
     [Fact]
     public void UndefinedGlyph_DrawsNothing_InTheSvgExport()

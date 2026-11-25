@@ -233,13 +233,9 @@ public sealed class IccTransformTests
     /// reason slot — that a profile was present and skipped. Those two are indistinguishable at
     /// the pixel level, which is the reason the slot exists.
     ///
-    /// <para><b>Renamed, because half of what it used to claim is no longer true.</b> It was
-    /// <c>IccBasedCmykFill_IsReportedAndKeepsTheDeviceFallback</c>, and its premise was that a
-    /// CMYK profile is lut-based and therefore beyond this evaluator. The lut is now read
-    /// (<c>IccLutProfileTests</c>), so what survives is the narrower and still-important claim:
-    /// when the lut is <i>unreadable</i>, the fallback is exact and the reason names the tag. The
-    /// fixture's <c>A2B0</c> is a 12-byte stub, which is why this file still reaches that
-    /// path.</para>
+    /// <para>A readable lut is evaluated (<c>IccLutProfileTests</c>); the claim here is the narrower
+    /// one: when the lut is <i>unreadable</i>, the fallback is exact and the reason names the tag.
+    /// The fixture's <c>A2B0</c> is a 12-byte stub, which is how this file reaches that path.</para>
     /// </summary>
     [Fact]
     public void IccBasedCmykFill_WithAnUnreadableLut_IsReportedAndKeepsTheDeviceFallback()
@@ -712,7 +708,7 @@ public sealed class IccTransformTests
     /// A provider that manages images but not vector colour <b>says so</b>, on both channels.
     /// </summary>
     /// <remarks>
-    /// <para><b>The only fallback in <c>IccColorTransform</c> that used to tell nobody.</b> A host
+    /// <para><b>A fallback that would otherwise tell nobody.</b> A host
     /// in this state gets colour-managed images beside device-space vector fills <i>in the same
     /// document</i>, and the result is identical at the pixel level to a document whose profile
     /// simply is not managed — so neither the picture nor
@@ -1067,13 +1063,10 @@ public sealed class IccTransformTests
     /// A data space with no matrix/TRC form and <b>no lut either</b> is named by its space, which
     /// is the one thing a caller could act on.
     ///
-    /// <para>These rows used to carry a stub <c>A2B0</c> tag and expect the <i>space</i> to be
-    /// named — a claim that only held while the lut was unreadable by definition. Now that a valid
-    /// lut is evaluated, an unreadable one is a fact about the tag and is reported as one (see
-    /// <see cref="IccProfile_AnUnreadableLut_NamesTheTagRatherThanTheSpace"/>), so the fixtures
-    /// here carry no lut at all and the rows say what they now mean. The <c>("RGB ", "Lab ")</c>
-    /// row was <b>deleted rather than re-expected</b>: a Lab PCS is no longer an obstacle in any
-    /// combination, so there is no version of that claim left to make.</para>
+    /// <para>A valid lut is evaluated, and an unreadable one is a fact about the tag, reported as one
+    /// (see <see cref="IccProfile_AnUnreadableLut_NamesTheTagRatherThanTheSpace"/>), so the fixtures
+    /// here carry no lut at all. A Lab PCS is an obstacle in no combination, so no row names
+    /// <c>("RGB ", "Lab ")</c>.</para>
     /// </summary>
     [Theory]
     [InlineData("CMYK", "XYZ ", "CMYK")]

@@ -14,13 +14,11 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// Parity between the SVG export and the raster path, for the divergences found by the 2026-08-06
-/// rendering audit (GAPS.md §2, "full rendering audit", group 1).
+/// Parity between the SVG export and the raster path, where the two can diverge.
 ///
-/// <para><b>These assert on the parsed SVG, not on substrings of it.</b> The suite's existing SVG
-/// tests are almost entirely <c>Assert.Contains("&lt;image", svg)</c>; the document was parsed as
-/// XML exactly once in the whole tree. That is why every defect below — a fill silently lost, a
-/// pattern placed by the wrong matrix, a hidden layer exported anyway — survived a green suite.</para>
+/// <para><b>These assert on the parsed SVG, not on substrings of it.</b> A substring check such as
+/// <c>Assert.Contains("&lt;image", svg)</c> cannot see any defect below — a fill silently lost, a
+/// pattern placed by the wrong matrix, a hidden layer exported anyway.</para>
 /// </summary>
 public sealed class SvgRasterParityTests
 {
@@ -29,9 +27,9 @@ public sealed class SvgRasterParityTests
     // ====================================================================
 
     /// <summary>
-    /// <c>re W f</c> must both fill the rectangle and establish the clip. The SVG writer used to
-    /// apply the clip inside the <c>W</c> handler and clear the path with it, so <c>PaintPath</c>
-    /// found nothing to paint and the fill vanished from the export.
+    /// <c>re W f</c> must both fill the rectangle and establish the clip. A writer applying the clip
+    /// inside the <c>W</c> handler and clearing the path with it would leave <c>PaintPath</c> nothing
+    /// to paint, and the fill would vanish from the export.
     /// </summary>
     [Fact]
     public void ClipFollowedByFill_StillPaintsTheFill()
@@ -98,10 +96,9 @@ public sealed class SvgRasterParityTests
     // ====================================================================
 
     /// <summary>
-    /// A pattern's <c>/Matrix</c> maps pattern space to the page's default space (§8.7.3.1). The
-    /// writer used to ignore it and emit the current CTM as <c>patternTransform</c> instead — which
-    /// both dropped the matrix and applied the CTM a second time, since path coordinates already
-    /// carry it.
+    /// A pattern's <c>/Matrix</c> maps pattern space to the page's default space (§8.7.3.1). Emitting
+    /// the current CTM as <c>patternTransform</c> instead would both drop the matrix and apply the CTM
+    /// a second time, since path coordinates already carry it.
     /// </summary>
     [Fact]
     public void TilingPattern_PatternTransformIsTheMatrix_NotTheCurrentCtm()
@@ -129,9 +126,8 @@ public sealed class SvgRasterParityTests
     }
 
     /// <summary>
-    /// <c>/XStep</c> / <c>/YStep</c> default to the <c>/BBox</c> extent, not to the arbitrary 10
-    /// units this writer used to assume — which detached the tiling period from the cell for every
-    /// pattern that omitted them.
+    /// <c>/XStep</c> / <c>/YStep</c> default to the <c>/BBox</c> extent, not to an arbitrary 10 units,
+    /// which would detach the tiling period from the cell for every pattern that omits them.
     /// </summary>
     [Fact]
     public void TilingPattern_AbsentSteps_DefaultToBBoxExtent()

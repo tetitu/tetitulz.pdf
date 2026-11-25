@@ -387,17 +387,13 @@ public class ExportParityTests
     /// other half of the pair, and the half that had no test.
     /// </summary>
     /// <remarks>
-    /// <para><b>The PDF exporter rendered the marker and dropped the text, and had done since
-    /// 2026-08-28.</b> The <c>else</c> branch that added <c>Text</c> had been swallowed into the
-    /// comment above it by a scripted edit that wrote PowerShell's newline escape as literal
-    /// characters, folding three comment lines and a statement onto one physical line. It compiled,
-    /// because <c>if (…) foreach (…) …;</c> is legal with no <c>else</c>.</para>
-    ///
-    /// <para><b>Nothing caught it because every list test used the other branch.</b> The four
-    /// tests above all build <see cref="RichListItem"/>, whose content is in <c>Runs</c> and whose
-    /// <c>Text</c> is empty — so the branch that was deleted was exercised by no assertion in the
-    /// repository, on the overload (<c>AddListItem("first")</c>) that most callers use. A fixture
-    /// that covers one side of a documented either/or is a fixture that hides the other.</para>
+    /// <para><b>The other branch.</b> The four tests above all build <see cref="RichListItem"/>, whose
+    /// content is in <c>Runs</c> and whose <c>Text</c> is empty — so without this one, the branch that
+    /// adds <c>Text</c> would be exercised by no assertion in the repository, on the overload
+    /// (<c>AddListItem("first")</c>) that most callers use, and an exporter rendering the marker and
+    /// dropping the text would still compile (<c>if (…) foreach (…) …;</c> is legal with no
+    /// <c>else</c>). A fixture that covers one side of a documented either/or is a fixture that hides
+    /// the other.</para>
     /// </remarks>
     [Theory]
     [InlineData("pdf")]
@@ -618,19 +614,17 @@ public class ExportParityTests
     }
 
     /// <summary>
-    /// A list item in a <b>table cell</b> reaches every exporter — it used to reach none of them.
+    /// A list item in a <b>table cell</b> reaches every exporter.
     /// </summary>
     /// <remarks>
-    /// <para><b><c>CellBuilder.AddListItem</c> was public, in the API snapshot, and dropped in
-    /// silence by all four exporters.</b> Every cell-block loop handled <c>Paragraph</c> and
-    /// <c>Table</c> and nothing else, so the item vanished with no diagnostic — and in the PDF
-    /// exporter it vanished twice over, because the code-point walker that decides which glyphs to
-    /// embed skipped it too.</para>
+    /// <para><b><c>CellBuilder.AddListItem</c> is public, in the API snapshot.</b> A cell-block loop
+    /// handling <c>Paragraph</c> and <c>Table</c> and nothing else would drop the item with no
+    /// diagnostic — and in the PDF exporter twice over, if the code-point walker that decides which
+    /// glyphs to embed skipped it too.</para>
     ///
     /// <para><b>A branch that exists in one loop and not its sibling is the shape that costs
     /// content.</b> Section children and cell blocks are both <c>IReadOnlyList&lt;IDocElement&gt;</c>,
-    /// so the model says the two are the same thing; only the exporters disagreed, and only about
-    /// one of the three implementers.</para>
+    /// so the model says the two are the same thing, and the exporters must agree.</para>
     /// </remarks>
     [Theory]
     [InlineData("pdf")]

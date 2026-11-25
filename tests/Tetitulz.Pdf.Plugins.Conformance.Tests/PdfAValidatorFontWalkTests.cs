@@ -35,8 +35,8 @@ public class PdfAValidatorFontWalkTests
 
     /// <summary>
     /// The page names no <c>/Font</c> at all; the text is drawn inside placed artwork, which is
-    /// the ordinary shape for it. Before the fix this validated clean and
-    /// <see cref="PdfAConverter"/> stamped <c>pdfaid:part=1</c> on it.
+    /// the ordinary shape for it. A walk of the page's own <c>/Font</c> alone would validate it clean,
+    /// and <see cref="PdfAConverter"/> would stamp <c>pdfaid:part=1</c> on it.
     /// </summary>
     [Fact]
     public void Validate_NonEmbeddedFontReachableOnlyThroughAFormXObject_ReportsA06()

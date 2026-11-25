@@ -13,9 +13,9 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 /// <summary>
 /// Resolving a <c>setcolorspace</c> operand is bounded in depth. A space's array can name itself
 /// (<c>a 1 a put</c> makes <c>a[1]</c> reference <c>a</c>, which no array setter checks) or be built
-/// thousands deep by a loop, and the resolver descended it by C# recursion that never returns to the
-/// interpreter's step loop — so the work budget could not tick and a <c>StackOverflowException</c>, which
-/// no handler can catch, took the host process down (2026-10-22).
+/// thousands deep by a loop. Descended by C# recursion that never returns to the interpreter's step loop,
+/// it would leave the work budget unable to tick, and a <c>StackOverflowException</c>, which no handler
+/// can catch, would take the host process down.
 /// </summary>
 public class ColorSpaceDepthTests
 {

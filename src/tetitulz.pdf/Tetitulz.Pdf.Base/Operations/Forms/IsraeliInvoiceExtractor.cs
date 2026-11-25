@@ -1351,7 +1351,7 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
                     || !InvoiceValueParser.TryParseAmount(v.Value, out decimal vat, out _)) continue;
                 var e = exempts.FirstOrDefault(r => r.PageIndex == page);
                 // One zero-rated line: its labels' several matches ("סה"כ חייב במע"מ", "חייב במע"מ") are one value.
-                if (e == null && zeroRated.Count > 0 && zeroRated.Select(r => (r.Value, r.ValueBox)).Distinct().Count() == 1)
+                if (e == null && zeroRated.Count > 0 && zeroRated.Select(r => (r.Value, r.ValueBox)).Distinct(SubtotalKeys).Count() == 1)
                     e = new FieldResult
                     {
                         Key = ExemptKey,
@@ -1377,12 +1377,19 @@ namespace Tetitulz.Pdf.Base.Operations.Forms
             }
         }
 
+        // A subtotal's value and box, the value being the document's text, hash under a key the document
+        // cannot see (KeyedHash): the tuple's own hash is the runtime's string hash, which .NET Framework
+        // does not key.
+        private static readonly IEqualityComparer<(string, (float, float, float, float))> SubtotalKeys =
+            Core.Util.KeyedHash.Comparer<(string, (float, float, float, float))>(
+                k => unchecked(Core.Util.KeyedHash.Of(k.Item1) * 31 + k.Item2.GetHashCode()));
+
         // The subtotal lines that name their rate in their label ("סה"כ סכומים ב-17% מע"מ"), one per
         // line (a line matched by two labels is one), when they name two rates or more; else none.
         private static List<(IsraeliRatedAmount Part, FieldResult Result)> RatedParts(IEnumerable<FieldResult> subtotals)
         {
             var parts = new List<(IsraeliRatedAmount, FieldResult)>();
-            var seen = new HashSet<(string, (float, float, float, float))>();
+            var seen = new HashSet<(string, (float, float, float, float))>(SubtotalKeys);
             foreach (var r in subtotals)
             {
                 if (!seen.Add((r.Value, r.ValueBox))) continue;

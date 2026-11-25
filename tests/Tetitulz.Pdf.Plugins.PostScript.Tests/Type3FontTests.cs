@@ -14,16 +14,16 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 /// Type 3 (user-defined) fonts — glyphs that are PostScript <b>procedures</b>, which is how
 /// PostScript carries logos, symbol sets, barcodes and bitmap fonts.
 ///
-/// <para>Until 2026-08-19 nothing read <c>/FontType</c>, so such a font fell through to the
-/// standard-14 substitution and drew <b>Helvetica's letters</b> with <c>UnimplementedOperators</c>
-/// empty and <c>IsClean</c> true. The glyph procedures are now <i>run</i>, in a child interpreter,
-/// and what they draw becomes the emitted font's <c>/CharProcs</c>.</para>
+/// <para>The glyph procedures are <i>run</i>, in a child interpreter, and what they draw becomes
+/// the emitted font's <c>/CharProcs</c>. Were <c>/FontType</c> not read, such a font would fall
+/// through to the standard-14 substitution and draw <b>Helvetica's letters</b> with
+/// <c>UnimplementedOperators</c> empty and <c>IsClean</c> true.</para>
 ///
 /// <para><b>The load-bearing assertion is decoding a CharProc and finding the glyph's own
 /// operators in it.</b> An empty CharProc is a perfectly valid stream: it passes every check on
 /// the font dictionary's shape, on `Subtype`, on `/Widths` length — everything except looking at
-/// what the procedure actually drew. Two wrong ways of invoking the procedure produced exactly
-/// that empty stream during development.</para>
+/// what the procedure actually drew, and a wrong way of invoking the procedure produces exactly
+/// that empty stream.</para>
 /// </summary>
 public sealed class Type3FontTests
 {
@@ -150,8 +150,8 @@ public sealed class Type3FontTests
     }
 
     /// <summary>
-    /// …and is therefore <b>not</b> multiplied into the text matrix. It used to be: the interpreter's
-    /// size-matrix key is literally <c>"FontMatrix"</c>, so <c>12 scalefont</c> produced
+    /// …and is therefore <b>not</b> multiplied into the text matrix. The interpreter's size-matrix key
+    /// is literally <c>"FontMatrix"</c>, so multiplied in, <c>12 scalefont</c> would produce
     /// <c>0.012 0 0 0.012 0 0 Tm</c> — the whole document at 1/1000 scale, with a clean report.
     /// </summary>
     [Fact]

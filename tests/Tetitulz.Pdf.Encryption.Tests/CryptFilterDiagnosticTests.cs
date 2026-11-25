@@ -21,11 +21,11 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 /// read. A host deciding "is this document protected?" reads this and nothing else.</para>
 ///
 /// <para><b>The two defects pinned here have the same root.</b> <c>ResolveCryptFilter</c> is called
-/// twice per document — once for <c>/StmF</c>, once for <c>/StrF</c> — and it used to clear the slot
-/// on entry and assign. So the stream finding was destroyed by a clean string filter, and the
+/// twice per document — once for <c>/StmF</c>, once for <c>/StrF</c> — so clearing the slot on
+/// entry and assigning would let a clean string filter destroy the stream finding, and the
 /// commonest shape of "clean" (<c>/StrF</c> absent or <c>/Identity</c>) returns within two lines of
-/// the reset. It was invisible on the ordinary document where both keys name the same filter,
-/// because both calls then produce identical text — so it failed precisely on the asymmetric
+/// such a reset. It is invisible on the ordinary document where both keys name the same filter,
+/// because both calls then produce identical text — so it fails precisely on the asymmetric
 /// documents worth auditing.</para>
 /// </remarks>
 public class CryptFilterDiagnosticTests

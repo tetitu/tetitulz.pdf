@@ -58,16 +58,11 @@ public class IndirectDocMdpTests
     }
 
     /// <summary>
-    /// The floor: a document with no certification really does report none, so the assertion above
-    /// cannot be met by an analyser that claims certification unconditionally — and "no
-    /// certification" is exactly the answer the defect produced.
-    /// </summary>
-    /// <summary>
-    /// Wave 17 R1.6: Table 257's <c>/P</c> is an integer 1 to 3. Read as <c>(int)DoubleValue</c>,
-    /// <c>2.5</c> became level 2 and a value past <c>int</c> wrapped; and a value outside 1–3 made
-    /// the whole certification vanish — the restrictions the document declared were not enforced at
-    /// all. A level that is not one of the three now reads as the absent one: the default, 2, with
-    /// the certification kept.
+    /// Table 257's <c>/P</c> is an integer 1 to 3. Read as <c>(int)DoubleValue</c>, <c>2.5</c> would
+    /// become level 2 and a value past <c>int</c> would wrap; and a value outside 1–3 must not make the
+    /// whole certification vanish, leaving the restrictions the document declared unenforced. A level
+    /// that is not one of the three reads as the absent one: the default, 2, with the certification
+    /// kept.
     /// </summary>
     [Theory]
     [InlineData("2.5")]
@@ -98,6 +93,11 @@ public class IndirectDocMdpTests
         Assert.Equal(expected, DocMdpAnalyzer.Analyze(doc, pdf.Length).PermissionLevel);
     }
 
+    /// <summary>
+    /// The floor: a document with no certification really does report none, so the assertion above
+    /// cannot be met by an analyser that claims certification unconditionally — and "no
+    /// certification" is exactly the answer an unresolved reference would produce.
+    /// </summary>
     [Fact]
     public void UncertifiedDocument_ReportsNoCertification()
     {

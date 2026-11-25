@@ -49,8 +49,7 @@ public class ApiBaselineCoverageTests
     /// Packages that ship without an API baseline today. **This list may only shrink.**
     /// </summary>
     /// <remarks>
-    /// Captured 2026-08-13, when the coverage gap was found. Each entry is a package whose public
-    /// surface can currently change without any test noticing.
+    /// Each entry is a package whose public surface can change without any test noticing.
     /// </remarks>
     private static readonly string[] KnownUnguarded =
     {

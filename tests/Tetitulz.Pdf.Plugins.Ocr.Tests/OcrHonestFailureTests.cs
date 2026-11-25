@@ -38,8 +38,8 @@ public class OcrHonestFailureTests
     // ────────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// The disclosure case. The bracketed message used to BE the return value, so it reached
-    /// whatever the caller built from it.
+    /// The disclosure case. A bracketed message returned as the value would reach whatever the
+    /// caller built from it.
     /// </summary>
     [Fact]
     public void OcrPage_WithNoTessData_ReturnsNullAndReportsSeparately()
@@ -147,8 +147,8 @@ public class OcrHonestFailureTests
     // ────────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// The two methods must agree by construction. A 4-component buffer used to be laid out as
-    /// 3-byte RGB with a 4-byte stride, which shears the image and yields confident garbage.
+    /// The two methods must agree by construction. A 4-component buffer laid out as 3-byte RGB
+    /// with a 4-byte stride shears the image and yields confident garbage.
     /// </summary>
     [Theory]
     [InlineData(4)]   // CMYK / RGBA

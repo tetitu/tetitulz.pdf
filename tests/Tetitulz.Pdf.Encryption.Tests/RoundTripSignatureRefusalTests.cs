@@ -17,10 +17,9 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 /// <see cref="EncryptedRoundTripOptions.AllowSignatureInvalidation"/>.
 /// </summary>
 /// <remarks>
-/// <para><b>The refusal is the point of the class's safety contract, and nothing tested it.</b> A
-/// 2026-08-29 liveness sweep neutralised the <c>AllowSignatureInvalidation</c> gate, and separately
-/// the <c>HasSignature</c> check that feeds it, and <i>both</i> left Encryption's and
-/// Accessibility's suites green.</para>
+/// <para><b>The refusal is the point of the class's safety contract.</b> Neutralising the
+/// <c>AllowSignatureInvalidation</c> gate, or the <c>HasSignature</c> check that feeds it, leaves
+/// the rest of Encryption's and Accessibility's suites green.</para>
 ///
 /// <para><b>What the refusal protects.</b> The round trip decrypts, runs the caller's operation, and
 /// re-encrypts — which rewrites every string and stream in the file. A signature's
@@ -29,11 +28,10 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 /// from a call the caller believed was a content edit is the outcome the gate exists to prevent, and
 /// it is exactly the kind of damage a green test suite is supposed to make impossible to ship.</para>
 ///
-/// <para><b>The fixture is a signature field with a value, and it has to be.</b> These tests once
-/// set <c>/SigFlags 1</c> on a form with <c>/Fields []</c> and called that document signed, because
-/// the guard read that bit and returned. §12.7.2 makes bit 1 mean a signature <i>field</i> exists —
-/// not that anything is signed — so the fixture was a document the round trip could rewrite without
-/// destroying anything, and the refusal it pinned was the wrong one. The guard now asks
+/// <para><b>The fixture is a signature field with a value, and it has to be.</b> <c>/SigFlags 1</c>
+/// on a form with <c>/Fields []</c> is not a signed document: §12.7.2 makes bit 1 mean a signature
+/// <i>field</i> exists — not that anything is signed — so the round trip could rewrite it without
+/// destroying anything. The guard asks
 /// <c>PdfSignatureDetection.HasSignature</c>, the same question the optimizer, the sanitizer, the
 /// linearizer and both conformance converters ask, which requires a field with a <c>/V</c>. Writing
 /// a signature dictionary by hand keeps this assembly clear of the signing stack, which it may not

@@ -10,9 +10,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Plugins.Maintenance.Tests;
 
 /// <summary>
-/// The empty <c>q…Q</c> remover streams the content into one buffer. It tokenized the stream into a
-/// list, copying every token and white-space run into an array of its own, and built a second list for
-/// the output: two megabytes of content cost over a hundred megabytes (Wave 22, Maintenance-2:3).
+/// The empty <c>q…Q</c> remover streams the content into one buffer. Tokenizing the stream into a
+/// list, copying every token and white-space run into an array of its own, and building a second list
+/// for the output, two megabytes of content would cost over a hundred megabytes.
 /// </summary>
 public sealed class EmptyQQPairStreamingTests
 {

@@ -14,8 +14,8 @@ namespace Tetitulz.Pdf.Core.Tests.Text;
 /// <summary>
 /// A font that maps the Arabic letters but not their presentation forms, reaching each joining form
 /// through its own <c>GSUB</c> (<c>init</c>, <c>medi</c>, <c>fina</c>, <c>isol</c>). The composer
-/// shapes to presentation forms; it now draws such a font's letter and applies the feature the form
-/// stands for, where it used to find no glyph and drop the text. See <see cref="F"/>.
+/// shapes to presentation forms; it draws such a font's letter and applies the feature the form
+/// stands for, rather than finding no glyph and dropping the text. See <see cref="F"/>.
 /// </summary>
 public class GsubJoiningFormsTests
 {

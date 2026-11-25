@@ -12,8 +12,8 @@ using Xunit;
 namespace Tetitulz.Pdf.Builder.Tests;
 
 /// <summary>
-/// The names an ODT run-style table hands out and the formattings it declines to name, which the
-/// 2026-10-10 overnight sweep found unpinned: the first name, the count-based numbering, the case
+/// The names an ODT run-style table hands out and the formattings it declines to name: the first
+/// name, the count-based numbering, the case
 /// of a font name, and the normalisation of a colour before it is compared with the default.
 /// </summary>
 public class OdtRunStyleTableTests

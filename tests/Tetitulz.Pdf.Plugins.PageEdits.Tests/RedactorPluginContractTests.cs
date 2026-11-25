@@ -21,12 +21,10 @@ namespace Tetitulz.Pdf.Plugins.PageEdits.Tests;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Until 2026-08-12 it called <c>PdfRedactor.CoverRegions</c>, which draws an opaque box and
-/// leaves the text underneath extractable, while every name on the path (<c>IRedactPlugin</c>,
-/// <c>Redact</c>, <c>RedactionRegion</c>, plugin id <c>Tetitulz.Plugins.Redactor</c>) said
-/// otherwise. <b>There were no tests on this type at all</b>, which is how the mismatch survived —
-/// the cover-only behaviour was pinned for <c>PdfRedactor.CoverRegions</c> but never for the
-/// contract that callers reach through <c>PdfPluginHost</c>.
+/// <c>PdfRedactor.CoverRegions</c> draws an opaque box and leaves the text underneath extractable;
+/// every name on this path (<c>IRedactPlugin</c>, <c>Redact</c>, <c>RedactionRegion</c>, plugin id
+/// <c>Tetitulz.Plugins.Redactor</c>) promises more, so the contract that callers reach through
+/// <c>PdfPluginHost</c> is pinned here, apart from <c>CoverRegions</c>'s own tests.
 /// </para>
 /// <para>
 /// These assert the data is <i>gone</i>, not that a call returned without throwing: a document with
@@ -95,13 +93,8 @@ public class RedactorPluginContractTests
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Renamed from <c>Redact_WhenRemovalCannotBeProvenSafe_ThrowsRatherThanLeaking</c>, which
-    /// asserted a refusal. Plan 08 item 46 replaced that refusal with cloning, so the name changed
-    /// with the behaviour instead of the assertion being inverted underneath it.
-    /// </para>
-    /// <para>
-    /// <b>The engine still fails closed elsewhere</b> — an encrypted document, or a form nested
-    /// deeper than the depth cap — so this is a narrowing of the refusal, not its removal.
+    /// <b>The engine fails closed elsewhere</b> — an encrypted document, or a form nested
+    /// deeper than the depth cap — so cloning narrows the refusal rather than removing it.
     /// </para>
     /// </remarks>
     [Fact]

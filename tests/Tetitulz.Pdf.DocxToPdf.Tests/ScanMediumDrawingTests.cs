@@ -107,7 +107,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
             Assert.True(FillsWith(connector, "1.000 0.000 0.000 rg"),
                 "flowChartConnector was not filled");
 
-            // The control: a preset that really IS a line must still never be filled, so the fix
+            // The control: a preset that really IS a line must still never be filled, so the rule
             // cannot be satisfied by dropping the stroke-only concept altogether.
             string line = Convert(Inline(Shape("straightConnector1", "FF0000"), 914400, 914400));
             Assert.False(FillsWith(line, "1.000 0.000 0.000 rg"),

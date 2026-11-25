@@ -13,10 +13,10 @@ using Tetitulz.Pdf.Plugins.PostScript.Tests.TestInfrastructure;
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
-/// Regressions from the third review (2026-08-06). Its dominant finding was a <b>class</b>, not a
-/// defect: an operator whose real cost scales with attacker-controlled data while
-/// <c>WorkBudget</c> charges one tick per operator is invisible to the guard that is documented as
-/// terminating <c>{ } loop</c> in bounded time. Seven operators were in that state.
+/// A <b>class</b> of defect, not one: an operator whose real cost scales with attacker-controlled
+/// data while <c>WorkBudget</c> charges one tick per operator is invisible to the guard that is
+/// documented as terminating <c>{ } loop</c> in bounded time. Each operator here is charged its
+/// real cost.
 /// </summary>
 public sealed class ThirdReviewRegressionTests
 {
@@ -86,8 +86,8 @@ public sealed class ThirdReviewRegressionTests
 
     /// <summary>
     /// <c>search</c> is a naive O(n·m) scan and the needle here never matches, so it does the full
-    /// 1e10 byte comparisons — charged as ONE tick before the fix. <c>anchorsearch</c> is a prefix
-    /// test that scanned the whole haystack to answer an O(m) question.
+    /// 1e10 byte comparisons, which one tick per operator would not charge. <c>anchorsearch</c> is a
+    /// prefix test, and scanning the whole haystack would answer an O(m) question at O(n) cost.
     /// </summary>
     /// <remarks>
     /// <b>The budget is the evidence, not a stopwatch, and it discriminates because this fixture
@@ -126,15 +126,13 @@ public sealed class ThirdReviewRegressionTests
     }
 
     /// <summary>
-    /// <c>findfont</c> tested every hyphen's suffix against the CMap registry, copying it each
-    /// time. A program can build a 500 KB font name without a single long token in its source.
+    /// <c>findfont</c> tests a hyphenated name's suffixes against the CMap registry, copying each.
+    /// A program can build a 500 KB font name without a single long token in its source.
     /// </summary>
     /// <remarks>
-    /// <b>Not in the backlog row that swept the others, and it was the most at-risk of the three.</b>
-    /// This asserted <c>ms &lt; 15_000</c> — under the ~30 s threshold below which ceilings flake in
-    /// a full-solution run, and the <i>exact</i> ceiling at which <c>CharstringStepBudgetTests</c>
-    /// failed having passed in 323 ms alone.
-    /// <para>The fix here was <c>PsLimits.MaxCMapNameChars</c> — a <b>cap</b> rather than a charge —
+    /// <b>Not a wall-clock ceiling:</b> one like <c>ms &lt; 15_000</c> is under the ~30 s threshold
+    /// below which ceilings flake in a full-solution run.
+    /// <para>The guard is <c>PsLimits.MaxCMapNameChars</c> — a <b>cap</b> rather than a charge —
     /// so unlike its siblings there is no budget to interrogate: past the cap the name is simply not
     /// split, and a correctly-capped run and an uncapped-but-fast one are indistinguishable in the
     /// result. Termination is genuinely the whole claim, so this takes the dedicated-thread remedy
@@ -155,23 +153,23 @@ public sealed class ThirdReviewRegressionTests
             "findfont did not return on a 200 000-hyphen name — the split is still quadratic");
     }
 
-    /// <summary><c>scalefont</c> copies the whole dictionary; it charged a flat two entries.</summary>
+    /// <summary><c>scalefont</c> copies the whole dictionary and is charged the copy, not a flat two entries.</summary>
     /// <remarks>
     /// <para><b>Termination is the claim, and these two are the only cases in this file with no
     /// other evidence for it.</b> Both budgets end in an allocation <c>limitcheck</c> whether the
     /// copy is charged or not — charged after ~70 iterations, uncharged after ~280 000 — so
     /// <c>BudgetExhausted</c>, <c>LastError</c> and the (empty) output are identical, and only the
-    /// duration differs: ~200 ms against the tens of minutes the pre-fix code took. Squeezing the
+    /// duration differs: ~200 ms against tens of minutes uncharged. Squeezing the
     /// budgets cannot separate them, because the ops-to-allocation ratio per iteration moves
     /// together with the charge.</para>
     ///
-    /// <para>A dedicated thread, not <c>Stopwatch</c> and not <c>Task.Run</c>: 26 test assemblies
-    /// share the cores in a full-solution run, so elapsed time measures the machine's backlog.
+    /// <para>A dedicated thread, not <c>Stopwatch</c> and not <c>Task.Run</c>: a full-solution run's
+    /// test assemblies share the cores, so elapsed time measures the machine's backlog.
     /// <c>PtBypassRegressionTests</c>' class comment records the measurement — a bomb that aborts
-    /// in ~0.5 s idle took 12.7 s under a parallel whole-solution run, <b>22×</b> with the code
-    /// unchanged. That factor is what condemned the 6 s ceiling this replaced: 6 s / 22 = 273 ms
-    /// against a ~200 ms charged run leaves no margin at all. Two minutes here is a hang-guard
-    /// against a ~600× margin, not a performance assertion — the same shape and the same number as
+    /// in ~0.5 s idle takes 12.7 s under a parallel whole-solution run, <b>22×</b> with the code
+    /// unchanged, so a 6 s ceiling (6 s / 22 = 273 ms against a ~200 ms charged run) would leave no
+    /// margin at all. Two minutes here is a hang-guard against a ~600× margin, not a performance
+    /// assertion — the same shape and the same number as
     /// <c>PtBypassRegressionTests.HangCeilingMs</c>.</para>
     /// </remarks>
     [Theory]
@@ -194,7 +192,7 @@ public sealed class ThirdReviewRegressionTests
             $"'{op}' over a large dictionary must exhaust a budget, not copy it for free");
     }
 
-    /// <summary><c>cvn</c> retained ~600 MB against a 64 MiB budget that never saw a byte of it.</summary>
+    /// <summary><c>cvn</c> is charged its string: uncharged, it would retain ~600 MB against a 64 MiB budget that never saw a byte of it.</summary>
     /// <remarks>
     /// <b>Two assertions, and the pair is the point.</b> <c>cvn</c> charges through
     /// <c>LatinFromOperand</c>, which calls <c>ChargeAllocation</c> and never <c>Tick</c>s — so
@@ -203,7 +201,7 @@ public sealed class ThirdReviewRegressionTests
     /// Both set <c>BudgetExhausted</c>; only the pair says the allocation budget saw the string.
     /// The idiom is <c>AssemblyScanRegressionTests.TextOperatorWork_IsChargedByTheStringLength</c>'s.
     /// Both budgets are squeezed so the uncharged case fails in about a second rather than in hours
-    /// — which is what replaces the 6 s stopwatch this row used to carry.
+    /// — rather than a stopwatch.
     /// </remarks>
     [Fact]
     public void CvnIsChargedForTheStringItConverts()

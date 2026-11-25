@@ -27,12 +27,12 @@ public sealed class PdfGapAdvancedTests
     //  stream should not throw (best-effort rasterization).
     // ====================================================================
 
-    [Fact]
     /// <summary>
     /// An axial (type 2) shading must produce an actual <b>gradient</b>: the two ends of the axis
     /// differ. "Did not throw" is satisfied by a shading dispatch that painted one flat colour, or
     /// nothing at all.
     /// </summary>
+    [Fact]
     public void RenderPage_WithAxialShading_PaintsAGradientAlongTheAxis()
     {
         using var bmp = PixelAssert.Render(BuildPdfWithAxialShading());
@@ -56,13 +56,13 @@ public sealed class PdfGapAdvancedTests
     //  GAP 21.8 — ICCBased color space: /N correctly maps to components.
     // ====================================================================
 
-    [Fact]
     /// <summary>
     /// An <c>[/ICCBased &lt;stream&gt;]</c> colour space with <c>/N 3</c> must map to DeviceRGB, so
     /// the image's samples reach the page as the colours they encode. Reading two corners proves
     /// the mapping happened; "did not throw" would also hold if the image were dropped or drawn as
     /// grey.
     /// </summary>
+    [Fact]
     public void RenderPage_WithIccBasedImage_MapsNThreeToDeviceRgb()
     {
         using var bmp = PixelAssert.Render(BuildPdfWithIccBasedImage());

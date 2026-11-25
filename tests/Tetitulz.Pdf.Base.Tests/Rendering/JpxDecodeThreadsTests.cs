@@ -16,10 +16,10 @@ using Xunit;
 namespace Tetitulz.Pdf.Base.Tests.Rendering;
 
 /// <summary>
-/// The render's thread budget reaches the JPEG 2000 decoder (the review of 2026-09-26, row 25):
+/// The render's thread budget reaches the JPEG 2000 decoder:
 /// a page render forwards <see cref="PdfRenderOptions.MaxRenderThreads"/> as the decode's cap, and
 /// a batch render's page workers decode on their own thread — the batch already parallelises by
-/// page, and every worker starting the decoder's automatic degree ran N times up to sixteen
+/// page, and every worker starting the decoder's automatic degree would run N times up to sixteen
 /// threads. The evidence is <see cref="JpxImageDecoder.LastDecodeThreads"/>, read on the thread
 /// that decoded.
 /// </summary>

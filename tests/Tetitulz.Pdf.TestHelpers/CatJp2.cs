@@ -10,9 +10,8 @@ namespace Tetitulz.Pdf.TestHelpers;
 /// A real, self-contained JPEG 2000 (JP2 container) test image: the PDF Association's 100x67 RGB
 /// "cat" used in <c>UnknownFilter-objstm.pdf</c>, embedded as base64 so no test reads a file.
 ///
-/// <para>Its JP2 header carries a <c>colr</c> box with METH 1 / EnumCS 16 (sRGB). One copy for the
-/// Core, Base and Jpeg2000-plugin tests: there were two identical copies until Wave 15a, when a
-/// third consumer made the duplicate a DRY question.</para>
+/// <para>Its JP2 header carries a <c>colr</c> box with METH 1 / EnumCS 16 (sRGB). One copy for
+/// every test project that needs it.</para>
 /// </summary>
 public static class CatJp2
 {

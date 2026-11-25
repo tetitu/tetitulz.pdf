@@ -48,8 +48,8 @@ public sealed class CffPredefinedCharsetTests
 
     /// <summary>
     /// The standard strings as an independent font tool and another reader both give them: SID 227 is
-    /// <c>ydieresis</c>, 228 <c>zcaron</c>, 390 <c>Semibold</c>, and there is no <c>Euro</c>. Until
-    /// 2026-10-21 the table lacked 227 and read every later SID as its successor.
+    /// <c>ydieresis</c>, 228 <c>zcaron</c>, 390 <c>Semibold</c>, and there is no <c>Euro</c>. A
+    /// table lacking 227 would read every later SID as its successor.
     /// </summary>
     [Fact]
     public void TheStandardStrings_AreAppendixAsTwoImplementationsGiveThem()

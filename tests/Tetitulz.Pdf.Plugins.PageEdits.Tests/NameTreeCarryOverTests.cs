@@ -142,10 +142,9 @@ public class NameTreeCarryOverTests
     /// </summary>
     /// <remarks>
     /// §7.3.10 lets an indirect object's body be another reference: <c>9 0 obj 10 0 R endobj</c>.
-    /// The merger's <c>DerefCloned</c> took one hop and handed back the second reference, which is not
-    /// a string, so the name was left as the key the merge had given the other document. The
-    /// splitter's copy of the same helper was fixed for exactly this and pinned by
-    /// <c>IndirectDestinationChainTests</c>; the two are one helper now.
+    /// Taking one hop would hand back the second reference, which is not a string, and leave the name
+    /// as the key the merge had given the other document. The merger and the splitter share one helper,
+    /// which the splitter's <c>IndirectDestinationChainTests</c> pins too.
     /// </remarks>
     [Theory]
     [InlineData(false)]   // /Dest 9 0 R, 9 = 10 0 R, 10 = (Home)
@@ -233,7 +232,7 @@ public class NameTreeCarryOverTests
         Assert.Equal(new[] { "B2" }, titles);
 
         // The survivor's chain must be rebuilt around the dropped siblings, not left dangling at
-        // the object numbers they used to occupy.
+        // the object numbers they occupied.
         var item = extracted.ResolveObject(outlines[PdfName.First]) as PdfDictionary;
         Assert.Null(item[PdfName.Prev]);
         Assert.Null(item[PdfName.Next]);

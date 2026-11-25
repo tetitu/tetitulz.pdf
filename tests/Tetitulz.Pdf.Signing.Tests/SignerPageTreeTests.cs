@@ -117,9 +117,9 @@ public sealed class SignerPageTreeTests
     /// A document whose <c>/Root</c> names no catalog is refused before the output is touched.
     /// </summary>
     /// <remarks>
-    /// Reading the document through <see cref="PdfDocument"/> is what moved the refusal: the signer
-    /// used to copy the input to the output and write the signature and field objects first, and
-    /// only then find it had no catalog to supersede — leaving a caller's output file half-written.
+    /// Reading the document through <see cref="PdfDocument"/> puts the refusal first: copying the input
+    /// to the output and writing the signature and field objects before finding there is no catalog to
+    /// supersede would leave a caller's output file half-written.
     /// </remarks>
     [Fact]
     public void ADocumentWithoutACatalog_IsRefusedBeforeAnyByteIsWritten()

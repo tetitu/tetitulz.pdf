@@ -121,12 +121,12 @@ public class SignatureVerdictCompositionTests
 
     /// <summary>
     /// <c>IsFullyTrusted</c> is the property CLAUDE.md tells callers to ask for the complete
-    /// verdict, and its three clauses had no test separating them. These assert the composition
+    /// verdict, and its three clauses need a test separating them. These assert the composition
     /// directly, which is the only way to pin a rule whose inputs come from three different
     /// subsystems.
     ///
     /// <para>Each row inverts exactly one clause. Dropping <i>either</i> the chain clause or the
-    /// revocation clause from the property is a mutation that used to survive the whole suite.</para>
+    /// revocation clause from the property is a mutation nothing else kills.</para>
     /// </summary>
     [Theory]
     // integrity, errors,   chain,                              revocation,                    expected

@@ -16,10 +16,9 @@ namespace Tetitulz.Pdf.Core.Tests.Document;
 /// </summary>
 /// <remarks>
 /// <para>A caller that needs only that answer — the image replacer's certified-document refusal —
-/// used to run the full analysis and discard its modification verdict, which meant handing it a
-/// length. For a decrypted copy the length was first the copy's <c>startxref</c> offset and then the
-/// copy's own length, and neither is meaningful: the copy's <c>/ByteRange</c> describes the original
-/// file. The graph-only question needs no length, and these pin that it finds the same certification
+/// need not run the full analysis, which takes a length: for a decrypted copy no length is
+/// meaningful, since the copy's <c>/ByteRange</c> describes the original file. The graph-only
+/// question needs no length, and these pin that it finds the same certification
 /// the full analysis finds, by both spellings, and that a document without one reports none.</para>
 /// </remarks>
 public class CertificationReadTests

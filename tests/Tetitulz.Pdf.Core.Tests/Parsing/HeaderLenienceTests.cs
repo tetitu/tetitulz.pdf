@@ -14,10 +14,9 @@ using Xunit;
 namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
-/// A file with no <c>%PDF-</c> header, or a version after it that does not parse, opens (GAPS §7c,
-/// 2026-10-15): the version is taken as 1.4 and <see cref="PdfParser.LastHeaderRecovery"/> says so.
-/// Two of the eight public-corpus files that would not open stopped at the header; another reader opens
-/// both. A file that is not a PDF at all still refuses, at the catalog, and the refusal says the
+/// A file with no <c>%PDF-</c> header, or a version after it that does not parse, opens: the version
+/// is taken as 1.4 and <see cref="PdfParser.LastHeaderRecovery"/> says so, as another reader opens
+/// such public-corpus files. A file that is not a PDF at all still refuses, at the catalog, and the refusal says the
 /// header was missing too. A header that reads as written leaves the slot null.
 /// </summary>
 public class HeaderLenienceTests

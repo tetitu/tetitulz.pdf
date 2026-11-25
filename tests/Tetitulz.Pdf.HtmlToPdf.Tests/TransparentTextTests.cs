@@ -15,9 +15,8 @@ namespace Tetitulz.Pdf.HtmlToPdf.Tests
     /// colour, end it.
     /// </summary>
     /// <remarks>
-    /// The transparent colour was dropped as an absent one, so the text kept the inherited colour and
-    /// was seen — GAPS §4b's "a fully transparent text colour keeps the inherited colour". Before
-    /// batch 20 it was composited to white.
+    /// Dropped as an absent one, a transparent colour would leave the text the inherited colour, and
+    /// seen; composited to white, it would show on a coloured background.
     /// </remarks>
     public class TransparentTextTests
     {

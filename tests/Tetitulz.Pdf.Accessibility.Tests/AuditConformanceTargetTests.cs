@@ -88,7 +88,7 @@ public class AuditConformanceTargetTests
     /// <summary>
     /// The structure checker lists 25 Sound annotations and sums up the other five as "…and 5 more".
     /// The audit counts that summary as its five instances, so the total is the thirty in the file.
-    /// It used to count it as one.
+    /// Counted as one, it would make the total 26.
     /// </summary>
     [Fact]
     public void Audit_Ua2Target_CountsTheInstancesASummaryNames()

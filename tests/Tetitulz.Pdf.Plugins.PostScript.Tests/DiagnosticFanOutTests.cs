@@ -15,32 +15,20 @@ namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 /// notification — it cannot blind the others.
 /// </summary>
 /// <remarks>
-/// <para><b>Why this exists.</b> <c>Report</c> used to invoke the multicast delegate in a single
-/// call inside one <c>try</c>, so the first subscriber to throw aborted the rest and every later
-/// listener silently missed the event. This type's own remarks already warned about it — "it costs
-/// the remaining subscribers their notification" — which made it a documented hazard rather than an
-/// unknown one, and documented hazards are exactly the ones worth converting into a test.</para>
-/// <para><b>It was not theoretical.</b> The subscription is process-wide, so an unrelated
-/// concurrent handler that throws blinds everyone. On 2026-08-17 a correctly thread-filtered
-/// collector never received a <c>rangecheck</c> it had asked for, in a whole-solution run; the test
-/// passed alone and on the next two full runs. That is the signature of a lost notification rather
-/// than a wrong assertion.</para>
-/// <para><b>It recurred on 2026-09-06 and again on 2026-09-07, and the third sighting is what
-/// found the cause.</b> The collector below was <i>the only one of the four fan-out tests in this
-/// repository not filtered to the calling thread</i> — <c>RenderDiagnosticsFanOutTests</c>,
-/// <c>BuilderDiagnosticsFanOutTests</c> and <c>Core.Util.DiagnosticFanOutTests</c> all had the
-/// filter already. <c>OnEvent</c> is process-wide, so a whole-solution run has other PostScript
-/// tests reporting into this list from other threads; and unsubscribing does not stop a fan-out
-/// already in flight, so the assertion could enumerate the list while another thread was still
-/// adding to it. Alone, or in a single-assembly run, no other thread is reporting and it always
-/// passed.</para>
-/// <para><b>The diagnosis came from the siblings, not from the assertion text.</b> Three files
-/// applying a fix and a fourth not applying it is a pattern a failure message cannot show — which
-/// is the argument for writing the same guard the same way everywhere, and for reading the ones
-/// that already exist before inventing a new explanation.</para>
+/// <para><b>Why this exists.</b> Invoking the multicast delegate in a single call inside one
+/// <c>try</c> would let the first subscriber to throw abort the rest, every later listener silently
+/// missing the event. The subscription is process-wide, so an unrelated concurrent handler that
+/// throws would blind everyone.</para>
+/// <para><b>The collector is filtered to the calling thread</b>, as
+/// <c>RenderDiagnosticsFanOutTests</c>, <c>BuilderDiagnosticsFanOutTests</c> and
+/// <c>Core.Util.DiagnosticFanOutTests</c> are. <c>OnEvent</c> is process-wide, so a whole-solution
+/// run has other PostScript tests reporting into this list from other threads; and unsubscribing
+/// does not stop a fan-out already in flight, so an unfiltered assertion could enumerate the list
+/// while another thread is still adding to it — a failure that never shows alone or in a
+/// single-assembly run.</para>
 /// <para><b>Ordering matters to the test.</b> The throwing handler is subscribed <i>first</i>, so a
 /// single-call invocation would abort before the good one ever ran. Subscribing it second would
-/// pass under the old behaviour too and prove nothing.</para>
+/// pass under a single-call invocation too and prove nothing.</para>
 /// </remarks>
 public class DiagnosticFanOutTests
 {

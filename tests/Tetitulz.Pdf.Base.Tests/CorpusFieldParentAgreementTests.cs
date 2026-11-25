@@ -91,7 +91,7 @@ public sealed class CorpusFieldParentAgreementTests
     /// and on the corpus this was written against, it does not.
     /// </summary>
     /// <remarks>
-    /// <para><b>Measured 2026-08-26: 20 documents, 2 with an <c>/AcroForm</c>, and ZERO nodes
+    /// <para><b>Measured on that corpus: 20 documents, 2 with an <c>/AcroForm</c>, and ZERO nodes
     /// reached by a <c>/Kids</c> edge.</b> Both forms are entirely flat — every field is a root of
     /// <c>/Fields</c> with no children — so the corpus classification above is <c>0 == 0</c> and
     /// says nothing at all about the chain question.</para>

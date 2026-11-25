@@ -167,7 +167,7 @@ public sealed class PositionedInBoxTests
 
     /// <summary>
     /// A page-placed paragraph inside a table cell is drawn at its page point, once, after the flow —
-    /// not laid out in the cell's flow, where it used to go; the cell's own text stays where it was.
+    /// not laid out in the cell's flow; the cell's own text stays where it is.
     /// </summary>
     [Fact]
     public void APagePlacedParagraphInACell_IsDrawnAtItsPagePoint()

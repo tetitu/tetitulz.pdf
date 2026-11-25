@@ -19,7 +19,7 @@ namespace Tetitulz.Pdf.Encryption.Tests;
 /// A stream's own crypt filter (ISO 32000-2 §7.4.10): <c>/Crypt</c> first in its <c>/Filter</c>,
 /// naming the crypt filter its data is encrypted with in place of the document's — <c>/Identity</c>
 /// for a stream left in the clear. The encryptor, the incremental writer and the decryptor honour it;
-/// the decryptor used to read every stream under <c>/StmF</c>, turning a clear one into noise. The
+/// a decryptor reading every stream under <c>/StmF</c> would turn a clear one into noise. The
 /// stream data is uncompressed, so the raw bytes show plainly which side of the line each went.
 /// </summary>
 public sealed class StreamCryptFilterTests

@@ -105,8 +105,8 @@ public class BaseDiagnosticSurfaceTests
     /// <summary>
     /// CLAUDE.md's Diagnostics Pattern makes one hard rule about these slots: <b>every</b> one is
     /// backed by a <c>[ThreadStatic]</c> field, because a plain process-wide static hands a caller
-    /// a reason belonging to some other thread's document. Naming four properties by hand — which
-    /// is what this file used to do — cannot enforce a rule about all of them: the failure mode is
+    /// a reason belonging to some other thread's document. Naming properties by hand cannot enforce
+    /// a rule about all of them: the failure mode is
     /// a <i>newly added</i> diagnostic that forgets the attribute, and a hand-written list never
     /// mentions the property that does not exist yet.
     ///

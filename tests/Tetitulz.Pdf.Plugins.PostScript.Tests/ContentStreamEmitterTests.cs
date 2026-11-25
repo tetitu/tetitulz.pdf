@@ -403,8 +403,7 @@ public sealed class ContentStreamEmitterTests
 
     /// <summary>
     /// <c>restore</c> rolls back VM (<c>VmRestoreTests</c>): the definition made since the save is
-    /// gone, and the limit it used to report — "rolled back the graphics state but not VM" — is no
-    /// longer said.
+    /// gone, and no "rolled back the graphics state but not VM" limit is reported.
     /// </summary>
     [Fact]
     public void Restore_RollsBackVm_AndReportsNoLimit()
@@ -548,10 +547,9 @@ public sealed class ContentStreamEmitterTests
     }
 
     /// <summary>
-    /// The bomb must not escape as a CLR exception <b>and</b> must actually be bounded. The second
-    /// half used to be missing: this asserted only <c>Assert.Null(ex)</c> under a name claiming a
-    /// depth cap, and the cap it named applied to the emitted <c>q</c> alone — the engine went on
-    /// cloning a graphics state per iteration. <c>GraphicsStateStackDepthTests</c> owns the full
+    /// The bomb must not escape as a CLR exception <b>and</b> must actually be bounded: a cap on the
+    /// emitted <c>q</c> alone would leave the engine cloning a graphics state per iteration.
+    /// <c>GraphicsStateStackDepthTests</c> owns the full
     /// evidence; the emitted-depth bound is asserted here because it is the emitter's half of it.
     /// </summary>
     [Fact]
@@ -614,10 +612,10 @@ public sealed class ContentStreamEmitterTests
     /// A <c>gsave</c> reached <b>after</b> the byte cap tripped must not produce a lone <c>Q</c>.
     ///
     /// <para>The sibling test above puts the <c>gsave</c> <i>before</i> the cap, where the <c>q</c>
-    /// is really in the stream and its <c>Q</c> has a partner. This is the other order, and it is
-    /// the one that used to break: the <c>q</c> was suppressed as over-cap while the save depth
-    /// advanced anyway, so the end-of-stream close wrote a <c>Q</c> for a <c>q</c> that was never
-    /// written. That matters well beyond this stream — the renderer runs it on the page's own
+    /// is really in the stream and its <c>Q</c> has a partner. This is the other order: a <c>q</c>
+    /// suppressed as over-cap while the save depth advanced anyway would make the end-of-stream close
+    /// write a <c>Q</c> for a <c>q</c> that was never written. That matters well beyond this stream —
+    /// the renderer runs it on the page's own
     /// graphics-state stack, so the surplus <c>Q</c> pops the calling page's state and every mark
     /// after the XObject inherits the wrong colour, transform and clip.</para>
     /// </summary>
@@ -666,8 +664,8 @@ public sealed class ContentStreamEmitterTests
     /// is skipped as unchanged when it is not — and draws in the enclosing colour.
     ///
     /// <para>Asserted by counting: the program sets blue twice, either side of the
-    /// <c>initclip</c>, and both fills must actually get it. Before the fix the second
-    /// <c>0 0 1 rg</c> was never emitted and the square came out red.</para>
+    /// <c>initclip</c>, and both fills must actually get it: a stale record would skip the second
+    /// <c>0 0 1 rg</c>, and the square would come out red.</para>
     /// </summary>
     [Fact]
     public void InitClip_RollsBackTheTrackedColour_SoTheNextFillReEmitsIt()

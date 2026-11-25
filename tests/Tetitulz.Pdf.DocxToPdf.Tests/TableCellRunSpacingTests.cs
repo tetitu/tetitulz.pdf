@@ -79,8 +79,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// <b>The claim.</b> A scaled run occupies the same width inside a cell as outside one.
-        /// Measured from the emitted operators rather than asserted against a constant: the cell
-        /// used to draw the run at 100% while a paragraph drew it at 150%.
+        /// Measured from the emitted operators rather than asserted against a constant: a cell that
+        /// drew the run at 100% while a paragraph drew it at 150% would fail it.
         /// </summary>
         [Fact]
         public void ACellAppliesTheSameScaleAsAParagraph()

@@ -351,7 +351,7 @@ public class XfaRichTextTests
         Assert.Equal((false, false, (int?)null), (p[1].PageBreakBefore, p[1].PageBreakAfter, p[1].Orphans));
         Assert.Equal(new[] { "kerning-mode: x", "orphans: 0" }, unapplied.OrderBy(s => s, StringComparer.Ordinal));
         Assert.True(p[0].KeepWithNext);                                     // the second's avoid before keeps the first with it
-        // A first paragraph's previous is outside the text: kept with it by the layout (2026-10-19; it was named).
+        // A first paragraph's previous is outside the text: kept with it by the layout, not named.
         var first = new HashSet<string>();
         Assert.True(Read("<p style=\"page-break-before:avoid\">alone</p>", first)[0].KeepWithPrevious);
         Assert.Empty(first);

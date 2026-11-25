@@ -13,11 +13,10 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests
 {
     /// <summary>
-    /// The elements that only mark the content they hold (Rendering.MarkupWrappers), on both paths: until
-    /// 2026-10-20 text inside a smart tag, inline or block custom XML, a moved run or a bidi wrapper, a table row or
-    /// cell inside a content control or custom XML, and — on the legacy path — anything but a cell paragraph's own
-    /// runs was absent from the output. And a hyperlink's target (Rendering.HyperlinkTargets): the Builder path
-    /// wrote no link for an external one.
+    /// The elements that only mark the content they hold (Rendering.MarkupWrappers), on both paths: text inside a
+    /// smart tag, inline or block custom XML, a moved run or a bidi wrapper, a table row or cell inside a content
+    /// control or custom XML, and — on the legacy path — more than a cell paragraph's own runs reach the output.
+    /// And a hyperlink's target (Rendering.HyperlinkTargets): the Builder path writes a link for an external one.
     /// </summary>
     public class MarkupWrapperTests
     {
@@ -90,8 +89,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         }
 
         /// <summary>
-        /// Two hundred nested smart tags around a run cost what one does, on both paths: each level was serialised
-        /// and parsed again on its own, the subtree's size times its depth (Wave 22, DocxToPdf-3:2). The run is
+        /// Two hundred nested smart tags around a run cost what one does, on both paths — not each level serialised
+        /// and parsed again on its own, the subtree's size times its depth. The run is
         /// drawn either way; the conversion's allocation on this thread is compared with one level's.
         /// </summary>
         [Theory]
@@ -231,9 +230,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         }
 
         /// <summary>
-        /// A direction wrapper is applied on both paths and reported on neither: the legacy path said once per
-        /// conversion that it left the text to the bidi algorithm until 2026-10-22, when its lines came to be
-        /// resolved whole. The override's text reversed is the potency check.
+        /// A direction wrapper is applied on both paths and reported on neither, since both resolve a line's text
+        /// whole. The override's text reversed is the potency check.
         /// </summary>
         [Theory]
         [InlineData(true)]
@@ -290,8 +288,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// run with no wrapper.
         /// </summary>
         /// <remarks>
-        /// The Builder path shaped a token once in its paragraph's direction, and so drew Hebrew under an override
-        /// as it would without one, until 2026-10-22 (Core's BidiControlStack now tells it of the override).
+        /// Core's BidiControlStack tells the Builder path of the override: a token shaped once in its paragraph's
+        /// direction would draw Hebrew under an override as it would without one.
         /// </remarks>
         [HebrewCapableDocxFontFact]
         public void AnOverrideOfShapedText_DrawsItInTheOverridesDirection_OnBothPaths()
@@ -414,8 +412,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
         /// <summary>
         /// On the Builder path a paragraph's bookmark is a link target: a hyperlink to <c>Target</c> leads to the
         /// paragraph holding it, though a <c>_Toc1</c> bookmark comes first there (the model keeps one name a
-        /// paragraph, and the one a link names wins). The mapper set no target until 2026-10-22, so every link
-        /// to a bookmark was dropped. The control: a link to a bookmark no paragraph holds is no link.
+        /// paragraph, and the one a link names wins). Without a target, every link to a bookmark would be
+        /// dropped. The control: a link to a bookmark no paragraph holds is no link.
         /// </summary>
         [Fact]
         public void ABookmarkALinkNames_IsItsTarget_OnTheBuilderPath()
@@ -431,8 +429,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
 
         /// <summary>
         /// A hyperlink in a table cell is a link on both paths — to a bookmark and to a URL — over the text it
-        /// covers, and the rest of the cell's line is not. The legacy cell layout drew the text without its link,
-        /// and said so, until 2026-10-22.
+        /// covers, and the rest of the cell's line is not.
         /// </summary>
         [Theory]
         [InlineData(true)]

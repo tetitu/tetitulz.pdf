@@ -465,7 +465,7 @@ public class PipelineGateAgreementTests
     public void FixHeadingHierarchy_StrongHeadingFollowedByH2_IsNotReportedAsAlreadySatisfied()
     {
         // <H> takes its level from /Sect nesting, so the fixer ignores it and <H2> becomes the
-        // first *numbered* heading — an H1. The replay used to fold <H> in as level 1, conclude
+        // first *numbered* heading — an H1. A replay folding <H> in as level 1 would conclude
         // that H2 followed it legally, and skip the step with a claim the step contradicts.
         byte[] input = HeadingPdf("H", "H2");
 

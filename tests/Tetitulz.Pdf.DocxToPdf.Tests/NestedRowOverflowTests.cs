@@ -15,9 +15,9 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// A nested table's row taller than a page was one block, drawn whole, and what fell past the bottom margin was
-/// lost — silently at first, then reported (Wave 22, DocxToPdf-4:7). It is cut into page-sized slices now, as a
-/// top-level row is, so every line lands on a page; only a single block taller than any page is still reported.
+/// A nested table's row taller than a page is cut into page-sized slices, as a top-level row is, so every line
+/// lands on a page rather than what falls past the bottom margin being lost; only a single block taller than
+/// any page is reported.
 /// </summary>
 public sealed class NestedRowOverflowTests
 {

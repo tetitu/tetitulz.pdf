@@ -291,7 +291,7 @@ public sealed class InlineImageDecodedLengthTests
         Assert.InRange(InlineImageLength.CandidateDecodes, images, (long)images * InlineImageLength.MaxDecodeCandidates);
     }
 
-    // ------------------------------------------------------------------ found by the overnight sweep
+    // ------------------------------------------------------------------ boundaries
 
     /// <summary>
     /// An image with no width or height has no samples to measure: the geometry is refused (-1),

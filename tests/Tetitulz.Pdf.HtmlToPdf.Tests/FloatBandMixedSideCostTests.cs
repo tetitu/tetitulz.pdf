@@ -45,13 +45,13 @@ public class FloatBandMixedSideCostTests
         var (work20, _) = Convert(20);
         var (work200, _) = Convert(200);
 
-        // Linear: ~n floats reach the exact mapper once (the single whole-run attempt). The pre-fix
-        // code reached n(n+1)/2 — 20 100 at n=200 and 210 at n=20 — so a quadratic cost fails both
-        // the absolute cap and the ×10-for-×10 growth check below.
+        // Linear: ~n floats reach the exact mapper once (the single whole-run attempt). A quadratic
+        // walk reaches n(n+1)/2 — 20 100 at n=200 and 210 at n=20 — and fails both the absolute cap
+        // and the ×10-for-×10 growth check below.
         Assert.True(work200 <= 3 * 200, $"expected ~linear work, got {work200} for 200 floats");
 
         // Ten times the floats costs about ten times the work, not a hundred times. (20→200 is ×10;
-        // the pre-fix ratio was 20100/210 ≈ 96.)
+        // the quadratic ratio is 20100/210 ≈ 96.)
         Assert.True(work200 < work20 * 20, $"work grew super-linearly: {work20} → {work200}");
     }
 

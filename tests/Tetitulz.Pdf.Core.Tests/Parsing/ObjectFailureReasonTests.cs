@@ -71,7 +71,7 @@ public class ObjectFailureReasonTests
 
     /// <summary>
     /// <b>A reference chain that loops says so.</b> Two objects pointing at each other is a file a
-    /// reader must survive, and the guard that makes it survivable used to leave the caller unable
+    /// reader must survive, and the guard that makes it survivable must not leave the caller unable
     /// to tell the loop from an object that was never there.
     /// </summary>
     [Fact]
@@ -137,7 +137,7 @@ public class ObjectFailureReasonTests
     /// <summary>
     /// <b>The slot belongs to the most recent call and to nothing earlier.</b> Resolving a
     /// <i>direct</i> object never reaches <c>GetObject</c>, which is the path on which a stale
-    /// reason used to survive and be attributed to an object that parsed perfectly.
+    /// reason could survive and be attributed to an object that parsed perfectly.
     /// </summary>
     [Fact]
     public void ResolvingADirectObjectClearsAnEarlierFailuresReason()

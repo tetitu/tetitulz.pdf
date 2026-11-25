@@ -141,10 +141,8 @@ public class ExistingObjectReferenceGenerationTests
 
     /// <summary>
     /// An indirect name dictionary is superseded where it lives, at its own generation, and the
-    /// catalog is left alone. The destination writer used to rewrite the catalog too, and its
-    /// reference to the dictionary had to be rebuilt at the right generation. Since the name-tree
-    /// rewrite became <c>CatalogNameTree</c>, no reference is rebuilt, so there is none to get
-    /// wrong.
+    /// catalog is left alone: the name-tree rewrite (<c>CatalogNameTree</c>) rebuilds no reference
+    /// to the dictionary, so there is none to get wrong.
     /// </summary>
     [Fact]
     public void ANamedDestinationSupersedesTheNamesDictionaryAtItsGeneration_AndLeavesTheCatalog()

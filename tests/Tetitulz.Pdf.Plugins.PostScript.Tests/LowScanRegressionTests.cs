@@ -13,14 +13,11 @@ using Tetitulz.Pdf.Plugins.PostScript.Tests.TestInfrastructure;
 namespace Tetitulz.Pdf.Plugins.PostScript.Tests;
 
 /// <summary>
-/// The LOW findings of the assembly-wide scan (2026-08-13) that belong to this plugin.
+/// Small defects in this plugin that do not warrant a file of their own.
 ///
-/// <para>Five of the six were confirmed and fixed. The sixth — memoising
-/// <c>PdfResourceCollector.EncodingKey</c> by encoding-instance identity — is an explicitly
-/// unmeasured performance hypothesis, and both this repo's rule ("measure before you rank") and the
-/// finding's own instruction ("if the delta is in the noise beside the interpreter loop, leave it
-/// alone and record the measurement") make guessing the wrong move. It is not fixed here and has no
-/// test.</para>
+/// <para>Memoising <c>PdfResourceCollector.EncodingKey</c> by encoding-instance identity is not
+/// done and has no test: it is an unmeasured performance hypothesis, and this repo's rule is
+/// "measure before you rank".</para>
 /// </summary>
 public sealed class LowScanRegressionTests
 {
@@ -161,13 +158,9 @@ public sealed class LowScanRegressionTests
     }
 
     /// <summary>
-    /// <c>filter</c> over a <b>file</b> is implemented as of 2026-08-19 — it is how an EPS embeds
-    /// image data — so it is no longer reported. The operand-balance contract this test was written
-    /// for still holds and is what it now asserts: one file object comes back, whatever the filter.
-    ///
-    /// <para>Renamed rather than edited in place. The old name said "is still reported as
-    /// unimplemented", and leaving that name on an assertion about something else is the exact
-    /// name/body disagreement CLAUDE.md records as the failure no guard can catch.</para>
+    /// <c>filter</c> over a <b>file</b> is implemented — it is how an EPS embeds image data — so it is
+    /// not reported. The operand-balance contract holds and is what this asserts: one file object comes
+    /// back, whatever the filter.
     /// </summary>
     [Fact]
     public void Filter_OverAFile_YieldsOneFileObject()

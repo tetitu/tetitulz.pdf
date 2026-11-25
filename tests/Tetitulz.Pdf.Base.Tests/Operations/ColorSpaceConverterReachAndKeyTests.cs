@@ -368,8 +368,8 @@ public class ColorSpaceConverterReachAndKeyTests
     }
 
     /// <summary>
-    /// A space a page declares and an image then uses is an image colour space. It used to keep
-    /// whatever the first sighting said.
+    /// A space a page declares and an image then uses is an image colour space, not whatever the
+    /// first sighting said.
     /// </summary>
     [Fact]
     public void ASpaceDeclaredBeforeAnImageUsesItIsStillAnImageColourSpace()

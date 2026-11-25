@@ -414,9 +414,9 @@ namespace Tetitulz.Pdf.DocxToPdf.Tests
             Assert.Equal(2, withDirect.Count);
 
             // OOXML resolves each attribute independently. A direct w:spacing carrying only
-            // w:after used to be selected as THE spacing element and, stating no w:line, made
-            // ResolveLineHeight return 0 — so the paragraph rendered single-spaced among its
-            // double-spaced siblings. The two baseline gaps must agree.
+            // w:after, selected as THE spacing element, would state no w:line and make
+            // ResolveLineHeight return 0 — the paragraph single-spaced among its double-spaced
+            // siblings. The two baseline gaps must agree.
             Assert.Equal(withoutDirect[0] - withoutDirect[1], withDirect[0] - withDirect[1], 1);
 
             // …and both must be the style's double spacing (12 pt × 1.2 × 480/240 = 28.8 pt),

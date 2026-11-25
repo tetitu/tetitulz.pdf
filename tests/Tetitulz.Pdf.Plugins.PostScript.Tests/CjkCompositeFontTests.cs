@@ -191,7 +191,7 @@ public sealed class CjkCompositeFontTests
 
     /// <summary>
     /// Table 117 lists <c>/FontDescriptor</c> as <b>Required</b> for every CIDFont, embedded or not,
-    /// and the descendant used to be emitted without one.
+    /// and the descendant is emitted with one.
     ///
     /// <para>That is precisely the case where it matters: no CJK program is embedded on this path,
     /// so the reader must substitute a face — and <c>/Flags</c>, <c>/FontBBox</c>,

@@ -271,8 +271,8 @@ public class PdfA4ValidatorTests
 
     /// <summary>
     /// The catalog's <c>/NeedsRendering true</c> (the published profiles rule 6.4.2-2, tested as <c>NeedsRendering == false</c>): a
-    /// violation; <c>false</c> is not one, nor is the key in the AcroForm dictionary, where the check looked until
-    /// 2026-10-20 and ISO 32000 puts no such key.
+    /// violation; <c>false</c> is not one, nor is the key in the AcroForm dictionary, where ISO 32000 puts no such
+    /// key.
     /// </summary>
     [Theory]
     [InlineData("/NeedsRendering true", false, true)]

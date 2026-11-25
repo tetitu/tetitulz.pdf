@@ -16,14 +16,13 @@ namespace Tetitulz.Pdf.TestHelpers;
 /// </summary>
 /// <remarks>
 /// <para><b>Why it matters: the corpus is half of a local run.</b> With <c>tests/pdf</c> present
-/// the Base suite took 90 s; the same suite without its corpus tests took 43 s. CI has no corpus,
+/// the Base suite takes about 90 s, and about 43 s without its corpus tests. CI has no corpus,
 /// so those tests skip there — and a mutation killed only by them is a survivor on CI, which is
 /// why <c>.claude/mutate.ps1</c> applies this filter to every sweep.</para>
 ///
 /// <para><b>On the attribute, not on each class</b>, so a new corpus test cannot forget it; and
-/// <b>here, not in one test project</b>, because every test project references this one — the
-/// attribute used to be defined twice (Base.Tests and Plugins.Maintenance.Tests), and the second
-/// copy would have lacked the trait.</para>
+/// <b>here, not in one test project</b>, because every test project references this one — a
+/// second definition of the attribute could lack the trait.</para>
 /// </remarks>
 public sealed class CorpusTraitDiscoverer : ITraitDiscoverer
 {
@@ -40,11 +39,11 @@ public sealed class CorpusTraitDiscoverer : ITraitDiscoverer
 /// A <see cref="FactAttribute"/> that skips — visibly, with a reason — when the
 /// developer-local PDF corpus is not present.
 ///
-/// This replaces two bad patterns that both used to report green:
+/// It stands in for two bad patterns:
 ///   * <c>Assert.True(File.Exists(path))</c> against a hardcoded machine path,
-///     which simply failed on every machine but the author's; and
-///   * <c>if (!File.Exists(path)) return;</c>, which reported *Passed* while
-///     executing nothing, so the test could never go red.
+///     which fails on every machine but the author's; and
+///   * <c>if (!File.Exists(path)) return;</c>, which reports *Passed* while
+///     executing nothing, so the test can never go red.
 /// A skipped test is reported as skipped, which is the honest outcome.
 /// </summary>
 [TraitDiscoverer(CorpusTraitDiscoverer.TypeName, CorpusTraitDiscoverer.AssemblyName)]

@@ -47,9 +47,9 @@ public class SanitizerDosGuardTests
         // guard is `visited.Add(actionDict)` returning false; it mutates nothing, so on a chain of
         // actions the sanitizer does not consider dangerous there is no post-condition to read.
         // Without the guard this recurses A -> B -> A forever and the test host dies; with it, the
-        // call returns. Writing `Assert.True(true)` here — as this test used to — asserted nothing
-        // while looking like it asserted something, and would have passed just as well against a
-        // guard that had been deleted, provided the deletion happened not to hang.
+        // call returns. An `Assert.True(true)` here would assert nothing while looking like it
+        // asserted something, and would pass just as well against a deleted guard, provided the
+        // deletion happened not to hang.
         //
         // The companion below CAN read a post-condition, and does.
     }
@@ -92,20 +92,18 @@ public class SanitizerDosGuardTests
     /// 1 000 is severed exactly like one at link 3.
     /// </summary>
     /// <remarks>
-    /// <para><b>This replaced a reach of 227 links that no constant described.</b> The walk used to
-    /// recurse, and each hop called <c>SanitizeDictionary</c>, which sees <c>/Next</c> and called
-    /// straight back in, restarting at <c>depth: 0</c> — so <c>PdfLimits.MaxActionChainDepth</c>
-    /// (64) was never reached, and the ambient <c>_sanitizeDepth</c> (100), which unwinds on exit,
-    /// gauged stack depth rather than accumulating. The two composed into 227, measured. A previous
-    /// round tried to assert a bound here, mutated <c>MaxActionChainDepth</c> to 100000, saw no red
-    /// and shipped a bare completion check saying the cause was unknown: the assertion was not
-    /// weak, the cap was simply not the operative one.</para>
+    /// <para><b>No reach that no constant describes.</b> A recursive walk in which each hop calls
+    /// <c>SanitizeDictionary</c>, which sees <c>/Next</c> and calls straight back in at
+    /// <c>depth: 0</c>, never reaches <c>PdfLimits.MaxActionChainDepth</c> (64), while an ambient
+    /// depth (100) that unwinds on exit gauges stack depth rather than accumulating: the two compose
+    /// into an accidental reach of 227 links, and a mutation of <c>MaxActionChainDepth</c> shows no
+    /// red, because that cap is not the operative one.</para>
     /// <para><b>Unbounded is the right answer for a sanitizer</b>, because failing to strip is the
-    /// harmful direction — a 228-link chain used to keep its JavaScript action with nothing
-    /// reporting it. The walk is iterative and admits each dictionary once, so it consumes no stack
-    /// per link and cannot run away.</para>
-    /// <para>1 000 is far past every cap that used to apply (64, 100, and the 227 they produced),
-    /// so this goes red if any of them comes back.</para>
+    /// harmful direction — a 228-link chain would keep its JavaScript action with nothing reporting
+    /// it. The walk is iterative and admits each dictionary once, so it consumes no stack per link
+    /// and cannot run away.</para>
+    /// <para>1 000 is far past every such cap (64, 100, and the 227 they produce), so this goes red
+    /// if any of them comes back.</para>
     /// </remarks>
     [Theory]
     [InlineData(3)]

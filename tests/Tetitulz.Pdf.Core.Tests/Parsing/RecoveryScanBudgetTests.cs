@@ -11,9 +11,9 @@ namespace Tetitulz.Pdf.Core.Tests.Parsing;
 
 /// <summary>
 /// The header scan that rebuilds a cross-reference table is charged against the parser's entry
-/// budget like every parsed section and every recovered object-stream member (the review of
-/// 2026-10-16, R1.10). Uncharged, a file of bare headers rebuilt a table of one entry per eight
-/// bytes over the whole file — the one path the budget did not bound.
+/// budget like every parsed section and every recovered object-stream member. Uncharged, a file of
+/// bare headers would rebuild a table of one entry per eight bytes over the whole file — the one
+/// path the budget would not bound.
 /// </summary>
 public sealed class RecoveryScanBudgetTests
 {
