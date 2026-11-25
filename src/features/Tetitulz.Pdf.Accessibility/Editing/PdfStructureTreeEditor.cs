@@ -9,6 +9,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Tetitulz.Pdf.Accessibility.Internal;
+using Tetitulz.Pdf.Accessibility.Metadata;
 using Tetitulz.Pdf.Accessibility.Models;
 using Tetitulz.Pdf.Core.IO;
 using Tetitulz.Pdf.Core.Constants;
@@ -440,16 +441,16 @@ namespace Tetitulz.Pdf.Accessibility.Editing
 
             var index = GetOrBuildIndex(doc);
 
-            var (modified, updated, skipped, failed) =
+            var (modified, updated, skipped, failed, undescribed) =
                 CollectLinkDescriptionRevisions(doc, descriptionProvider, Op);
 
             if (!WriteAndVerify(output, bytes, doc, index, modified, _noObjects, Op,
                     "the link descriptions"))
             {
-                return new SetAltTextResult(0, skipped, failed + updated);
+                return new SetAltTextResult(0, skipped, failed + updated, undescribed);
             }
 
-            return new SetAltTextResult(updated, skipped, failed);
+            return new SetAltTextResult(updated, skipped, failed, undescribed);
         }
 
         /// <summary>
@@ -481,14 +482,14 @@ namespace Tetitulz.Pdf.Accessibility.Editing
             if (index == null) return FigureAltTextPlan.Nothing;
             index.ReserveObjectNumber(firstFreeObjectNumber - 1);
 
-            var (modified, updated, skipped, failed) =
+            var (modified, updated, skipped, failed, undescribed) =
                 CollectLinkDescriptionRevisions(doc, descriptionProvider, Op);
 
             if (modified.Count == 0)
-                return new FigureAltTextPlan(Array.Empty<IndirectObject>(), 0, skipped, failed);
+                return new FigureAltTextPlan(Array.Empty<IndirectObject>(), 0, skipped, failed, undescribed);
 
             var objects = RevisionObjects.From(modified, index, Op);
-            return new FigureAltTextPlan(objects, updated, skipped, failed);
+            return new FigureAltTextPlan(objects, updated, skipped, failed, undescribed);
         }
 
         /// <summary>
@@ -502,13 +503,15 @@ namespace Tetitulz.Pdf.Accessibility.Editing
         /// A link held as a direct dictionary in <c>/Annots</c> has no object number, so an
         /// incremental update cannot revise it alone; it is counted as failed and said, never
         /// offered — a description the provider wrote for it would not reach the file.
+        /// <c>Undescribed</c> counts the skipped links with no <c>/Contents</c> of their own: a
+        /// provider may decline a link because it already has one, and that link needs nothing.
         /// </remarks>
-        private static (Dictionary<int, PdfObject> Modified, int Updated, int Skipped, int Failed)
+        private static (Dictionary<int, PdfObject> Modified, int Updated, int Skipped, int Failed, int Undescribed)
             CollectLinkDescriptionRevisions(
                 PdfDocument doc, Func<LinkContext, string> provider, string op)
         {
             var modified = new Dictionary<int, PdfObject>();
-            int linkIdx = 0, updated = 0, skipped = 0, failed = 0, direct = 0;
+            int linkIdx = 0, updated = 0, skipped = 0, failed = 0, direct = 0, undescribed = 0;
 
             IReadOnlyList<PdfLink> links =
                 PdfLinkExtractor.ExtractLinks(doc);
@@ -555,6 +558,8 @@ namespace Tetitulz.Pdf.Accessibility.Editing
                     continue;
                 }
 
+                if (string.IsNullOrWhiteSpace(description) && string.IsNullOrWhiteSpace(ctx.ExistingDescription))
+                    undescribed++;
                 if (description == null) { skipped++; continue; }
                 if (string.IsNullOrWhiteSpace(description))
                 {
@@ -580,7 +585,7 @@ namespace Tetitulz.Pdf.Accessibility.Editing
                     "revise; they were not offered a description");
             }
 
-            return (modified, updated, skipped, failed);
+            return (modified, updated, skipped, failed, undescribed);
         }
 
         // ----------------------------------------------------------------
@@ -899,8 +904,10 @@ namespace Tetitulz.Pdf.Accessibility.Editing
         }
 
         /// <summary>
-        /// Computes the <c>/Info /Title</c> edit <b>without writing it</b>, for a caller that owns
-        /// the write - which is how an <b>encrypted</b> document gets the title UA04 requires.
+        /// Computes the title edit <see cref="SetDocumentTitle"/> writes — <c>/Info /Title</c>,
+        /// <c>/ViewerPreferences /DisplayDocTitle</c> and the XMP <c>dc:title</c> UA04 reads —
+        /// <b>without writing it</b>, for a caller that owns the write; this is how an
+        /// <b>encrypted</b> document gets its title.
         /// </summary>
         /// <remarks>
         /// <para><b>This edit CAN mint</b>: a document with no <c>/Info</c> dictionary gets a new
@@ -972,10 +979,59 @@ namespace Tetitulz.Pdf.Accessibility.Editing
                 created[newInfoId] = freshInfo;
             }
 
+            // The catalog edits SetDocumentTitle makes: /DisplayDocTitle, and the XMP dc:title,
+            // which is where ISO 14289-1 7.1 reads the title.
+            PdfDictionary catalog = doc.Catalog?.Dictionary;
+            int catalogObjNum = catalog != null ? ResolveCatalogObjectNumber(doc, index, catalog) : -1;
+            if (catalogObjNum > 0)
+            {
+                PdfDictionary newCatalog = CloneDict(catalog);
+                modified[catalogObjNum] = newCatalog;
+                StageDisplayDocTitle(doc, catalog, newCatalog, modified, Op);
+                DocumentTitleXmp.Stage(doc, index, catalog, () => newCatalog, title, modified, created, Op);
+            }
+            else
+            {
+                AccessibilityDiagnostics.Report(Op,
+                    "the /Catalog or its object number could not be read; /DisplayDocTitle and the " +
+                    "XMP dc:title were not planned");
+            }
+
             var objects = RevisionObjects.From(
                 created, modified, index, Op);
 
             return new StructureTreePlan(objects, newInfoId);
+        }
+
+        /// <summary>
+        /// Stages <c>/ViewerPreferences /DisplayDocTitle true</c> (ISO 14289-1 7.1): an indirect
+        /// <c>/ViewerPreferences</c> is revised in place, a direct one or none is written into
+        /// <paramref name="newCatalog"/>, the catalog the caller's revision writes.
+        /// </summary>
+        private static void StageDisplayDocTitle(
+            PdfDocument doc, PdfDictionary catalog, PdfDictionary newCatalog,
+            IDictionary<int, PdfObject> modified, string op)
+        {
+            var vpObj = catalog[PdfName.ViewerPreferences];
+            var vp    = vpObj != null ? ResolveDict(doc, vpObj) : null;
+            var newVp = CloneDict(vp);
+            newVp[PdfName.DisplayDocTitle] = new PdfBoolean(true);
+
+            if (vpObj is PdfReference vpRef)
+            {
+                // /ViewerPreferences is its own indirect object — revise it in place.
+                if (vpRef.ReferenceObjectNumber > 0)
+                    modified[vpRef.ReferenceObjectNumber] = newVp;
+                else
+                    AccessibilityDiagnostics.Report(op,
+                        "the /ViewerPreferences reference names object number " +
+                        vpRef.ReferenceObjectNumber.ToString(CultureInfo.InvariantCulture) +
+                        ", which is not a valid indirect object; /DisplayDocTitle was not set");
+            }
+            else
+            {
+                newCatalog[PdfName.ViewerPreferences] = newVp;
+            }
         }
 
         private static void RequireCeiling(int firstFreeObjectNumber)
@@ -987,8 +1043,9 @@ namespace Tetitulz.Pdf.Accessibility.Editing
 
         // ----------------------------------------------------------------
 
-        /// <summary>Sets the document title in /Info and in /ViewerPreferences /DisplayDocTitle.
-        /// Creates a new /Info dictionary if the PDF does not have one.
+        /// <summary>Sets the document title in /Info, in the XMP dc:title — where ISO 14289-1 7.1
+        /// reads it, a conforming reader ignoring /Info — and /ViewerPreferences /DisplayDocTitle.
+        /// Creates a new /Info dictionary, and a new XMP Metadata stream, if the PDF does not have one.
         ///
         /// <para>
         /// <b>Invariant: <c>true</c> implies the output differs from the input.</b> Two things have
@@ -1094,31 +1151,13 @@ namespace Tetitulz.Pdf.Accessibility.Editing
             {
                 int catalogObjNum = ResolveCatalogObjectNumber(doc, index, catalog);
                 var newCatalog = CloneDict(catalog);
-
-                var vpObj = catalog[PdfName.ViewerPreferences];
-                var vp    = vpObj != null ? ResolveDict(doc, vpObj) : null;
-                var newVp = CloneDict(vp);
-                newVp[PdfName.DisplayDocTitle] = new PdfBoolean(true);
-
-                if (vpObj is PdfReference vpRef)
-                {
-                    // /ViewerPreferences is its own indirect object — revise it in place.
-                    if (vpRef.ReferenceObjectNumber > 0)
-                        modified[vpRef.ReferenceObjectNumber] = newVp;
-                    else
-                        AccessibilityDiagnostics.Report(Op,
-                            "the /ViewerPreferences reference names object number " +
-                            vpRef.ReferenceObjectNumber.ToString(CultureInfo.InvariantCulture) +
-                            ", which is not a valid indirect object; /DisplayDocTitle was not set");
-                }
-                else
-                {
-                    newCatalog[PdfName.ViewerPreferences] = newVp;
-                }
+                StageDisplayDocTitle(doc, catalog, newCatalog, modified, Op);
 
                 if (catalogObjNum > 0)
                 {
                     modified[catalogObjNum] = newCatalog;
+                    // ISO 14289-1 7.1 reads the title from the XMP dc:title alone.
+                    DocumentTitleXmp.Stage(doc, index, catalog, () => newCatalog, title, modified, newObjects, Op);
                 }
                 else
                 {

@@ -225,8 +225,9 @@ namespace Tetitulz.Pdf.Accessibility.Metadata
         /// </param>
         /// <param name="title">
         /// Optional document title written as <c>dc:title</c> in <c>rdf:Alt</c> /
-        /// <c>rdf:li xml:lang="x-default"</c> form. Null or whitespace leaves any existing title
-        /// untouched.
+        /// <c>rdf:li xml:lang="x-default"</c> form. Null or whitespace leaves an existing
+        /// <c>dc:title</c> untouched; where the packet has none, the document's own
+        /// <c>/Info /Title</c> is written there (<see cref="TitleToWrite"/>).
         /// </param>
         /// <param name="language">
         /// Optional BCP-47 language tag (e.g. <c>"en-US"</c>) written as <c>dc:language</c> in
@@ -312,7 +313,8 @@ namespace Tetitulz.Pdf.Accessibility.Metadata
 
             bool written = XmpMetadataRevision.Write(input, output, (doc, existingXmp) =>
             {
-                string xmp = BuildPdfUaXmpPacket(existingXmp, part, title, language, modifyDate);
+                string xmp = BuildPdfUaXmpPacket(existingXmp, part,
+                    TitleToWrite(title, existingXmp, PdfAccessibility.GetDocumentTitle(doc)), language, modifyDate);
                 PdfName version = VersionToDeclare(doc, part);
 
                 // The packet builder is deterministic — no timestamp unless the caller asks for one,
@@ -386,6 +388,25 @@ namespace Tetitulz.Pdf.Accessibility.Metadata
             DateTimeOffset? modifyDate = null)
         {
             ValidatePart(part);
+            return BuildPacket(existingXmp, part, title, language, modifyDate);
+        }
+
+        /// <summary>
+        /// <paramref name="existingXmp"/> with <paramref name="title"/> merged in as its
+        /// <c>dc:title</c> and nothing else changed — no PDF/UA identifier, which declares a
+        /// conformance this write does not judge. A packet that is absent or cannot be merged is
+        /// replaced by a fresh one, as <see cref="BuildPdfUaXmpPacket"/> replaces it.
+        /// </summary>
+        internal static string BuildTitlePacket(string existingXmp, string title)
+            => BuildPacket(existingXmp, 0, title, null, null);
+
+        /// <summary>
+        /// The packet <see cref="BuildPdfUaXmpPacket"/> and <see cref="BuildTitlePacket"/> write:
+        /// <paramref name="part"/> 1 or 2 declares that part, 0 declares none.
+        /// </summary>
+        private static string BuildPacket(
+            string existingXmp, int part, string title, string language, DateTimeOffset? modifyDate)
+        {
             title = XmlLegal(title, "title");
             language = XmlLegal(language, "language");
 
@@ -422,21 +443,24 @@ namespace Tetitulz.Pdf.Accessibility.Metadata
                 description = XmpPacketDom.EnsureDescription(doc);
             }
 
-            SetSimpleProperty(doc, description, PdfUaIdNamespace, "pdfuaid", "part",
-                part.ToString(CultureInfo.InvariantCulture));
+            if (part != 0)
+            {
+                SetSimpleProperty(doc, description, PdfUaIdNamespace, "pdfuaid", "part",
+                    part.ToString(CultureInfo.InvariantCulture));
 
-            // ISO 14289-2 Clause 5 (Table 1): a PDF/UA-2 file also names the revision of the part it
-            // conforms to, as the four digits of the year — ISO 14289-2:2024.
-            bool withRevision = part == 2;
-            if (withRevision)
-                SetSimpleProperty(doc, description, PdfUaIdNamespace, "pdfuaid", "rev", PdfUa2Revision);
+                // ISO 14289-2 Clause 5 (Table 1): a PDF/UA-2 file also names the revision of the part
+                // it conforms to, as the four digits of the year — ISO 14289-2:2024.
+                bool withRevision = part == 2;
+                if (withRevision)
+                    SetSimpleProperty(doc, description, PdfUaIdNamespace, "pdfuaid", "rev", PdfUa2Revision);
 
-            // A PDF/A-1, -2 or -3 packet may hold only properties of a predefined schema or of one it
-            // describes (ISO 19005-1 6.7.9, 19005-2/3 6.6.2.3.1), and neither edition of the XMP
-            // Specification those parts cite predefines pdfuaid; so in such a packet the schema is
-            // described too, or declaring PDF/UA would break the PDF/A declaration beside it.
-            if (DeclaresPdfAPartOneToThree(doc))
-                EnsurePdfUaExtensionSchema(doc, description, withRevision);
+                // A PDF/A-1, -2 or -3 packet may hold only properties of a predefined schema or of one
+                // it describes (ISO 19005-1 6.7.9, 19005-2/3 6.6.2.3.1), and neither edition of the
+                // XMP Specification those parts cite predefines pdfuaid; so in such a packet the
+                // schema is described too, or declaring PDF/UA would break the PDF/A declaration.
+                if (DeclaresPdfAPartOneToThree(doc))
+                    EnsurePdfUaExtensionSchema(doc, description, withRevision);
+            }
 
             if (!string.IsNullOrWhiteSpace(title))
                 SetLanguageAlternative(doc, description, DublinCoreNamespace, "dc", "title", title);
@@ -457,6 +481,24 @@ namespace Tetitulz.Pdf.Accessibility.Metadata
         // ================================================================
         //  Packet construction
         // ================================================================
+
+        /// <summary>
+        /// The <c>dc:title</c> a packet is written with: the caller's when given; otherwise, when
+        /// <paramref name="existingXmp"/> carries no non-empty <c>dc:title</c>, the document's own
+        /// <c>/Info /Title</c>; otherwise none, leaving the packet's own. ISO 14289-1 7.1 and
+        /// ISO 14289-2 §8.11.1 read the title from <c>dc:title</c> alone, so a title held only in
+        /// the information dictionary is carried to where both parts read it — the document's
+        /// title, never one made up, and never over a <c>dc:title</c> the packet already has.
+        /// </summary>
+        internal static string TitleToWrite(string callerTitle, string existingXmp, string infoTitle)
+        {
+            if (!string.IsNullOrWhiteSpace(callerTitle)) return callerTitle;
+            if (string.IsNullOrWhiteSpace(infoTitle)) return null;
+            return Plugins.Conformance.PdfUaChecker.DcTitleIn(existingXmp)
+                   == Plugins.Conformance.PdfUaChecker.XmpTitleState.Present
+                ? null
+                : infoTitle;
+        }
 
         /// <summary><paramref name="value"/> with what XML 1.0 forbids replaced, and said: the serializer would throw on it, and a host's title may hold a control character.</summary>
         private static string XmlLegal(string value, string what)
@@ -829,7 +871,8 @@ namespace Tetitulz.Pdf.Accessibility.Metadata
             }
 
             string existingXmp = XmpPacketDom.ReadCatalogPacket(doc, catalog, Report);
-            string xmp = BuildPdfUaXmpPacket(existingXmp, part, title, language, modifyDate);
+            string xmp = BuildPdfUaXmpPacket(existingXmp, part,
+                TitleToWrite(title, existingXmp, PdfAccessibility.GetDocumentTitle(doc)), language, modifyDate);
 
             PdfName version = VersionToDeclare(doc, part);
 

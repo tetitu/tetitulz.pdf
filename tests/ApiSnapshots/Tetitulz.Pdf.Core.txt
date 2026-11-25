@@ -1148,6 +1148,7 @@ Tetitulz.Pdf.Core.Forms.PdfSignatureField::Reason : System.String { get }
 Tetitulz.Pdf.Core.Forms.PdfSignatureField::SignatureValue : Tetitulz.Pdf.Core.Objects.PdfDictionary { get }
 Tetitulz.Pdf.Core.Forms.PdfSignatureField::SigningTime : System.String { get }
 Tetitulz.Pdf.Core.Forms.PdfSignatureField::SubFilter : System.String { get }
+Tetitulz.Pdf.Core.Forms.XfaPacket::ConfigPacket : System.String = "config"
 Tetitulz.Pdf.Core.Forms.XfaPacket::DatasetsPacket : System.String = "datasets"
 Tetitulz.Pdf.Core.Forms.XfaPacket::GetPacket(System.String) : System.Byte[]
 Tetitulz.Pdf.Core.Forms.XfaPacket::GetPacketStream(System.String) : Tetitulz.Pdf.Core.Objects.PdfStream
@@ -1155,6 +1156,7 @@ Tetitulz.Pdf.Core.Forms.XfaPacket::IsPackaged : System.Boolean { get }
 Tetitulz.Pdf.Core.Forms.XfaPacket::IsPresent(Tetitulz.Pdf.Core.Objects.PdfDictionary) : System.Boolean
 Tetitulz.Pdf.Core.Forms.XfaPacket::PacketNames : System.Collections.Generic.IReadOnlyList<System.String> { get }
 Tetitulz.Pdf.Core.Forms.XfaPacket::Read(Tetitulz.Pdf.Core.Objects.PdfDictionary, Tetitulz.Pdf.Core.Document.PdfDocument) : Tetitulz.Pdf.Core.Forms.XfaPacket
+Tetitulz.Pdf.Core.Forms.XfaPacket::RequiresDynamicRender(out System.String&) : System.Nullable<System.Boolean>
 Tetitulz.Pdf.Core.Forms.XfaPacket::Streams : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Core.Objects.PdfStream> { get }
 Tetitulz.Pdf.Core.Forms.XfaPacket::TemplatePacket : System.String = "template"
 Tetitulz.Pdf.Core.IO.BigEndian::Put16(System.Byte[], System.Int64, System.Int32) : System.Void
@@ -1535,6 +1537,7 @@ Tetitulz.Pdf.Core.Objects.PdfName::CMap : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::CMapName : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::CO : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::CS : Tetitulz.Pdf.Core.Objects.PdfName
+Tetitulz.Pdf.Core.Objects.PdfName::CT : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::Cap : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::CapHeight : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::Catalog : Tetitulz.Pdf.Core.Objects.PdfName
@@ -1702,6 +1705,7 @@ Tetitulz.Pdf.Core.Objects.PdfName::Info : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::InkList : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::Intent : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::Interpolate : Tetitulz.Pdf.Core.Objects.PdfName
+Tetitulz.Pdf.Core.Objects.PdfName::IsMap : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::Issuer : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::ItalicAngle : Tetitulz.Pdf.Core.Objects.PdfName
 Tetitulz.Pdf.Core.Objects.PdfName::JBIG2Decode : Tetitulz.Pdf.Core.Objects.PdfName

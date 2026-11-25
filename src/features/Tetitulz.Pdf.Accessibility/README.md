@@ -126,8 +126,8 @@ IReadOnlyList<AccessibilityIssue> PdfDeepAccessibilityChecker.Check(
     Stream input,   int maxPageContentBytes, long maxDocumentContentBytes);
 ```
 
-Runs the plugin's `PdfUaChecker` (UA00–UA09, UA25–UA29, UA50, UA99) **and** this assembly's
-`PdfDeepAccessibilityChecker` (UA10–UA24 and UA30–UA32, plus its own UA00/UA06/UA99) over the same bytes
+Runs the plugin's `PdfUaChecker` (UA00–UA09, UA25–UA29, UA50–UA61, UA99) **and** this assembly's
+`PdfDeepAccessibilityChecker` (UA10–UA24 and UA30–UA35, plus its own UA00/UA06/UA99) over the same bytes
 and merges the findings. Three of the plugin's codes are **dropped unconditionally** from the merge
 (`SupersededByDeepCheck`): **UA28/UA29** in favour of the deep checker's better-located UA14/UA16,
 and **UA50** in favour of UA16–UA18. A fourth, **UA06**, is dropped **only when the deep half
@@ -295,7 +295,8 @@ the per-step log, the warnings and the before/after comparison. Prefer `Remediat
 > Two findings cannot be closed from inside the document, so the pipeline asks for them:
 >
 > - **UA04 — document title.** Set `RemediationOptions.Title`. Nothing in the file can supply a
->   title that is not there, and the step will not invent one.
+>   title that is not there, and the step will not invent one; a document whose title is in `/Info`
+>   alone has it carried to the XMP `dc:title`, where ISO 14289-1 7.1 reads it.
 > - **UA21 / UA25 — font embedding.** ISO 14289-1 §7.21.4.1 requires *every* font to be embedded and
 >   grants the **standard 14 no exemption**, so a `/Helvetica` document — the common case for
 >   machine-generated PDFs — fails until a font *program* is supplied. Set
@@ -623,9 +624,9 @@ Severity drives conformance: **Error** clears `IsConforming`, **Warning** clears
 `IsFullyConforming`, **Info** is advisory.
 
 **Which assembly owns which code, and the one trap.** The plugin owns `UA00`–`UA09`, `UA25`–`UA29`,
-`UA50` and its own `UA99`; this assembly's deep checker owns `UA10`–`UA24` and `UA30`–`UA32`, plus its
-own `UA00`, `UA06` and `UA99`. `UA32` is the deep checker's last code and new deep codes are allocated
-upward from there, leaving `UA33`–`UA49` free; the plugin allocates its own content-level checks
+`UA50`–`UA61` and its own `UA99`; this assembly's deep checker owns `UA10`–`UA24` and `UA30`–`UA35`, plus its
+own `UA00`, `UA06` and `UA99`. `UA35` is the deep checker's last code and new deep codes are allocated
+upward from there, leaving `UA36`–`UA49` free; the plugin allocates its own checks
 from `UA50` up, which is why `UA50` and not `UA30`. There is no gap-filler at `UA30` on the plugin
 side — the band was reserved above the plugin's block precisely so the two never collide. The two
 font checks exist on both sides **in opposite order**:
@@ -656,7 +657,7 @@ one construct. **Read a report carrying `UA99` as incomplete, whichever side rai
 | `UA01` | Not tagged: catalog `/MarkInfo /Marked` is not `true`. Indirect `/MarkInfo` references resolve correctly. |
 | `UA02` | Catalog declares no natural language (`/Lang`). |
 | `UA03` | XMP metadata does not declare `pdfuaid:part`. **Only `SetPdfUaIdentifier` closes this.** |
-| `UA04` | No document title in `/Info` or XMP, or `/ViewerPreferences /DisplayDocTitle` is not true. On an **encrypted** document whose `/Metadata` packet cannot be decoded or parsed, the title half downgrades to `UA99` rather than asserting a violation about bytes the checker never read; the `DisplayDocTitle` half is still asserted. |
+| `UA04` | No non-empty XMP `dc:title` in the catalog's Metadata stream (ISO 14289-1 7.1, which has a conforming reader ignore `/Info`, so an `/Info /Title` alone does not satisfy it; a `title` element of another namespace is not `dc:title`), or `/ViewerPreferences /DisplayDocTitle` is not true. On an **encrypted** document whose `/Metadata` packet cannot be decoded or parsed, the title half downgrades to `UA99` rather than asserting a violation about bytes the checker never read; the `DisplayDocTitle` half is still asserted. |
 | `UA05` | Catalog has no `/StructTreeRoot`. |
 | `UA06` | The security handler denies content extraction for accessibility. Encryption *itself* is permitted by PDF/UA-1; the remaining checks continue for an encrypted-but-accessible file. |
 | `UA07` | Figure structure elements without `/Alt` or `/ActualText`. |
@@ -668,6 +669,17 @@ one construct. **Read a report carrying `UA99` as incomplete, whichever side rai
 | `UA28` | The structure tree has no `/ParentTree`, so no marked content resolves to an element. |
 | `UA29` | Structure elements that reference no content. |
 | `UA50` | A structure element names a marked-content identifier its page's content stream never defines, so the element describes nothing. The plugin's **only** content-decoding check, and the only direction that is unambiguous: the converse — text no MCID covers — needs form XObjects followed, so it stays with the deep checker's `UA17`. `/Pg` is inherited down the structure walk (Table 323); references carrying `/Stm` name another stream and are skipped and counted; a page that will not decode or exceeds the 8 MiB `MaxMcidScanBytesPerPage` ceiling raises `UA99` instead. Dropped from a combined `Audit`. |
+| `UA51` | A TrueType font used for rendering breaks ISO 14289-1 7.21.6: a symbolic font with `/Encoding`, a non-symbolic one not MacRoman or WinAnsi or with `/Differences` names outside the Adobe Glyph List, a program `cmap` without the subtables asked. |
+| `UA52` | A TrapNet annotation a reader is presented with (7.18.2). |
+| `UA53` | A reference XObject: a form with `/Ref` (7.20). |
+| `UA54` | An embedded CIDFontType2 whose `/CIDToGIDMap` is neither `/Identity` nor a stream (7.21.3.2). |
+| `UA55` | A `/ToUnicode` value of U+0000, U+FEFF or U+FFFE in a font used for rendering (7.21.7). |
+| `UA56` | A font subset whose `/CharSet` does not list exactly its program's glyphs, or whose `/CIDSet` leaves out a CID its program holds (7.21.4.2). |
+| `UA57` | A font used for rendering paints a glyph its embedded program does not define (7.21.4.1). |
+| `UA58` | An optional content configuration without a non-empty `/Name` once `/OCProperties /Configs` holds a configuration — the default included — or with an `/AS` entry, whatever `/Configs` holds (7.10). The same sentence as PDF/UA-2's §8.7, read from one place (`OptionalContentConfigurations`). |
+| `UA59` | An embedded file's specification (one with `/EF`) without both `/F` and `/UF` (7.11), in the `/EmbeddedFiles` name tree or a file attachment annotation's `/FS` (7.18.7) — a hidden attachment too, since 7.11 is no annotation rule. The set PDF/A's A67 reads. |
+| `UA60` | A dynamic XFA form: the config packet's `dynamicRender` element (`config/acrobat/acrobat7`) says `required` (7.15). A static XFA form is permitted. A packet that cannot be read, an encrypted one among them, raises `UA99`. |
+| `UA61` | A media clip data dictionary (`/S /MCD`) without `/CT` and an `/Alt` multi-language text array (7.18.6.2: "In the media clip data dictionary, the optional CT and Alt keys … are required"). Every one the file holds is judged, whatever reaches it, by a bounded scan of its objects; dictionaries are never ciphertext, so an encrypted file is judged as a clear one is. |
 | `UA99` | A check could not be completed; its findings are missing. |
 
 `UA28`, `UA29` and `UA50` are **dropped unconditionally** from a combined `Audit` — `UA28`/`UA29` in
@@ -682,7 +694,7 @@ from `PdfUaChecker.Validate` if you call the plugin standalone.
 
 | Code | Severity | Meaning |
 |---|---|---|
-| `UA10` | Error / Warning | Heading hierarchy, for both the numbered (`H1`…`H6`) and the PDF/UA "strong" (`<H>` nested in `<Sect>`) models — the mixed-model failure, a numbered skip, headings with no `H1` (ISO 14289-1 7.4.2) and more than one `H` under any node (7.4.4) are errors; the strong model's depth skip, which no clause states, a warning. |
+| `UA10` | Error / Warning | Heading hierarchy, for both the numbered (`H1`…`H6`) and the PDF/UA "strong" (`<H>` nested in `<Sect>`) models — the mixed-model failure, a numbered skip, a first numbered heading other than `H1` (ISO 14289-1 7.4.2: "H1 shall be the first") and more than one `H` under any node (7.4.4) are errors; the strong model's depth skip, which no clause states, a warning. |
 | `UA11` | Error / Warning | List structure: `L` → `LI` → `Lbl` + `LBody`, in that order (PDF/UA-1 7.6). |
 | `UA12` | Error / Warning | Table structure: `Table` > `TR` > `TD`/`TH` nesting, `TH` addressability (`/Scope` or `/Headers`), and table **regularity** once `/ColSpan` and `/RowSpan` are resolved (Matterhorn 15-003). A `TH` with neither `/Scope` nor a referenced `/ID` is an error where some `TD` names no headers (7.5: the structure is then not determinable), a warning where every `TD` does. |
 | `UA13` | Error / Warning | Role mapping: every `/S` must be standard or resolve through `/RoleMap` chains to a standard type, and standard types must not be remapped — an ISO 32000-1 type remapped, itself as the value included, is an error (7.1); a type only ISO 32000-2 made standard (`Title`), a custom type in a PDF/UA-1 file, a warning. `Artifact` is deliberately **not** a standard role. |
@@ -700,6 +712,9 @@ from `PdfUaChecker.Validate` if you call the plugin standalone.
 | `UA30` | Error | A structure **subtree** that reaches no content anywhere beneath it — no MCID, no `/MCR`, no `/OBJR`, at any depth. This is the transitive question `UA16` cannot ask: a `Document → Sect → Sect …` chain, or two elements whose `/K` point at each other, has an element child at every node and reaches content at none, so it looks fully populated in a structure viewer and describes nothing. Only the **topmost** element of each hollow subtree is reported, with the element count of the branch in `InstanceCount`; a hollow *leaf* is left to `UA16`. The `RolesAllowedToBeEmpty` exemptions do **not** apply — a `<TR>` of nothing but empty cells is a row describing no content. |
 | `UA31` | Error | Structure element nesting: the parent and child rules ISO 14289-1 7.2 takes from ISO 32000-1 Tables 337–340 — `TR`, `THead`, `TBody`, `TFoot`, `TH`, `TD`, `LI`, `LBody` and `TOCI` under their own parents; `Table`, the row groups, `TOC` and `L` holding only their own children. A non-standard child is left to `UA13`. |
 | `UA32` | Error | Annotation nesting: a widget annotation's `/OBJR` is held by an element that means `Form`, a link annotation's by one that means `Link` (ISO 14289-1 7.18.4, 7.18.5) — the role resolved through `/RoleMap`, hidden and off-page annotations out of scope as for `UA23`, which keeps an annotation no `/OBJR` names. |
+| `UA33` | Error | An element that means `Formula` without an `/Alt` that says something (ISO 14289-1 7.7: "shall have an Alt attribute"). 7.7 names `/Alt` alone, so an `/ActualText` does not satisfy it. On an encrypted document a present `/Alt` is accepted and the report says its emptiness was not judged. |
+| `UA34` | Error | An element that means `Note` whose `/ID` is missing, not a byte string, empty, or carried by another structure element too (7.9: "Each note tag shall have a unique entry in the ID key"). On an encrypted document a present `/ID` is accepted and the report says why: one identifier in two objects encrypts to different bytes. |
+| `UA35` | Warning | A link annotation a reader is shown whose URI action — its `/A` or one on its `/Next` chain — has `/IsMap true` (7.18.5). A warning: the clause permits it when the same function is provided elsewhere without IsMap, which a person must confirm. |
 | `UA99` | Info | **A check did not run, so its findings are missing from this report.** Never a statement about the document. Four distinct producers: (a) a check that threw; (b) the encrypted-document coverage notice — one issue naming exactly what encryption cost *this* document; (c) a page whose content stream could not be decoded, naming the page, the object number, the cause and each check lost (`UA14`'s MCID mapping, `UA17`, `UA18`, `UA24`); (d) a page scanned only in part — an unreadable Form XObject, or a `BDC` naming a property list absent from `/Properties` — which additionally names the checks that *did* run "from counts that are lower bounds". Info, not Error, because the document has not been shown to be wrong, only not fully examined. **A clean result for a page named here means "not established", not "nothing wrong".** |
 
 Up to 8 occurrences of one finding are reported individually, fully located (page, object number,
@@ -809,9 +824,9 @@ Console.WriteLine(PdfAccessibility.Audit(ms3));
 
 | Operation | Encrypted input |
 |---|---|
-| `PdfUaChecker.Validate` (UA00–UA09, UA25–UA29, UA50, UA99) | **Runs every check but `UA50`, which is a known hole (GAPS.md §5c): it iterates `doc.Pages`, which is empty for an encrypted document, so it reports neither a finding nor a `UA99`.** Dictionary structure is never encrypted — only string and stream *contents* — so the structural checks stay meaningful. It raises `UA06` **only when the handler cannot be shown to permit accessibility extraction** (standard handler, `/P` bit 10; `/R` ≤ 2 and `/R` ≥ 6 are permitted by rule, and a non-standard `/Filter` or an unreadable `/P` is reported because it cannot be verified). An encrypted-but-accessible document gets **no** UA06 from this side. **UA03 and UA04 are both downgraded, on the same rule.** The XMP packet is ciphertext, so a check that cannot be decided from it is reported as `UA99` ("could not be verified") rather than as a violation. The exemption is deliberately narrow and identical for both: **only** a decode failure or an `XmlException` counts as unreadable. A missing `/Metadata` entry and an empty packet are facts about dictionary structure and length, which are never ciphertext, so they still yield a plain UA03/UA04 — encryption is not a blanket amnesty. The `/ViewerPreferences /DisplayDocTitle` half of UA04 is a boolean and is always asserted. |
+| `PdfUaChecker.Validate` (UA00–UA09, UA25–UA29, UA50–UA61, UA99) | **Runs every check but `UA50`, which is a known hole (GAPS.md §5c): it iterates `doc.Pages`, which is empty for an encrypted document, so it reports neither a finding nor a `UA99`.** Dictionary structure is never encrypted — only string and stream *contents* — so the structural checks stay meaningful. It raises `UA06` **only when the handler cannot be shown to permit accessibility extraction** (standard handler, `/P` bit 10; `/R` ≤ 2 and `/R` ≥ 6 are permitted by rule, and a non-standard `/Filter` or an unreadable `/P` is reported because it cannot be verified). An encrypted-but-accessible document gets **no** UA06 from this side. **UA03 and UA04 are both downgraded, on the same rule.** The XMP packet is ciphertext, so a check that cannot be decided from it is reported as `UA99` ("could not be verified") rather than as a violation. The exemption is deliberately narrow and identical for both: **only** a decode failure or an `XmlException` counts as unreadable. A missing `/Metadata` entry and an empty packet are facts about dictionary structure and length, which are never ciphertext, so they still yield a plain UA03/UA04 — encryption is not a blanket amnesty. The `/ViewerPreferences /DisplayDocTitle` half of UA04 is a boolean and is always asserted. UA58, UA59 and UA61 read dictionaries and run in full; UA60's XFA config packet is a stream, so on an encrypted document it is `UA99` ("could not be verified"). |
 | `Remediate` / `RemediateWithReport`, and every writer | **All nine steps run in place** when `RemediationOptions.EncryptedRevisionWriter` is set — one lambda mapping to `Encryption.PdfEncryptedIncrementalUpdate.Run`. This assembly still references no crypto and contains no occurrence of "password": the *operation* travels to Encryption, not the other way round. Without a writer the pipeline skips every step with a reason naming the option, exactly as before. **One pipeline, not two** — only the step *action* is substituted, so an encrypted run takes the same requested/applicable/superseded branches as a clear-text one, and the suite asserts the two agree on which steps applied. Each step is its own decrypt/append cycle: composing nine plans against one decrypted copy would need steps 2..9 to see changes that exist only as staged objects, and several revise the same catalog. |
-| `PdfDeepAccessibilityChecker.Check` (UA10–UA24, UA30–UA32) | **Runs every check that does not need plaintext.** It applies the **same `UA06` rule as the plugin, in the same order** — the two implementations are documented as "change together" — and continues the audit either way. Because `PdfDocument.Load` loads neither catalog nor pages for an encrypted file, it resolves the catalog from the trailer `/Root` and walks `/Pages` by hand (depth- and node-capped, cycle-guarded); without that every page-scoped check would silently have seen a zero-page document. |
+| `PdfDeepAccessibilityChecker.Check` (UA10–UA24, UA30–UA35) | **Runs every check that does not need plaintext.** It applies the **same `UA06` rule as the plugin, in the same order** — the two implementations are documented as "change together" — and continues the audit either way. Because `PdfDocument.Load` loads neither catalog nor pages for an encrypted file, it resolves the catalog from the trailer `/Root` and walks `/Pages` by hand (depth- and node-capped, cycle-guarded); without that every page-scoped check would silently have seen a zero-page document. UA33 and UA34 judge only that a Formula's `/Alt` and a Note's `/ID` are present, since an encrypted string's emptiness and equality depend on the cipher, and the report's encryption notice says so; UA35 reads booleans and names and runs in full. |
 | `AutoTag`, `MarkHeadersAndFooters`, `FixReadingOrder`, every `PdfStructureTreeEditor` method, `SetPdfUaIdentifier`, `EmbedMissingFonts`, `RemediateWithReport` | **Refused.** The document is passed through unchanged and the reason is recorded — in `Warnings`, in `RemediationReport.SkippedSteps`, and on the diagnostics sink. |
 
 **What the deep checker cannot do on an encrypted file is named once, in a single `Info` issue

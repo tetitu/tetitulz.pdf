@@ -253,9 +253,9 @@ namespace Tetitulz.Pdf.Accessibility
 
         /// <summary>
         /// Performs a full accessibility audit on a PDF stream, combining the base PDF/UA-1
-        /// checks (<c>UA00</c>–<c>UA09</c>, <c>UA25</c>–<c>UA29</c>, <c>UA50</c>, <c>UA99</c>) with
+        /// checks (<c>UA00</c>–<c>UA09</c>, <c>UA25</c>–<c>UA29</c>, <c>UA50</c> and up, <c>UA99</c>) with
         /// the extended deep checks (<c>UA00</c>, <c>UA06</c>, <c>UA10</c>–<c>UA24</c>,
-        /// <c>UA30</c>, <c>UA99</c>). <c>UA28</c>, <c>UA29</c> and <c>UA50</c> are dropped from the
+        /// <c>UA30</c>–<c>UA35</c>, <c>UA99</c>). <c>UA28</c>, <c>UA29</c> and <c>UA50</c> are dropped from the
         /// base checker's contribution, superseded by the deep checker's more precise <c>UA14</c>,
         /// <c>UA16</c> and <c>UA16</c>–<c>UA18</c>; see <see cref="AccessibilityAuditReport"/>.
         ///
@@ -920,9 +920,15 @@ namespace Tetitulz.Pdf.Accessibility
             {
                 // The tree is written for the part this run declares: a PDF/UA-2 declaration over a
                 // tree with no PDF 2.0 namespace is one the after-audit refuses (§8.2.5.2).
-                AutoTagOptions tagOptions = options.PdfUaPart == 2
-                    ? (options.AutoTagOptions ?? new AutoTagOptions()).ForTarget(PdfUaVersion.Ua2)
-                    : options.AutoTagOptions;
+                // /Lang is the metadata step's (RemediationOptions.Language, none when that is null),
+                // never the tagger's own default.
+                AutoTagOptions tagOptions = (options.AutoTagOptions ?? new AutoTagOptions()).WithoutLanguage();
+                if (options.PdfUaPart == 2)
+                    tagOptions = tagOptions.ForTarget(PdfUaVersion.Ua2);
+                // A link the tagger finds without a /Contents is the link step's to describe and,
+                // when the provider gives it none, to report (BuildLinkDescriptionWarnings).
+                if (options.LinkDescriptionFactory != null)
+                    tagOptions = tagOptions.WithLinkDescriptionsToFollow();
                 current = RunStep(current, StepAutoTag, steps,
                     enc == null
                         ? (i, o) => PdfAutoTagger.AutoTag(i, o, tagOptions)
@@ -1131,14 +1137,7 @@ namespace Tetitulz.Pdf.Accessibility
                             pl => new PlannedRevision(pl.Objects),
                             (pl, appended) => pl?.Describe(appended)),
                     r => RemediationStepResult.Ran(StepSetLinkDescriptions, r?.Updated ?? 0,
-                        r != null && r.Failed > 0
-                            ? new[]
-                              {
-                                  r.Failed.ToString(CultureInfo.InvariantCulture) +
-                                  " link annotation(s) could not be given a description (a direct " +
-                                  "dictionary in /Annots, or the provider threw); UA22 stays open for them."
-                              }
-                            : null));
+                        BuildLinkDescriptionWarnings(r)));
             }
 
             // ---- Pass 4: heading hierarchy -----------------------------------
@@ -1146,6 +1145,16 @@ namespace Tetitulz.Pdf.Accessibility
             {
                 steps.Add(RemediationStepResult.Skip(StepFixHeadingHierarchy,
                     "not requested: RemediationOptions.FixHeadingHierarchy is false"));
+            }
+            else if (options.PdfUaPart == 2)
+            {
+                // The no-skip sequence is ISO 14289-1 7.4.2's. ISO 14289-2 §8.2.5.12 states that it
+                // does not include that requirement, so a part-2 target keeps the author's levels.
+                steps.Add(RemediationStepResult.Skip(StepFixHeadingHierarchy,
+                    "not applicable: sequential heading levels are an ISO 14289-1 (PDF/UA-1) " +
+                    "requirement that ISO 14289-2 §8.2.5.12 does not include, so the document's " +
+                    "heading levels are kept; call PdfAccessibility.FixHeadingHierarchy to renumber " +
+                    "them regardless"));
             }
             else if (!snapshot.HasStructTree)
             {
@@ -1274,6 +1283,32 @@ namespace Tetitulz.Pdf.Accessibility
                              "document is not usable even though the check passes; supply " +
                              "RemediationOptions.AltTextFactory with real descriptions and have a " +
                              "human review them.");
+
+            return warnings.Count > 0 ? warnings : null;
+        }
+
+        /// <summary>
+        /// The link step's warnings: the links it could not revise, and the links the provider gave
+        /// no description that have none of their own. The second is the auto-tagger's UA22 warning
+        /// said after the step that could have closed it, so it names only what is still open.
+        /// </summary>
+        /// <param name="result">The editor's result; null when the step produced none.</param>
+        private static IReadOnlyList<string> BuildLinkDescriptionWarnings(SetAltTextResult result)
+        {
+            if (result == null) return null;
+
+            var warnings = new List<string>(2);
+
+            if (result.Failed > 0)
+                warnings.Add(result.Failed.ToString(CultureInfo.InvariantCulture) +
+                             " link annotation(s) could not be given a description (a direct " +
+                             "dictionary in /Annots, or the provider threw); UA22 stays open for them.");
+
+            if (result.LeftWithoutDescription > 0)
+                warnings.Add(result.LeftWithoutDescription.ToString(CultureInfo.InvariantCulture) +
+                             " link annotation(s) have no /Contents alternate description: " +
+                             "RemediationOptions.LinkDescriptionFactory returned none for them, and a " +
+                             "description is not invented, so an audit will report UA22 for them.");
 
             return warnings.Count > 0 ? warnings : null;
         }
@@ -1502,19 +1537,36 @@ namespace Tetitulz.Pdf.Accessibility
                     written, satisfied, writeFailures, ref changed);
             }
 
-            if (!wantsTitle) notRequested.Add("/Info /Title (RemediationOptions.Title was not set)");
+            if (!wantsTitle)
+            {
+                notRequested.Add("/Info /Title (RemediationOptions.Title was not set)");
+
+                // The document's own /Info /Title, carried to a packet holding no dc:title, which is
+                // where ISO 14289-1 7.1 reads it (TitleToWrite) — as the clear-text route carries it.
+                current = RunMetadataCycle(enc, current, "dc:title (from the document's /Info /Title)",
+                    doc => PdfUaXmpWriter.TitleToWrite(
+                               null, ReadXmpPacket(doc, doc.Catalog?.Dictionary), GetDocumentTitle(doc)) == null,
+                    (doc, ff) => PdfStructureTreeEditor.PlanDocumentTitle(doc, ff, GetDocumentTitle(doc)),
+                    written, new List<string>(), writeFailures, ref changed);
+            }
             else
             {
-                // PlanDocumentTitle writes /ViewerPreferences /DisplayDocTitle as part of the same
-                // plan -- a title a reader will not display still fails UA04, so the two belong in
-                // one revision. A separate cycle for it here would be redundant, and would append
-                // a second revision to set a flag already set.
-                current = RunMetadataCycle(enc, current, "/Info /Title (with /DisplayDocTitle)",
+                // PlanDocumentTitle writes /ViewerPreferences /DisplayDocTitle and the XMP dc:title in
+                // the same plan -- a title a reader will not display, or one in /Info alone, still
+                // fails UA04, so the three belong in one revision.
+                current = RunMetadataCycle(enc, current, "/Info /Title (with /DisplayDocTitle and dc:title)",
                     doc => string.Equals(GetDocumentTitle(doc), options.Title, StringComparison.Ordinal)
-                        && IsDisplayDocTitleTrue(doc, doc.Catalog?.Dictionary),
+                        && IsDisplayDocTitleTrue(doc, doc.Catalog?.Dictionary)
+                        && XmpCarriesTitle(doc, options.Title),
                     (doc, ff) => PdfStructureTreeEditor.PlanDocumentTitle(doc, ff, options.Title),
                     written, satisfied, writeFailures, ref changed);
             }
+
+            // An entry not asked for is read from the decrypted document, so a missing one is said
+            // as the clear-text route says it.
+            var stepWarnings = new List<string>(writeFailures);
+            if (!wantsLanguage || !wantsTitle)
+                stepWarnings.AddRange(OpenMetadataIssuesEncrypted(enc, current, !wantsLanguage, !wantsTitle));
 
             if (changed == 0)
             {
@@ -1526,14 +1578,80 @@ namespace Tetitulz.Pdf.Accessibility
                         ? "nothing could be written: " + string.Join("; ", writeFailures)
                         : DescribeUnwrittenMetadata(satisfied, notRequested, new List<string>()),
                     itemsChanged: 0,
-                    warnings: writeFailures.Count > 0 ? writeFailures : null));
+                    warnings: stepWarnings.Count > 0 ? stepWarnings : null));
                 return current;
             }
 
             steps.Add(RemediationStepResult.Ran(
                 StepSetDocumentMetadata, changed,
-                writeFailures.Count > 0 ? writeFailures : null));
+                stepWarnings.Count > 0 ? stepWarnings : null));
             return current;
+        }
+
+        /// <summary>
+        /// Whether the catalog's XMP packet already carries <paramref name="title"/> as its
+        /// <c>dc:title</c>: merging it in changes nothing (<see cref="PdfUaXmpWriter.BuildTitlePacket"/>,
+        /// the merge <c>DocumentTitleXmp</c> writes).
+        /// </summary>
+        private static bool XmpCarriesTitle(PdfDocument doc, string title)
+        {
+            string packet = ReadXmpPacket(doc, doc.Catalog?.Dictionary);
+            return packet != null
+                && string.Equals(PdfUaXmpWriter.BuildTitlePacket(packet, title), packet, StringComparison.Ordinal);
+        }
+
+        /// <summary>The metadata step's notice for a language neither asked for nor present.</summary>
+        private const string LanguageStaysOpen =
+            "no Language was supplied and the catalog has no /Lang, so UA02 remains open; set " +
+            "RemediationOptions.Language (e.g. \"en-US\") to close it.";
+
+        /// <summary>The metadata step's notice for a title neither asked for nor present.</summary>
+        private const string TitleStaysOpen =
+            "no Title was supplied and the /Info dictionary carries no /Title, so UA04 (\"requires " +
+            "a non-empty document title\") remains open unless the XMP packet already carries a " +
+            "dc:title; set RemediationOptions.Title to close it.";
+
+        /// <summary>
+        /// The encrypted route's <see cref="LanguageStaysOpen"/> and <see cref="TitleStaysOpen"/>:
+        /// the entries the caller did not ask for, read from the document the writer decrypts, with
+        /// nothing appended. A document the writer cannot open is said, not taken for one that
+        /// carries both.
+        /// </summary>
+        private static List<string> OpenMetadataIssuesEncrypted(
+            EncryptedRevisionWriter enc, byte[] current, bool language, bool title)
+        {
+            var issues = new List<string>(2);
+            string existingLanguage = null, existingTitle = null;
+            bool read = false;
+            try
+            {
+                using var input  = new MemoryStream(current, writable: false);
+                using var output = new MemoryStream();
+                enc(input, output, (doc, firstFree) =>
+                {
+                    existingLanguage = ReadCatalogLanguage(doc);
+                    existingTitle    = GetDocumentTitle(doc);
+                    read = true;
+                    return PlannedRevision.Nothing;
+                });
+            }
+            catch (Exception ex)
+            {
+                AccessibilityDiagnostics.Report(
+                    DiagnosticOperation + ".ApplyDocumentMetadataEncrypted",
+                    "the document could not be read for its /Lang and /Info /Title", ex);
+            }
+
+            if (!read)
+            {
+                issues.Add("the encrypted document could not be read for the entries not asked " +
+                           "for (/Lang, /Info /Title), so whether UA02 or UA04 remains open is not known.");
+                return issues;
+            }
+
+            if (language && string.IsNullOrEmpty(existingLanguage)) issues.Add(LanguageStaysOpen);
+            if (title && string.IsNullOrEmpty(existingTitle)) issues.Add(TitleStaysOpen);
+            return issues;
         }
 
         /// <summary>
@@ -1664,9 +1782,11 @@ namespace Tetitulz.Pdf.Accessibility
                     return current;
                 }
 
-                // Cache the packet for pass 6 while the document is open anyway.
+                // Cache the packet for pass 6 while the document is open anyway, with the /Info
+                // /Title that pass carries into a packet holding no dc:title.
                 snapshot.XmpPacket     = ReadXmpPacket(doc, catalog);
                 snapshot.XmpPacketRead = true;
+                snapshot.InfoTitle     = GetDocumentTitle(doc);
 
                 var index = PdfObjectIndex.Build(doc);
                 int catalogObjectNumber = index.GetObjectNumber(catalog);
@@ -1702,9 +1822,7 @@ namespace Tetitulz.Pdf.Accessibility
                                          : " (the catalog holds \"" + existingLanguage + "\")"));
 
                     if (string.IsNullOrEmpty(existingLanguage))
-                        openIssues.Add("no Language was supplied and the catalog has no /Lang, so " +
-                                       "UA02 remains open; set RemediationOptions.Language " +
-                                       "(e.g. \"en-US\") to close it.");
+                        openIssues.Add(LanguageStaysOpen);
                 }
                 else if (string.Equals(existingLanguage, options.Language, StringComparison.Ordinal))
                 {
@@ -1791,10 +1909,7 @@ namespace Tetitulz.Pdf.Accessibility
                                          : " (the document holds one already)"));
 
                     if (string.IsNullOrEmpty(existingTitle))
-                        openIssues.Add("no Title was supplied and the /Info dictionary carries no " +
-                                       "/Title, so UA04 (\"requires a non-empty document title\") " +
-                                       "remains open unless the XMP packet already carries a " +
-                                       "dc:title; set RemediationOptions.Title to close it.");
+                        openIssues.Add(TitleStaysOpen);
                 }
                 else if (string.Equals(existingTitle, options.Title, StringComparison.Ordinal))
                 {
@@ -1837,6 +1952,16 @@ namespace Tetitulz.Pdf.Accessibility
                         existingTitle = options.Title;
                     }
                 }
+
+                // ---- XMP dc:title ------------------------------------------
+                // ISO 14289-1 7.1 reads the title from the XMP dc:title alone: the caller's title, or
+                // the document's own /Info /Title where the packet has none (TitleToWrite).
+                string xmpTitle = PdfUaXmpWriter.TitleToWrite(
+                    wantsTitle ? options.Title : null, snapshot.XmpPacket, existingTitle);
+                if (catalogObjectNumber > 0
+                    && DocumentTitleXmp.Stage(doc, index, catalog, Catalog, xmpTitle, modified, newObjects,
+                        DiagnosticOperation + ".ApplyDocumentMetadata"))
+                    changed++;
 
                 // ---- /ViewerPreferences /DisplayDocTitle -------------------
                 // Only meaningful once the document has a title to display.
@@ -2185,7 +2310,8 @@ namespace Tetitulz.Pdf.Accessibility
                 try
                 {
                     string desired = PdfUaXmpWriter.BuildPdfUaXmpPacket(
-                        snapshot.XmpPacket, options.PdfUaPart, options.Title,
+                        snapshot.XmpPacket, options.PdfUaPart,
+                        PdfUaXmpWriter.TitleToWrite(options.Title, snapshot.XmpPacket, snapshot.InfoTitle),
                         options.Language, options.XmpModifyDate);
 
                     if (string.Equals(desired, snapshot.XmpPacket, StringComparison.Ordinal))
@@ -2293,6 +2419,13 @@ namespace Tetitulz.Pdf.Accessibility
             /// generated one — trading a fixable defect for an unfixable loss.</para>
             /// </remarks>
             internal bool StructTreeNamesContent;
+
+            /// <summary>
+            /// The document's <c>/Info /Title</c> when the metadata pass read the packet — after
+            /// that pass, whose own title write is the caller's, which the identifier pass writes
+            /// to <c>dc:title</c> as well.
+            /// </summary>
+            internal string InfoTitle;
 
             internal int  FigureCount;
             internal int  FiguresMissingAlt;
@@ -3093,7 +3226,7 @@ namespace Tetitulz.Pdf.Accessibility
         private static bool IsDisplayDocTitleTrue(PdfDocument doc, PdfDictionary catalog)
             => PdfViewerPreferences.Read(catalog, doc.ResolveObject).DisplayDocTitle == true;
 
-        private static string GetDocumentTitle(PdfDocument doc)
+        internal static string GetDocumentTitle(PdfDocument doc)
         {
             var infoObj = doc.Trailer?[PdfName.Info];
             var info    = infoObj != null ? ResolveDictionary(doc, infoObj) : null;
@@ -3248,8 +3381,10 @@ namespace Tetitulz.Pdf.Accessibility
                            WcagLevel.None, "06-002", (string)null),
 
                 "UA04" => (IssueCategory.Metadata,
-                           "Set /Info /Title (or XMP dc:title) and /ViewerPreferences /DisplayDocTitle true. " +
-                           "Use PdfAccessibility.SetDocumentTitle(), or RemediationOptions.Title.",
+                           "Write the title into the XMP metadata stream's dc:title (an /Info /Title alone does " +
+                           "not satisfy ISO 14289-1 7.1) and set /ViewerPreferences /DisplayDocTitle true. " +
+                           "PdfAccessibility.SetDocumentTitle() and RemediationOptions.Title write both; with " +
+                           "no title given, Remediate carries the document's own /Info /Title to dc:title.",
                            WcagLevel.A, "06-003", "2.4.2"),
 
                 "UA05" => (IssueCategory.Structure,
@@ -3298,6 +3433,26 @@ namespace Tetitulz.Pdf.Accessibility
                            "Give every annotation an accessible description: /Contents (or /Alt on its " +
                            "structure element) for non-Widget annotations, and /TU on form field widgets. " +
                            "Link annotations additionally need an /Alt on the enclosing Link structure element.",
+                           WcagLevel.A, (string)null, "1.1.1"),
+
+                "UA58" => (IssueCategory.Structure,
+                           "Give every optional content configuration — /OCProperties /D and each /Configs " +
+                           "entry — a non-empty /Name, and remove /AS from each (ISO 14289-1 7.10).",
+                           WcagLevel.None, (string)null, (string)null),
+
+                "UA59" => (IssueCategory.Structure,
+                           "Give each embedded file's specification both /F and /UF — the file's name, /UF as " +
+                           "a Unicode text string — and preferably a /Desc saying what the file is (ISO 14289-1 7.11).",
+                           WcagLevel.None, (string)null, (string)null),
+
+                "UA60" => (IssueCategory.Forms,
+                           "Dynamic XFA forms are not permitted (ISO 14289-1 7.15). Re-author the form as a " +
+                           "static XFA form or as AcroForm fields, and re-run the audit.",
+                           WcagLevel.None, (string)null, (string)null),
+
+                "UA61" => (IssueCategory.Annotations,
+                           "Give each media clip data dictionary a /CT (the media's MIME type) and an /Alt " +
+                           "multi-language text array describing the media (ISO 14289-1 7.18.6.2).",
                            WcagLevel.A, (string)null, "1.1.1"),
 
                 // Not an ISO 14289-1 requirement: UA99 is the plugin's own "a check could not be

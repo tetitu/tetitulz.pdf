@@ -278,17 +278,32 @@ public class HeadingListTableChecksTests
         Assert.Equal(9, multi.ObjectNumber);
     }
 
-    /// <summary>ISO 14289-1 7.4.2: a numbered heading that skips a level, and headings with no H1, are errors.</summary>
+    /// <summary>
+    /// ISO 14289-1 7.4.2: a numbered heading that skips a level is an error, and so is a first heading
+    /// that is not H1 ("If any heading tags are used, H1 shall be the first") — whether or not an H1
+    /// comes later. The control starts at H1 and returns to it.
+    /// </summary>
     [Fact]
-    public void Ua10_ANumberedHeadingSkipAndAMissingH1_AreErrors()
+    public void Ua10_ANumberedHeadingSkipAndAFirstHeadingOtherThanH1_AreErrors()
     {
         var skip = WithCode(Check(StructurePdf(
             Element("Document", 8, 9), Leaf("H1"), Leaf("H3"))), "UA10");
         Assert.Contains(skip, i => i.Severity == IssueSeverity.Error && i.Message.Contains("skips a level", StringComparison.Ordinal));
+
         var noH1 = WithCode(Check(StructurePdf(
             Element("Document", 8, 9), Leaf("H2"), Leaf("H3"))), "UA10");
-        Assert.Contains(noH1, i => i.Severity == IssueSeverity.Error && i.Message.Contains("no H1", StringComparison.Ordinal));
-        Assert.Empty(WithCode(Check(StructurePdf(Element("Document", 8, 9), Leaf("H1"), Leaf("H2"))), "UA10"));
+        AccessibilityIssue first = Assert.Single(noH1);
+        Assert.Equal(IssueSeverity.Error, first.Severity);
+        Assert.Contains("first numbered heading is H2", first.Message, StringComparison.Ordinal);
+        Assert.Equal(8, first.ObjectNumber);
+
+        var h1Later = WithCode(Check(StructurePdf(
+            Element("Document", 8, 9, 10), Leaf("H2"), Leaf("H1"), Leaf("H2"))), "UA10");
+        AccessibilityIssue late = Assert.Single(h1Later);
+        Assert.Contains("first numbered heading is H2", late.Message, StringComparison.Ordinal);
+        Assert.Equal(8, late.ObjectNumber);
+
+        Assert.Empty(WithCode(Check(StructurePdf(Element("Document", 8, 9, 10), Leaf("H1"), Leaf("H2"), Leaf("H1"))), "UA10"));
     }
 
     /// <summary>

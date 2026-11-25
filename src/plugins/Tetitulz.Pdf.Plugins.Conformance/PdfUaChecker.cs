@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -30,11 +31,9 @@ namespace Tetitulz.Pdf.Plugins.Conformance
     ///   <item>UA01 — Document must be tagged (catalog /MarkInfo /Marked = true).</item>
     ///   <item>UA02 — Catalog must declare a natural language (/Lang entry).</item>
     ///   <item>UA03 — XMP metadata must declare <c>pdfuaid:part=1</c>.</item>
-    ///   <item>UA04 — Document must have a document title set in /Info or XMP,
-    ///                and /ViewerPreferences /DisplayDocTitle must be true. On an encrypted
-    ///                document whose title could only be in XMP <c>dc:title</c> — an unreadable
-    ///                packet, no <c>/Info /Title</c> — the missing-title half is reported as
-    ///                UA99 rather than asserted, exactly as UA03 is.</item>
+    ///   <item>UA04 — The catalog's XMP metadata stream must hold a non-empty <c>dc:title</c>
+    ///                (ISO 14289-1 7.1; an <c>/Info /Title</c> does not satisfy it), and
+    ///                /ViewerPreferences /DisplayDocTitle must be true.</item>
     ///   <item>UA05 — Catalog must have a /StructTreeRoot (tagged structure tree).</item>
     ///   <item>UA06 — If the document is encrypted, the security handler must permit content
     ///                extraction for accessibility (ISO 32000-1 Table 22, /P bit 10).
@@ -70,9 +69,15 @@ namespace Tetitulz.Pdf.Plugins.Conformance
     ///   <item>UA56 — A font subset whose /CharSet does not list exactly its program's glyphs, or whose
     ///     /CIDSet leaves out a CID its program holds (7.21.4.2).</item>
     ///   <item>UA57 — A font used for rendering paints a glyph its embedded program does not define (7.21.4.1).</item>
+    ///   <item>UA58 — An optional content configuration without a non-empty /Name once /Configs holds one, or
+    ///     with an /AS entry (7.10).</item>
+    ///   <item>UA59 — An embedded file's specification without both /F and /UF (7.11, 7.18.7).</item>
+    ///   <item>UA60 — A dynamic XFA form: its dynamicRender element says <c>required</c> (7.15).</item>
+    ///   <item>UA61 — A media clip data dictionary without /CT and /Alt (7.18.6.2).</item>
     ///   <item>UA99 — Reported when a check could not be completed: the document structure raised
     ///                an unexpected error, or the data the check needs is encrypted (the XMP
-    ///                packet, which both UA03 and the title half of UA04 have to read).
+    ///                packet, which both UA03 and the title half of UA04 have to read; UA60's XFA
+    ///                config packet).
     ///                Not a document defect as such, but it means the audit is incomplete
     ///                — inspect <see cref="LastValidationError"/> for the cause. A check that
     ///                neither ran nor said so is indistinguishable from a check that ran and found
@@ -292,6 +297,10 @@ namespace Tetitulz.Pdf.Plugins.Conformance
             RunCheck(violations, "UA28/UA29", () => CheckHollowStructure(doc, catalog, structScan, violations));
             RunCheck(violations, "UA50", () => CheckNamedMcidsExist(doc, pages, encrypted, structScan,
                 violations, maxPageContentBytes, maxDocumentContentBytes));
+            RunCheck(violations, "UA58", () => CheckOptionalContentConfigurations(doc, catalog, violations));
+            RunCheck(violations, "UA59", () => CheckEmbeddedFileNames(doc, catalog, pages, violations));
+            RunCheck(violations, "UA60", () => CheckDynamicXfa(doc, catalog, encrypted, violations));
+            RunCheck(violations, "UA61", () => CheckMediaClips(doc, violations));
 
             return Completed(violations);
         }
@@ -875,21 +884,14 @@ namespace Tetitulz.Pdf.Plugins.Conformance
                     "PDF/UA-1 requires /ViewerPreferences /DisplayDocTitle = true " +
                     "so that the document title is shown in the title bar."));
 
-            // Check that a title is actually set (in /Info or XMP). /Info /Title is a *string*:
-            // on an encrypted document its bytes are ciphertext, but HasNonEmptyString only
-            // claims presence, which is exactly what UA04 needs, so this half needs no
-            // encryption handling.
-            bool hasTitle = false;
-            var infoDict = ResolveDict(doc, doc.Trailer?[PdfName.Info]);
-            if (infoDict != null)
-                hasTitle = HasNonEmptyString(doc, infoDict[PdfName.Title]);
-
-            if (hasTitle) return;
-
-            // A title may instead live in XMP dc:title (valid, common in PDF 2.0 / PDF/UA
-            // workflows), and that is a *stream*: on an encrypted document it is ciphertext to
-            // this checker. "I could not read the packet" is not evidence that the document has
-            // no title, so it must not be reported as one — see Ua04Unverifiable.
+            // ISO 14289-1 7.1: "The Metadata stream in the document's catalog dictionary shall
+            // contain a dc:title entry ... A document information dictionary may be present in a
+            // conforming file and an ISO 14289-1 conforming reader shall ignore it." So the title is
+            // XMP dc:title alone; an /Info /Title, which the reader ignores, does not stand in for it.
+            //
+            // The packet is a *stream*: on an encrypted document it is ciphertext to this checker.
+            // "I could not read the packet" is not evidence that the document has no title, so it
+            // must not be reported as one — see Ua04Unverifiable.
             switch (FindXmpDcTitle(doc, catalog))
             {
                 case XmpTitleState.Present:
@@ -906,8 +908,9 @@ namespace Tetitulz.Pdf.Plugins.Conformance
                     // a document that is not encrypted — in which case "unreadable" is itself a
                     // document defect and UA03 reports it. Both mean: no title from XMP.
                     v.Add(new PdfUaViolation("UA04",
-                        "PDF/UA-1 requires a non-empty document title in the /Info dictionary " +
-                        "or XMP dc:title."));
+                        "PDF/UA-1 requires a non-empty dc:title in the XMP Metadata stream of the " +
+                        "document catalog (ISO 14289-1 7.1); an /Info /Title does not satisfy it, " +
+                        "since a conforming reader ignores the document information dictionary."));
                     return;
             }
         }
@@ -945,11 +948,11 @@ namespace Tetitulz.Pdf.Plugins.Conformance
         /// </summary>
         /// <remarks>
         /// <c>internal</c> (not <c>private</c>) and named in this assembly's
-        /// <c>InternalsVisibleTo</c> for <c>Tetitulz.Pdf.Accessibility</c>: PDF/UA-2 §8.11.1 needs
-        /// the same non-empty-<c>dc:title</c> lookup, without the <c>/Info /Title</c> fallback
-        /// UA04 also accepts, so <c>PdfUa2StructureChecker</c> reuses this rather than
-        /// re-deriving the BOM handling, DTD-processing settings and encryption-aware "absent vs.
-        /// unreadable" distinction this method already carries.
+        /// <c>InternalsVisibleTo</c> for <c>Tetitulz.Pdf.Accessibility</c>: PDF/UA-2 §8.11.1 asks
+        /// the same non-empty-<c>dc:title</c> question ISO 14289-1 7.1 does, so
+        /// <c>PdfUa2StructureChecker</c> reuses this rather than re-deriving the BOM handling,
+        /// DTD-processing settings and encryption-aware "absent vs. unreadable" distinction this
+        /// method already carries. The packet's text is read by <see cref="DcTitleIn"/>.
         /// </remarks>
         internal static XmpTitleState FindXmpDcTitle(PdfDocument doc, PdfDictionary catalog)
         {
@@ -976,32 +979,44 @@ namespace Tetitulz.Pdf.Plugins.Conformance
             // document is encrypted.
             if (bytes == null || bytes.Length == 0) return XmpTitleState.Absent;
 
+            string xmp;
             try
             {
-                // BOM-aware: XMP permits UTF-16, and Encoding.UTF8.GetString does not throw on it —
-                // it substitutes, so a UTF-16 packet parsed as mojibake and dc:title was never
-                // found. One decoder, in Core.Metadata.XmpPacket.
-                string xmp = Tetitulz.Pdf.Core.Metadata.XmpPacket.DecodeText(bytes);
+                // BOM-aware: XMP permits UTF-16, which a UTF-8 decode would turn into mojibake
+                // without throwing. One decoder, in Core.Metadata.XmpPacket.
+                xmp = Tetitulz.Pdf.Core.Metadata.XmpPacket.DecodeText(bytes);
+            }
+            catch (Exception ex)
+            {
+                Report("PdfUaChecker.FindXmpDcTitle", "XMP could not be decoded for dc:title", ex);
+                return XmpTitleState.Unreadable;
+            }
+
+            return DcTitleIn(xmp);
+        }
+
+        /// <summary>
+        /// Whether an XMP packet's text carries a non-empty <c>dc:title</c> — the element in the
+        /// Dublin Core namespace, so a <c>title</c> of another schema (<c>pdfx:title</c>, an
+        /// extension schema's) does not stand in for it; any non-blank text in its subtree
+        /// (<c>rdf:Alt/rdf:li</c>) counts. The one reading of a packet's title, for UA04, PDF/UA-2
+        /// §8.11.1 and the XMP writer that decides whether a packet already has one.
+        /// </summary>
+        /// <remarks>
+        /// DTD processing is <c>Ignore</c>, as <see cref="CheckXmpMetadata"/> reads the same packet:
+        /// a packet with an internal subset parses in both or in neither. <c>XmlResolver</c> is null,
+        /// so no entity is expanded and nothing is fetched. A packet that is not well-formed — a
+        /// broken one, or ciphertext — is <see cref="XmpTitleState.Unreadable"/>, said through
+        /// <c>LastValidationError</c>.
+        /// </remarks>
+        internal static XmpTitleState DcTitleIn(string xmp)
+        {
+            if (string.IsNullOrWhiteSpace(xmp)) return XmpTitleState.Absent;
+
+            try
+            {
                 var settings = new XmlReaderSettings
                 {
-                    // Ignore, not Prohibit -- MATCHING CheckXmpMetadata above, which reads THIS SAME
-                    // packet. A packet with an internal DTD subset parsed there and threw here, so
-                    // FindXmpDcTitle returned Unreadable and, for an unencrypted document, the
-                    // consumer's default arm reported a FALSE UA04 on a document that plainly has a
-                    // title. That arm's comment said "'unreadable' is itself a document defect and
-                    // UA03 reports it" -- but the sibling method had just read the packet fine, so
-                    // UA03 was never raised and nothing reported the truth.
-                    //
-                    // Neither setting is the safer one: XmlResolver is null in both, so no entity is
-                    // ever expanded and neither can be made to fetch anything. Ignore simply
-                    // tolerates a subset that Prohibit rejects.
-                    //
-                    // NOT COVERED BY A TEST, AND THAT IS STATED RATHER THAN IMPLIED. The
-                    // divergence is verified by reading the two methods, and this change is
-                    // strictly more permissive, so it cannot reject anything that parsed before.
-                    // A fixture reaching it through Validate could not be built: dc:title was not
-                    // found in the CONTROL packet either, so the harness never exercised the DTD
-                    // question at all, and chasing that is a separate matter from this alignment.
                     DtdProcessing = DtdProcessing.Ignore,
                     XmlResolver = null,
                 };
@@ -1009,10 +1024,8 @@ namespace Tetitulz.Pdf.Plugins.Conformance
                 using var reader = XmlReader.Create(sr, settings);
                 while (reader.Read())
                 {
-                    // Find dc:title and check its subtree (dc:title/rdf:Alt/rdf:li)
-                    // for any non-empty text — scoped to title so dc:creator etc.
-                    // can't satisfy it.
-                    if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "title")
+                    if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "title"
+                        && reader.NamespaceURI == Tetitulz.Pdf.Core.Metadata.XmpPacket.DublinCoreNamespace)
                     {
                         using var sub = reader.ReadSubtree();
                         while (sub.Read())
@@ -1024,8 +1037,6 @@ namespace Tetitulz.Pdf.Plugins.Conformance
             }
             catch (XmlException ex)
             {
-                // Not well-formed: either a broken packet, or ciphertext. Never silent — the
-                // cause is retrievable from LastValidationError.
                 Report("PdfUaChecker.FindXmpDcTitle", "XMP is not well-formed XML", ex);
                 return XmpTitleState.Unreadable;
             }
@@ -2553,6 +2564,211 @@ namespace Tetitulz.Pdf.Plugins.Conformance
                     $"{linksWithoutDescription} /Link annotation(s) have neither a /Contents " +
                     "entry nor an enclosing <Link> structure element with /Alt. PDF/UA-1 " +
                     "(ISO 14289-1 §7.18.5) requires an alternate description for every link."));
+        }
+
+        // ----------------------------------------------------------------
+        //  UA58–UA61 — optional content, embedded files, XFA, media clips
+        // ----------------------------------------------------------------
+
+        /// <summary>How many places a UA58–UA61 message names before it counts the rest.</summary>
+        private const int MaxNamedPlaces = 10;
+
+        /// <summary>The first <see cref="MaxNamedPlaces"/> of <paramref name="places"/>, and how many more there are.</summary>
+        private static string Named(List<string> places)
+        {
+            string list = string.Join("; ", places.GetRange(0, Math.Min(MaxNamedPlaces, places.Count)));
+            return places.Count > MaxNamedPlaces ? $"{list}; and {places.Count - MaxNamedPlaces} more" : list;
+        }
+
+        /// <summary>
+        /// UA58 — ISO 14289-1 7.10: once the catalog's <c>/OCProperties /Configs</c> holds a configuration
+        /// dictionary, every configuration, the default included, has a <c>/Name</c> that is a non-empty
+        /// text string; and no configuration has an <c>/AS</c> entry, whatever <c>/Configs</c> holds. The
+        /// configurations and the name rule are <see cref="OptionalContentConfigurations"/>'s, which
+        /// PDF/UA-2's §8.7 check reads too.
+        /// </summary>
+        private static void CheckOptionalContentConfigurations(PdfDocument doc, PdfDictionary catalog, List<PdfUaViolation> v)
+        {
+            var ocProperties = ResolveDict(doc, catalog[PdfName.OCProperties]);
+            if (ocProperties == null) return;
+            var configurations = OptionalContentConfigurations.Read(doc, ocProperties);
+
+            var unnamed = OptionalContentConfigurations.UnnamedUnderPdfUa(doc, ocProperties, configurations)
+                .ConvertAll(c => c.Where);
+            if (unnamed.Count > 0)
+                v.Add(new PdfUaViolation("UA58",
+                    "An optional content configuration has no /Name that is a non-empty text string: " +
+                    $"{Named(unnamed)}. ISO 14289-1 7.10 requires one on every configuration, the default " +
+                    "included, once /OCProperties /Configs holds a configuration."));
+
+            var alternates = new List<string>();
+            foreach (var c in configurations)
+                if (c.Dictionary[PdfName.AS] != null) alternates.Add(c.Where);
+            if (alternates.Count > 0)
+                v.Add(new PdfUaViolation("UA58",
+                    $"An optional content configuration has an /AS entry: {Named(alternates)}. ISO 14289-1 " +
+                    "7.10 forbids it in every configuration: it changes which content is shown by the " +
+                    "document's use rather than by the reader."));
+        }
+
+        /// <summary>
+        /// UA59 — ISO 14289-1 7.11: the file specification of an embedded file — one with an
+        /// <c>/EF</c> — has both <c>/F</c> and <c>/UF</c>; 7.18.7 holds a file attachment annotation's to
+        /// the same rule. The specifications are <see cref="EmbeddedFileSpecifications"/>'s, which PDF/A's
+        /// A67 reads: 7.11 is no annotation rule, so an attachment a reader is not shown is read as well.
+        /// </summary>
+        private static void CheckEmbeddedFileNames(PdfDocument doc, PdfDictionary catalog, List<PageRef> pages,
+            List<PdfUaViolation> v)
+        {
+            var reading = EmbeddedFileSpecifications.Read(doc, catalog, pages.ConvertAll(p => p.Dict),
+                o => Resolve(doc, o));
+            if (!reading.NameTreeComplete)
+                v.Add(new PdfUaViolation("UA99",
+                    "UA59 (ISO 14289-1 7.11) did not read the whole /EmbeddedFiles name tree, so an embedded " +
+                    "file's specification may not have been checked."));
+
+            var lacking = new List<string>();
+            foreach (var (name, spec) in reading.Specifications)
+            {
+                if (ResolveDict(doc, spec[PdfName.EF]) == null) continue;
+                bool f = spec[PdfName.F] != null, uf = spec[PdfName.UF] != null;
+                if (!f || !uf) lacking.Add(name + (f ? " has no /UF" : uf ? " has no /F" : " has neither /F nor /UF"));
+            }
+            if (lacking.Count > 0)
+                v.Add(new PdfUaViolation("UA59",
+                    $"An embedded file's specification lacks /F or /UF: {Named(lacking)}. ISO 14289-1 7.11 " +
+                    "requires both (and 7.18.7 holds a file attachment annotation's to it)."));
+        }
+
+        /// <summary>
+        /// UA60 — ISO 14289-1 7.15: no dynamic XFA form. A form is XFA-based when <c>/AcroForm</c> has an
+        /// <c>/XFA</c> array or stream, and dynamic when its <c>dynamicRender</c> element says
+        /// <c>required</c> (<see cref="Core.Forms.XfaPacket.RequiresDynamicRender"/>); a static one is
+        /// permitted. A packet that cannot be read is a UA99, never a verdict.
+        /// </summary>
+        private static void CheckDynamicXfa(PdfDocument doc, PdfDictionary catalog, bool encrypted, List<PdfUaViolation> v)
+        {
+            var acroForm = ResolveDict(doc, catalog[PdfName.AcroForm]);
+            if (acroForm == null) return;
+            var packet = Core.Forms.XfaPacket.Read(acroForm, doc);
+            if (packet == null) return;
+
+            bool? dynamic = packet.RequiresDynamicRender(out string unreadable);
+            if (dynamic == true)
+                v.Add(new PdfUaViolation("UA60",
+                    "The document is a dynamic XFA form: its config packet's dynamicRender element is " +
+                    "\"required\". ISO 14289-1 7.15 forbids dynamic XFA forms; a static one is permitted."));
+            else if (dynamic == null)
+                v.Add(new PdfUaViolation("UA99",
+                    "UA60 (ISO 14289-1 7.15) could not be verified: " + (encrypted
+                        ? "the document is encrypted, so its XFA config packet is ciphertext"
+                        : "the XFA config packet could not be read — " + unreadable) +
+                    ", and whether the form is dynamic is not known."));
+        }
+
+        /// <summary>
+        /// UA61 — ISO 14289-1 7.18.6.2: "In the media clip data dictionary, the optional CT and Alt keys
+        /// (ISO 32000-1:2008, 13.2.4.2, Table 274) are required" — <c>/CT</c> a non-empty string,
+        /// <c>/Alt</c> a multi-language text array: pairs of strings, at least one. The sentence is about
+        /// the dictionary, so every one the file holds is judged (<see cref="MediaClipData"/>), whatever
+        /// reaches it; and dictionaries are never ciphertext, so an encrypted document is read as a clear
+        /// one is. An object the parser could not read joins the run's one unreadable-object notice
+        /// (<see cref="UnreadableObjects"/>); a scan cut at its ceiling is a UA99 of its own.
+        /// </summary>
+        internal static void CheckMediaClips(PdfDocument doc, List<PdfUaViolation> v, int maxNodes = MaxMediaClipScanNodes)
+        {
+            var clips = MediaClipData(doc, maxNodes, out _, out bool cut);
+            if (cut)
+                v.Add(new PdfUaViolation("UA99",
+                    $"UA61 (ISO 14289-1 7.18.6.2) did not read the whole file — its scan stopped at {maxNodes} " +
+                    "values — so a media clip data dictionary may not have been checked."));
+
+            var lacking = new List<string>();
+            foreach (var (where, clip) in clips)
+            {
+                string problem = WhatMediaClipDataLacks(doc, clip);
+                if (problem != null) lacking.Add(where + problem);
+            }
+            if (lacking.Count > 0)
+                v.Add(new PdfUaViolation("UA61",
+                    $"A media clip data dictionary lacks /CT or /Alt: {Named(lacking)}. ISO 14289-1 7.18.6.2 " +
+                    "requires both: the media's type, and a description a reader can be given in its place."));
+        }
+
+        /// <summary>The most values <see cref="CheckMediaClips"/>'s scan visits in one document.</summary>
+        internal const int MaxMediaClipScanNodes = 2_000_000;
+
+        /// <summary>
+        /// Every media clip data dictionary in the file — <c>/S /MCD</c> (ISO 32000-1 Table 274), an
+        /// object the cross-reference table lists or a dictionary held directly inside one — with where it
+        /// is. Each listed object is walked once, iteratively, through its direct values only (a reference
+        /// is another listed object, so nothing is met twice and nothing cycles), at most
+        /// <paramref name="maxNodes"/> values in all; <paramref name="cut"/> says that ceiling stopped it,
+        /// <paramref name="unreadable"/> how many objects the parser could not read, each also recorded in
+        /// <see cref="UnreadableObjects"/>.
+        /// </summary>
+        internal static List<(string Where, PdfDictionary Clip)> MediaClipData(PdfDocument doc, int maxNodes,
+            out int unreadable, out bool cut)
+        {
+            var found = new List<(string, PdfDictionary)>();
+            int failed = 0, nodes = 0;
+            cut = false;
+            if (doc.Parser != null)
+            {
+                var pending = new Stack<PdfObject>();
+                foreach (var kvp in doc.Parser.EnumerateAllObjects((number, ex) =>
+                         {
+                             failed++;
+                             UnreadableObjects.Record(number, ex);
+                         }))
+                {
+                    pending.Push(kvp.Value);
+                    while (pending.Count > 0)
+                    {
+                        var value = pending.Pop();
+                        if (++nodes > maxNodes)
+                        {
+                            cut = true;
+                            break;
+                        }
+                        if (value is PdfArray array)
+                        {
+                            for (int i = array.Count - 1; i >= 0; i--) pending.Push(array[i]);
+                        }
+                        else if (value is PdfDictionary dict)
+                        {
+                            if (ResolveName(doc, dict[PdfName.S])?.Value == "MCD")
+                                found.Add((ReferenceEquals(dict, kvp.Value)
+                                    ? "object " + kvp.Key.ToString(CultureInfo.InvariantCulture)
+                                    : "a dictionary in object " + kvp.Key.ToString(CultureInfo.InvariantCulture), dict));
+                            foreach (var entry in dict) pending.Push(entry.Value);
+                        }
+                    }
+                    if (cut) break;
+                }
+            }
+            unreadable = failed;
+            return found;
+        }
+
+        /// <summary>
+        /// What a media clip data dictionary lacks of 7.18.6.2's two entries, as a phrase starting with a
+        /// space, or <see langword="null"/>. <c>/Alt</c> is a multi-language text array (ISO 32000-1
+        /// Table 274): an even, non-zero number of strings, a language and a text each pair.
+        /// </summary>
+        private static string WhatMediaClipDataLacks(PdfDocument doc, PdfDictionary clip)
+        {
+            bool type = HasNonEmptyString(doc, clip[PdfName.CT]);
+            bool alt = false;
+            if (ResolveArray(doc, clip[PdfName.Alt]) is PdfArray pairs && pairs.Count > 0 && pairs.Count % 2 == 0)
+            {
+                alt = true;
+                for (int i = 0; i < pairs.Count && alt; i++) alt = Resolve(doc, pairs[i]) is PdfString;
+            }
+            if (type && alt) return null;
+            return !type && !alt ? " has neither /CT nor /Alt"
+                : !type ? " has no /CT"
+                : " has no /Alt that is a multi-language text array";
         }
     }
 

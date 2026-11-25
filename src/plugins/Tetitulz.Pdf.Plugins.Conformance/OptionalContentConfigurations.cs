@@ -13,8 +13,8 @@ namespace Tetitulz.Pdf.Plugins.Conformance
     /// The optional content configuration dictionaries a document declares — <c>/OCProperties /D</c>
     /// and each element of <c>/Configs</c> (ISO 32000-1 §8.11.4.2, Tables 100 and 101) — with what the
     /// conformance rules ask of them: the <c>/Name</c>, whether two share one, which groups an
-    /// <c>/Order</c> leaves out. PDF/A's A70–A72 judge them and PDF/X's X27 reports them; both read
-    /// them here.
+    /// <c>/Order</c> leaves out. PDF/A's A70–A72 judge them, PDF/X's X27 reports them, and PDF/UA-1's
+    /// UA58 and PDF/UA-2's §8.7 check judge their names and <c>/AS</c>; all read them here.
     /// </summary>
     internal static class OptionalContentConfigurations
     {
@@ -62,6 +62,27 @@ namespace Tetitulz.Pdf.Plugins.Conformance
                 for (int i = 0; i < configs.Count; i++)
                     Add(configs[i], "/Configs [" + i.ToString(CultureInfo.InvariantCulture) + "]");
             return found;
+        }
+
+        /// <summary>
+        /// The configurations PDF/UA asks a <c>/Name</c> of and that carry none whose value is a non-empty
+        /// text string. ISO 14289-1 7.10 and ISO 14289-2 §8.7 say it in one sentence: every configuration,
+        /// the default included, once the <c>/Configs</c> entry holds at least one configuration dictionary.
+        /// Empty when <c>/Configs</c> holds none, whatever the default's name; PDF/A's A70, which asks a name
+        /// of every configuration, does not read this.
+        /// </summary>
+        internal static List<Configuration> UnnamedUnderPdfUa(PdfDocument doc, PdfDictionary ocProperties,
+            IEnumerable<Configuration> configurations)
+        {
+            var unnamed = new List<Configuration>();
+            if (!(doc.ResolveObject(ocProperties?[PdfName.Configs]) is PdfArray configs)) return unnamed;
+            bool holdsOne = false;
+            for (int i = 0; i < configs.Count && !holdsOne; i++)
+                holdsOne = doc.ResolveObject(configs[i]) is PdfDictionary;
+            if (!holdsOne) return unnamed;
+            foreach (var c in configurations)
+                if (string.IsNullOrEmpty(c.Name)) unnamed.Add(c);
+            return unnamed;
         }
 
         /// <summary>The names two or more of <paramref name="configurations"/> carry, each once, in order.</summary>

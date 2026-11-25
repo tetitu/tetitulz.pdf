@@ -16,7 +16,8 @@ namespace Tetitulz.Pdf.Plugins.Conformance
     /// Validates a PDF against the PDF/UA-2 (ISO 14289-2:2024) document-level requirements: Clause 5
     /// "Version identification", Table 1 "PDF/UA identification schema" — the XMP metadata must
     /// declare <c>pdfuaid:part=2</c> and <c>pdfuaid:rev</c> (the four digits of the year of
-    /// publication or revision), both REQUIRED — and 6.1, the file a PDF 2.0 file (UA2-6.1).
+    /// publication or revision), both REQUIRED — and the file a PDF 2.0 file (UA2-6.1, after veraPDF's
+    /// PDF/UA-2 profile rule 6.1-1; see <see cref="CheckFileVersion"/>).
     ///
     /// <para>
     /// <b>The document-level slice of PDF/UA-2 support.</b> PDF/UA-2 is a new companion standard,
@@ -139,13 +140,18 @@ namespace Tetitulz.Pdf.Plugins.Conformance
                 ex => Report("PdfUa2Checker.Resolve", "could not resolve indirect reference", ex));
 
         // ----------------------------------------------------------------
-        //  Clause 6.1 — the file is a PDF 2.0 file
+        //  UA2-6.1 — the file is a PDF 2.0 file (veraPDF's PDF/UA-2 profile, rule 6.1-1)
         // ----------------------------------------------------------------
 
         /// <summary>
         /// UA2-6.1 — "The file version shall be 2.0, specified either in the header or as the value of
-        /// the Version entry" (veraPDF's PDF/UA-2 profile, 6.1-1; ISO 14289-2 builds on ISO 32000-2).
-        /// The document's version is the header's raised by a later catalog <c>/Version</c> (§7.7.2).
+        /// the Version entry": veraPDF's PDF/UA-2 profile, rule 6.1-1, which this check follows so that
+        /// one file gets one verdict from both. The sentence is the profile's, not ISO 14289-2's: the
+        /// standard asks that a file adhere to ISO 32000-2 (§6.2) and that its <c>Document</c> element be
+        /// in the PDF 2.0 namespace (§8.2.5.2, whose NOTE 1 says a PDF/UA-2 file "cannot solely conform to
+        /// PDF 1.7"), while §6.1 NOTE 2 bases its requirements on ISO 32000-2 "regardless of the version
+        /// number present in the conforming file". The message names the profile for that reason. The
+        /// document's version is the header's raised by a later catalog <c>/Version</c> (§7.7.2).
         /// </summary>
         private static void CheckFileVersion(PdfDocument doc, PdfDictionary catalog, List<PdfUa2Violation> v)
         {
@@ -167,8 +173,9 @@ namespace Tetitulz.Pdf.Plugins.Conformance
             }
             if (major == 2 && minor == 0) return;
             v.Add(new PdfUa2Violation("UA2-6.1",
-                $"The file version is {major}.{minor}; a PDF/UA-2 file is a PDF 2.0 file, " +
-                "its header or its catalog's /Version saying 2.0 (ISO 14289-2 6.1)."));
+                $"The file version is {major}.{minor}; a PDF/UA-2 file is a PDF 2.0 file, its header or its " +
+                "catalog's /Version saying 2.0 (veraPDF's PDF/UA-2 profile, rule 6.1-1; ISO 14289-2 §6.2 asks " +
+                "for adherence to ISO 32000-2). Setting the catalog's /Version to /2.0 satisfies it."));
         }
 
         // ----------------------------------------------------------------

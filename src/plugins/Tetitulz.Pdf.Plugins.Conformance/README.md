@@ -82,7 +82,7 @@ invented.
 ## Which side owns which PDF/UA check
 
 This package owns the mostly-dictionary checks (UA00–UA09, UA25–UA29, UA50+).
-`Tetitulz.Pdf.Accessibility` owns the deep, content-walking ones (UA10–UA24, UA30) and reuses this
+`Tetitulz.Pdf.Accessibility` owns the deep, content-walking ones (UA10–UA24, UA30–UA35) and reuses this
 package's engine rather than duplicating it — that feature-to-plugin reference is deliberate and
 one-way. New deep codes are numbered from UA30 up, new plugin codes from UA50 up; the font pair is
 numbered oppositely on the two sides (deep UA20/UA21, plugin UA25/UA26) and is not de-duplicated.

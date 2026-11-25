@@ -1017,7 +1017,7 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
                 warnings.Add("The document has no pages; nothing was tagged.");
                 ApplyCatalogEdits(doc, index, catalog, catalogObjectNumber, options, plan,
                                   structTreeRootNumber: -1, markContent: false);
-                ApplyTitle(doc, index, options, plan);
+                ApplyTitle(doc, index, catalog, catalogObjectNumber, options, plan);
                 return plan;
             }
 
@@ -1129,7 +1129,7 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
                     skipReasons.Add(DescribeSkip(pi, "the existing structure tree's parent-tree keys leave no room for new ones."));
                 ApplyCatalogEdits(doc, index, catalog, catalogObjectNumber, options, plan,
                                   structTreeRootNumber: -1, markContent: false);
-                ApplyTitle(doc, index, options, plan);
+                ApplyTitle(doc, index, catalog, catalogObjectNumber, options, plan);
                 return plan;
             }
 
@@ -1150,7 +1150,7 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
 
                 ApplyCatalogEdits(doc, index, catalog, catalogObjectNumber, options, plan,
                                   structTreeRootNumber: -1, markContent: false);
-                ApplyTitle(doc, index, options, plan);
+                ApplyTitle(doc, index, catalog, catalogObjectNumber, options, plan);
                 return plan;
             }
 
@@ -1315,7 +1315,7 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
                 // at the other place that can write the key.
                 ApplyCatalogEdits(doc, index, catalog, catalogObjectNumber, options, plan,
                                   structTreeRootNumber: -1, markContent: false);
-                ApplyTitle(doc, index, options, plan);
+                ApplyTitle(doc, index, catalog, catalogObjectNumber, options, plan);
                 plan.ContentMarked = false;
                 return plan;
             }
@@ -1327,7 +1327,8 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
             // produced from an input that had no such finding: remediation manufacturing a
             // violation.
             List<AnnotationElement> annotations =
-                CollectAnnotations(doc, index, pages, pageCount, elements, warnings, merging ? existing : null);
+                CollectAnnotations(doc, index, pages, pageCount, elements, warnings,
+                    options.LinkDescriptionsFollow, merging ? existing : null);
 
             // From here a real structure tree is written, so an existing one is genuinely
             // superseded — which is the point at which saying so is accurate.
@@ -1470,7 +1471,7 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
             // ---- catalog + /Info ------------------------------------------------------
             ApplyCatalogEdits(doc, index, catalog, catalogObjectNumber, options, plan,
                               structTreeRootNumber, markContent: true);
-            ApplyTitle(doc, index, options, plan);
+            ApplyTitle(doc, index, catalog, catalogObjectNumber, options, plan);
 
             if (plan.McidCount == 0)
                 warnings.Add("The structure tree was written but references no MCIDs; assistive "
@@ -2077,6 +2078,10 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
         /// <param name="pageCount">How many of them the pass covers.</param>
         /// <param name="elements">The logical blocks found, which an annotation is parented under when one encloses it.</param>
         /// <param name="warnings">Where a direct annotation or a link without a description is said.</param>
+        /// <param name="linkDescriptionsFollow">
+        /// <see cref="AutoTagOptions.LinkDescriptionsFollow"/>: a later step writes the links'
+        /// descriptions and reports those it leaves out, so a link without one is not said here.
+        /// </param>
         /// <param name="existing">
         /// The tree being merged into, or null when the pass supersedes or there is none: an annotation
         /// on a page that tree claims, or one whose <c>/StructParent</c> is a key it defines, already has
@@ -2084,7 +2089,8 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
         /// </param>
         private static List<AnnotationElement> CollectAnnotations(
             PdfDocument doc, PdfObjectIndex index, IReadOnlyList<PdfPage> pages, int pageCount,
-            List<LogicalElement> elements, List<string> warnings, ExistingStructureTree existing = null)
+            List<LogicalElement> elements, List<string> warnings, bool linkDescriptionsFollow,
+            ExistingStructureTree existing = null)
         {
             var result = new List<AnnotationElement>();
             var seen   = new HashSet<int>();
@@ -2182,7 +2188,7 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
                 AccessibilityDiagnostics.Report(Operation, detail);
             }
 
-            if (linksWithoutDescription > 0)
+            if (linksWithoutDescription > 0 && !linkDescriptionsFollow)
             {
                 // Deliberately not invented: /Contents is the link's alternate description
                 // (ISO 14289-1 §7.18.5) and only the caller knows where the link goes. Writing the
@@ -2454,10 +2460,23 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
             newCatalog.Set(subKey, direct);
         }
 
-        private static void ApplyTitle(PdfDocument doc, PdfObjectIndex index, AutoTagOptions options, TagPlan plan)
+        private static void ApplyTitle(
+            PdfDocument doc, PdfObjectIndex index, PdfDictionary catalog, int catalogObjectNumber,
+            AutoTagOptions options, TagPlan plan)
         {
             if (options.Title == null) return;
 
+            ApplyInfoTitle(doc, index, options, plan);
+
+            // ISO 14289-1 7.1 reads the title from the XMP dc:title alone; a new /Metadata stream is
+            // referenced from the catalog ApplyCatalogEdits put in the plan.
+            Metadata.DocumentTitleXmp.Stage(doc, index, catalog,
+                () => plan.Modified.TryGetValue(catalogObjectNumber, out PdfObject revised) ? revised as PdfDictionary : null,
+                options.Title, plan.Modified, plan.New, "PdfAutoTagger.ApplyTitle");
+        }
+
+        private static void ApplyInfoTitle(PdfDocument doc, PdfObjectIndex index, AutoTagOptions options, TagPlan plan)
+        {
             PdfObject infoObj = null;
             try
             {

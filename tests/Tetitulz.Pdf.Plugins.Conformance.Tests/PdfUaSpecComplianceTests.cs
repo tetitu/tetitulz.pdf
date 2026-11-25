@@ -85,14 +85,15 @@ public class PdfUaSpecComplianceTests
     private static string StreamObject(string dictEntries, string data)
         => "<< " + dictEntries + " /Length " + data.Length + " >>\nstream\n" + data + "\nendstream";
 
-    /// <summary>A well-formed XMP packet declaring <c>pdfuaid:part</c>.</summary>
-    private static string XmpPacket(string partValue)
+    /// <summary>A well-formed XMP packet declaring <c>pdfuaid:part</c>, and a <c>dc:title</c> when given one.</summary>
+    private static string XmpPacket(string partValue, string title = null)
         => "<?xpacket begin=\"\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"
          + "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n"
          + " <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n"
          + "  <rdf:Description rdf:about=\"\""
-         + " xmlns:pdfuaid=\"http://www.aiim.org/pdfua/ns/id/\">\n"
+         + " xmlns:pdfuaid=\"http://www.aiim.org/pdfua/ns/id/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n"
          + "   <pdfuaid:part>" + partValue + "</pdfuaid:part>\n"
+         + (title == null ? "" : "   <dc:title><rdf:Alt><rdf:li xml:lang=\"x-default\">" + title + "</rdf:li></rdf:Alt></dc:title>\n")
          + "  </rdf:Description>\n"
          + " </rdf:RDF>\n"
          + "</x:xmpmeta>\n"
@@ -496,20 +497,32 @@ public class PdfUaSpecComplianceTests
     }
 
     /// <summary>
-    /// The document title lives in the trailer's /Info, which is an indirect reference in
-    /// essentially every real file.
+    /// ISO 14289-1 7.1: the title is the catalog's Metadata stream's <c>dc:title</c>, and a
+    /// conforming reader ignores the document information dictionary — so an <c>/Info /Title</c>
+    /// alone is UA04. The control carries the same title in <c>dc:title</c>; and a <c>title</c>
+    /// element of another namespace is not one.
     /// </summary>
     [Fact]
-    public void Validate_IndirectInfoDictionaryWithTitle_SatisfiesTheTitleCheck()
+    public void Validate_InfoTitleWithoutDcTitle_ReportsUa04_DcTitleSatisfiesIt()
     {
-        byte[] pdf = BuildPdfWithTrailer(" /Info 4 0 R",
-            "<< /Type /Catalog /Pages 2 0 R >>",
-            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>",
-            "<< /Title (Quarterly Report) >>");
+        string Catalog(string metadata) =>
+            "<< /Type /Catalog /Pages 2 0 R /ViewerPreferences << /DisplayDocTitle true >>" + metadata + " >>";
+        const string Pages = "<< /Type /Pages /Kids [3 0 R] /Count 1 >>";
+        const string Page = "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>";
+        const string Info = "<< /Title (Quarterly Report) >>";
+        string otherTitle = XmpPacket("1").Replace(
+            "<pdfuaid:part>1</pdfuaid:part>",
+            "<pdfuaid:part>1</pdfuaid:part><x:title xmlns:x=\"http://example.com/ns/\">Quarterly Report</x:title>");
 
-        Assert.DoesNotContain(Validate(pdf).Violations,
-            v => v.Code == "UA04" && v.Message.Contains("/Info"));
+        var infoOnly = Validate(BuildPdfWithTrailer(" /Info 4 0 R", Catalog(""), Pages, Page, Info));
+        var dcTitle = Validate(BuildPdfWithTrailer(" /Info 4 0 R", Catalog(" /Metadata 5 0 R"), Pages, Page, Info,
+            StreamObject("/Type /Metadata /Subtype /XML", XmpPacket("1", "Quarterly Report"))));
+        var foreignTitle = Validate(BuildPdfWithTrailer(" /Info 4 0 R", Catalog(" /Metadata 5 0 R"), Pages, Page, Info,
+            StreamObject("/Type /Metadata /Subtype /XML", otherTitle)));
+
+        Assert.Contains(infoOnly.Violations, v => v.Code == "UA04" && v.Message.Contains("ISO 14289-1 7.1", StringComparison.Ordinal));
+        Assert.DoesNotContain(dcTitle.Violations, v => v.Code == "UA04");
+        Assert.Contains(foreignTitle.Violations, v => v.Code == "UA04" && v.Message.Contains("dc:title", StringComparison.Ordinal));
     }
 
     /// <summary>An empty /Title is the same as having none — presence is not a title.</summary>
@@ -653,7 +666,7 @@ public class PdfUaSpecComplianceTests
             "<< /Title (Quarterly Report) >>",
             "<< /Type /StructTreeRoot /K 9 0 R /ParentTree 13 0 R /ParentTreeNextKey 1 >>",
             "<< /Type /StructElem /S /Document /P 8 0 R /Pg 3 0 R /K 0 >>",
-            StreamObject("/Type /Metadata /Subtype /XML", XmpPacket("1")),
+            StreamObject("/Type /Metadata /Subtype /XML", XmpPacket("1", "Quarterly Report")),
             "true",
             "true",
             "<< /Nums [0 [9 0 R]] >>",
@@ -1792,12 +1805,12 @@ public class PdfUaSpecComplianceTests
     }
 
     /// <summary>
-    /// And an /Info title still settles the question outright: its bytes are ciphertext on an
-    /// encrypted document, but UA04 asks only whether a title is <i>present</i>, and presence is
-    /// legible without the key. Nothing to downgrade here.
+    /// An /Info title does not settle the question on an encrypted document either (ISO 14289-1
+    /// 7.1 reads <c>dc:title</c> alone), and a catalog with no <c>/Metadata</c> is an absence
+    /// legible without the key — so the title is reported missing, not unverifiable.
     /// </summary>
     [Fact]
-    public void Validate_EncryptedWithInfoTitle_ReportsNeitherUa04NorUnverifiable()
+    public void Validate_EncryptedWithInfoTitleOnly_ReportsUa04NotUnverifiable()
     {
         byte[] pdf = BuildPdfWithTrailer(" /Info 4 0 R /Encrypt 5 0 R",
             "<< /Type /Catalog /Pages 2 0 R /ViewerPreferences << /DisplayDocTitle true >> >>",
@@ -1808,7 +1821,7 @@ public class PdfUaSpecComplianceTests
 
         var result = Validate(pdf);
 
-        Assert.DoesNotContain(result.Violations, IsMissingTitleUa04);
+        Assert.Contains(result.Violations, IsMissingTitleUa04);
         Assert.DoesNotContain(result.Violations, IsUa04Unverifiable);
     }
 

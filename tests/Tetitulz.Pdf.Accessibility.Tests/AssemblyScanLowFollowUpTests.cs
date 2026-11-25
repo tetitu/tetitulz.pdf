@@ -517,9 +517,24 @@ public class AssemblyScanLowFollowUpTests
     /// </summary>
     private static byte[] DirectFalseFlagsPdf() => FlagsPdf("false", "false");
 
+    /// <summary>
+    /// The title's XMP packet as the metadata pass writes it, so the pass finds it already there —
+    /// ASCII-hex encoded, since the fixture is written as ASCII and the packet opens with a BOM.
+    /// </summary>
+    private static string TitlePacketStream()
+    {
+        string packet = Tetitulz.Pdf.Accessibility.Metadata.PdfUaXmpWriter.BuildTitlePacket(null, "A Title");
+        var hex = new StringBuilder();
+        foreach (byte b in Encoding.UTF8.GetBytes(packet)) hex.Append(b.ToString("X2", CultureInfo.InvariantCulture));
+        hex.Append('>');
+        return "<< /Type /Metadata /Subtype /XML /Filter /ASCIIHexDecode /Length "
+             + hex.Length.ToString(CultureInfo.InvariantCulture)
+             + " >>\nstream\n" + hex + "\nendstream";
+    }
+
     private static byte[] FlagsPdf(string marked, string displayDocTitle) => BuildPdfWithInfo(new[]
     {
-        "<< /Type /Catalog /Pages 2 0 R /Lang (en-US) /MarkInfo 7 0 R /StructTreeRoot 8 0 R "
+        "<< /Type /Catalog /Pages 2 0 R /Lang (en-US) /MarkInfo 7 0 R /StructTreeRoot 8 0 R /Metadata 11 0 R "
         + "/ViewerPreferences << /DisplayDocTitle " + displayDocTitle + " >> >>",
         "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
         "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /StructParents 0 "
@@ -531,7 +546,8 @@ public class AssemblyScanLowFollowUpTests
         "<< /Type /StructTreeRoot /K [9 0 R] /ParentTree 10 0 R >>",
         "<< /Type /StructElem /S /P /P 8 0 R /Pg 3 0 R /K [0] >>",
         "<< /Nums [0 [9 0 R]] >>",
-        "<< /Title (A Title) >>",                      // 11 — the trailer's /Info
+        TitlePacketStream(),                           // 11 — the XMP dc:title (ISO 14289-1 7.1)
+        "<< /Title (A Title) >>",                      // 12 — the trailer's /Info
     });
 
     /// <summary>

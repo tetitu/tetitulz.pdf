@@ -170,7 +170,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking
         }
 
         /// <summary>
-        /// Numbered model: levels must not skip, and a document with headings should start at H1.
+        /// Numbered model: levels must not skip, and the first heading must be H1 (ISO 14289-1 7.4.2).
         /// </summary>
         private static void CheckNumberedHeadings(CheckContext ctx, List<StructNode> headings)
         {
@@ -202,17 +202,17 @@ namespace Tetitulz.Pdf.Accessibility.Checking
                 "Ensure heading levels increment by at most one (H1→H2→H3). " +
                 "Use PdfAccessibility.FixHeadingHierarchy() to renumber levels automatically.");
 
-            bool hasH1 = headings.Any(h => StructTreeWalker.HeadingLevel(RoleOf(ctx, h)) == 1);
-            if (!hasH1)
+            // "If any heading tags are used, H1 shall be the first" — the first in document order,
+            // so an H1 further on does not excuse the H2 a reader meets first.
+            StructNode first = headings.FirstOrDefault(h => StructTreeWalker.HeadingLevel(RoleOf(ctx, h)) >= 1);
+            if (first != null && StructTreeWalker.HeadingLevel(RoleOf(ctx, first)) != 1)
             {
-                StructNode first = headings[0];
                 ctx.Issues.Add(Locate(ctx,
                     Issue(IssueSeverity.Error, "UA10",
-                        "Document has headings but no H1 element; the shallowest heading is " +
-                        (first.Role == null ? "unknown" : DescribeRole(ctx, first)) +
-                        ". ISO 14289-1 7.4.2 starts numbered headings at H1.",
-                        "Add an H1 structure element wrapping the main document title, or renumber the " +
-                        "existing headings so the outline starts at H1.",
+                        "The document's first numbered heading is " + DescribeRole(ctx, first) +
+                        "; ISO 14289-1 7.4.2: \"If any heading tags are used, H1 shall be the first.\"",
+                        "Make the first heading an H1 — wrap the main document title in one, or renumber " +
+                        "the headings so the outline starts at H1.",
                         IssueCategory.Navigation, WcagLevel.A)
                     .MappedTo(null, "1.3.1"),
                     first));
