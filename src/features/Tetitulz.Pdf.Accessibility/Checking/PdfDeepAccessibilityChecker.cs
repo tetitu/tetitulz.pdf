@@ -61,6 +61,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking
     ///   <item>UA32 — Annotation nesting: a widget annotation's /OBJR is held by an element that means
     ///     Form, a link annotation's by one that means Link (ISO 14289-1 7.18.4, 7.18.5) — an
     ///     annotation no /OBJR names is UA23's.</item>
+    ///   <item>UA33 — A Formula element without an /Alt that says something (ISO 14289-1 7.7).</item>
+    ///   <item>UA34 — A Note element without a unique /ID (ISO 14289-1 7.9).</item>
+    ///   <item>UA35 — A link annotation whose URI action has /IsMap true (ISO 14289-1 7.18.5) — a
+    ///     Warning, since the clause permits it when its function is offered elsewhere.</item>
     ///   <item>UA99 — A check could not be completed; its findings are missing (Info).</item>
     /// </list>
     ///
@@ -545,7 +549,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking
                 if (truncation != null)
                     ReportStructureWalkGap(ctx, truncation,
                         "the structure tree was collected only in part, and every element-level " +
-                        "check below (UA10–UA16, UA30) therefore ran on a partial list.");
+                        "check below (UA10–UA16, UA30, UA33, UA34) therefore ran on a partial list.");
 
                 BuildTopology(ctx);
             });
@@ -569,6 +573,8 @@ namespace Tetitulz.Pdf.Accessibility.Checking
 
             RunCheck(ctx, "EmptyStructureElements", () => CheckEmptyStructureElements(ctx));
             RunCheck(ctx, "HollowSubtrees",         () => CheckHollowSubtrees(ctx));
+            RunCheck(ctx, "FormulaAltText",         () => CheckFormulaAltText(ctx));
+            RunCheck(ctx, "NoteIdentifiers",        () => CheckNoteIdentifiers(ctx));
 
             RunContentCheck(ctx, "UnmarkedPageContent",
                 "UA17 (text drawn outside every marked-content sequence) was not attempted: it " +
@@ -584,6 +590,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking
             RunCheck(ctx, "SuspectTagging",         () => CheckSuspectTagging(ctx));
             RunCheck(ctx, "Fonts",                  () => CheckFonts(ctx));
             RunCheck(ctx, "Annotations",            () => CheckAnnotations(ctx));
+            RunCheck(ctx, "LinkImageMaps",          () => CheckLinkImageMaps(ctx));
 
             RunContentCheck(ctx, "ImageOnlyPages",
                 "UA24 (image-only, probably scanned pages) was not attempted: it counts drawing " +

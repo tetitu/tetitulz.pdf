@@ -230,6 +230,31 @@ public sealed class LinkDescriptionTests
         Assert.Equal("New 0", ContentsOf(output, 6));
     }
 
+    /// <summary>
+    /// The links still undescribed after the step: one the provider declined (null) or answered
+    /// blank that has no <c>/Contents</c> of its own. A link it declined because it already has one
+    /// needs nothing and is not counted. The writer and the plan agree, and a lost revision, which
+    /// adds no description, keeps the count.
+    /// </summary>
+    [Fact]
+    public void LeftWithoutDescription_CountsDeclinedLinksWithNoContentsOfTheirOwn()
+    {
+        byte[] input = OnePage(UriLink, UriLink, DescribedLink);
+        Func<LinkContext, string> provider = ctx => ctx.LinkIndex == 1 ? "  " : null;
+
+        SetAltTextResult set = Set(input, provider, out _);
+
+        using var ms = new MemoryStream(input, writable: false);
+        using PdfDocument doc = PdfDocument.Open(ms);
+        FigureAltTextPlan plan = PdfStructureTreeEditor.PlanLinkDescriptions(doc, 1000, provider);
+
+        Assert.Equal(3, set.Skipped);
+        Assert.Equal(2, set.LeftWithoutDescription);
+        Assert.Equal(2, plan.LeftWithoutDescription);
+        Assert.Equal(2, plan.Describe(revisionWasAppended: true).LeftWithoutDescription);
+        Assert.Equal(2, plan.Describe(revisionWasAppended: false).LeftWithoutDescription);
+    }
+
     [Fact]
     public void SetLinkDescriptions_NullProvider_Throws()
         => Assert.Throws<ArgumentNullException>(() => Set(OnePage(UriLink), null, out _));
@@ -296,6 +321,49 @@ public sealed class LinkDescriptionTests
         Assert.True(skipped.Skipped);
         Assert.Contains("LinkDescriptionFactory", skipped.SkipReason);
         Assert.Contains(left.AfterAudit.Issues, i => i.Code == "UA22");
+    }
+
+    /// <summary>
+    /// The auto-tagger's UA22 warning — a link it tagged has no <c>/Contents</c> — is said only
+    /// where nothing after it will describe the link. With a factory the link step follows, the
+    /// tagger is silent and the run carries no such warning; without one (the control) the tagger
+    /// says it, as it does when tagging alone.
+    /// </summary>
+    [Fact]
+    public void Remediate_WithAFactory_TheTaggerLeavesTheLinkToTheLinkStep()
+    {
+        byte[] input = OnePage(UriLink);
+
+        RemediationReport described = Remediate(input, o => o.LinkDescriptionFactory = _ => "Opens the annual report", out _);
+        RemediationReport left = Remediate(input, _ => { }, out _);
+
+        RemediationStepResult tagged = Assert.Single(described.Steps, s => s.Name == "AutoTag");
+        Assert.True(tagged.Applied, tagged.ToString());
+        Assert.DoesNotContain(described.AllWarnings, w => w.Contains("no /Contents alternate description", StringComparison.Ordinal));
+
+        RemediationStepResult taggedAlone = Assert.Single(left.Steps, s => s.Name == "AutoTag");
+        Assert.True(taggedAlone.Applied, taggedAlone.ToString());
+        Assert.Contains(taggedAlone.Warnings, w => w.StartsWith("1 Link annotation(s) have no /Contents alternate description", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// A link the factory gives no description is said once, by the link step, after it ran: the
+    /// undescribed link counted and the one that keeps its own <c>/Contents</c> not, and the
+    /// after-audit agrees that UA22 is open. The tagger says nothing of either.
+    /// </summary>
+    [Fact]
+    public void Remediate_FactoryDecliningALink_TheLinkStepSaysWhatIsStillOpen()
+    {
+        byte[] input = OnePage(UriLink, DescribedLink);
+
+        RemediationReport report = Remediate(input, o => o.LinkDescriptionFactory = _ => null, out _);
+
+        RemediationStepResult tagged = Assert.Single(report.Steps, s => s.Name == "AutoTag");
+        Assert.True(tagged.Applied, tagged.ToString());
+        string warning = Assert.Single(report.AllWarnings, w => w.Contains("no /Contents alternate description", StringComparison.Ordinal));
+        Assert.StartsWith("[SetLinkDescriptions] 1 link annotation(s) have no /Contents alternate description",
+            warning, StringComparison.Ordinal);
+        Assert.Contains(report.AfterAudit.Issues, i => i.Code == "UA22");
     }
 
     /// <summary>The step's encrypted route: the description is written, the file stays encrypted.</summary>

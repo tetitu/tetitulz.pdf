@@ -354,6 +354,10 @@ namespace Tetitulz.Pdf.Core.Objects
         public static readonly PdfName Launch = new PdfName("Launch");
         public static readonly PdfName SubmitForm = new PdfName("SubmitForm");
         public static readonly PdfName URI = new PdfName("URI");
+        /// <summary>ISO 32000-1 §12.6.4.7 Table 206 — a URI action's flag to send the pointer's position with the URI.</summary>
+        public static readonly PdfName IsMap = new PdfName("IsMap");
+        /// <summary>ISO 32000-1 §13.2.4.2 Table 274 — a media clip data dictionary's content type, a MIME type.</summary>
+        public static readonly PdfName CT = new PdfName("CT");
         public static readonly PdfName OpenAction = new PdfName("OpenAction");
         public static readonly PdfName AA = new PdfName("AA");
         public static readonly PdfName A = new PdfName("A");

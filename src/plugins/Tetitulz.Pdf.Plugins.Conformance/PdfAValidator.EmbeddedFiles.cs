@@ -59,38 +59,15 @@ namespace Tetitulz.Pdf.Plugins.Conformance
             // The file specifications: the /EmbeddedFiles name tree's, and a FileAttachment
             // annotation's /FS, for the rules are on every file specification of an embedded file (its
             // CosFileSpecification), wherever it is; conformance test files 6-8 t04 and t05 attach theirs that way.
-            var specs = new List<(string Name, PdfDictionary Spec)>();
-            var tree = doc.ResolveObject((doc.ResolveObject(catalog[PdfName.Names]) as PdfDictionary)?[PdfName.EmbeddedFiles]) as PdfDictionary;
-            if (tree == null)
-            {
-                if (part4 && level == "F")
-                    v.Add(new PdfAViolation("A67",
-                        "A PDF/A-4f file's name dictionary has no /EmbeddedFiles (ISO 19005-4 6.9; rule 6.9-5)."));
-            }
-            else
-            {
-                var entries = new List<KeyValuePair<PdfObject, PdfObject>>();
-                int budget = PdfLimits.MaxNameTreeEntries;
-                if (!PdfNameTree.TryFlatten(tree, doc, entries, ref budget))
-                    ReportPartial("The A67-A68 embedded-file checks did not read the whole /EmbeddedFiles name tree.", "A67", "A68");
-                foreach (var entry in entries)
-                    if (doc.ResolveObject(entry.Value) is PdfDictionary named)
-                        specs.Add(("(" + (PdfNameTree.KeyText(entry.Key) ?? "?") + ")", named));
-            }
-            // A specification both named and attached is read once.
-            var seen = new HashSet<object>(PdfReferenceEquality.Instance);
-            foreach (var (_, named) in specs) seen.Add(named);
-            for (int p = 0; doc.Pages != null && p < doc.Pages.Count; p++)
-            {
-                if (!(doc.ResolveObject(doc.Pages[p].Dictionary?[PdfName.Annots]) is PdfArray annots)
-                    || !ScanReuse.AdmitAnnotations(annots)) continue;
-                for (int a = 0; a < annots.Count; a++)
-                    if (doc.ResolveObject(annots[a]) is PdfDictionary annot
-                        && (doc.ResolveObject(annot[PdfName.Subtype]) as PdfName)?.Value == PdfAnnotationSubtypes.FileAttachment
-                        && doc.ResolveObject(annot[PdfName.FS]) is PdfDictionary attached
-                        && seen.Add(attached))
-                        specs.Add(("a /FileAttachment annotation's on page " + (p + 1).ToString(CultureInfo.InvariantCulture), attached));
-            }
+            var pages = new List<PdfDictionary>();
+            for (int p = 0; doc.Pages != null && p < doc.Pages.Count; p++) pages.Add(doc.Pages[p].Dictionary);
+            var reading = EmbeddedFileSpecifications.Read(doc, catalog, pages, doc.ResolveObject);
+            if (!reading.HasNameTree && part4 && level == "F")
+                v.Add(new PdfAViolation("A67",
+                    "A PDF/A-4f file's name dictionary has no /EmbeddedFiles (ISO 19005-4 6.9; rule 6.9-5)."));
+            if (!reading.NameTreeComplete)
+                ReportPartial("The A67-A68 embedded-file checks did not read the whole /EmbeddedFiles name tree.", "A67", "A68");
+            var specs = reading.Specifications;
             if (specs.Count == 0) return;
 
             HashSet<PdfDictionary> associated = part3 ? AssociatedFilesOf(doc) : null;

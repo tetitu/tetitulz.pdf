@@ -31,13 +31,21 @@ namespace Tetitulz.Pdf.Accessibility.Editing
     public sealed class FigureAltTextPlan
     {
         internal FigureAltTextPlan(
-            IReadOnlyList<IndirectObject> objects, int updated, int skipped, int failed)
+            IReadOnlyList<IndirectObject> objects, int updated, int skipped, int failed,
+            int leftWithoutDescription = 0)
         {
-            Objects        = objects ?? Array.Empty<IndirectObject>();
-            PlannedUpdates = updated;
-            Skipped        = skipped;
-            Failed         = failed;
+            Objects                = objects ?? Array.Empty<IndirectObject>();
+            PlannedUpdates         = updated;
+            Skipped                = skipped;
+            Failed                 = failed;
+            LeftWithoutDescription = leftWithoutDescription;
         }
+
+        /// <summary>
+        /// Links the provider declined that have no <c>/Contents</c> of their own — carried into
+        /// <see cref="Describe"/>'s result unchanged, a lost revision having added no description.
+        /// </summary>
+        internal int LeftWithoutDescription { get; }
 
         internal static FigureAltTextPlan Nothing { get; } =
             new FigureAltTextPlan(Array.Empty<IndirectObject>(), 0, 0, 0);
@@ -80,7 +88,7 @@ namespace Tetitulz.Pdf.Accessibility.Editing
         /// </remarks>
         public SetAltTextResult Describe(bool revisionWasAppended)
             => revisionWasAppended
-                ? new SetAltTextResult(PlannedUpdates, Skipped, Failed)
-                : new SetAltTextResult(0, Skipped, Failed + PlannedUpdates);
+                ? new SetAltTextResult(PlannedUpdates, Skipped, Failed, LeftWithoutDescription)
+                : new SetAltTextResult(0, Skipped, Failed + PlannedUpdates, LeftWithoutDescription);
     }
 }

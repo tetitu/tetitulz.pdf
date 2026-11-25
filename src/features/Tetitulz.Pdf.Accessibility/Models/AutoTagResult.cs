@@ -12,7 +12,11 @@ namespace Tetitulz.Pdf.Accessibility.Models
     /// <summary>Options for the PDF auto-tagger.</summary>
     public sealed class AutoTagOptions
     {
-        /// <summary>Default document language tag to inject (e.g. "en-US").</summary>
+        /// <summary>
+        /// Document language tag the tagger writes into a catalog that has no <c>/Lang</c> (e.g.
+        /// "en-US"); null or empty writes none. The remediation pipeline does not read it:
+        /// <see cref="RemediationOptions.Language"/> alone decides the pipeline's <c>/Lang</c>.
+        /// </summary>
         public string Language { get; set; } = "en-US";
 
         /// <summary>Document title to set in /Info. If null, leaves existing title untouched.</summary>
@@ -51,6 +55,39 @@ namespace Tetitulz.Pdf.Accessibility.Models
             if (Target == target) return this;
             var copy = (AutoTagOptions)MemberwiseClone();
             copy.Target = target;
+            return copy;
+        }
+
+        /// <summary>
+        /// Whether a step after tagging writes the links' descriptions — the remediation pipeline's
+        /// <see cref="RemediationOptions.LinkDescriptionFactory"/>. The tagger then leaves the links
+        /// it finds without a <c>/Contents</c> to that step, which reports the ones it leaves
+        /// undescribed; tagging alone, nothing else describes them, and the tagger says so.
+        /// </summary>
+        internal bool LinkDescriptionsFollow { get; private set; }
+
+        /// <summary>
+        /// These options with <see cref="LinkDescriptionsFollow"/> set: a copy, as
+        /// <see cref="ForTarget"/> makes, so the caller's object is not changed.
+        /// </summary>
+        internal AutoTagOptions WithLinkDescriptionsToFollow()
+        {
+            if (LinkDescriptionsFollow) return this;
+            var copy = (AutoTagOptions)MemberwiseClone();
+            copy.LinkDescriptionsFollow = true;
+            return copy;
+        }
+
+        /// <summary>
+        /// These options with <see cref="Language"/> null: a copy, as <see cref="ForTarget"/>
+        /// makes. The remediation pipeline's <c>/Lang</c> is its metadata step's, which writes
+        /// <see cref="RemediationOptions.Language"/> and leaves the entry alone when that is null.
+        /// </summary>
+        internal AutoTagOptions WithoutLanguage()
+        {
+            if (string.IsNullOrEmpty(Language)) return this;
+            var copy = (AutoTagOptions)MemberwiseClone();
+            copy.Language = null;
             return copy;
         }
 
@@ -636,6 +673,19 @@ namespace Tetitulz.Pdf.Accessibility.Models
             Skipped = skipped;
             Failed  = failed;
         }
+
+        internal SetAltTextResult(int updated, int skipped, int failed, int leftWithoutDescription)
+            : this(updated, skipped, failed)
+        {
+            LeftWithoutDescription = leftWithoutDescription;
+        }
+
+        /// <summary>
+        /// Of the links the provider declined (<see cref="Skipped"/>), those that have no
+        /// <c>/Contents</c> of their own either, so UA22 stays open for them — what the remediation
+        /// pipeline reports once its link step has run. 0 for figures.
+        /// </summary>
+        internal int LeftWithoutDescription { get; }
     }
 
     /// <summary>Context passed to the user-supplied alt-text provider callback.</summary>

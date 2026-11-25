@@ -92,6 +92,13 @@ namespace Tetitulz.Pdf.Plugins.Conformance
                    "conformance report is incomplete.";
         }
 
+        /// <summary>
+        /// Records an object a walk of the whole file could not read — the parser's enumeration hands
+        /// over its number and the exception — in the run's one notice, as a failed dereference is.
+        /// </summary>
+        internal static void Record(int number, Exception ex)
+            => Note(number, ex == null ? "the object does not parse" : ex.GetType().Name + ": " + ex.Message);
+
         private static void Note(int number, string why)
         {
             var numbers = _numbers ??= new HashSet<int>();

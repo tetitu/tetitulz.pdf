@@ -76,7 +76,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
     /// leaves out; see <see cref="CheckNoMarkedContentReferencesIntoAnnotationAppearances"/>'s own remarks.
     /// </para>
     /// </summary>
-    public static class PdfUa2StructureChecker
+    public static partial class PdfUa2StructureChecker
     {
         /// <summary>ISO 32000-2:2020 §14.8.6.1 — the standard structure namespace for PDF 2.0.</summary>
         internal const string Pdf2StandardStructureNamespace = "http://iso.org/pdf2/ssn";
@@ -267,6 +267,11 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             RunCheck(doc, catalog, violations, "CheckRoleMapNsNotSameNamespace", CheckRoleMapNsNotSameNamespace);
             RunCheck(doc, catalog, violations, "CheckAriaRoleUsesAria11Owner", CheckAriaRoleUsesAria11Owner);
             RunCheck(doc, catalog, violations, "CheckElementBelongsToStandardNamespace", CheckElementBelongsToStandardNamespace);
+            RunCheck(doc, catalog, violations, "CheckShownTextIsTaggedOrArtifact", CheckShownTextIsTaggedOrArtifact);
+            RunCheck(doc, catalog, violations, "CheckEmbeddedFontsDefineShownGlyphs", CheckEmbeddedFontsDefineShownGlyphs);
+            RunCheck(doc, catalog, violations, "CheckFormulaRepresentation", CheckFormulaRepresentation);
+            RunCheck(doc, catalog, violations, "CheckWidgetActionsAreDescribed", CheckWidgetActionsAreDescribed);
+            RunCheck(doc, catalog, violations, "CheckElementAndAnnotationTextNoPua", CheckElementAndAnnotationTextNoPua);
 
             return Completed(violations);
         }
@@ -443,10 +448,48 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// not satisfy this rule.
         /// </summary>
         private static bool IsInPdf2Namespace(PdfDocument doc, PdfDictionary element)
+            => IsInNamespace(doc, element, Pdf2StandardStructureNamespace);
+
+        /// <summary>
+        /// Whether <paramref name="node"/> is the standard structure type <paramref name="type"/> of the
+        /// PDF 1.7 namespace — or of the PDF 2.0 namespace too, when <paramref name="inPdf2Namespace"/> —
+        /// followed from its own <c>/S</c>: in the default namespace (no <c>/NS</c>, ISO 32000-2
+        /// §14.8.6.1: PDF 1.7) through the structure tree's <c>/RoleMap</c>
+        /// (<see cref="PdfRoleMap.Means"/>); in another namespace through its <c>/RoleMapNS</c> (§14.8.6.2),
+        /// a bare name a target in the default namespace, an array a type and its namespace, under
+        /// <see cref="PdfRoleMap.MaxHops"/>. A chain that ends outside the standard namespaces, or cannot be
+        /// followed, is not the type.
+        /// </summary>
+        private static bool IsStandardStructureType(PdfDocument doc, StructNode node,
+            IReadOnlyDictionary<string, string> roleMap, string type, bool inPdf2Namespace)
         {
-            var nsDict = Resolve(doc, element[PdfName.NS]) as PdfDictionary;
-            var nsName = Resolve(doc, nsDict?[PdfName.NS]) as PdfString;
-            return nsName?.GetText() == Pdf2StandardStructureNamespace;
+            if (node?.Dict == null || node.Role == null) return false;
+            string role = node.Role;
+            var nsDict = Resolve(doc, node.Dict[PdfName.NS]) as PdfDictionary;
+            for (int hop = 0; hop <= PdfRoleMap.MaxHops; hop++)
+            {
+                if (nsDict == null) return PdfRoleMap.Means(role, roleMap, type);
+                string ns = (Resolve(doc, nsDict[PdfName.NS]) as PdfString)?.GetText();
+                if (ns == Pdf17StandardStructureNamespace) return role == type;
+                if (ns == Pdf2StandardStructureNamespace) return inPdf2Namespace && role == type;
+                if (ns == null || ns == MathMlNamespace) return false;
+
+                PdfObject mapped = Resolve(doc, (Resolve(doc, nsDict[PdfName.RoleMapNS]) as PdfDictionary)?[new PdfName(role)]);
+                if (mapped is PdfName bare)
+                {
+                    role = bare.Value;
+                    nsDict = null;
+                }
+                else if (mapped is PdfArray target && target.Count >= 2
+                         && Resolve(doc, target[0]) is PdfName targetRole
+                         && Resolve(doc, target[1]) is PdfDictionary targetNs)
+                {
+                    role = targetRole.Value;
+                    nsDict = targetNs;
+                }
+                else return false;
+            }
+            return false;
         }
 
         /// <summary>The catalog's <c>/StructTreeRoot</c>, or <see langword="null"/> when absent —
@@ -474,12 +517,11 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// H</c> anywhere in the tree is unambiguously prohibited. The clause's other requirement
         /// ("where a heading's level is evident, the heading level … shall match") needs judging
         /// real content against its nesting level, which this slice does not attempt.</para>
-        /// <para><b>Scoped to the literal role name</b>, the same way <see cref="CheckDocumentStructureType"/>
-        /// checks <c>Document</c> — a custom namespace reusing the name <c>H</c> for an unrelated,
-        /// role-mapped-elsewhere type would be a false positive this check does not distinguish.
-        /// Real documents reusing a standard structure type name for something else in a private
-        /// namespace are not a case this codebase has evidence of and GAPS.md §22d already defers
-        /// full namespace-membership judging.</para>
+        /// <para><b>By the standard structure type an element is</b> (<see cref="IsStandardStructureType"/>),
+        /// in either standard namespace, both of which define <c>H</c>: an <c>/S /H</c> in the default
+        /// namespace, a custom type the <c>/RoleMap</c> or a namespace's <c>/RoleMapNS</c> maps to it —
+        /// §8.2.4: a custom type "shall conform to the requirements for the standard structure types to
+        /// which they are role mapped" — and not a custom namespace's own <c>H</c> mapped elsewhere.</para>
         /// </remarks>
         private static void CheckProhibitedHType(
             PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
@@ -487,10 +529,11 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             var structTreeRoot = ResolveStructTreeRoot(doc, catalog);
             if (structTreeRoot == null) return;
 
+            var roleMap = PdfRoleMap.Build(structTreeRoot, o => Resolve(doc, o));
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "H") return;
+                if (!IsStandardStructureType(doc, node, roleMap, "H", inPdf2Namespace: true)) return;
                 found++;
                 if (found > IndividualReportLimit) return;
                 v.Add(new PdfUa2StructureViolation("UA2-8.2.5.12",
@@ -514,9 +557,13 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// be present in conforming files."
         /// </summary>
         /// <remarks>
-        /// Only the prohibition is checked here; the clause's <c>/Ref</c> linkage between a citation
-        /// and its <c>FENote</c> is <see cref="CheckFENoteRefsAreReciprocal"/>. Same
-        /// literal-role-name scope note as <see cref="CheckProhibitedHType"/>.
+        /// <para>Only the prohibition is checked here; the clause's <c>/Ref</c> linkage between a citation
+        /// and its <c>FENote</c> is <see cref="CheckFENoteRefsAreReciprocal"/>.</para>
+        /// <para><b>The standard type, not the name.</b> NOTE 1: "This does not prohibit using a Note
+        /// structure type in any other namespace if it is role mapped to an allowed structure type" — so
+        /// a custom namespace's <c>Note</c> mapped to <c>FENote</c> is not reported, and a custom type
+        /// mapped to the PDF 1.7 <c>Note</c> is (<see cref="IsStandardStructureType"/>; the PDF 2.0
+        /// namespace defines no <c>Note</c>).</para>
         /// </remarks>
         private static void CheckProhibitedNoteType(
             PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
@@ -524,10 +571,11 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             var structTreeRoot = ResolveStructTreeRoot(doc, catalog);
             if (structTreeRoot == null) return;
 
+            var roleMap = PdfRoleMap.Build(structTreeRoot, o => Resolve(doc, o));
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "Note") return;
+                if (!IsStandardStructureType(doc, node, roleMap, "Note", inPdf2Namespace: false)) return;
                 found++;
                 if (found > IndividualReportLimit) return;
                 v.Add(new PdfUa2StructureViolation("UA2-8.2.5.14.1",
@@ -2497,24 +2545,16 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         // ----------------------------------------------------------------
 
         /// <summary>
-        /// Every optional content configuration dictionary reachable from the catalog's
-        /// <c>/OCProperties</c> — the default (<c>/D</c>) and every entry of <c>/Configs</c>, when
-        /// present — shared by both §8.7 checks so neither re-derives the walk.
+        /// Every optional content configuration dictionary the catalog's <c>/OCProperties</c>
+        /// declares — the default (<c>/D</c>) and every entry of <c>/Configs</c>, each once —
+        /// through <c>Plugins.Conformance.OptionalContentConfigurations</c>, which PDF/UA-1's UA58
+        /// and PDF/A's optional content rules read too.
         /// </summary>
-        private static IEnumerable<PdfDictionary> CollectOcConfigDictionaries(PdfDocument doc, PdfDictionary catalog)
+        private static List<Plugins.Conformance.OptionalContentConfigurations.Configuration> OcConfigurations(
+            PdfDocument doc, PdfDictionary catalog, out PdfDictionary ocProperties)
         {
-            var ocProperties = Resolve(doc, catalog[PdfName.OCProperties]) as PdfDictionary;
-            if (ocProperties == null) yield break;
-
-            if (Resolve(doc, ocProperties[PdfName.D]) is PdfDictionary defaultConfig)
-                yield return defaultConfig;
-
-            if (Resolve(doc, ocProperties[PdfName.Configs]) is PdfArray configs)
-            {
-                foreach (PdfObject entry in configs)
-                    if (Resolve(doc, entry) is PdfDictionary config)
-                        yield return config;
-            }
+            ocProperties = Resolve(doc, catalog[PdfName.OCProperties]) as PdfDictionary;
+            return Plugins.Conformance.OptionalContentConfigurations.Read(doc, ocProperties);
         }
 
         /// <summary>
@@ -2525,10 +2565,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
         {
             int found = 0;
-            foreach (PdfDictionary config in CollectOcConfigDictionaries(doc, catalog))
+            foreach (var configuration in OcConfigurations(doc, catalog, out _))
             {
                 if (found > IndividualReportLimit) break;
-                if (config[PdfName.AS] == null) continue;
+                if (configuration.Dictionary[PdfName.AS] == null) continue;
 
                 found++;
                 if (found > IndividualReportLimit) break;
@@ -2552,25 +2592,19 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// </summary>
         /// <remarks>
         /// The condition gates the whole check, not just which dictionaries it looks at: a file
-        /// with only the default configuration and no <c>/Configs</c> array is untouched by this
-        /// rule at all, so <see cref="CollectOcConfigDictionaries"/> is walked only after
-        /// confirming a non-empty <c>/Configs</c> array exists.
+        /// with only the default configuration and no configuration in <c>/Configs</c> is untouched
+        /// by this rule at all. ISO 14289-1 7.10 says the same in the same words, so the rule is
+        /// <c>OptionalContentConfigurations.UnnamedUnderPdfUa</c>, PDF/UA-1's UA58 reading it too.
         /// </remarks>
         private static void CheckOcConfigNamesWhenConfigsPresent(
             PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
         {
-            var ocProperties = Resolve(doc, catalog[PdfName.OCProperties]) as PdfDictionary;
-            if (ocProperties == null) return;
-            if (!(Resolve(doc, ocProperties[PdfName.Configs]) is PdfArray configs) || configs.Count == 0)
-                return;
-
+            var configurations = OcConfigurations(doc, catalog, out PdfDictionary ocProperties);
             int found = 0;
-            foreach (PdfDictionary config in CollectOcConfigDictionaries(doc, catalog))
+            foreach (var unnamed in Plugins.Conformance.OptionalContentConfigurations.UnnamedUnderPdfUa(
+                         doc, ocProperties, configurations))
             {
                 if (found > IndividualReportLimit) break;
-
-                var name = Resolve(doc, config[PdfName.Name]) as PdfString;
-                if (name != null && !string.IsNullOrEmpty(name.GetText())) continue;
 
                 found++;
                 if (found > IndividualReportLimit) break;
@@ -3816,14 +3850,14 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// Unicode PUA."
         /// </summary>
         /// <remarks>
-        /// <para><b>Scoped to outline (bookmark) <c>/Title</c> entries only</b> — the clause's own
-        /// worked example ("Bookmarks (outlines) are an example of a user-facing text string"),
-        /// and the one text-string location this checker can call unambiguously "intended to be
-        /// human readable" without a semantic judgment call. A general sweep of every text string
-        /// in the file would have to decide, for each one, whether it is human-facing at all (an
-        /// annotation's internal `/NM` name, say, is not), which is exactly the kind of intent
-        /// judgment every other clause in this file declines to make; a document outline's
-        /// `/Title` has no other purpose.</para>
+        /// <para><b>Outline (bookmark) <c>/Title</c> entries</b> — the clause's own worked example
+        /// ("Bookmarks (outlines) are an example of a user-facing text string"). The other text strings
+        /// read under §8.6 are those whose definition makes them human-readable — a structure element's
+        /// <c>/Alt</c>, <c>/ActualText</c>, <c>/E</c> and <c>/T</c>, an annotation's <c>/Contents</c> —
+        /// in <see cref="CheckElementAndAnnotationTextNoPua"/>. A sweep of every text string would have
+        /// to decide, for each one, whether it is human-facing at all (an annotation's internal
+        /// <c>/NM</c> name, say, is not), which is the kind of intent judgment this file declines to
+        /// make.</para>
         /// <para>Walks the catalog's `/Outlines` tree via `/First`/`/Next` — a small bespoke walk
         /// (mirroring <see cref="CollectMultiWidgetFieldWidgets"/>'s shape: a
         /// <see cref="PdfReferenceEquality"/>-keyed visited set for the cycle guard, and
@@ -5186,8 +5220,9 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// True when this checker found no violations.
         ///
         /// <para>
-        /// <b>Not a PDF/UA-2 conformance certificate.</b> This checker implements fifty-one
-        /// clauses (§8.2.5.2, §8.2.5.12, two from §8.2.5.14.1, §8.2.5.14.2, §8.2.5.23, §8.2.5.24, §8.2.5.27, §8.2.5.28.2,
+        /// <b>Not a PDF/UA-2 conformance certificate.</b> This checker implements these
+        /// clauses (§8.2.2 with §8.3.1 for shown text, §8.2.5.29 and a second from §8.2.5.29.1,
+        /// §8.10.2.3, a second from §8.6 and a second from §8.4.5.5.1 (glyphs), §8.2.5.2, §8.2.5.12, two from §8.2.5.14.1, §8.2.5.14.2, §8.2.5.23, §8.2.5.24, §8.2.5.27, §8.2.5.28.2,
         /// three from §8.2.5.25, §8.2.5.29.1, §8.2.5.21/§8.9.2.2, §8.2.5.22/§8.10.1, two from §8.9.2.1,
         /// §8.9.3.3, two from §8.10.1, §8.9.4.2, §8.9.2.4.9, §8.9.2.4.11, §8.9.2.4.15, §8.9.2.4.14,
         /// §8.9.2.4.12, §8.9.2.4.19, §8.9.2.4.13, §8.9.2.4.10, §8.9.2.4.8, §8.10.3.3, §8.4.4, two

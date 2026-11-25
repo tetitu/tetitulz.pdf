@@ -130,6 +130,85 @@ namespace Tetitulz.Pdf.Accessibility.Checking
         }
 
         /// <summary>
+        /// UA35 — ISO 14289-1 7.18.5: "The IsMap key shall not be present with a value of true in the
+        /// URI action dictionary … unless its functionality is also provided in an equivalent manner
+        /// elsewhere in the content without using an IsMap key." A link annotation a reader is shown
+        /// (<see cref="EnumerateAnnotations"/>, 7.18.1's scope) whose <c>/A</c>, or an action on its
+        /// <c>/Next</c> chain (ISO 32000-1 §12.6.3), is a URI action with <c>/IsMap</c> true. A Warning,
+        /// not an Error: whether the same function is offered elsewhere is for a person to confirm.
+        /// </summary>
+        private static void CheckLinkImageMaps(CheckContext ctx)
+        {
+            var imageMaps = new List<Occurrence>();
+            bool chainCut = false;
+            foreach (PageInfo page in ctx.Pages)
+                foreach (AnnotationInfo annot in EnumerateAnnotations(ctx, page))
+                    if (annot.Subtype == PdfAnnotationSubtypes.Link
+                        && SendsPointerPosition(ctx, annot.Dict[PdfName.A], ref chainCut))
+                        imageMaps.Add(Occurrence.ForAnnotation(annot));
+
+            if (chainCut)
+                ctx.Issues.Add(Issue(IssueSeverity.Info, "UA99",
+                    "UA35 stopped reading a link's action chain at the " +
+                    PdfLimits.MaxActionChainDepth.ToString(CultureInfo.InvariantCulture) +
+                    "-action ceiling, so a URI action with /IsMap further along it was not looked for.",
+                    "Shorten the link's /Next chain and re-run the audit.",
+                    IssueCategory.Annotations));
+
+            EmitOccurrences(ctx, IssueSeverity.Warning, "UA35", IssueCategory.Annotations, WcagLevel.A,
+                null, "2.1.1", imageMaps,
+                o => "Link annotation's URI action has /IsMap true, so following it sends the pointer's " +
+                     "position, which a keyboard or screen-reader user cannot give. ISO 14289-1 7.18.5 permits " +
+                     "it only when the same function is provided in an equivalent manner elsewhere in the " +
+                     "content without IsMap, which this checker cannot confirm.",
+                (count, objects) =>
+                    count.ToString(CultureInfo.InvariantCulture) + " link annotation(s) have a URI action with " +
+                    "/IsMap true (e.g. " + objects + ").",
+                "Remove /IsMap from the URI action, or confirm by review that each destination of the image map " +
+                "is also reachable without it, for example as a link annotation of its own.");
+        }
+
+        /// <summary>
+        /// Whether <paramref name="action"/>, or an action on its <c>/Next</c> chain (a dictionary or an
+        /// array of them), is a URI action with <c>/IsMap</c> true. Each object is read once, and at most
+        /// <see cref="PdfLimits.MaxActionChainDepth"/> actions and arrays a chain; past it the rest is not
+        /// read and <paramref name="cut"/> is set.
+        /// </summary>
+        private static bool SendsPointerPosition(CheckContext ctx, PdfObject action, ref bool cut)
+        {
+            var pending = new Stack<PdfObject>();
+            var seen = new HashSet<object>(PdfReferenceEquality.Instance);
+            int read = 0;
+            pending.Push(action);
+            while (pending.Count > 0)
+            {
+                PdfObject next = pending.Pop();
+                if (next is PdfReference) next = ResolveObject(ctx.Doc, next);
+                if (!(next is PdfArray || next is PdfDictionary) || !seen.Add(next)) continue;
+                if (++read > PdfLimits.MaxActionChainDepth)
+                {
+                    cut = true;
+                    return false;
+                }
+
+                if (next is PdfArray list)
+                {
+                    int take = Math.Min(list.Count, PdfLimits.MaxActionChainDepth);
+                    if (take < list.Count) cut = true;
+                    for (int i = take - 1; i >= 0; i--) pending.Push(list[i]);
+                    continue;
+                }
+
+                var dict = (PdfDictionary)next;
+                if ((ResolveObject(ctx.Doc, dict[PdfName.S]) as PdfName)?.Value == "URI"
+                    && (ResolveObject(ctx.Doc, dict[PdfName.IsMap]) as PdfBoolean)?.Value == true)
+                    return true;
+                pending.Push(dict[PdfName.Next]);
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Enumerates the annotations on a page that PDF/UA cares about.
         ///
         /// <para>Excluded, because none of them is content a reader navigates to:</para>

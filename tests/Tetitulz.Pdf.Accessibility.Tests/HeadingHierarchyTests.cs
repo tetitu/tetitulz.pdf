@@ -222,13 +222,14 @@ public class HeadingHierarchyTests
     }
 
     /// <summary>Runs the remediation pipeline with every pass but the heading pass disabled.</summary>
-    private static RemediationReport RemediateHeadingsOnly(byte[] input, out byte[] output)
+    private static RemediationReport RemediateHeadingsOnly(byte[] input, out byte[] output, int part = 1)
     {
         using var inMs = new MemoryStream(input, writable: false);
         using var outMs = new MemoryStream();
         RemediationReport report = PdfAccessibility.RemediateWithReport(inMs, outMs,
             new RemediationOptions
             {
+                PdfUaPart = part,
                 Language = null,
                 Title = null,
                 AutoTagIfUntagged = false,
@@ -256,6 +257,28 @@ public class HeadingHierarchyTests
 
         Assert.Equal(1, changed);
         Assert.Equal(new[] { "Document", "H1", "H2" }, RolesOf(output));
+    }
+
+    /// <summary>
+    /// The no-skip rule is ISO 14289-1 7.4.2's; ISO 14289-2 §8.2.5.12 says it does not include one.
+    /// So a part-2 run keeps the author's H1, H3 and says why, while a part-1 run (the control)
+    /// closes the gap.
+    /// </summary>
+    [Fact]
+    public void Remediate_Part2_KeepsTheAuthorsHeadingLevels_Part1ClosesTheGap()
+    {
+        byte[] input = StructurePdf(Doc("H1", "H3"));
+
+        RemediationReport part2 = RemediateHeadingsOnly(input, out byte[] part2Output, part: 2);
+        RemediationReport part1 = RemediateHeadingsOnly(input, out byte[] part1Output, part: 1);
+
+        RemediationStepResult kept = HeadingStep(part2);
+        Assert.True(kept.Skipped);
+        Assert.Contains("ISO 14289-2 §8.2.5.12", kept.SkipReason, StringComparison.Ordinal);
+        Assert.Equal(new[] { "Document", "H1", "H3" }, RolesOf(part2Output));
+
+        Assert.True(HeadingStep(part1).Applied);
+        Assert.Equal(new[] { "Document", "H1", "H2" }, RolesOf(part1Output));
     }
 
     [Fact]

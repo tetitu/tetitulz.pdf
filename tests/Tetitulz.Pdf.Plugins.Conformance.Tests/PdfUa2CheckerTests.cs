@@ -258,6 +258,10 @@ public class PdfUa2CheckerTests
         PdfUa2Violation version = Assert.Single(result.Violations);
         Assert.Equal("UA2-6.1", version.Code);
         Assert.Contains("1.7", version.Message, StringComparison.Ordinal);
+        // The rule is veraPDF's profile's (6.1-1), and the message says so rather than citing a sentence
+        // ISO 14289-2 §6.1 does not contain.
+        Assert.Contains("veraPDF's PDF/UA-2 profile, rule 6.1-1", version.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain("ISO 14289-2 6.1", version.Message, StringComparison.Ordinal);
     }
 
     [Fact]
