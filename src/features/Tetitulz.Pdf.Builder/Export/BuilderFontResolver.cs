@@ -49,10 +49,36 @@ namespace Tetitulz.Pdf.Builder.Export
         /// two are deliberately independent constants in independent assemblies rather than a shared
         /// one, matching how <c>ContentOperationCache</c> keeps its own.</para>
         ///
-        /// <para>Refusing an entry never changes what <see cref="LoadFile"/> returns, so a full
-        /// cache costs a re-read on a future miss and nothing else.</para>
+        /// <para>Refusing an entry never changes what an export embeds. <see cref="LoadFile"/> hands
+        /// the program back either way, but a refused file is read again on the next load, as a new
+        /// program; an export keeps the program it took for each file (<see cref="_taken"/>), so a
+        /// face several of its families fall back to is still one program and one embedded font, and
+        /// a full cache costs a re-read on a future miss and nothing else.</para>
         /// </summary>
         internal const long MaxCachedFontBytes = 32L * 1024 * 1024;
+
+        /// <summary>
+        /// Empties <see cref="FileCache"/> and charges it to its ceiling until disposed, so every load
+        /// meanwhile is refused and read afresh: a test's way to reach a full cache without 32 MiB of
+        /// fonts. Disposing empties it again and clears the charge.
+        /// </summary>
+        internal static IDisposable FullFileCacheForTest() => new FullFileCacheScope();
+
+        private sealed class FullFileCacheScope : IDisposable
+        {
+            internal FullFileCacheScope() => Reset(MaxCachedFontBytes);
+
+            public void Dispose() => Reset(0);
+
+            private static void Reset(long charged)
+            {
+                lock (FileGate)
+                {
+                    FileCache.Clear();
+                    _chargedBytes = charged;
+                }
+            }
+        }
 
         /// <summary>Bytes <see cref="FileCache"/> is holding; for the bound's regression test.</summary>
         internal static long ChargedBytes { get { lock (FileGate) return _chargedBytes; } }
@@ -63,6 +89,13 @@ namespace Tetitulz.Pdf.Builder.Export
             new Dictionary<string, TrueTypeFontProgram?>(StringComparer.Ordinal);
         private readonly Dictionary<string, TrueTypeFontProgram?> _providerCache =
             new Dictionary<string, TrueTypeFontProgram?>(StringComparer.Ordinal);
+
+        // The host files this export has taken, by path. FileCache past its ceiling hands back a new
+        // program for each load, and the exporter embeds one handle per program instance
+        // (PdfExporter's EmbeddedByProgram), so without it two families falling back to one face
+        // would embed it twice. Only an accepted program is kept, never a candidate the scan read.
+        private readonly Dictionary<string, TrueTypeFontProgram> _taken =
+            new Dictionary<string, TrueTypeFontProgram>(StringComparer.OrdinalIgnoreCase);
 
         // Code points no installed font has a glyph for, learned on a failed host scan. A set that
         // contains one can never resolve (a covering font must cover every point), so a later set
@@ -222,7 +255,7 @@ namespace Tetitulz.Pdf.Builder.Export
                     foreach (string path in FontFileLocator.FindFamilyFiles(familyName!, bold, italic, 8))
                     {
                         var prog = HostCandidate(path, required);
-                        if (prog != null && IsEmbeddable(prog, path, required)) return prog;
+                        if (prog != null && IsEmbeddable(prog, path, required)) return Take(path, prog);
                     }
                 }
 
@@ -233,7 +266,7 @@ namespace Tetitulz.Pdf.Builder.Export
                         {
                             string p = Path.Combine(dir, stem + ext);
                             var prog = HostCandidate(p, required);
-                            if (prog != null && IsEmbeddable(prog, p, required)) return prog;
+                            if (prog != null && IsEmbeddable(prog, p, required)) return Take(p, prog);
                         }
             }
 
@@ -255,13 +288,20 @@ namespace Tetitulz.Pdf.Builder.Export
 
                 var prog = HostCandidate(path, required);
                 if (prog == null) continue;
-                if (!prog.HasCff) { if (IsEmbeddable(prog, path, required)) return prog; }
+                if (!prog.HasCff) { if (IsEmbeddable(prog, path, required)) return Take(path, prog); }
                 else cffCandidates.Add((prog, path));
             }
             foreach (var (prog, path) in cffCandidates)
-                if (IsEmbeddable(prog, path, required)) return prog;
+                if (IsEmbeddable(prog, path, required)) return Take(path, prog);
 
             return null;
+        }
+
+        /// <summary>Keeps <paramref name="prog"/> as this export's program for <paramref name="path"/>, and returns it.</summary>
+        private TrueTypeFontProgram Take(string path, TrueTypeFontProgram prog)
+        {
+            _taken[path] = prog;
+            return prog;
         }
 
         /// <summary>
@@ -297,7 +337,7 @@ namespace Tetitulz.Pdf.Builder.Export
         /// <param name="required">The code points the run draws.</param>
         private TrueTypeFontProgram? HostCandidate(string path, int[] required)
         {
-            var prog = LoadFile(path);
+            var prog = _taken.TryGetValue(path, out var taken) ? taken : LoadFile(path);
             if (prog == null || !Covers(prog, required)) return null;
 
             var licence = prog.EmbeddingLicense;

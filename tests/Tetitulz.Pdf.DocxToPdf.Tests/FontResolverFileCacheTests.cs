@@ -4,6 +4,11 @@
 
 using System;
 using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Tetitulz.Pdf.DocxToPdf.Rendering;
 using Tetitulz.Pdf.TestHelpers;
 using Xunit;
@@ -11,7 +16,8 @@ using Xunit;
 namespace Tetitulz.Pdf.DocxToPdf.Tests;
 
 /// <summary>
-/// <see cref="FontResolver"/>'s file cache is live and charges what it holds, exactly. Removing the
+/// <see cref="FontResolver"/>'s file cache is live and charges what it holds, exactly, and a full
+/// one still leaves a document one program, and one embedded font, per file. Removing the
 /// cache write or the charge, or adding a byte to the charge, is invisible to an answer-only test: a
 /// cache whose hits and misses return equal programs is invisible to every
 /// assertion about the answer (CLAUDE.md's second blind spot), so the evidence asserted here is
@@ -48,5 +54,54 @@ public class FontResolverFileCacheTests
         {
             try { File.Delete(path); } catch (IOException) { }
         }
+    }
+
+    /// <summary>
+    /// A document converted while the file cache is full embeds its host face once. Past the
+    /// ceiling every load reads the file again as a new program, and the document's embedded fonts
+    /// are deduplicated by program, so each of the twelve runs would embed its own copy; the
+    /// document keeps the program it took for the file (<c>DocxRenderContext.ResolveHostFont</c>).
+    /// </summary>
+    [Fact]
+    public void AFullFileCache_StillEmbedsTheHostFaceOnce()
+    {
+        const string word = "שלום";
+        string path = Path.Combine(Path.GetTempPath(), "tetitulz-fullcache-" + Guid.NewGuid().ToString("N") + ".ttf");
+        File.WriteAllBytes(path, MinimalTrueType.Build(word));
+        try
+        {
+            string pdf;
+            long charged;
+            using (FontResolver.UseHostFontFilesForTest(new[] { path }))
+            using (FontResolver.FullFileCacheForTest())
+            {
+                pdf = Encoding.Latin1.GetString(DocxToPdfConverter.ConvertToBytes(
+                    Paragraphs(word, 12), new DocxToPdfOptions { CompressStreams = false }));
+                charged = FontResolver.ChargedBytes;
+            }
+
+            Assert.Single(Regex.Matches(pdf, "/FontFile2"));
+            // The cache refused every program throughout, so each run's resolution read the file anew.
+            Assert.Equal(FontResolver.MaxCachedFontBytes, charged);
+        }
+        finally
+        {
+            try { File.Delete(path); } catch (IOException) { }
+        }
+    }
+
+    private static byte[] Paragraphs(string text, int count)
+    {
+        using var ms = new MemoryStream();
+        using (var doc = WordprocessingDocument.Create(ms, WordprocessingDocumentType.Document))
+        {
+            var main = doc.AddMainDocumentPart();
+            var body = new Body();
+            for (int i = 0; i < count; i++)
+                body.Append(new Paragraph(new Run(new Text(text))));
+            main.Document = new Document(body);
+            main.Document.Save();
+        }
+        return ms.ToArray();
     }
 }

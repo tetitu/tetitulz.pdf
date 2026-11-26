@@ -186,7 +186,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering.Drawings
                         // so with no covering font the line is left out and that is said.
                         var cps = UnicodeText.CodePointsToCover(lineText);
                         var program = context.ResolveEmbeddedFont(text.Family, text.Bold, text.Italic, cps)
-                                      ?? FontResolver.Resolve(text.Family, text.Bold, text.Italic, cps, context.Options.AllowRestrictedSystemFonts);
+                                      ?? context.ResolveHostFont(text.Family, text.Bold, text.Italic, cps);
                         if (program == null)
                         {
                             RunRenderer.ReportNoCoveringFont("ShapeTextRenderer.Render", text.Family, lineText);

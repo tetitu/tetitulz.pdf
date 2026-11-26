@@ -97,7 +97,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
                 var cps = UnicodeText.CodePointsToCover(textStr);
                 // Prefer a font embedded in the DOCX itself; fall back to an OS font.
                 var program = context.ResolveEmbeddedFont(csFamily, isBold, isItalic, cps)
-                              ?? FontResolver.Resolve(csFamily, isBold, isItalic, cps, context.Options.AllowRestrictedSystemFonts);
+                              ?? context.ResolveHostFont(csFamily, isBold, isItalic, cps);
                 if (program != null)
                 {
                     // Defer shaping to wrap time so a long RTL/complex run can be

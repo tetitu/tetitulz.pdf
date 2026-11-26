@@ -411,7 +411,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             var cps = UnicodeText.CodePointsToCover(marker);
             string family = context.StyleResolver.ResolveComplexScriptFontName(null, paragraph);
             var program = context.ResolveEmbeddedFont(family, false, false, cps)
-                          ?? FontResolver.Resolve(family, false, false, cps, context.Options.AllowRestrictedSystemFonts);
+                          ?? context.ResolveHostFont(family, false, false, cps);
             if (program == null) RunRenderer.ReportNoCoveringFont("ParagraphRenderer.NoCoveringMarkerFont", family, marker);
             return program;
         }

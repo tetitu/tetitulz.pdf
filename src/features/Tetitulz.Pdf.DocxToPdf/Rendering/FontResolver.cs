@@ -76,8 +76,17 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         /// <c>Core.Fonts.FontEmbeddingLicense</c> states — report for a caller-supplied program,
         /// skip for a system-substituted one.
         /// </remarks>
+        /// <param name="documentPrograms">
+        /// The programs one document has taken, by file (<c>DocxRenderContext.ResolveHostFont</c>
+        /// passes its own): a file the document already holds is answered with that program, and a
+        /// new one is added. A document deduplicates its embedded fonts by program identity
+        /// (<c>DocxRenderContext.RegisterEmbeddedFont</c>), and <see cref="FileCache"/> past its
+        /// ceiling hands back a new program for every load, so without the map one face would be
+        /// embedded once a run. Null answers from the file cache alone.
+        /// </param>
         internal static TrueTypeFontProgram Resolve(string family, bool bold, bool italic,
-            IEnumerable<int> requiredCodePoints, bool allowRestricted = false)
+            IEnumerable<int> requiredCodePoints, bool allowRestricted = false,
+            IDictionary<string, TrueTypeFontProgram> documentPrograms = null)
         {
             int[] required = RequiredCodePoints(requiredCodePoints);
             // The flag is in the key for the reason the caches exist at all: they are static and
@@ -88,11 +97,25 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             lock (Gate)
             {
                 if (ResolveCache.TryGetValue(key, out string cachedPath))
-                    return cachedPath == null ? null : LoadFile(cachedPath);
+                    return cachedPath == null ? null : TheDocumentsProgram(cachedPath, null, documentPrograms);
                 var result = ResolveUncached(family, bold, italic, required, allowRestricted, out string path);
                 ResolveCache[key] = path;
-                return result;
+                return path == null ? result : TheDocumentsProgram(path, result, documentPrograms);
             }
+        }
+
+        /// <summary>
+        /// The program <paramref name="documentPrograms"/> holds for <paramref name="path"/>; else
+        /// <paramref name="loaded"/>, or the file read through <see cref="FileCache"/>, kept there
+        /// for the document's next request.
+        /// </summary>
+        private static TrueTypeFontProgram TheDocumentsProgram(
+            string path, TrueTypeFontProgram loaded, IDictionary<string, TrueTypeFontProgram> documentPrograms)
+        {
+            if (documentPrograms != null && documentPrograms.TryGetValue(path, out var held)) return held;
+            var program = loaded ?? LoadFile(path);
+            if (documentPrograms != null && program != null) documentPrograms[path] = program;
+            return program;
         }
 
         /// <summary>Drops the programs <see cref="FileCache"/> holds and their charge, the resolutions kept: a test's way to see that a resolution holds no program of its own.</summary>
@@ -476,12 +499,35 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         /// <para>32 MiB rather than 16: a single broad-coverage face is large (Arial Unicode is
         /// ~23 MiB) and the fonts worth keeping hot are the ones a document actually draws.</para>
         ///
-        /// <para><b>Refusing to cache never changes what is returned</b> — the program is handed
-        /// back either way, so a full cache costs a re-read on a future miss and nothing else:
-        /// <see cref="ResolveCache"/> memoises a resolution as the file it answered with, so a
-        /// repeated request re-reads a refused file rather than keeping a program of its own.</para>
+        /// <para><b>Refusing to cache never changes what a document embeds.</b> The program is handed
+        /// back either way, but a refused file is read again on the next load, as a new program:
+        /// <see cref="ResolveCache"/> memoises a resolution as the file it answered with, never the
+        /// program. A document keeps the program it first took for each file (the
+        /// <c>documentPrograms</c> map <see cref="Resolve"/> takes), so its runs share one program
+        /// and one embedded font, and a full cache costs one read of a file per document.</para>
         /// </summary>
         internal const long MaxCachedFontBytes = 32L * 1024 * 1024;
+
+        /// <summary>
+        /// Empties <see cref="FileCache"/> and charges it to its ceiling until disposed, so every load
+        /// meanwhile is refused and read afresh: a test's way to reach a full cache without 32 MiB of
+        /// fonts. Disposing empties it again and clears the charge.
+        /// </summary>
+        internal static IDisposable FullFileCacheForTest() => new FullFileCacheScope();
+
+        private sealed class FullFileCacheScope : IDisposable
+        {
+            internal FullFileCacheScope()
+            {
+                lock (FileCache)
+                {
+                    FileCache.Clear();
+                    _chargedBytes = MaxCachedFontBytes;
+                }
+            }
+
+            public void Dispose() => ClearFileCacheForTest();
+        }
 
         /// <summary>
         /// <see cref="LoadFile"/>, reachable by a test — the same hook

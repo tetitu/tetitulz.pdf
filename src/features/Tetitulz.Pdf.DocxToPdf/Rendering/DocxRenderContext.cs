@@ -83,6 +83,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         /// <summary>
         /// Registers a font program for embedding (deduped by program instance) and
         /// returns its entry. Callers record drawn glyphs into <c>UsedGidToUnicode</c>.
+        /// A host font reaches here through <see cref="ResolveHostFont"/>, which hands the
+        /// document one program per file, so the instance is the file.
         /// </summary>
         internal EmbeddedFontEntry RegisterEmbeddedFont(Tetitulz.Pdf.Core.Fonts.TrueTypeFontProgram program)
         {
@@ -92,6 +94,23 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             _embeddedFonts.Add(entry);
             return entry;
         }
+
+        // The host fonts this document has taken, by file: FontResolver's process-wide cache hands
+        // back a new program for each load once it is full, and the embedded-font list above is
+        // deduplicated by instance.
+        private readonly Dictionary<string, Tetitulz.Pdf.Core.Fonts.TrueTypeFontProgram> _hostPrograms =
+            new Dictionary<string, Tetitulz.Pdf.Core.Fonts.TrueTypeFontProgram>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// A host font covering <paramref name="requiredCodePoints"/> for this document, under its
+        /// <see cref="DocxToPdfOptions.AllowRestrictedSystemFonts"/>: <see cref="FontResolver.Resolve"/>
+        /// with the document's own programs, so every run drawn from one file shares one program and
+        /// one embedded font. The one door every renderer resolves a host font through.
+        /// </summary>
+        internal Tetitulz.Pdf.Core.Fonts.TrueTypeFontProgram ResolveHostFont(
+            string family, bool bold, bool italic, IEnumerable<int> requiredCodePoints)
+            => FontResolver.Resolve(family, bold, italic, requiredCodePoints,
+                _options.AllowRestrictedSystemFonts, _hostPrograms);
 
         // Fonts embedded in the DOCX itself (word/fontTable.xml + obfuscated font parts),
         // keyed by "family|variant" (variant = regular/bold/italic/bolditalic). Loaded once.

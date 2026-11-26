@@ -79,8 +79,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering.MathTypesetting
             // the host's, an equation in a document embedding no font would draw its non-WinAnsi symbols
             // as reserved space on a machine that has a covering face.
             var program = context.ResolveEmbeddedFont(style.FontName, style.Bold, style.Italic, codePoints)
-                          ?? FontResolver.Resolve(style.FontName, style.Bold, style.Italic, codePoints,
-                                 context.Options.AllowRestrictedSystemFonts);
+                          ?? context.ResolveHostFont(style.FontName, style.Bold, style.Italic, codePoints);
 
             if (program != null)
             {
