@@ -82,7 +82,8 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
 
         /// <summary>
         /// Registers a font program for embedding (deduped by program instance) and
-        /// returns its entry. Callers record drawn glyphs into <c>UsedGidToUnicode</c>.
+        /// returns its entry. Callers record drawn glyphs into <c>UsedGidToUnicode</c>. A host
+        /// font is one instance a conversion when it is resolved through <see cref="ResolveFont"/>.
         /// </summary>
         internal EmbeddedFontEntry RegisterEmbeddedFont(Tetitulz.Pdf.Core.Fonts.TrueTypeFontProgram program)
         {
@@ -92,6 +93,25 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
             _embeddedFonts.Add(entry);
             return entry;
         }
+
+        // The host fonts this conversion resolved, by file: FontResolver's file cache is
+        // process-wide and may drop or refuse a program, and a re-read is a second instance.
+        private readonly Dictionary<string, Tetitulz.Pdf.Core.Fonts.TrueTypeFontProgram> _hostFontPrograms =
+            new Dictionary<string, Tetitulz.Pdf.Core.Fonts.TrueTypeFontProgram>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// The font a run of <paramref name="codePoints"/> in <paramref name="family"/> draws in: a
+        /// face the DOCX embeds (<see cref="ResolveEmbeddedFont"/>), else the host's
+        /// (<see cref="FontResolver.Resolve"/>, under <c>AllowRestrictedSystemFonts</c>), or null.
+        /// A host font file is one program for the whole conversion, so
+        /// <see cref="RegisterEmbeddedFont"/> embeds it once whatever the process-wide file cache
+        /// holds by the time a later run asks.
+        /// </summary>
+        internal Tetitulz.Pdf.Core.Fonts.TrueTypeFontProgram ResolveFont(
+            string family, bool bold, bool italic, IEnumerable<int> codePoints)
+            => ResolveEmbeddedFont(family, bold, italic, codePoints)
+               ?? FontResolver.Resolve(family, bold, italic, codePoints,
+                      Options.AllowRestrictedSystemFonts, _hostFontPrograms);
 
         // Fonts embedded in the DOCX itself (word/fontTable.xml + obfuscated font parts),
         // keyed by "family|variant" (variant = regular/bold/italic/bolditalic). Loaded once.

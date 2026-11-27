@@ -8,11 +8,13 @@ using Tetitulz.Pdf.Accessibility.Internal;
 using Tetitulz.Pdf.Core.Constants;
 using Tetitulz.Pdf.Core.Document;
 using Tetitulz.Pdf.Core.Objects;
+using Tetitulz.Pdf.Core.Text;
+using Tetitulz.Pdf.Core.Util;
 using Tetitulz.Pdf.Plugins.Conformance;
 
 namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
 {
-    // §8.2.2 and §8.3.1 (shown text is tagged or an artifact), §8.4.5.5.1's glyph sentence, §8.2.5.29
+    // §8.2.2 and §8.3.1 (shown text, paths, images, shadings and forms are tagged or an artifact), §8.4.5.5.1's glyph sentence, §8.2.5.29
     // (a formula's representation), §8.10.2.3 (a widget's actions described) and §8.6 over the text
     // strings of structure elements and annotations.
     public static partial class PdfUa2StructureChecker
@@ -34,10 +36,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// <para>Judged for text, through <see cref="WalkShownText"/>, in any render mode (invisible text
         /// is content too), and in the page's own stream only: the walk starts each nested stream with a
         /// fresh marked-content shadow, so a form XObject's text takes its marking from the sequence that
-        /// invokes it, which this reading does not see, and an annotation's appearance is exempt by
-        /// §8.3.1. Paths and images are content as well and are not judged here. An MCID is claimed when
-        /// a structure element names it on that page (<see cref="MapMarkedContentOwners"/>). One finding
-        /// a page and MCID.</para>
+        /// invokes it, which <see cref="CheckPaintedContentIsTaggedOrArtifact"/> reads for a form drawn
+        /// outside marked content, with the page's paths, images and shadings; an annotation's appearance
+        /// is exempt by §8.3.1. An MCID is claimed when a structure element names it on that page
+        /// (<see cref="MapMarkedContentOwners"/>). One finding a page and MCID.</para>
         /// </remarks>
         private static void CheckShownTextIsTaggedOrArtifact(
             PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
@@ -78,6 +80,264 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             foreach (object segment in segments)
                 if (segment is byte[] bytes && bytes.Length > 0) return true;
             return false;
+        }
+
+        /// <summary>
+        /// ISO 14289-2:2024 §8.2.2 and §8.3.1 for the content that is not text: a path the page's own content
+        /// stream strokes or fills, an image it draws (an image XObject or an inline image), a shading it paints
+        /// with <c>sh</c>, and a form XObject it draws — each in marked content a structure element claims or in
+        /// an artifact. Reported as <see cref="CheckShownTextIsTaggedOrArtifact"/> reports text, one finding a
+        /// page, MCID and kind of content.
+        /// </summary>
+        /// <remarks>
+        /// <para>A path ended by <c>n</c> paints nothing, and is not content. A form drawn inside marked content
+        /// takes its marking from it. A form drawn outside every marked-content sequence holds content of its
+        /// own, and is reported when something it paints — text, a path, an image, a shading, or a form it draws
+        /// in turn — stands outside every artifact and MCID of its own stream (<see cref="FormPaintsUnmarked"/>);
+        /// an MCID in a form is read as marking, its claim through the form's <c>/StructParents</c> not
+        /// followed. Annotation appearances are exempt by §8.3.1.</para>
+        /// </remarks>
+        private static void CheckPaintedContentIsTaggedOrArtifact(
+            PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
+        {
+            if (doc.Pages == null) return;
+
+            Dictionary<(int Page, int Mcid), StructNode> owners = null;
+            var reported = new HashSet<(int Page, int Mcid, string Kind)>(KeyedHash.Comparer<(int Page, int Mcid, string Kind)>(
+                k => unchecked((k.Page * 31 + k.Mcid) * 31 + KeyedHash.Of(k.Kind))));
+            var forms = new FormReading();
+            int found = 0;
+            long documentBytes = 0;
+
+            for (int p = 0; p < doc.Pages.Count && found <= IndividualReportLimit; p++)
+            {
+                var scan = PdfXValidator.ScanPage(doc, doc.Pages[p],
+                    PdfXValidator.DefaultMaxPageContentBytes, ref documentBytes,
+                    PdfXValidator.DefaultMaxDocumentContentBytes, collectContent: true);
+                if (scan.PageContentIndex < 0) continue;
+
+                PdfDictionary resources = scan.ContentStreamResources[scan.PageContentIndex];
+                List<ContentStreamOperation> ops;
+                try { ops = ScanReuse.Parse(scan.ContentStreams[scan.PageContentIndex]); }
+                catch (Exception ex)
+                {
+                    Report("PdfUa2StructureChecker.CheckPaintedContentIsTaggedOrArtifact",
+                        "a page's content stream could not be parsed; its paths and images were not checked", ex);
+                    continue;
+                }
+
+                var marking = new MarkedContentShadow();
+                foreach (ContentStreamOperation op in ops)
+                {
+                    if (marking.Observe(op, resources, doc)) continue;
+
+                    string kind = PaintedKind(doc, op, resources, out PdfStream form);
+                    if (kind == null || marking.InArtifact) continue;
+                    bool unmarkedForm = form != null && !marking.IsMarked;
+                    if (unmarkedForm && !FormPaintsUnmarked(doc, form, resources, 0, forms)) continue;
+                    if (marking.Mcid >= 0)
+                    {
+                        owners ??= MapMarkedContentOwners(doc, catalog);
+                        if (owners.ContainsKey((p, marking.Mcid))) continue;
+                    }
+
+                    if (!reported.Add((p, marking.Mcid, kind))) continue;
+                    found++;
+                    if (found > IndividualReportLimit) break;
+                    string what = unmarkedForm
+                        ? "a form XObject drawn outside every marked-content sequence paints content that"
+                        : kind + (marking.Mcid >= 0
+                            ? $" in marked content {marking.Mcid}, which no structure element claims,"
+                            : " that no marked-content sequence with an /MCID encloses");
+                    v.Add(new PdfUa2StructureViolation("UA2-8.2.2",
+                        $"Page {p + 1}: {what} is neither in the structure tree nor marked as an artifact; real " +
+                        "content is enclosed in structure elements and other content is an artifact " +
+                        "(ISO 14289-2 §8.2.2, §8.3.1)."));
+                }
+            }
+
+            if (found > IndividualReportLimit)
+                v.Add(new PdfUa2StructureViolation("UA2-8.2.2",
+                    "…and at least one more, not listed individually."));
+            if (forms.Cut != null)
+                v.Add(new PdfUa2StructureViolation("UA2-99",
+                    "§8.2.2 was not judged in full for the forms pages draw outside marked content: " + forms.Cut + "."));
+        }
+
+        /// <summary>
+        /// What a painting operator draws, for a finding — "a path", "an image", "a shading", "a form XObject" —
+        /// or <see langword="null"/> for one that paints no content of its own (text is
+        /// <see cref="CheckShownTextIsTaggedOrArtifact"/>'s); <paramref name="form"/> is the form a <c>Do</c> draws.
+        /// </summary>
+        private static string PaintedKind(PdfDocument doc, ContentStreamOperation op, PdfDictionary resources, out PdfStream form)
+        {
+            form = null;
+            switch (op.Operator)
+            {
+                case PdfOperators.Stroke:
+                case PdfOperators.CloseStroke:
+                case PdfOperators.Fill:
+                case PdfOperators.FillObsolete:
+                case PdfOperators.FillEvenOdd:
+                case PdfOperators.FillStroke:
+                case PdfOperators.FillStrokeEvenOdd:
+                case PdfOperators.CloseFillStroke:
+                case PdfOperators.CloseFillStrokeEvenOdd:
+                    return "a path";
+                case PdfOperators.ShadingFill:
+                    return "a shading";
+                case PdfOperators.BeginInlineImage:
+                    return "an image";
+                case PdfOperators.InvokeXObject:
+                {
+                    string name = ContentOperand.Name(op, 0);
+                    if (name == null) return null;
+                    var xobjects = Resolve(doc, resources?[PdfName.XObject]) as PdfDictionary;
+                    if (!(Resolve(doc, xobjects?[new PdfName(name)]) is PdfStream xobject)) return null;
+                    string subtype = (Resolve(doc, xobject[PdfName.Subtype]) as PdfName)?.Value;
+                    if (subtype == "Image") return "an image";
+                    if (subtype != "Form") return null;
+                    form = xobject;
+                    return "a form XObject";
+                }
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>What <see cref="FormPaintsUnmarked"/> has read: each form's answer, and the bytes it may still decode.</summary>
+        private sealed class FormReading
+        {
+            internal readonly Dictionary<object, bool> Answers = new Dictionary<object, bool>(PdfReferenceEquality.Instance);
+            internal long BytesLeft = PdfXValidator.DefaultMaxDocumentContentBytes;
+
+            /// <summary>Why a form was not read, the first time one was not; <see langword="null"/> while every one was.</summary>
+            internal string Cut;
+        }
+
+        /// <summary>
+        /// Whether a form XObject paints anything outside every artifact and MCID of its own content stream —
+        /// text, a path, an image, a shading, or a form it draws outside marking in turn. Each form is read
+        /// once (a form that draws itself reads as painting nothing more), its nesting bounded by
+        /// <see cref="PdfLimits.MaxFormXObjectDepth"/> and its bytes by the document's content budget; a form not
+        /// read answers false, and <see cref="FormReading.Cut"/> says why.
+        /// </summary>
+        private static bool FormPaintsUnmarked(PdfDocument doc, PdfStream form, PdfDictionary invokingResources,
+            int depth, FormReading reading)
+        {
+            if (reading.Answers.TryGetValue(form, out bool known)) return known;
+            if (depth >= PdfLimits.MaxFormXObjectDepth)
+            {
+                reading.Cut ??= $"forms nested deeper than {PdfLimits.MaxFormXObjectDepth} were not read";
+                return false;
+            }
+            reading.Answers[form] = false;
+
+            if (!form.TryGetDecodedData(Math.Min(reading.BytesLeft, PdfXValidator.DefaultMaxPageContentBytes),
+                    out byte[] content, out string reason))
+            {
+                reading.Cut ??= "a form's content was not decoded (" + reason + ")";
+                return false;
+            }
+            reading.BytesLeft -= content.Length;
+
+            List<ContentStreamOperation> ops;
+            try { ops = ContentStreamParser.Parse(content); }
+            catch (Exception ex)
+            {
+                reading.Cut ??= "a form's content could not be parsed (" + ex.Message + ")";
+                return false;
+            }
+
+            var resources = Resolve(doc, form[PdfName.Resources]) as PdfDictionary ?? invokingResources;
+            var marking = new MarkedContentShadow();
+            bool paints = false;
+            foreach (ContentStreamOperation op in ops)
+            {
+                if (marking.Observe(op, resources, doc) || marking.IsMarked) continue;
+                string kind = PaintedKind(doc, op, resources, out PdfStream nested);
+                if (kind == null) paints = ShowsText(op);
+                else paints = nested == null || FormPaintsUnmarked(doc, nested, resources, depth + 1, reading);
+                if (paints) break;
+            }
+            reading.Answers[form] = paints;
+            return paints;
+        }
+
+        /// <summary>Whether an operator shows text with at least one byte in it (<c>Tj</c>, <c>'</c>, <c>"</c>, <c>TJ</c>).</summary>
+        private static bool ShowsText(ContentStreamOperation op)
+        {
+            switch (op.Operator)
+            {
+                case PdfOperators.ShowText:
+                case PdfOperators.NextLineShowText:
+                    return ShowsAnything(ContentOperand.ShowTextSegments(op, 0));
+                case PdfOperators.NextLineSetSpacingShowText:
+                    return ShowsAnything(ContentOperand.ShowTextSegments(op, 2));
+                case PdfOperators.ShowTextArray:
+                    return ShowsAnything(ContentOperand.ShowTextArraySegments(op));
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// The marked-content sequences open at a point of one content stream (§14.6) — whether one is an
+        /// artifact, whether one carries <c>/ActualText</c>, the innermost <c>/MCID</c> — the state both content
+        /// walks read. <c>q</c>/<c>Q</c> do not save it; an <c>EMC</c> with none open is passed over.
+        /// </summary>
+        private sealed class MarkedContentShadow
+        {
+            private readonly Stack<(bool Artifact, bool ActualText, bool HasMcid)> _frames = new Stack<(bool, bool, bool)>();
+            private readonly Stack<int> _mcids = new Stack<int>();
+            private int _artifactDepth, _actualTextDepth;
+
+            /// <summary>Inside an <c>/Artifact</c> sequence at any depth.</summary>
+            internal bool InArtifact => _artifactDepth > 0;
+
+            /// <summary>Inside a sequence whose property list carries <c>/ActualText</c>, an empty one included.</summary>
+            internal bool HasActualText => _actualTextDepth > 0;
+
+            /// <summary>The innermost enclosing <c>/MCID</c>, or -1.</summary>
+            internal int Mcid => _mcids.Count > 0 ? _mcids.Peek() : -1;
+
+            /// <summary>Inside an artifact, or inside a sequence with an <c>/MCID</c>.</summary>
+            internal bool IsMarked => InArtifact || Mcid >= 0;
+
+            /// <summary>Takes in a <c>BMC</c>, <c>BDC</c> or <c>EMC</c> and answers true; any other operator, false.</summary>
+            internal bool Observe(ContentStreamOperation op, PdfDictionary resources, PdfDocument doc)
+            {
+                switch (op.Operator)
+                {
+                    case PdfOperators.BeginMarkedContent:
+                    case PdfOperators.BeginMarkedContentProps:
+                    {
+                        bool artifact = ContentOperand.Name(op, 0) == "Artifact";
+                        // default(MarkedContentInfo) has Mcid 0, not -1 — only a BDC that actually carries a
+                        // property operand may supply either value.
+                        bool hasProps = op.Operator == PdfOperators.BeginMarkedContentProps && op.Operands.Length > 1;
+                        var info = hasProps ? MarkedContentInfo.Read(op.Operands[1], resources, doc) : default;
+                        bool actualText = hasProps && info.ActualText != null;
+                        bool hasMcid = hasProps && info.Mcid >= 0;
+                        _frames.Push((artifact, actualText, hasMcid));
+                        if (artifact) _artifactDepth++;
+                        if (actualText) _actualTextDepth++;
+                        if (hasMcid) _mcids.Push(info.Mcid);
+                        return true;
+                    }
+                    case PdfOperators.EndMarkedContent:
+                    {
+                        if (_frames.Count == 0) return true;
+                        var frame = _frames.Pop();
+                        if (frame.Artifact) _artifactDepth--;
+                        if (frame.ActualText) _actualTextDepth--;
+                        if (frame.HasMcid) _mcids.Pop();
+                        return true;
+                    }
+                    default:
+                        return false;
+                }
+            }
         }
 
         // ----------------------------------------------------------------
@@ -157,13 +417,12 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         {
             var structTreeRoot = ResolveStructTreeRoot(doc, catalog);
             if (structTreeRoot == null) return;
-            var roleMap = PdfRoleMap.Build(structTreeRoot, o => Resolve(doc, o));
 
             var formulas = new List<StructNode>();
             var withMathMlChild = new HashSet<StructNode>();
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (IsStandardStructureType(doc, node, roleMap, "Formula", inPdf2Namespace: true)) formulas.Add(node);
+                if (IsStandardStructureType(doc, node, "Formula", inPdf2Namespace: true)) formulas.Add(node);
                 if (node.Parent != null && node.Dict != null && IsInNamespace(doc, node.Dict, MathMlNamespace))
                     withMathMlChild.Add(node.Parent);
             });

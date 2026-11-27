@@ -174,7 +174,7 @@ public class ContentCoverageHonestyTests
         // …and it must name what was consequently not established.
         Assert.Contains("did not run for this page", gap.Message, StringComparison.Ordinal);
         Assert.Contains("UA14's marked-content mapping", gap.Message, StringComparison.Ordinal);
-        Assert.Contains("UA17 (text drawn outside every marked-content sequence)",
+        Assert.Contains("UA17 (content drawn outside every marked-content sequence)",
             gap.Message, StringComparison.Ordinal);
         Assert.Contains("UA24 (image-only, probably scanned pages)", gap.Message, StringComparison.Ordinal);
     }

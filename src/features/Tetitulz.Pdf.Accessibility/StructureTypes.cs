@@ -193,6 +193,22 @@ namespace Tetitulz.Pdf.Accessibility
                    || Internal.StructTreeWalker.HeadingLevel(role) >= 1);
 
         /// <summary>
+        /// Whether a type is a unique PDF 1.7 element (ISO/TS 32005:2023 §3.5): defined in the PDF 1.7
+        /// standard structure namespace and not in the PDF 2.0 one — ISO/TS 32005 Tables 2 and 3, which
+        /// ISO 32000-2:2020 Annex M lists alike. A type both namespaces define uses the PDF 2.0 one
+        /// (ISO/TS 32005 §5.3), so these are the types an element with no explicit namespace may be in a
+        /// document that uses the PDF 2.0 namespace (ISO 14289-2 §8.2.4).
+        /// </summary>
+        public static bool IsUniqueToPdf17(string role) => role != null && UniquePdf17.Contains(role);
+
+        private static readonly System.Collections.Generic.HashSet<string> UniquePdf17 =
+            new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal)
+        {
+            Art, BlockQuote, Toc, Toci, Index, Private,     // ISO/TS 32005 Table 2, grouping
+            Quote, Note, Reference, BibEntry, Code,         // Table 3, inline level
+        };
+
+        /// <summary>
         /// The ISO 32000-2:2020 Table 364 additions to ISO 32000-1:2008 Table 333 (which is Core's,
         /// <see cref="Core.Constants.PdfStructureTypes.IsStandardInIso32000Part1"/>, shared with
         /// PDF/A's level A rules), so a valid PDF 2.0 producer is not false-flagged.

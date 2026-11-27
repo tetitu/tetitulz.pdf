@@ -56,17 +56,92 @@ public class Ua2ContentRuleTests
     }
 
     /// <summary>
-    /// A form XObject's text takes its marking from the sequence that invokes it, which the walk does not
-    /// see, so it is not judged; the same text on the page itself is.
+    /// Paths, shadings and inline images on the page are content too: claimed or an artifact is quiet, a path
+    /// ended by <c>n</c> paints nothing, and one in no MCID-carrying sequence or an unclaimed one is reported.
     /// </summary>
-    [Fact]
-    public void Ua222_TextInAFormXObject_IsNotJudged()
+    [Theory]
+    [InlineData("/P <</MCID 0>> BDC 0 0 10 10 re f EMC", null)]
+    [InlineData("/Artifact BMC 0 0 10 10 re S EMC", null)]
+    [InlineData("0 0 10 10 re n", null)]
+    [InlineData("0 0 10 10 re W n", null)]
+    [InlineData("0 0 10 10 re f", "a path that no marked-content sequence with an /MCID encloses")]
+    [InlineData("0 0 m 10 10 l S", "a path that no marked-content sequence with an /MCID encloses")]
+    [InlineData("0 0 10 10 re b*", "a path that no marked-content sequence with an /MCID encloses")]
+    [InlineData("/Span BMC 0 0 10 10 re F EMC", "a path that no marked-content sequence with an /MCID encloses")]
+    [InlineData("/P <</MCID 5>> BDC 0 0 10 10 re B EMC", "a path in marked content 5, which no structure element claims,")]
+    [InlineData("/Sh0 sh", "a shading that no marked-content sequence with an /MCID encloses")]
+    [InlineData("BI /W 1 /H 1 /CS /G /BPC 8 ID a EI", "an image that no marked-content sequence with an /MCID encloses")]
+    [InlineData("/Artifact BMC BI /W 1 /H 1 /CS /G /BPC 8 ID a EI EMC", null)]
+    [InlineData("/Artifact BMC 0 0 1 1 re f EMC 0 0 10 10 re f", "a path that no marked-content sequence with an /MCID encloses")]
+    [InlineData("/P <</MCID 0>> BDC EMC 0 0 10 10 re f", "a path that no marked-content sequence with an /MCID encloses")]
+    public void Ua222_PaintedContentIsTaggedOrAnArtifact(string content, string? expected)
     {
-        byte[] form = PdfUa2StructureCheckerTests.PuaPdf("/Fm0 Do", pageXObjects: "/XObject << /Fm0 10 0 R >>",
-            extra: "<< /Type /XObject /Subtype /Form /BBox [0 0 200 200] /Resources << /Font << /F1 4 0 R >> >> /Length 22 >>\nstream\nBT /F1 12 Tf (B) Tj ET\nendstream");
-        Assert.Empty(Coded(form, "UA2-8.2.2"));
-        Assert.Single(Coded(PdfUa2StructureCheckerTests.PuaPdf("BT /F1 12 Tf (B) Tj ET"), "UA2-8.2.2"));
+        var found = Coded(PdfUa2StructureCheckerTests.PuaPdf(content), "UA2-8.2.2");
+        if (expected == null)
+        {
+            Assert.Empty(found);
+            return;
+        }
+        Assert.StartsWith("Page 1: " + expected, Assert.Single(found).Message, StringComparison.Ordinal);
     }
+
+    /// <summary>An image XObject drawn untagged is reported; tagged, it is not.</summary>
+    [Theory]
+    [InlineData("/Im0 Do", true)]
+    [InlineData("/P <</MCID 0>> BDC /Im0 Do EMC", false)]
+    public void Ua222_AnImageXObject_IsTaggedOrAnArtifact(string content, bool reported)
+    {
+        byte[] pdf = PdfUa2StructureCheckerTests.PuaPdf(content, pageXObjects: "/XObject << /Im0 10 0 R >>",
+            extra: "<< /Type /XObject /Subtype /Image /Width 1 /Height 1 /ColorSpace /DeviceGray /BitsPerComponent 8 /Length 1 >>\nstream\na\nendstream");
+        Assert.Equal(reported, Coded(pdf, "UA2-8.2.2").Any(v => v.Message.StartsWith("Page 1: an image", StringComparison.Ordinal)));
+    }
+
+    /// <summary>
+    /// A form drawn outside every marked-content sequence holds content of its own, and is reported when it
+    /// paints something unmarked; drawn inside an artifact, or marking what it paints itself, it is not. The
+    /// text check still reads only the page's own stream.
+    /// </summary>
+    [Theory]
+    [InlineData("/Fm0 Do", "BT /F1 12 Tf (B) Tj ET", true)]
+    [InlineData("/Fm0 Do", "0 0 10 10 re f", true)]
+    [InlineData("/Artifact BMC /Fm0 Do EMC", "BT /F1 12 Tf (B) Tj ET", false)]
+    [InlineData("/P <</MCID 0>> BDC /Fm0 Do EMC", "0 0 10 10 re f", false)]
+    [InlineData("/Fm0 Do", "/Artifact BMC BT /F1 12 Tf (B) Tj ET EMC", false)]
+    [InlineData("/Fm0 Do", "/P <</MCID 0>> BDC 0 0 10 10 re f EMC", false)]
+    [InlineData("/Fm0 Do", "BT /F1 12 Tf () Tj ET 0 0 10 10 re n", false)]
+    [InlineData("/Fm0 Do", "/Fm0 Do", false)]                                     // a form that draws itself
+    public void Ua222_AFormDrawnOutsideMarking_IsJudgedByWhatItPaints(string page, string formContent, bool reported)
+    {
+        byte[] pdf = PdfUa2StructureCheckerTests.PuaPdf(page, pageXObjects: "/XObject << /Fm0 10 0 R >>", extra: Form(formContent, "/Fm0 10 0 R"));
+        var found = Coded(pdf, "UA2-8.2.2");
+        Assert.Equal(reported, found.Any(v => v.Message.StartsWith("Page 1: a form XObject drawn outside every marked-content sequence paints content", StringComparison.Ordinal)));
+        Assert.DoesNotContain(found, v => v.Message.StartsWith("Page 1: text", StringComparison.Ordinal));
+        Assert.DoesNotContain(Coded(pdf, "UA2-99"), v => v.Message.StartsWith("§8.2.2 was not judged", StringComparison.Ordinal));
+    }
+
+    /// <summary>A form a form draws is read in turn: its unmarked path is the outer form's content too.</summary>
+    [Theory]
+    [InlineData("0 0 10 10 re f", true)]
+    [InlineData("/Artifact BMC 0 0 10 10 re f EMC", false)]
+    public void Ua222_AFormsNestedForm_IsReadInTurn(string innerContent, bool reported)
+    {
+        byte[] pdf = PdfUa2StructureCheckerTests.PuaPdf("/Fm0 Do", pageXObjects: "/XObject << /Fm0 10 0 R >>",
+            extra: new[] { Form("/Fm1 Do", "/Fm1 11 0 R"), Form(innerContent, "") });
+        Assert.Equal(reported, Coded(pdf, "UA2-8.2.2").Any(v => v.Message.Contains("a form XObject drawn outside")));
+    }
+
+    /// <summary>One finding a page, MCID and kind: two untagged paths are one, a path and an image two.</summary>
+    [Fact]
+    public void Ua222_UntaggedContent_IsReportedOnceAKind()
+    {
+        Assert.Single(Coded(PdfUa2StructureCheckerTests.PuaPdf("0 0 10 10 re f 0 0 5 5 re S"), "UA2-8.2.2"));
+        Assert.Equal(2, Coded(PdfUa2StructureCheckerTests.PuaPdf("0 0 10 10 re f BI /W 1 /H 1 /CS /G /BPC 8 ID a EI"), "UA2-8.2.2").Count);
+    }
+
+    /// <summary>A form XObject drawing <paramref name="content"/>, with /F1 and <paramref name="xobjects"/> in its resources.</summary>
+    internal static string Form(string content, string xobjects)
+        => "<< /Type /XObject /Subtype /Form /BBox [0 0 200 200] /Resources << /Font << /F1 4 0 R >> /XObject << " + xobjects +
+           " >> >> /Length " + content.Length.ToString(CultureInfo.InvariantCulture) + " >>\nstream\n" + content + "\nendstream";
 
     /// <summary>One finding a page and MCID, however often the same untagged run shows text.</summary>
     [Fact]
@@ -301,5 +376,37 @@ public class Ua2ContentRuleTests
         var found = Coded(pdf, "UA2-8.6");
         Assert.Equal(reported ? 1 : 0, found.Count);
         if (reported) Assert.StartsWith("An annotation's /Contents uses", found[0].Message, StringComparison.Ordinal);
+    }
+}
+
+/// <summary>
+/// §8.2.2's reading of forms under <see cref="Core.Constants.PdfLimits.MaxFormXObjectDepth"/>: a form nested past
+/// it is not read, and a UA2-99 says so.
+/// </summary>
+[Collection(PdfLimitsCollection.Name)]
+public sealed class Ua2PaintedContentLimitTests
+{
+    /// <summary>Under the default the nested form's unmarked path is found; past a ceiling of one it is not read, and said.</summary>
+    [Fact]
+    public void Ua222_FormsNestedPastTheCeiling_AreSaidNotJudged()
+    {
+        byte[] pdf = PdfUa2StructureCheckerTests.PuaPdf("/Fm0 Do", pageXObjects: "/XObject << /Fm0 10 0 R >>",
+            extra: new[] { Ua2ContentRuleTests.Form("/Fm1 Do", "/Fm1 11 0 R"), Ua2ContentRuleTests.Form("0 0 10 10 re f", "") });
+
+        var all = PdfUa2StructureChecker.Validate(new MemoryStream(pdf)).Violations;
+        Assert.Contains(all, v => v.Code == "UA2-8.2.2" && v.Message.Contains("a form XObject drawn outside"));
+        Assert.DoesNotContain(all, v => v.Code == "UA2-99" && v.Message.StartsWith("§8.2.2 was not judged", StringComparison.Ordinal));
+
+        try
+        {
+            Core.Constants.PdfLimits.MaxFormXObjectDepth = 1;
+            all = PdfUa2StructureChecker.Validate(new MemoryStream(pdf)).Violations;
+            Assert.DoesNotContain(all, v => v.Code == "UA2-8.2.2" && v.Message.Contains("a form XObject drawn outside"));
+            Assert.Contains(all, v => v.Code == "UA2-99" && v.Message.Contains("forms nested deeper than 1 were not read"));
+        }
+        finally
+        {
+            Core.Constants.PdfLimits.ResetToDefaults();
+        }
     }
 }

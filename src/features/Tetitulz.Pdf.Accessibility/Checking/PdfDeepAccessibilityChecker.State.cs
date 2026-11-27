@@ -241,6 +241,15 @@ namespace Tetitulz.Pdf.Accessibility.Checking
             internal int UnmarkedTextShowingOperators;
 
             /// <summary>
+            /// Path-painting and shading operators inside no marked-content sequence at all — content
+            /// ISO 14289-1 §7.1 asks to be tagged or an artifact, as it asks of text.
+            /// </summary>
+            internal int UnmarkedPaintingOperators;
+
+            /// <summary>Image XObjects drawn and inline images inside no marked-content sequence at all.</summary>
+            internal int UnmarkedImages;
+
+            /// <summary>
             /// Marked-content sequences that are structural content <em>items</em>: not artifacts,
             /// not enclosed by an artifact, and naming an <c>/MCID</c>. Table 30 makes
             /// <c>/StructParents</c> required only when the page has some.

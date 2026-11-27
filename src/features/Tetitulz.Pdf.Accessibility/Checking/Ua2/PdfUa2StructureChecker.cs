@@ -59,7 +59,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
     /// (<c>Core.Fonts.FontFlags.IsSymbolic</c>), a Type 0 font's <c>CIDSystemInfo</c> against an
     /// embedded CMap's, <c>/ToUnicode</c> values and coverage
     /// (<see cref="CheckToUnicodeMapsReferencedGlyphs"/>, over <c>Core.Fonts.CMapParser</c>),
-    /// <c>/WMode</c> (<see cref="CheckEmbeddedCMapWModeConsistent"/>), <c>/Widths</c> against the
+    /// CMaps (<see cref="CheckCMaps"/>, over <c>Plugins.Conformance.CMapRules</c>), <c>/Widths</c> against the
     /// program (<see cref="CheckFontWidthConsistency"/>, over <see cref="SimpleFontWidthProbe"/>),
     /// <c>.notdef</c> (<see cref="CheckNoNotdefInFonts"/>), and embedding of the fonts used for
     /// rendering (<see cref="CheckFontsUsedForRenderingAreEmbedded"/>, over
@@ -137,6 +137,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             _annotations = null;
             _annotationEntriesRead = 0;
             _lastScanHits = 0;
+            _roleMap = null;
             try
             {
                 // One page scan for every check that asks: about fourteen font and appearance checks
@@ -150,6 +151,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                 // The list holds the document's dictionaries; it must not keep them alive past the call.
                 _annotationsOf = null;
                 _annotations = null;
+                _roleMap = null;
                 _lastScanHits = ScanReuse.ClosedScanHits;
             }
         }
@@ -204,6 +206,8 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                 return Completed(violations);
             }
 
+            _roleMap = PdfRoleMap.Build(ResolveStructTreeRoot(doc, catalog), o => Resolve(doc, o));
+
             RunCheck(doc, catalog, violations, "CheckDocumentStructureType", CheckDocumentStructureType);
             RunCheck(doc, catalog, violations, "CheckNamespacesAreDeclared", CheckNamespacesAreDeclared);
             RunCheck(doc, catalog, violations, "CheckProhibitedHType", CheckProhibitedHType);
@@ -230,13 +234,16 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             RunCheck(doc, catalog, violations, "CheckPopupNotInStructureTree", CheckPopupNotInStructureTree);
             RunCheck(doc, catalog, violations, "CheckPrinterMarkIsArtifact", CheckPrinterMarkIsArtifact);
             RunCheck(doc, catalog, violations, "CheckMarkupAnnotationsEnclosedInAnnot", CheckMarkupAnnotationsEnclosedInAnnot);
+            RunCheck(doc, catalog, violations, "CheckMarkupRichTextMatchesContents", CheckMarkupRichTextMatchesContents);
             RunCheck(doc, catalog, violations, "CheckLinkAnnotationEnclosedInLinkOrReference", CheckLinkAnnotationEnclosedInLinkOrReference);
+            RunCheck(doc, catalog, violations, "CheckLinkTargetsAreSeparate", CheckLinkTargetsAreSeparate);
             RunCheck(doc, catalog, violations, "CheckScreenHasContents", CheckScreenHasContents);
             RunCheck(doc, catalog, violations, "CheckThreeDAndRichMediaHaveContents", CheckThreeDAndRichMediaHaveContents);
             RunCheck(doc, catalog, violations, "CheckZeroSizeWidgetIsArtifact", CheckZeroSizeWidgetIsArtifact);
             RunCheck(doc, catalog, violations, "CheckFileAttachmentHasAFRelationship", CheckFileAttachmentHasAFRelationship);
             RunCheck(doc, catalog, violations, "CheckInkHasContents", CheckInkHasContents);
             RunCheck(doc, catalog, violations, "CheckTextFieldRVRequiresV", CheckTextFieldRVRequiresV);
+            RunCheck(doc, catalog, violations, "CheckTextFieldRichValueMatchesValue", CheckTextFieldRichValueMatchesValue);
             RunCheck(doc, catalog, violations, "CheckPuaContentHasActualTextOrAlt", CheckPuaContentHasActualTextOrAlt);
             RunCheck(doc, catalog, violations, "CheckCatalogLangSpecified", CheckCatalogLangSpecified);
             RunCheck(doc, catalog, violations, "CheckOcConfigNoAsKey", CheckOcConfigNoAsKey);
@@ -254,7 +261,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             RunCheck(doc, catalog, violations, "CheckToUnicodeValuesValid", CheckToUnicodeValuesValid);
             RunCheck(doc, catalog, violations, "CheckToUnicodeMapsReferencedGlyphs", CheckToUnicodeMapsReferencedGlyphs);
             RunCheck(doc, catalog, violations, "CheckMultiWidgetFieldHasLabelOrContents", CheckMultiWidgetFieldHasLabelOrContents);
-            RunCheck(doc, catalog, violations, "CheckEmbeddedCMapWModeConsistent", CheckEmbeddedCMapWModeConsistent);
+            RunCheck(doc, catalog, violations, "CheckCMaps", CheckCMaps);
             RunCheck(doc, catalog, violations, "CheckOutlineTitlesNoPua", CheckOutlineTitlesNoPua);
             RunCheck(doc, catalog, violations, "CheckAnnotationsIncludedInStructureTree", CheckAnnotationsIncludedInStructureTree);
             RunCheck(doc, catalog, violations, "CheckNoMarkedContentReferencesIntoAnnotationAppearances", CheckNoMarkedContentReferencesIntoAnnotationAppearances);
@@ -267,7 +274,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             RunCheck(doc, catalog, violations, "CheckRoleMapNsNotSameNamespace", CheckRoleMapNsNotSameNamespace);
             RunCheck(doc, catalog, violations, "CheckAriaRoleUsesAria11Owner", CheckAriaRoleUsesAria11Owner);
             RunCheck(doc, catalog, violations, "CheckElementBelongsToStandardNamespace", CheckElementBelongsToStandardNamespace);
+            RunCheck(doc, catalog, violations, "CheckElementWithoutNamespaceIsUniquePdf17", CheckElementWithoutNamespaceIsUniquePdf17);
+            RunCheck(doc, catalog, violations, "CheckUriActionsWithIsMap", CheckUriActionsWithIsMap);
             RunCheck(doc, catalog, violations, "CheckShownTextIsTaggedOrArtifact", CheckShownTextIsTaggedOrArtifact);
+            RunCheck(doc, catalog, violations, "CheckPaintedContentIsTaggedOrArtifact", CheckPaintedContentIsTaggedOrArtifact);
             RunCheck(doc, catalog, violations, "CheckEmbeddedFontsDefineShownGlyphs", CheckEmbeddedFontsDefineShownGlyphs);
             RunCheck(doc, catalog, violations, "CheckFormulaRepresentation", CheckFormulaRepresentation);
             RunCheck(doc, catalog, violations, "CheckWidgetActionsAreDescribed", CheckWidgetActionsAreDescribed);
@@ -305,8 +315,23 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             if (unreadable != null) violations.Add(new PdfUa2StructureViolation("UA2-99", unreadable));
             string annotationsCut = ScanReuse.AnnotationsCutNotice("the font and appearance checks");
             if (annotationsCut != null) violations.Add(new PdfUa2StructureViolation("UA2-99", annotationsCut));
-            return new PdfUa2StructureResult(violations);
+
+            var advisories = new List<PdfUa2StructureViolation>();
+            violations.RemoveAll(found =>
+            {
+                if (!AdvisoryCodes.Contains(found.Code)) return false;
+                advisories.Add(found);
+                return true;
+            });
+            return new PdfUa2StructureResult(violations, advisories);
         }
+
+        /// <summary>
+        /// The clauses whose requirement turns on something a person confirms — §8.13.3's equivalent
+        /// functionality elsewhere — so a finding under one is <see cref="PdfUa2StructureResult.Advisories"/>,
+        /// never a violation.
+        /// </summary>
+        private static readonly HashSet<string> AdvisoryCodes = new HashSet<string>(StringComparer.Ordinal) { "UA2-8.13.3" };
 
         private static PdfObject Resolve(PdfDocument doc, PdfObject obj)
             => UnreadableObjects.Resolve(doc, obj,
@@ -371,7 +396,8 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             }
 
             string role = StructTreeWalker.GetRole(child, doc);
-            if (role != "Document")
+            var (type, ns) = StandardTypeOf(doc, child);
+            if (type != "Document")
             {
                 v.Add(new PdfUa2StructureViolation("UA2-8.2.5.2",
                     "The structure tree root's only child must be a Document structure element " +
@@ -379,7 +405,8 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                 return;
             }
 
-            if (!IsInPdf2Namespace(doc, child))
+            // §8.2.4: an element role mapped to the PDF 2.0 Document is that Document.
+            if (ns != StandardNamespace.Pdf2)
             {
                 v.Add(new PdfUa2StructureViolation("UA2-8.2.5.2",
                     "The Document structure element must specify its namespace as the PDF 2.0 " +
@@ -441,38 +468,65 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         }
 
         /// <summary>
-        /// True when <paramref name="element"/>'s <c>/NS</c> entry resolves to a namespace
-        /// dictionary (ISO 32000-2:2020 Table 356) whose own <c>/NS</c> name equals
-        /// <see cref="Pdf2StandardStructureNamespace"/>. An absent <c>/NS</c> answers false — see
-        /// <see cref="CheckDocumentStructureType"/>'s remarks on why the default namespace does
-        /// not satisfy this rule.
-        /// </summary>
-        private static bool IsInPdf2Namespace(PdfDocument doc, PdfDictionary element)
-            => IsInNamespace(doc, element, Pdf2StandardStructureNamespace);
-
-        /// <summary>
         /// Whether <paramref name="node"/> is the standard structure type <paramref name="type"/> of the
         /// PDF 1.7 namespace — or of the PDF 2.0 namespace too, when <paramref name="inPdf2Namespace"/> —
-        /// followed from its own <c>/S</c>: in the default namespace (no <c>/NS</c>, ISO 32000-2
-        /// §14.8.6.1: PDF 1.7) through the structure tree's <c>/RoleMap</c>
-        /// (<see cref="PdfRoleMap.Means"/>); in another namespace through its <c>/RoleMapNS</c> (§14.8.6.2),
-        /// a bare name a target in the default namespace, an array a type and its namespace, under
-        /// <see cref="PdfRoleMap.MaxHops"/>. A chain that ends outside the standard namespaces, or cannot be
+        /// by <see cref="StandardTypeOf"/>. A chain that ends outside the standard namespaces, or cannot be
         /// followed, is not the type.
         /// </summary>
-        private static bool IsStandardStructureType(PdfDocument doc, StructNode node,
-            IReadOnlyDictionary<string, string> roleMap, string type, bool inPdf2Namespace)
+        private static bool IsStandardStructureType(PdfDocument doc, StructNode node, string type, bool inPdf2Namespace)
         {
-            if (node?.Dict == null || node.Role == null) return false;
-            string role = node.Role;
-            var nsDict = Resolve(doc, node.Dict[PdfName.NS]) as PdfDictionary;
+            if (node?.Dict == null) return false;
+            var (standard, ns) = StandardTypeOf(doc, node.Dict);
+            return standard == type
+                && (ns == StandardNamespace.Pdf17 || (inPdf2Namespace && ns == StandardNamespace.Pdf2));
+        }
+
+        /// <summary>Which standard namespace <see cref="StandardTypeOf"/> reached, or that it reached none.</summary>
+        private enum StandardNamespace { None, Pdf17, Pdf2, MathMl }
+
+        /// <summary>The document's <c>/RoleMap</c>, read once a validation, for <see cref="StandardTypeOf"/>.</summary>
+        [ThreadStatic] private static IReadOnlyDictionary<string, string> _roleMap;
+
+        /// <summary>
+        /// The structure type <paramref name="element"/> is, for every rule this checker holds a type to —
+        /// §8.2.4: a custom type "role mapped, either directly or transitively, to standard structure types"
+        /// conforms "to the requirements for the standard structure types to which they are role mapped,
+        /// including the containment rules" of ISO/TS 32005.
+        /// </summary>
+        /// <remarks>
+        /// <para>Followed from the element's own <c>/S</c>: in the PDF 1.7, PDF 2.0 or MathML namespace, that
+        /// type; in the default namespace (no <c>/NS</c>, ISO 32000-2 §14.8.6.1: PDF 1.7) the first PDF 1.7
+        /// standard type on its <c>/RoleMap</c> chain — so <c>/RoleMap &lt;&lt; /Figure /Div &gt;&gt;</c>
+        /// leaves a <c>Figure</c> a figure; in another namespace through that namespace's <c>/RoleMapNS</c>
+        /// (§14.8.6.2), a bare name a type of the default namespace, an array a type and its namespace — under
+        /// <see cref="PdfRoleMap.MaxHops"/>.</para>
+        /// <para>A chain that reaches no standard type answers the element's own <c>/S</c> with
+        /// <see cref="StandardNamespace.None"/>: an unmapped type is its own, §8.2.4's membership check reports
+        /// it, and a rule comparing types reads it as it is written.</para>
+        /// </remarks>
+        private static (string Type, StandardNamespace Namespace) StandardTypeOf(PdfDocument doc, PdfDictionary element)
+        {
+            string raw = StructTreeWalker.GetRole(element, doc);
+            if (raw == null) return (null, StandardNamespace.None);
+
+            string role = raw;
+            var nsDict = Resolve(doc, element[PdfName.NS]) as PdfDictionary;
             for (int hop = 0; hop <= PdfRoleMap.MaxHops; hop++)
             {
-                if (nsDict == null) return PdfRoleMap.Means(role, roleMap, type);
+                if (nsDict == null)
+                {
+                    if (PdfStructureTypes.IsStandardInIso32000Part1(role)) return (role, StandardNamespace.Pdf17);
+                    if (_roleMap == null || !_roleMap.TryGetValue(role, out string next) || next == null || next == role)
+                        return (raw, StandardNamespace.None);
+                    role = next;
+                    continue;
+                }
+
                 string ns = (Resolve(doc, nsDict[PdfName.NS]) as PdfString)?.GetText();
-                if (ns == Pdf17StandardStructureNamespace) return role == type;
-                if (ns == Pdf2StandardStructureNamespace) return inPdf2Namespace && role == type;
-                if (ns == null || ns == MathMlNamespace) return false;
+                if (ns == Pdf17StandardStructureNamespace) return (role, StandardNamespace.Pdf17);
+                if (ns == Pdf2StandardStructureNamespace) return (role, StandardNamespace.Pdf2);
+                if (ns == MathMlNamespace) return (role, StandardNamespace.MathMl);
+                if (ns == null) return (raw, StandardNamespace.None);
 
                 PdfObject mapped = Resolve(doc, (Resolve(doc, nsDict[PdfName.RoleMapNS]) as PdfDictionary)?[new PdfName(role)]);
                 if (mapped is PdfName bare)
@@ -487,9 +541,24 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     role = targetRole.Value;
                     nsDict = targetNs;
                 }
-                else return false;
+                else return (raw, StandardNamespace.None);
             }
-            return false;
+            return (raw, StandardNamespace.None);
+        }
+
+        /// <summary>The structure type <paramref name="element"/> is (<see cref="StandardTypeOf"/>), its own
+        /// <c>/S</c> where no map reaches a standard one; <see langword="null"/> for a dictionary that is no element.</summary>
+        private static string TypeOf(PdfDocument doc, PdfDictionary element)
+            => element == null ? null : StandardTypeOf(doc, element).Type;
+
+        /// <inheritdoc cref="TypeOf(PdfDocument, PdfDictionary)"/>
+        private static string TypeOf(PdfDocument doc, StructNode node) => TypeOf(doc, node?.Dict);
+
+        /// <summary>An element's <c>/S</c> for a message, with the type it is role mapped to when that differs.</summary>
+        private static string Described(PdfDocument doc, StructNode node)
+        {
+            string type = TypeOf(doc, node);
+            return node?.Role == null || type == node.Role ? type ?? "structure" : node.Role + " (role mapped to " + type + ")";
         }
 
         /// <summary>The catalog's <c>/StructTreeRoot</c>, or <see langword="null"/> when absent —
@@ -529,11 +598,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             var structTreeRoot = ResolveStructTreeRoot(doc, catalog);
             if (structTreeRoot == null) return;
 
-            var roleMap = PdfRoleMap.Build(structTreeRoot, o => Resolve(doc, o));
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (!IsStandardStructureType(doc, node, roleMap, "H", inPdf2Namespace: true)) return;
+                if (!IsStandardStructureType(doc, node, "H", inPdf2Namespace: true)) return;
                 found++;
                 if (found > IndividualReportLimit) return;
                 v.Add(new PdfUa2StructureViolation("UA2-8.2.5.12",
@@ -571,11 +639,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             var structTreeRoot = ResolveStructTreeRoot(doc, catalog);
             if (structTreeRoot == null) return;
 
-            var roleMap = PdfRoleMap.Build(structTreeRoot, o => Resolve(doc, o));
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (!IsStandardStructureType(doc, node, roleMap, "Note", inPdf2Namespace: false)) return;
+                if (!IsStandardStructureType(doc, node, "Note", inPdf2Namespace: false)) return;
                 found++;
                 if (found > IndividualReportLimit) return;
                 v.Add(new PdfUa2StructureViolation("UA2-8.2.5.14.1",
@@ -634,7 +701,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     if (!(raw is PdfReference noteRef) || noteRef.ReferenceObjectNumber <= 0) continue;
                     int noteNumber = noteRef.ReferenceObjectNumber;
                     var note = Resolve(doc, raw) as PdfDictionary;
-                    if (StructTreeWalker.GetRole(note, doc) != "FENote") continue;
+                    if (TypeOf(doc, note) != "FENote") continue;
 
                     if (!namedBy.TryGetValue(noteNumber, out HashSet<int> backRefs))
                         namedBy[noteNumber] = backRefs = ReferencedObjectNumbers(doc, note);
@@ -731,7 +798,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             foreach (PdfObject rawKid in StructTreeWalker.GetRawKids(element, doc))
             {
                 var childDict = Resolve(doc, rawKid) as PdfDictionary;
-                string role = StructTreeWalker.GetRole(childDict, doc);
+                string role = TypeOf(doc, childDict);
                 if (role != null) roles.Add(role);
             }
             return roles;
@@ -767,7 +834,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "Ruby") return;
+                if (TypeOf(doc, node) != "Ruby") return;
 
                 var roles = GetChildRoles(doc, node.Dict);
                 int rb = roles.FindAll(r => r == "RB").Count;
@@ -814,7 +881,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "Warichu") return;
+                if (TypeOf(doc, node) != "Warichu") return;
 
                 var roles = GetChildRoles(doc, node.Dict);
                 bool ok = roles.Count == 3 && roles[0] == "WP" && roles[1] == "WT" && roles[2] == "WP";
@@ -863,7 +930,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "Caption" || node.Parent?.Dict == null) return;
+                if (TypeOf(doc, node) != "Caption" || node.Parent?.Dict == null) return;
 
                 int index = FindChildIndex(doc, node.Parent.Dict, node.Dict, node.ObjectNumber,
                     out int structureElementSiblingCount);
@@ -951,7 +1018,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "Figure" || node.Dict == null) return;
+                if (TypeOf(doc, node) != "Figure" || node.Dict == null) return;
                 if (HasNonEmptyString(doc, node.Dict, PdfName.Alt)) return;
                 if (HasNonEmptyString(doc, node.Dict, PdfName.ActualText)) return;
 
@@ -1006,7 +1073,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "TOCI" || node.Dict == null || found > IndividualReportLimit) return;
+                if (TypeOf(doc, node) != "TOCI" || node.Dict == null || found > IndividualReportLimit) return;
                 if (HasRefAnywhereInSubtree(doc, node.Dict)) return;
 
                 found++;
@@ -1071,13 +1138,13 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "LI" || node.Dict == null || found > IndividualReportLimit) return;
+                if (TypeOf(doc, node) != "LI" || node.Dict == null || found > IndividualReportLimit) return;
 
                 foreach (PdfObject rawKid in StructTreeWalker.GetRawKids(node.Dict, doc))
                 {
                     var resolved = Resolve(doc, rawKid);
                     var childDict = resolved as PdfDictionary;
-                    string childRole = StructTreeWalker.GetRole(childDict, doc);
+                    string childRole = TypeOf(doc, childDict);
 
                     bool isUnwrappedContent;
                     if (childRole != null)
@@ -1154,7 +1221,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "L" || node.Dict == null || found > IndividualReportLimit) return;
+                if (TypeOf(doc, node) != "L" || node.Dict == null || found > IndividualReportLimit) return;
                 if (!ListItemsCarryLbl(doc, node.Dict)) return;
 
                 PdfObject resolved = null;
@@ -1211,7 +1278,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "L" || node.Dict == null || found > IndividualReportLimit) return;
+                if (TypeOf(doc, node) != "L" || node.Dict == null || found > IndividualReportLimit) return;
                 if (ReadOwnListAttribute(node.Dict, PdfName.ContinuedFrom, classMap, resolve) == null) return;
                 if (ReadOwnListAttribute(node.Dict, PdfName.ContinuedList, classMap, resolve) is PdfBoolean b && b.Value)
                     return;
@@ -1237,7 +1304,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             foreach (PdfObject rawItem in StructTreeWalker.GetRawKids(list, doc))
             {
                 var item = Resolve(doc, rawItem) as PdfDictionary;
-                if (item == null || StructTreeWalker.GetRole(item, doc) != "LI") continue;
+                if (item == null || TypeOf(doc, item) != "LI") continue;
                 if (GetChildRoles(doc, item).Contains("Lbl")) return true;
             }
             return false;
@@ -1396,7 +1463,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "Table" || node.Dict == null || found > IndividualReportLimit) return;
+                if (TypeOf(doc, node) != "Table" || node.Dict == null || found > IndividualReportLimit) return;
 
                 var rows = new List<PdfDictionary>();
                 CollectTableRows(doc, node.Dict, rows, depth: 0);
@@ -1421,7 +1488,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     {
                         var cell = Resolve(doc, rawKid) as PdfDictionary;
                         if (cell == null) continue;
-                        string cellRole = StructTreeWalker.GetRole(cell, doc);
+                        string cellRole = TypeOf(doc, cell);
                         if (cellRole != "TH" && cellRole != "TD") continue;
 
                         int colSpan = TableAttributes.ReadSpan(cell, PdfName.ColSpan, classMap, resolve);
@@ -1464,7 +1531,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             {
                 var kid = Resolve(doc, rawKid) as PdfDictionary;
                 if (kid == null) continue;
-                string role = StructTreeWalker.GetRole(kid, doc);
+                string role = TypeOf(doc, kid);
 
                 if (role == "TR") rows.Add(kid);
                 else if (role == "THead" || role == "TBody" || role == "TFoot")
@@ -1507,8 +1574,8 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             int found = 0;
             StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
             {
-                if (node.Role != "math") return;
-                if (node.Parent != null && node.Parent.Role == "Formula") return;
+                if (TypeOf(doc, node) != "math") return;
+                if (node.Parent != null && TypeOf(doc, node.Parent) == "Formula") return;
 
                 found++;
                 if (found > IndividualReportLimit) return;
@@ -1614,7 +1681,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     if (StructKidClassifier.Classify(objrDict, doc) != StructKidKind.ObjectReference) continue;
                     if (!(objrDict[PdfName.Obj] is PdfReference objRef)) continue;
                     if (!mustBeArtifact.Contains(objRef.ReferenceObjectNumber)) continue;
-                    if (IsEnclosedInArtifact(node)) continue;
+                    if (IsEnclosedInArtifact(doc, node)) continue;
 
                     found++;
                     if (found > IndividualReportLimit) break;
@@ -1628,10 +1695,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     $"…and at least one more, not listed individually."));
         }
 
-        private static bool IsEnclosedInArtifact(StructNode node)
+        private static bool IsEnclosedInArtifact(PdfDocument doc, StructNode node)
         {
             for (StructNode n = node; n != null; n = n.Parent)
-                if (n.Role == "Artifact") return true;
+                if (TypeOf(doc, n) == "Artifact") return true;
             return false;
         }
 
@@ -1830,7 +1897,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     if (StructKidClassifier.Classify(objrDict, doc) != StructKidKind.ObjectReference) continue;
                     if (!(objrDict[PdfName.Obj] is PdfReference objRef)) continue;
                     if (!mustBeEnclosed.Contains(objRef.ReferenceObjectNumber)) continue;
-                    if (IsEnclosedInMatchingRole(node, roleMatches)) enclosed.Add(objRef.ReferenceObjectNumber);
+                    if (IsEnclosedInMatchingRole(doc, node, roleMatches)) enclosed.Add(objRef.ReferenceObjectNumber);
                 }
             });
 
@@ -1848,10 +1915,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     $"…and {found - IndividualReportLimit} more, not listed individually."));
         }
 
-        private static bool IsEnclosedInMatchingRole(StructNode node, Func<string, bool> roleMatches)
+        private static bool IsEnclosedInMatchingRole(PdfDocument doc, StructNode node, Func<string, bool> roleMatches)
         {
             for (StructNode n = node; n != null; n = n.Parent)
-                if (roleMatches(n.Role)) return true;
+                if (roleMatches(TypeOf(doc, n))) return true;
             return false;
         }
 
@@ -1966,7 +2033,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     if (!(objrDict[PdfName.Obj] is PdfReference objRef)) continue;
                     if (!widgetAnnotations.Contains(objRef.ReferenceObjectNumber)) continue;
 
-                    StructNode form = NearestFormAncestor(node);
+                    StructNode form = NearestFormAncestor(doc, node);
                     if (form == null) continue;
 
                     countPerForm.TryGetValue(form, out int count);
@@ -1992,10 +2059,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     "more than one widget annotation, not listed individually."));
         }
 
-        private static StructNode NearestFormAncestor(StructNode node)
+        private static StructNode NearestFormAncestor(PdfDocument doc, StructNode node)
         {
             for (StructNode n = node; n != null; n = n.Parent)
-                if (n.Role == "Form") return n;
+                if (TypeOf(doc, n) == "Form") return n;
             return null;
         }
 
@@ -2366,13 +2433,8 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// entry … shall also be present, and they shall be textually equivalent."
         /// </summary>
         /// <remarks>
-        /// <b>Only the presence half is checked.</b> <c>/RV</c> (§12.7.4.3 Table 228) is the
-        /// field's <i>rich-text</i> value and may carry markup, while <c>/V</c> is plain text;
-        /// judging whether the two are "textually equivalent" after stripping markup is a
-        /// semantic comparison this checker does not attempt anywhere else, and a naive
-        /// byte-for-byte comparison would false-flag every conforming field whose rich text
-        /// merely formats the same words. "RV present without V" has no such ambiguity — it is a
-        /// missing required entry, checkable outright.
+        /// <b>The presence half.</b> Whether the two are textually equivalent is
+        /// <see cref="CheckTextFieldRichValueMatchesValue"/>'s, over the text the rich text shows.
         /// <para>Scoped to a Widget annotation whose own <c>/FT</c> resolves to <c>/Tx</c>
         /// directly; a text field whose <c>/FT</c> is inherited from an ancestor field dictionary
         /// (Table 220, not read by this check) is not reached. Narrower than the clause's full
@@ -3238,16 +3300,12 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// <c>Supplement</c> shall be greater than or equal to the CMap's.
         /// </summary>
         /// <remarks>
-        /// <para><b>Only the embedded-CMap-stream form of clause (b) is checked.</b> When
-        /// <c>/Encoding</c> is a <i>name</i> other than <c>Identity-H</c>/<c>Identity-V</c>, it
-        /// names a predefined CMap (Table 116) whose own Registry/Ordering/Supplement are not
-        /// written anywhere in the file — they are defined externally, by Adobe's CMap resource
-        /// registry — and this checker has no such lookup table. When <c>/Encoding</c> is a
-        /// <i>stream</i> instead, the embedded CMap carries its own <c>/CIDSystemInfo</c> entry
-        /// directly (§9.7.5.3, Table 118), so the comparison is a pure dictionary read with
-        /// nothing external to consult. A named predefined CMap is therefore skipped rather than
-        /// guessed at — the same "cannot verify, so say nothing" direction every other
-        /// unsupportable case in this file takes.</para>
+        /// <para>Judged by <c>Plugins.Conformance.CMapRules.CharacterCollectionProblem</c>, which PDF/UA-1's
+        /// UA63 reads for ISO 14289-1 7.21.3.1, the same relationship in the same words: an embedded CMap's
+        /// character collection from its stream dictionary, a predefined CMap's from the program registered
+        /// under its name — ISO 32000-2 leaves Table 117 empty and points to the CMap programs, which
+        /// <c>Plugins.CMap</c> carries. A predefined CMap no program is registered for is not judged, and a
+        /// UA2-99 says so.</para>
         /// <para>Not reached through <see cref="WalkAllFontDescriptors"/>: that helper calls
         /// back only on the terminal CIDFont, never the Type 0 wrapper whose own
         /// <c>/Encoding</c> this clause needs alongside it, so this check walks page resources
@@ -3258,56 +3316,30 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
             PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
         {
             int found = 0;
+            var unjudged = new SortedSet<string>(StringComparer.Ordinal);
             WalkAllTopLevelFonts(doc, (fontObj, subtype) =>
             {
                 if (found > IndividualReportLimit) return;
                 if (subtype != "Type0") return;
 
-                var encoding = Resolve(doc, fontObj[PdfName.Encoding]);
-                if (encoding is PdfName encName
-                    && (encName.Value == "Identity-H" || encName.Value == "Identity-V"))
-                    return;
-                if (!(encoding is PdfStream cmapStream)) return; // named predefined CMap
-
-                var cmapInfo = Resolve(doc, cmapStream[PdfName.CIDSystemInfo]) as PdfDictionary;
-                if (cmapInfo == null) return;
-
-                var descendants = Resolve(doc, fontObj[PdfName.DescendantFonts]) as PdfArray;
-                var cidFont = descendants != null && descendants.Count > 0
-                    ? Resolve(doc, descendants[0]) as PdfDictionary
-                    : null;
-                var cidInfo = cidFont != null
-                    ? Resolve(doc, cidFont[PdfName.CIDSystemInfo]) as PdfDictionary
-                    : null;
-                if (cidInfo == null) return;
-
-                string cmapRegistry = (Resolve(doc, cmapInfo[PdfName.Registry]) as PdfString)?.GetText();
-                string cmapOrdering = (Resolve(doc, cmapInfo[PdfName.Ordering]) as PdfString)?.GetText();
-                int? cmapSupplement = (Resolve(doc, cmapInfo[PdfName.Supplement]) as PdfNumber)?.IntValue;
-                string cidRegistry = (Resolve(doc, cidInfo[PdfName.Registry]) as PdfString)?.GetText();
-                string cidOrdering = (Resolve(doc, cidInfo[PdfName.Ordering]) as PdfString)?.GetText();
-                int? cidSupplement = (Resolve(doc, cidInfo[PdfName.Supplement]) as PdfNumber)?.IntValue;
-
-                if (cmapRegistry == null || cmapOrdering == null || cmapSupplement == null
-                    || cidRegistry == null || cidOrdering == null || cidSupplement == null)
-                    return;
-
-                bool ok = cmapRegistry == cidRegistry && cmapOrdering == cidOrdering
-                       && cidSupplement.Value >= cmapSupplement.Value;
-                if (ok) return;
+                string problem = CMapRules.CharacterCollectionProblem(doc, fontObj, out string notJudged);
+                if (notJudged != null) unjudged.Add(FontLabel(doc, fontObj) + ": " + notJudged);
+                if (problem == null) return;
 
                 found++;
                 if (found > IndividualReportLimit) return;
                 v.Add(new PdfUa2StructureViolation("UA2-8.4.5.3.1",
-                    "A Type 0 font's CIDSystemInfo does not have the required relationship " +
-                    "with its embedded CMap's CIDSystemInfo (matching /Registry and " +
-                    "/Ordering, and a /Supplement at least as high); §8.4.5.3.1 requires it " +
-                    "(ISO 14289-2 §8.4.5.3.1)."));
+                    $"The Type 0 font {FontLabel(doc, fontObj)}: {problem}; §8.4.5.3.1 requires a CIDFont's " +
+                    "/CIDSystemInfo to match its CMap's /Registry and /Ordering, with a /Supplement at least as " +
+                    "high (ISO 14289-2 §8.4.5.3.1)."));
             }, () => found > IndividualReportLimit);
 
             if (found > IndividualReportLimit)
                 v.Add(new PdfUa2StructureViolation("UA2-8.4.5.3.1",
                     $"…and at least one more, not listed individually."));
+            if (unjudged.Count > 0)
+                v.Add(new PdfUa2StructureViolation("UA2-99",
+                    "§8.4.5.3.1 was not judged for a font: " + string.Join("; ", unjudged) + "."));
         }
 
         /// <summary>
@@ -3670,7 +3702,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                         if (!(objrDict[PdfName.Obj] is PdfReference objRef)) continue;
                         if (!widgetObjectNumbers.Contains(objRef.ReferenceObjectNumber)) continue;
 
-                        StructNode form = NearestFormAncestor(node);
+                        StructNode form = NearestFormAncestor(doc, node);
                         if (form == null) continue;
                         if (GetChildRoles(doc, form.Dict).Contains("Lbl"))
                             hasLabel.Add(objRef.ReferenceObjectNumber);
@@ -3752,40 +3784,24 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         }
 
         // ----------------------------------------------------------------
-        //  Clause 8.4.5.4 — CMaps: an embedded CMap's /WMode must match its own program
+        //  Clause 8.4.5.4 — CMaps: embedded unless predefined, /WMode as the program says,
+        //  no reference to a CMap that is not predefined
         // ----------------------------------------------------------------
 
         /// <summary>
-        /// ISO 14289-2:2024 §8.4.5.4: "For those CMaps that are embedded, the integer value of
-        /// the WMode entry in the CMap dictionary shall be identical to the WMode value in the
-        /// embedded CMap stream."
+        /// ISO 14289-2:2024 §8.4.5.4, its three sentences: every CMap used is embedded except those
+        /// ISO 32000-2:2020 Table 116 lists; an embedded CMap's <c>/WMode</c> entry is the value its
+        /// program declares; a CMap references no other CMap except one Table 116 lists.
         /// </summary>
         /// <remarks>
-        /// <para><b>Only this one sentence is checked</b> — deliberately not the clause's first
-        /// sentence ("All CMaps used … except those listed in [Table 116] … shall be embedded"),
-        /// which would need the same predefined-CMap-name lookup table
-        /// <see cref="CheckCidSystemInfoRelationship"/>'s own remarks already say this checker
-        /// carries none of, and for the same reason: Table 116's names are external to any file,
-        /// so telling a legitimate predefined name from a made-up one needs a list this checker
-        /// does not have. This sentence needs no such list: it applies only once <c>/Encoding</c>
-        /// is already a stream (an embedded CMap), comparing two values both present in the file
-        /// itself.</para>
-        /// <para>Reuses <see cref="WalkAllTopLevelFonts"/> (the same top-level, not-descended-into
-        /// walk §8.4.5.3.1's own check already uses to reach a Type 0 font's own
-        /// <c>/Encoding</c>), filtered to <c>Type0</c> the same way. The dictionary-side value
-        /// defaults to 0 when the <c>/WMode</c> entry itself is absent (ISO 32000-2:2020 Table
-        /// 114/115's own default), matching every other "absent means the spec's own default, not
-        /// unprovable" reading in this file. The program-side value is read by
-        /// <see cref="ReadWModeFromCMapProgram"/>, a small text scan for the CMap program's own
-        /// <c>/WMode … def</c> declaration (ISO 32000-2:2020, 9.7.5.3) — a new, narrowly-scoped
-        /// reader rather than an addition to the shared <c>Core.Fonts.CMapParser</c>, since the
-        /// only fact needed is one integer, not a second general-purpose parse of a file this
-        /// checker already reads for a different clause's purposes elsewhere. A CMap program with
-        /// no <c>/WMode</c> declaration of its own is read as "cannot verify" and skipped, not
-        /// guessed at — the CMap's <i>program</i>, unlike its dictionary, has no documented
-        /// default this checker can rely on.</para>
+        /// <para>Judged by <see cref="CMapRules"/>, which PDF/UA-1's UA62 reads for ISO 14289-1 7.21.3.3 —
+        /// the same three sentences over ISO 32000-1 Table 118, whose 61 names are Table 116's.</para>
+        /// <para>Every Type 0 font a page's resources reach, through <see cref="WalkAllTopLevelFonts"/>, the
+        /// walk §8.4.5.3.1's check takes to the same <c>/Encoding</c>. An absent dictionary
+        /// <c>/WMode</c> is 0, ISO 32000-2 Table 118's default; a program that declares none is not
+        /// compared. A program that will not decode is not judged, and is said in a UA2-99.</para>
         /// </remarks>
-        private static void CheckEmbeddedCMapWModeConsistent(
+        private static void CheckCMaps(
             PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
         {
             int found = 0;
@@ -3794,51 +3810,23 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                 if (found > IndividualReportLimit) return;
                 if (subtype != "Type0") return;
 
-                if (!(Resolve(doc, fontObj[PdfName.Encoding]) is PdfStream cmapStream)) return;
-
-                int dictWMode = (Resolve(doc, cmapStream[PdfName.WMode]) as PdfNumber)?.IntValue ?? 0;
-
-                byte[] data;
-                try { data = FontStreamBytes.CMap(cmapStream); }
-                catch { return; }
-
-                int? programWMode = ReadWModeFromCMapProgram(data);
-                if (!programWMode.HasValue || programWMode.Value == dictWMode) return;
+                string problem = CMapRules.WhatIsWrong(doc, fontObj, out string unjudged);
+                if (unjudged != null)
+                    v.Add(new PdfUa2StructureViolation("UA2-99",
+                        $"§8.4.5.4 was not judged in full for the font {FontLabel(doc, fontObj)}: {unjudged}."));
+                if (problem == null) return;
 
                 found++;
                 if (found > IndividualReportLimit) return;
                 v.Add(new PdfUa2StructureViolation("UA2-8.4.5.4",
-                    $"An embedded CMap's /WMode dictionary entry ({dictWMode}) does not match " +
-                    $"the WMode declared inside the CMap program ({programWMode.Value}); " +
-                    "§8.4.5.4 requires them to be identical (ISO 14289-2 §8.4.5.4)."));
+                    $"The font {FontLabel(doc, fontObj)}: {problem}. A CMap that ISO 32000-2 Table 116 does " +
+                    "not list is embedded, its /WMode is its program's, and it references no CMap but a " +
+                    "listed one (ISO 14289-2 §8.4.5.4)."));
             }, () => found > IndividualReportLimit);
 
             if (found > IndividualReportLimit)
                 v.Add(new PdfUa2StructureViolation("UA2-8.4.5.4",
                     $"…and at least one more, not listed individually."));
-        }
-
-        /// <summary>
-        /// Reads the integer operand of a CMap program's own <c>/WMode … def</c> declaration
-        /// (ISO 32000-2:2020, 9.7.5.3) directly from the decoded stream bytes — a CMap program is
-        /// PostScript-like text, not a PDF dictionary, so there is no object model to resolve it
-        /// through. Returns <see langword="null"/> when no such declaration is found (a malformed
-        /// or unusual CMap program), never a guessed default.
-        /// </summary>
-        private static int? ReadWModeFromCMapProgram(byte[] data)
-        {
-            string text = Encoding.ASCII.GetString(data);
-            int idx = text.IndexOf("/WMode", StringComparison.Ordinal);
-            if (idx < 0) return null;
-            idx += "/WMode".Length;
-
-            while (idx < text.Length && char.IsWhiteSpace(text[idx])) idx++;
-            int start = idx;
-            if (idx < text.Length && text[idx] == '-') idx++;
-            while (idx < text.Length && char.IsDigit(text[idx])) idx++;
-            if (idx == start) return null;
-
-            return int.TryParse(text.Substring(start, idx - start), out int wMode) ? wMode : (int?)null;
         }
 
         // ----------------------------------------------------------------
@@ -4449,6 +4437,49 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         }
 
         /// <summary>
+        /// The document's named destinations (§12.3.2.4): the PDF 1.1 <c>/Dests</c> dictionary, keyed by
+        /// name, then the <c>/Names /Dests</c> name tree, keyed by string — <see cref="NamedDestination.InNameTree"/>
+        /// tells which, since a destination given as a name is looked up in the first and one given as a
+        /// string in the second. The tree is read through <see cref="PdfNameTree.TryFlatten"/>, bounded by
+        /// <see cref="PdfLimits.MaxNameTreeEntries"/>.
+        /// </summary>
+        private static List<NamedDestination> NamedDestinations(PdfDocument doc, PdfDictionary catalog)
+        {
+            var named = new List<NamedDestination>();
+
+            if (Resolve(doc, catalog[PdfName.Dests]) is PdfDictionary legacy)
+                foreach (var entry in legacy)
+                    named.Add(new NamedDestination(entry.Key.Value, false, entry.Value));
+
+            PdfObject treeRoot = (Resolve(doc, catalog[PdfName.Names]) as PdfDictionary)?[PdfName.Dests];
+            if (treeRoot != null)
+            {
+                var entries = new List<KeyValuePair<PdfObject, PdfObject>>();
+                int budget = PdfLimits.MaxNameTreeEntries;
+                PdfNameTree.TryFlatten(treeRoot, doc, entries, ref budget);
+                foreach (var entry in entries)
+                    named.Add(new NamedDestination(
+                        PdfNameTree.KeyText(Resolve(doc, entry.Key)) ?? "(unreadable name)", true, entry.Value));
+            }
+            return named;
+        }
+
+        /// <summary>One named destination: its name or string, which of the two holds it, and its value.</summary>
+        private readonly struct NamedDestination
+        {
+            internal NamedDestination(string key, bool inNameTree, PdfObject value)
+            {
+                Key = key;
+                InNameTree = inNameTree;
+                Value = value;
+            }
+
+            internal string Key { get; }
+            internal bool InNameTree { get; }
+            internal PdfObject Value { get; }
+        }
+
+        /// <summary>
         /// §8.8 for the destinations the catalog itself holds: every named destination — the
         /// PDF 1.1 <c>/Dests</c> dictionary and the <c>/Names /Dests</c> name tree — and
         /// <c>/OpenAction</c>, when it is a destination or a GoTo action.
@@ -4462,25 +4493,8 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         private static void CheckNamedAndOpenActionDestinationsAreStructureDestinations(
             PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
         {
-            var named = new List<KeyValuePair<string, PdfObject>>();
-
-            if (Resolve(doc, catalog[PdfName.Dests]) is PdfDictionary legacy)
-                foreach (var entry in legacy)
-                    named.Add(new KeyValuePair<string, PdfObject>(entry.Key.Value, entry.Value));
-
-            PdfObject treeRoot = (Resolve(doc, catalog[PdfName.Names]) as PdfDictionary)?[PdfName.Dests];
-            if (treeRoot != null)
-            {
-                var entries = new List<KeyValuePair<PdfObject, PdfObject>>();
-                int budget = PdfLimits.MaxNameTreeEntries;
-                PdfNameTree.TryFlatten(treeRoot, doc, entries, ref budget);
-                foreach (var entry in entries)
-                    named.Add(new KeyValuePair<string, PdfObject>(
-                        PdfNameTree.KeyText(Resolve(doc, entry.Key)) ?? "(unreadable name)", entry.Value));
-            }
-
             int found = 0;
-            foreach (var entry in named)
+            foreach (var entry in NamedDestinations(doc, catalog))
             {
                 if (!TargetsPageDirectly(doc, Resolve(doc, entry.Value))) continue;
                 found++;
@@ -4696,11 +4710,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     int renderMode = 0;
                     var stack = new Stack<(string FontName, int RenderMode)>();
 
-                    // Marked content, which q/Q do not save: a frame per BMC/BDC, with running
-                    // counts so the state at each text operator is O(1) to read.
-                    var marked = new Stack<(bool Artifact, bool ActualText, bool HasMcid)>();
-                    var mcids = new Stack<int>();
-                    int artifactDepth = 0, actualTextDepth = 0;
+                    var marking = new MarkedContentShadow();
 
                     List<ContentStreamOperation> ops;
                     try { ops = ContentStreamParser.Parse(scan.ContentStreams[s]); }
@@ -4714,6 +4724,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     foreach (ContentStreamOperation op in ops)
                     {
                         if (shouldStop()) return;
+                        if (marking.Observe(op, resources, doc)) continue;
 
                         List<object> segments;
                         switch (op.Operator)
@@ -4730,31 +4741,6 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                             case PdfOperators.SetTextRenderMode:
                                 renderMode = ContentOperand.Int(op, 0);
                                 continue;
-                            case PdfOperators.BeginMarkedContent:
-                            case PdfOperators.BeginMarkedContentProps:
-                            {
-                                bool artifact = ContentOperand.Name(op, 0) == "Artifact";
-                                // default(MarkedContentInfo) has Mcid 0, not -1 — only a BDC that
-                                // actually carries a property operand may supply either value.
-                                bool hasProps = op.Operator == PdfOperators.BeginMarkedContentProps && op.Operands.Length > 1;
-                                var info = hasProps ? MarkedContentInfo.Read(op.Operands[1], resources, doc) : default;
-                                bool actualText = hasProps && info.ActualText != null;
-                                bool hasMcid = hasProps && info.Mcid >= 0;
-                                marked.Push((artifact, actualText, hasMcid));
-                                if (artifact) artifactDepth++;
-                                if (actualText) actualTextDepth++;
-                                if (hasMcid) mcids.Push(info.Mcid);
-                                continue;
-                            }
-                            case PdfOperators.EndMarkedContent:
-                            {
-                                if (marked.Count == 0) continue;
-                                var frame = marked.Pop();
-                                if (frame.Artifact) artifactDepth--;
-                                if (frame.ActualText) actualTextDepth--;
-                                if (frame.HasMcid) mcids.Pop();
-                                continue;
-                            }
                             case PdfOperators.ShowText:
                             case PdfOperators.NextLineShowText:
                                 segments = ContentOperand.ShowTextSegments(op, 0);
@@ -4774,8 +4760,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                         var fontDict = Resolve(doc, fontResources?[new PdfName(fontName)]) as PdfDictionary;
                         if (fontDict != null)
                             onShow(new ShownText(fontDict, fontName, renderMode, segments, p,
-                                s == scan.PageContentIndex, artifactDepth > 0, actualTextDepth > 0,
-                                mcids.Count > 0 ? mcids.Peek() : -1));
+                                s == scan.PageContentIndex, marking.InArtifact, marking.HasActualText, marking.Mcid));
                     }
                 }
             }
@@ -4893,17 +4878,18 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// <see cref="PdfStructureNamespaceInclusion"/> itself (already built as this exact
         /// prerequisite — GAPS.md §22a — but not yet consumed by any check) for TS 32005's own
         /// text.</para>
-        /// <para>Reuses <see cref="PdfStructureNamespaceInclusion.CanContain"/> outright: for
+        /// <para>Reuses <see cref="PdfStructureNamespaceInclusion.CanContain"/> outright, over the type
+        /// each element is (<see cref="StandardTypeOf"/>) — §8.2.4 holds a custom type role mapped to a
+        /// standard one to "the containment rules specified in ISO/TS 32005:2023, Clause 7" — for
         /// every structure element with a parent (the struct tree root's own <c>null</c> role
         /// sentinel — see <see cref="StructTreeWalker.GetRole"/>'s remarks — is translated to the
         /// literal parent-type name <c>"StructTreeRoot"</c>, matching the table's own row/column
-        /// naming), a result of <see cref="StructureContainmentRule.Forbidden"/> — the table's
+        /// naming); a result of <see cref="StructureContainmentRule.Forbidden"/> — the table's
         /// "∅ — shall not occur" cell, TS 32005's own <c>'0'</c> — is the one unconditional
         /// violation. No other value is flagged: <see cref="StructureContainmentRule.Unknown"/>
-        /// covers any custom or role-mapped type name the table's fixed standard-type lists do
-        /// not recognise (resolving a role mapping to its standard target first is a separate,
-        /// larger piece of work this check does not attempt — TS 32005 "has nothing to say about
-        /// an unmapped name directly," per that type's own doc comment), and
+        /// covers a type no role map takes to a standard one, which the table's fixed standard-type
+        /// lists do not recognise (TS 32005 "has nothing to say about an unmapped name directly,"
+        /// per that type's own doc comment), and
         /// <see cref="StructureContainmentRule.ForbiddenUnlessGroupingLevel"/>/
         /// <see cref="StructureContainmentRule.Undocumented"/>/
         /// <see cref="StructureContainmentRule.SeeElementDescription"/>/
@@ -4931,9 +4917,9 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                 if (found > IndividualReportLimit) return;
                 if (node.Parent == null) return;
 
-                string childRole = node.Role;
+                string childRole = TypeOf(doc, node);
                 if (childRole == null) return;
-                string parentRole = node.Parent.Role ?? "StructTreeRoot";
+                string parentRole = node.Parent.Role == null ? "StructTreeRoot" : TypeOf(doc, node.Parent);
 
                 if (PdfStructureNamespaceInclusion.CanContain(parentRole, childRole)
                     != StructureContainmentRule.Forbidden) return;
@@ -4941,9 +4927,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                 found++;
                 if (found > IndividualReportLimit) return;
                 v.Add(new PdfUa2StructureViolation("UA2-6.2",
-                    $"A {childRole} structure element is a child of a {parentRole} structure " +
-                    "element; ISO/TS 32005 Table 5 lists this containment as forbidden " +
-                    "(ISO 14289-2 §6.2)."));
+                    $"A {Described(doc, node)} structure element is a child of a " +
+                    $"{(node.Parent.Role == null ? parentRole : Described(doc, node.Parent))} structure " +
+                    "element; ISO/TS 32005 Table 5 lists this containment as forbidden, for a type role " +
+                    "mapped to a standard one as for that type (ISO 14289-2 §6.2, §8.2.4)."));
             });
 
             if (found > IndividualReportLimit)
@@ -5137,9 +5124,9 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// other clause in this file takes on an ambiguous read; a chain this checker gave up
         /// chasing is not evidence of anything, and reporting it would claim certainty this
         /// checker does not have.</para>
-        /// <para>An absent <c>/NS</c> on the element itself is not walked at all — §14.8.6.1's
-        /// own default namespace is PDF 1.7 (the same finding <see cref="CheckDocumentStructureType"/>'s
-        /// remarks already establish), so it is compliant by definition, trivially.</para>
+        /// <para>An absent <c>/NS</c> on the element itself is the default namespace, PDF 1.7 (§14.8.6.1), a
+        /// standard one; which types it may hold there is the clause's later sentence,
+        /// <see cref="CheckElementWithoutNamespaceIsUniquePdf17"/>.</para>
         /// </remarks>
         private static void CheckElementBelongsToStandardNamespace(
             PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
@@ -5166,6 +5153,56 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
                     "PDF 2.0 or MathML namespaces, and it has no role map reaching one of them; " +
                     "§8.2.4 requires every structure element to belong to a standard namespace, " +
                     "possibly through role mapping (ISO 14289-2 §8.2.4)."));
+            });
+
+            if (found > IndividualReportLimit)
+                v.Add(new PdfUa2StructureViolation("UA2-8.2.4",
+                    $"…and at least one more, not listed individually."));
+        }
+
+        /// <summary>
+        /// ISO 14289-2:2024 §8.2.4: "A structure element with no explicit namespace may be present. Such a
+        /// structure element shall have, after any role mapping, a structure type matching one of the unique
+        /// PDF 1.7 element types and as restricted by this document." Shares <c>UA2-8.2.4</c>.
+        /// </summary>
+        /// <remarks>
+        /// <para>A unique PDF 1.7 element is one whose type the PDF 1.7 namespace defines and the PDF 2.0 one
+        /// does not (ISO/TS 32005 §3.5; Tables 2 and 3, and ISO 32000-2 Annex M, list the same eleven —
+        /// <see cref="StructureTypes.IsUniqueToPdf17"/>). A type both namespaces define is written in the PDF
+        /// 2.0 namespace explicitly (ISO/TS 32005 §5.3), which a conforming file uses for its Document
+        /// (§8.2.5.2), so an element with no <c>/NS</c> that is, after its <c>/RoleMap</c> chain
+        /// (<see cref="StandardTypeOf"/>), a P, a Figure — or a type no map takes to a standard one — is
+        /// reported. "As restricted by this document" is the other clauses' own: a Note passes here and
+        /// §8.2.5.14.1 reports it.</para>
+        /// <para>The structure tree root's own child is §8.2.5.2's, which asks it to be the PDF 2.0
+        /// Document; it is not reported twice.</para>
+        /// </remarks>
+        private static void CheckElementWithoutNamespaceIsUniquePdf17(
+            PdfDocument doc, PdfDictionary catalog, List<PdfUa2StructureViolation> v)
+        {
+            var structTreeRoot = ResolveStructTreeRoot(doc, catalog);
+            if (structTreeRoot == null) return;
+
+            int found = 0;
+            StructTreeWalker.Walk(structTreeRoot, doc, index: null, node =>
+            {
+                if (found > IndividualReportLimit) return;
+                if (node.Dict == null || node.Role == null || node.Parent?.Role == null) return;
+                if (Resolve(doc, node.Dict[PdfName.NS]) is PdfDictionary) return;
+
+                var (type, ns) = StandardTypeOf(doc, node.Dict);
+                if (ns == StandardNamespace.Pdf17 && StructureTypes.IsUniqueToPdf17(type)) return;
+
+                found++;
+                if (found > IndividualReportLimit) return;
+                v.Add(new PdfUa2StructureViolation("UA2-8.2.4",
+                    $"A {Described(doc, node)} structure element has no explicit namespace, and " +
+                    (ns == StandardNamespace.Pdf17
+                        ? $"{type} is defined in the PDF 2.0 namespace too, where it belongs"
+                        : "its type is no standard PDF 1.7 type") +
+                    "; an element with no explicit namespace is, after role mapping, one of the unique PDF 1.7 " +
+                    "element types (ISO 14289-2 §8.2.4, ISO/TS 32005 §5.3)." +
+                    (node.ObjectNumber > 0 ? $" Object {node.ObjectNumber}." : "")));
             });
 
             if (found > IndividualReportLimit)
@@ -5217,19 +5254,28 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         public IReadOnlyList<PdfUa2StructureViolation> Violations { get; }
 
         /// <summary>
+        /// Findings under a requirement whose condition a person confirms — a URI action with
+        /// <c>/IsMap</c> true (§8.13.3) conforms when equivalent functionality is provided elsewhere in
+        /// the real content, which no reading of the file can establish. Not violations:
+        /// <see cref="IsConforming"/> does not count them, and an audit reports them as warnings.
+        /// </summary>
+        public IReadOnlyList<PdfUa2StructureViolation> Advisories { get; }
+
+        /// <summary>
         /// True when this checker found no violations.
         ///
         /// <para>
         /// <b>Not a PDF/UA-2 conformance certificate.</b> This checker implements these
-        /// clauses (§8.2.2 with §8.3.1 for shown text, §8.2.5.29 and a second from §8.2.5.29.1,
+        /// clauses (§8.2.2 with §8.3.1 for text, paths, images, shadings and forms, §8.2.5.29 and a second from §8.2.5.29.1,
         /// §8.10.2.3, a second from §8.6 and a second from §8.4.5.5.1 (glyphs), §8.2.5.2, §8.2.5.12, two from §8.2.5.14.1, §8.2.5.14.2, §8.2.5.23, §8.2.5.24, §8.2.5.27, §8.2.5.28.2,
         /// three from §8.2.5.25, §8.2.5.29.1, §8.2.5.21/§8.9.2.2, §8.2.5.22/§8.10.1, two from §8.9.2.1,
         /// §8.9.3.3, two from §8.10.1, §8.9.4.2, §8.9.2.4.9, §8.9.2.4.11, §8.9.2.4.15, §8.9.2.4.14,
-        /// §8.9.2.4.12, §8.9.2.4.19, §8.9.2.4.13, §8.9.2.4.10, §8.9.2.4.8, §8.10.3.3, §8.4.4, two
+        /// §8.9.2.4.12, §8.9.2.4.19, §8.9.2.4.13, §8.9.2.4.10, §8.9.2.4.8, §8.10.3.3 in full, §8.4.4, two
         /// from §8.7, §8.11.2, §8.14.1, §8.11.1, §8.4.5.3.2, four from §8.4.5.7, §8.4.5.3.1, two from §8.4.5.8,
-        /// §8.9.2.3, §8.2.5.20, §8.2.5.8, §8.2.5.26, §8.10.2.4, §8.4.5.4, §8.6, §8.4.5.6, three from §8.8,
+        /// two from §8.9.2.3, two from §8.2.5.20, §8.2.5.8, §8.2.5.26, §8.10.2.4, §8.4.5.4 in full, §8.6, §8.4.5.6, three from §8.8,
         /// §8.4.5.9, §6.2, two from §8.2.4, §8.2.6.4, §8.4.5.5.1) of the standard's full clause
-        /// set — every one of the thirty-two subclauses of §8.2.5 is accounted for (checked
+        /// set, each rule asked of the standard structure type an element is role mapped to (§8.2.4)
+        /// — every one of the thirty-two subclauses of §8.2.5 is accounted for (checked
         /// outright, or,
         /// for §8.2.5.21/§8.2.5.22, closed via the specific §8.9/§8.10 sub-clause that names the
         /// same structure type — the same deferral shape, applied twice), §8.2.4 is closed in full
@@ -5248,8 +5294,12 @@ namespace Tetitulz.Pdf.Accessibility.Checking.Ua2
         /// </summary>
         public bool IsConforming => Violations.Count == 0;
 
-        internal PdfUa2StructureResult(List<PdfUa2StructureViolation> violations)
-            => Violations = violations;
+        internal PdfUa2StructureResult(List<PdfUa2StructureViolation> violations,
+            List<PdfUa2StructureViolation> advisories = null)
+        {
+            Violations = violations;
+            Advisories = advisories ?? new List<PdfUa2StructureViolation>();
+        }
     }
 
     /// <summary>A single PDF/UA-2 structure-tree violation.</summary>

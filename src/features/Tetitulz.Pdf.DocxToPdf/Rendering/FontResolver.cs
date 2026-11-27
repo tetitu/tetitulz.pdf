@@ -76,8 +76,17 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         /// <c>Core.Fonts.FontEmbeddingLicense</c> states — report for a caller-supplied program,
         /// skip for a system-substituted one.
         /// </remarks>
+        /// <param name="conversionPrograms">
+        /// The programs one conversion has resolved, by file — <c>DocxRenderContext.ResolveFont</c>'s —
+        /// or null. A file this conversion resolved before answers with the program it answered with
+        /// then, whatever <see cref="FileCache"/> holds now: the context embeds a font once per
+        /// program instance, and the file cache may have dropped the program (a test's clear, a
+        /// host-font scope) or never held it (<see cref="MaxCachedFontBytes"/>), so a fresh read
+        /// would be a second copy of the face in the same document.
+        /// </param>
         internal static TrueTypeFontProgram Resolve(string family, bool bold, bool italic,
-            IEnumerable<int> requiredCodePoints, bool allowRestricted = false)
+            IEnumerable<int> requiredCodePoints, bool allowRestricted = false,
+            IDictionary<string, TrueTypeFontProgram> conversionPrograms = null)
         {
             int[] required = RequiredCodePoints(requiredCodePoints);
             // The flag is in the key for the reason the caches exist at all: they are static and
@@ -87,12 +96,30 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
 
             lock (Gate)
             {
-                if (ResolveCache.TryGetValue(key, out string cachedPath))
-                    return cachedPath == null ? null : LoadFile(cachedPath);
-                var result = ResolveUncached(family, bold, italic, required, allowRestricted, out string path);
-                ResolveCache[key] = path;
-                return result;
+                if (!ResolveCache.TryGetValue(key, out string path))
+                {
+                    var found = ResolveUncached(family, bold, italic, required, allowRestricted, out path);
+                    ResolveCache[key] = path;
+                    return OneProgramPerFile(path, found, conversionPrograms);
+                }
+                if (path == null) return null;
+                if (conversionPrograms != null && conversionPrograms.TryGetValue(path, out var held))
+                    return held;
+                return OneProgramPerFile(path, LoadFile(path), conversionPrograms);
             }
+        }
+
+        /// <summary>
+        /// The program <paramref name="conversionPrograms"/> already holds for <paramref name="path"/>,
+        /// else <paramref name="program"/>, recorded there: one program per file for a conversion.
+        /// </summary>
+        private static TrueTypeFontProgram OneProgramPerFile(string path, TrueTypeFontProgram program,
+            IDictionary<string, TrueTypeFontProgram> conversionPrograms)
+        {
+            if (program == null || path == null || conversionPrograms == null) return program;
+            if (conversionPrograms.TryGetValue(path, out var held)) return held;
+            conversionPrograms[path] = program;
+            return program;
         }
 
         /// <summary>Drops the programs <see cref="FileCache"/> holds and their charge, the resolutions kept: a test's way to see that a resolution holds no program of its own.</summary>
@@ -479,7 +506,10 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
         /// <para><b>Refusing to cache never changes what is returned</b> — the program is handed
         /// back either way, so a full cache costs a re-read on a future miss and nothing else:
         /// <see cref="ResolveCache"/> memoises a resolution as the file it answered with, so a
-        /// repeated request re-reads a refused file rather than keeping a program of its own.</para>
+        /// repeated request re-reads a refused file rather than keeping a program of its own. A
+        /// re-read is a new instance, and a conversion embeds a font once per instance, so a
+        /// conversion keeps the programs it resolved itself (<see cref="Resolve"/>'s
+        /// <c>conversionPrograms</c>), for as long as it runs.</para>
         /// </summary>
         internal const long MaxCachedFontBytes = 32L * 1024 * 1024;
 

@@ -5641,18 +5641,22 @@ public class PdfUa2StructureCheckerTests
         Assert.DoesNotContain(result.Violations, v => v.Code == "UA2-8.2.4");
     }
 
+    /// <summary>
+    /// An absent /NS is the default namespace, PDF 1.7 (ISO 32000-2 §14.8.6.1) — a standard one, so the
+    /// membership sentence passes it — and §8.2.4's later sentence asks such an element to be a unique PDF
+    /// 1.7 type after role mapping, which an unmapped custom type is not.
+    /// </summary>
     [Fact]
-    public void AbsentNsOnElement_DoesNotReportUa824()
+    public void AbsentNsOnACustomTypeElement_ReportsUa824AsNoUniquePdf17Type()
     {
-        // ISO 32000-2 §14.8.6.1: an absent /NS defaults to the PDF 1.7 namespace — compliant by
-        // definition, and this element is never even walked into ResolveNamespaceMembership.
         byte[] pdf = Pdf("5 0 R", omitStructTreeRoot: false,
             DocumentElementWithChild(6, 7),
             NamespaceDict(Pdf2Namespace),
             "<< /Type /StructElem /S /CustomType /P 5 0 R >>");
 
-        var result = Validate(pdf);
-        Assert.DoesNotContain(result.Violations, v => v.Code == "UA2-8.2.4");
+        var found = Assert.Single(Validate(pdf).Violations, v => v.Code == "UA2-8.2.4");
+        Assert.StartsWith("A CustomType structure element has no explicit namespace, and its type is no standard PDF 1.7 type",
+            found.Message, System.StringComparison.Ordinal);
     }
 
     [Fact]

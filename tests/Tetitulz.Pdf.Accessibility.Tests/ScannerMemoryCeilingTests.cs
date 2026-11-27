@@ -401,7 +401,7 @@ public class ScannerMemoryCeilingTests
         Assert.Equal(3, gap.ObjectNumber);                   // its page object
         Assert.Contains(pageCeiling.ToString(CultureInfo.InvariantCulture), gap.Message, StringComparison.Ordinal);
         Assert.Contains("did not run for this page", gap.Message, StringComparison.Ordinal);
-        Assert.Contains("UA17 (text drawn outside every marked-content sequence)",
+        Assert.Contains("UA17 (content drawn outside every marked-content sequence)",
             gap.Message, StringComparison.Ordinal);
 
         // The rest of the file is audited exactly as before: UA21 is a dictionary-level fact about

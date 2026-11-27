@@ -1276,8 +1276,7 @@ namespace Tetitulz.Pdf.DocxToPdf.Rendering
                         csFamily ??= resolver.ResolveComplexScriptFontName(run, para);
                         var cps = UnicodeText.CodePointsToCover(text);
                         // Prefer a font embedded in the DOCX itself; fall back to an OS font.
-                        var program = context.ResolveEmbeddedFont(csFamily, bold, italic, cps)
-                                      ?? FontResolver.Resolve(csFamily, bold, italic, cps, context.Options.AllowRestrictedSystemFonts);
+                        var program = context.ResolveFont(csFamily, bold, italic, cps);
                         if (program != null)
                         {
                             srcSegs.Add(new CellSeg

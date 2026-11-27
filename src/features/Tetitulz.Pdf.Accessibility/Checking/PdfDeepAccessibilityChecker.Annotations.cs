@@ -144,7 +144,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking
             foreach (PageInfo page in ctx.Pages)
                 foreach (AnnotationInfo annot in EnumerateAnnotations(ctx, page))
                     if (annot.Subtype == PdfAnnotationSubtypes.Link
-                        && SendsPointerPosition(ctx, annot.Dict[PdfName.A], ref chainCut))
+                        && SendsPointerPosition(ctx.Doc, annot.Dict[PdfName.A], ref chainCut))
                         imageMaps.Add(Occurrence.ForAnnotation(annot));
 
             if (chainCut)
@@ -172,9 +172,9 @@ namespace Tetitulz.Pdf.Accessibility.Checking
         /// Whether <paramref name="action"/>, or an action on its <c>/Next</c> chain (a dictionary or an
         /// array of them), is a URI action with <c>/IsMap</c> true. Each object is read once, and at most
         /// <see cref="PdfLimits.MaxActionChainDepth"/> actions and arrays a chain; past it the rest is not
-        /// read and <paramref name="cut"/> is set.
+        /// read and <paramref name="cut"/> is set. UA35 and PDF/UA-2's §8.13.3 ask it alike.
         /// </summary>
-        private static bool SendsPointerPosition(CheckContext ctx, PdfObject action, ref bool cut)
+        internal static bool SendsPointerPosition(PdfDocument doc, PdfObject action, ref bool cut)
         {
             var pending = new Stack<PdfObject>();
             var seen = new HashSet<object>(PdfReferenceEquality.Instance);
@@ -183,7 +183,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking
             while (pending.Count > 0)
             {
                 PdfObject next = pending.Pop();
-                if (next is PdfReference) next = ResolveObject(ctx.Doc, next);
+                if (next is PdfReference) next = ResolveObject(doc, next);
                 if (!(next is PdfArray || next is PdfDictionary) || !seen.Add(next)) continue;
                 if (++read > PdfLimits.MaxActionChainDepth)
                 {
@@ -200,8 +200,8 @@ namespace Tetitulz.Pdf.Accessibility.Checking
                 }
 
                 var dict = (PdfDictionary)next;
-                if ((ResolveObject(ctx.Doc, dict[PdfName.S]) as PdfName)?.Value == "URI"
-                    && (ResolveObject(ctx.Doc, dict[PdfName.IsMap]) as PdfBoolean)?.Value == true)
+                if ((ResolveObject(doc, dict[PdfName.S]) as PdfName)?.Value == "URI"
+                    && (ResolveObject(doc, dict[PdfName.IsMap]) as PdfBoolean)?.Value == true)
                     return true;
                 pending.Push(dict[PdfName.Next]);
             }

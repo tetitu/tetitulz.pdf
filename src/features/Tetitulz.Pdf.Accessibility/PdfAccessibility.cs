@@ -3003,6 +3003,8 @@ namespace Tetitulz.Pdf.Accessibility
             var structure = PdfUa2StructureChecker.Validate(new MemoryStream(pdfBytes));
             foreach (var violation in structure.Violations)
                 issues.Add(MapUa2Violation(violation.Code, violation.Message));
+            foreach (var advisory in structure.Advisories)
+                issues.Add(MapUa2Violation(advisory.Code, advisory.Message, advisory: true));
         }
 
         /// <summary>
@@ -3054,9 +3056,11 @@ namespace Tetitulz.Pdf.Accessibility
         /// Maps a PDF/UA-2 violation — from either UA-2 checker, both of which report a code and a
         /// message only — onto the issue model. The location is recovered from the message the
         /// way <see cref="MapBaseViolation"/> recovers it, the category follows the clause, and
-        /// every code is an <see cref="IssueSeverity.Error"/> except <see cref="IncompleteUa2CheckCode"/>.
+        /// every code is an <see cref="IssueSeverity.Error"/> except <see cref="IncompleteUa2CheckCode"/>,
+        /// an Info, and an <paramref name="advisory"/> — a requirement whose condition a person confirms
+        /// (<see cref="PdfUa2StructureResult.Advisories"/>) — a Warning.
         /// </summary>
-        private static AccessibilityIssue MapUa2Violation(string code, string message)
+        private static AccessibilityIssue MapUa2Violation(string code, string message, bool advisory = false)
         {
             code    ??= string.Empty;
             message ??= string.Empty;
@@ -3069,13 +3073,16 @@ namespace Tetitulz.Pdf.Accessibility
                   "completed, so whatever it would have found is missing. Treat the report as " +
                   "incomplete — repair the file (see Tetitulz.Pdf.Plugins.Maintenance), decrypt it " +
                   "if it is encrypted, and re-run PdfAccessibility.Audit() until the check runs cleanly."
-                : "ISO 14289-2:2024 clause " + clause + ". Correct the document in an authoring " +
-                  "tool and re-run PdfAccessibility.Audit() with AuditOptions.Target = " +
-                  "PdfUaVersion.Ua2; this library's auto-tagging and remediation produce PDF/UA-1 " +
-                  "output and do not close PDF/UA-2 findings.";
+                : advisory
+                    ? "ISO 14289-2:2024 clause " + clause + ". Confirm by review that the requirement's " +
+                      "condition is met — for a URI action with /IsMap, that each destination of the image " +
+                      "map is also reachable without it — or remove what calls for it."
+                    : "ISO 14289-2:2024 clause " + clause + ". Correct the document — remediation with " +
+                      "RemediationOptions.PdfUaPart = 2 closes what it covers — and re-run " +
+                      "PdfAccessibility.Audit() with AuditOptions.Target = PdfUaVersion.Ua2.";
 
             return new AccessibilityIssue(
-                incomplete ? IssueSeverity.Info : IssueSeverity.Error,
+                incomplete ? IssueSeverity.Info : advisory ? IssueSeverity.Warning : IssueSeverity.Error,
                 code, message, remediation, Ua2Category(code),
                 pageNumber: ExtractPageNumber(message),
                 wcagLevel: WcagLevel.None,
@@ -3454,6 +3461,18 @@ namespace Tetitulz.Pdf.Accessibility
                            "Give each media clip data dictionary a /CT (the media's MIME type) and an /Alt " +
                            "multi-language text array describing the media (ISO 14289-1 7.18.6.2).",
                            WcagLevel.A, (string)null, "1.1.1"),
+
+                "UA62" => (IssueCategory.Fonts,
+                           "Embed each composite font's CMap unless it is one of the predefined CMaps of ISO " +
+                           "32000-1 Table 118, keep an embedded CMap's /WMode equal to its program's, and have " +
+                           "it use no CMap but a predefined one (ISO 14289-1 7.21.3.3).",
+                           WcagLevel.None, (string)null, (string)null),
+
+                "UA63" => (IssueCategory.Fonts,
+                           "Give each composite font's CIDFont a /CIDSystemInfo with its CMap's /Registry and " +
+                           "/Ordering and a /Supplement at least the CMap's, or encode its text with Identity-H " +
+                           "(ISO 14289-1 7.21.3.1).",
+                           WcagLevel.None, (string)null, (string)null),
 
                 // Not an ISO 14289-1 requirement: UA99 is the plugin's own "a check could not be
                 // completed" code. The default arm below sent it out as a hard violation whose

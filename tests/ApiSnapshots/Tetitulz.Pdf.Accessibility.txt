@@ -27,6 +27,7 @@ Tetitulz.Pdf.Accessibility.Checking.PdfDeepAccessibilityChecker::DefaultMaxPageC
 Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureChecker::LastValidationError : System.String { get }
 Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureChecker::Validate(System.IO.Stream) : Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureResult
 Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureChecker::Validate(System.String) : Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureResult
+Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureResult::Advisories : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureViolation> { get }
 Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureResult::IsConforming : System.Boolean { get }
 Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureResult::Violations : System.Collections.Generic.IReadOnlyList<Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureViolation> { get }
 Tetitulz.Pdf.Accessibility.Checking.Ua2.PdfUa2StructureViolation::Code : System.String { get }

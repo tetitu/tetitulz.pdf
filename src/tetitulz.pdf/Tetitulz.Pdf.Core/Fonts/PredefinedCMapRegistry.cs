@@ -30,5 +30,14 @@ namespace Tetitulz.Pdf.Core.Fonts
         /// </summary>
         public static bool IsRegistered(string name)
             => CMapParser.IsPredefinedCMapRegistered(name);
+
+        /// <summary>
+        /// The CMap program registered under <paramref name="name"/> — a copy — or <see langword="null"/>
+        /// when none is. A predefined CMap's character collection (its <c>/CIDSystemInfo</c>) is declared
+        /// there and nowhere else: ISO 32000-2:2020 leaves Table 117 empty and points to the CMap programs
+        /// themselves.
+        /// </summary>
+        public static byte[] GetProgram(string name)
+            => (byte[])CMapParser.GetPredefinedBytes(name)?.Clone();
     }
 }

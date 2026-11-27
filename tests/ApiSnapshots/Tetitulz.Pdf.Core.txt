@@ -1028,6 +1028,7 @@ Tetitulz.Pdf.Core.Fonts.NotdefReferences::In(System.Byte[]) : System.Collections
 Tetitulz.Pdf.Core.Fonts.NotdefReferences::Unreadable : System.String { get }
 Tetitulz.Pdf.Core.Fonts.PdfGlyphNames::TryGetUnicode(System.String, out System.Char&) : System.Boolean
 Tetitulz.Pdf.Core.Fonts.PfbAssembler::Build(System.Byte[], System.Int32, System.Int32, System.Int32) : System.Byte[]
+Tetitulz.Pdf.Core.Fonts.PredefinedCMapRegistry::GetProgram(System.String) : System.Byte[]
 Tetitulz.Pdf.Core.Fonts.PredefinedCMapRegistry::IsRegistered(System.String) : System.Boolean
 Tetitulz.Pdf.Core.Fonts.PredefinedCMapRegistry::Register(System.String, System.Byte[]) : System.Void
 Tetitulz.Pdf.Core.Fonts.SfntBuilder::Build(System.UInt32, System.Collections.Generic.IReadOnlyList<System.ValueTuple<System.String, System.Byte[]>>) : System.Byte[]
