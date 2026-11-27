@@ -455,6 +455,13 @@ namespace Tetitulz.Pdf.Accessibility.Checking
                 if (PaintingOperators.Contains(token.Operator))
                 {
                     info.PaintingOperators++;
+                    if (markedStack.Count == 0) info.UnmarkedPaintingOperators++;
+                    continue;
+                }
+
+                if (string.Equals(token.Operator, PdfOperators.BeginInlineImage, StringComparison.Ordinal))
+                {
+                    if (markedStack.Count == 0) info.UnmarkedImages++;
                     continue;
                 }
 
@@ -479,6 +486,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking
                 if (string.Equals(subtype, "Image", StringComparison.Ordinal))
                 {
                     info.ImageXObjectInvocations++;
+                    if (markedStack.Count == 0) info.UnmarkedImages++;
                     continue;
                 }
 

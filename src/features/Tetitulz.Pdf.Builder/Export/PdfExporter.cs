@@ -1318,7 +1318,7 @@ namespace Tetitulz.Pdf.Builder.Export
                 // A strip that opens with a note continued from the page before has a full-width rule
                 // (Word's continuation separator), so the reader can tell it from a strip of new notes.
                 double rule = _continuedNotes.Count > 0 ? ContentWidth : ContentWidth * FootnoteRuleWidthFraction;
-                using (EnterArtifact(PdfArtifactTypes.Layout, null))
+                using (MarkArtifact(PdfArtifactTypes.Layout))
                 {
                     Page.SetStrokeColorGray(0.4f);
                     Page.SetLineWidth(FootnoteRuleWidthPt);
@@ -3617,7 +3617,7 @@ namespace Tetitulz.Pdf.Builder.Export
 
             ctx.EnsureSpace(FootnoteRuleGapPt * 2 + NoteHeight(ctx, notes[0], ctx.ContentWidth));
 
-            using (ctx.EnterArtifact(PdfArtifactTypes.Layout, null))
+            using (ctx.MarkArtifact(PdfArtifactTypes.Layout))
             {
                 double top = ctx.Y - FootnoteRuleGapPt;
                 ctx.Page.SetStrokeColorGray(0.4f);

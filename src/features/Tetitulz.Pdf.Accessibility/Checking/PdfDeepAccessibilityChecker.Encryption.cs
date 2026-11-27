@@ -225,7 +225,7 @@ namespace Tetitulz.Pdf.Accessibility.Checking
             "exists on the page, and whether the /ParentTree leads back to that element)";
 
         private const string CheckNameUa17 =
-            "UA17 (text drawn outside every marked-content sequence)";
+            "UA17 (content drawn outside every marked-content sequence)";
 
         private const string CheckNameUa18 =
             "UA18 (a page holding structural content but no /StructParents)";

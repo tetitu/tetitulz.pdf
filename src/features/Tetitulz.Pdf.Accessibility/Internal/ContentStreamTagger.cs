@@ -398,6 +398,13 @@ namespace Tetitulz.Pdf.Accessibility.Internal
         /// <see cref="FigureAlternateText"/>'s contract for the images a stream draws in place.
         /// </summary>
         public Func<int, PdfDictionary, string> InlineImageAlternateText { get; set; }
+
+        /// <summary>
+        /// Marks each painted path and each shading outside marked content as a layout artifact — the
+        /// auto-tagger's pass, which leaves no content out of both the tree and the artifacts. Off for a
+        /// caller marking one kind of content only, as the header and footer marker does.
+        /// </summary>
+        public bool MarkPathsAsArtifacts { get; set; }
     }
 
     /// <summary>
@@ -833,8 +840,9 @@ namespace Tetitulz.Pdf.Accessibility.Internal
 
             // A page being completed may legitimately have no text left to classify: every text
             // object it has is already inside somebody's sequence, or the marked content wraps an
-            // image rather than words. Its sequences are still worth adopting, so "nothing to
-            // classify" only ends the pass when there is also nothing to adopt.
+            // image rather than words. Its sequences are still worth adopting, and a page of
+            // drawings has paths to mark as artifacts and images a caller may describe, so "nothing
+            // to classify" only ends the pass when there is also nothing to adopt and nothing drawn.
             bool hasAdoptable = false;
             if (existing != null)
             {
@@ -842,7 +850,7 @@ namespace Tetitulz.Pdf.Accessibility.Internal
                     if (!seq.IsArtifact && seq.Mcid >= 0) { hasAdoptable = true; break; }
             }
 
-            if (lines.Count == 0 && !hasAdoptable)
+            if (lines.Count == 0 && !hasAdoptable && !DrawsPathsOrImages(tokens, options))
             {
                 result.SkipReason = "Page contains no text-showing operators to tag"
                                   + (result.ContainsXObjectInvocations
@@ -983,6 +991,10 @@ namespace Tetitulz.Pdf.Accessibility.Internal
                                   ref mcid, ref sequence);
             }
 
+            // ---- 4a'. paths and shadings, as layout artifacts ---------------------
+            if (options.MarkPathsAsArtifacts)
+                CollectPathArtifactRuns(tokens, textObjects, existing, runs, insertions, ref sequence);
+
             if (existing != null)
             {
                 string adoptError = AdoptExistingSequences(existing, textObjects, runs);
@@ -1008,9 +1020,11 @@ namespace Tetitulz.Pdf.Accessibility.Internal
             // runs can tie, and it is worth writing down which cases were checked: two segments of
             // one text object start at different shows; a whole-object wrap is the object's only
             // run; two text objects have different BT offsets; a figure's `Do` is refused if it
-            // falls inside any BT…ET, so it cannot share a start with a text run; and both a text
-            // run and a figure inside an existing marked-content sequence are skipped before they
-            // get here, so an adopted run's BDC offset collides with neither. A stabiliser would
+            // falls inside any BT…ET, so it cannot share a start with a text run; a path artifact
+            // starts at a path construction operator or an `sh`, which is neither a show, a BT, a
+            // `Do` nor a `BI`, and one inside a text object is refused; and a text run, a figure and
+            // a path inside an existing marked-content sequence are all skipped before they get
+            // here, so an adopted run's BDC offset collides with none of them. A stabiliser would
             // therefore be a guard against a hazard that cannot occur — inert, and untestable.
             runs.Sort((a, b) => a.TokenStart.CompareTo(b.TokenStart));
 
@@ -1232,6 +1246,153 @@ namespace Tetitulz.Pdf.Accessibility.Internal
                 runs.Add(run);
                 insertions.Add(new Insertion(run.TokenStart, InsertionKind.Open,  BuildOpenSequence(run), sequence++));
                 insertions.Add(new Insertion(run.TokenEnd,   InsertionKind.Close, CloseSequence,          sequence++));
+            }
+        }
+
+        /// <summary>
+        /// Whether the page draws something the tagger marks without a line of text: a painted path or a
+        /// shading when <see cref="PageTagOptions.MarkPathsAsArtifacts"/> (<see cref="CollectPathArtifactRuns"/>), or an image the caller can describe
+        /// (<see cref="CollectFigureRuns"/>).
+        /// </summary>
+        private static bool DrawsPathsOrImages(IReadOnlyList<ContentToken> tokens, PageTagOptions options)
+        {
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                switch (tokens[i].Operator)
+                {
+                    case PdfOperators.Stroke:
+                    case PdfOperators.CloseStroke:
+                    case PdfOperators.Fill:
+                    case PdfOperators.FillObsolete:
+                    case PdfOperators.FillEvenOdd:
+                    case PdfOperators.FillStroke:
+                    case PdfOperators.FillStrokeEvenOdd:
+                    case PdfOperators.CloseFillStroke:
+                    case PdfOperators.CloseFillStrokeEvenOdd:
+                    case PdfOperators.ShadingFill:
+                        if (options.MarkPathsAsArtifacts) return true;
+                        break;
+                    case PdfOperators.BeginInlineImage:
+                        if (options.InlineImageAlternateText != null) return true;
+                        break;
+                    case PdfOperators.InvokeXObject:
+                        IReadOnlyList<PdfObject> operands = tokens[i].Operands;
+                        if (options.FigureAlternateText != null && options.ImageXObjectNames != null
+                            && operands != null && operands.Count > 0 && operands[operands.Count - 1] is PdfName name
+                            && options.ImageXObjectNames.Contains(name.Value))
+                            return true;
+                        break;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Wraps each painted path and each <c>sh</c> the page draws outside marked content in an
+        /// <c>/Artifact &lt;&lt;/Type /Layout&gt;&gt;</c> sequence: a rule, a border, a box's fill, a background.
+        /// </summary>
+        /// <remarks>
+        /// <para><b>Every piece of content is in the structure tree or an artifact</b> — ISO 14289-1 7.1,
+        /// ISO 14289-2 §8.2.2 and §8.3.1 — and a line-level tagger has no structure to give a path: it is not
+        /// text, and a vector drawing it could call a figure has no description to carry. So a path is
+        /// layout. An image is not wrapped here: whether it says something only its caller can tell, which
+        /// is what <see cref="CollectFigureRuns"/> asks.</para>
+        /// <para>A path runs from its first construction operator to the operator that paints it, a clip
+        /// (<c>W</c>, <c>W*</c>) and any state operator between them included; <c>n</c> paints nothing. An
+        /// operator a sequence must not cut — <c>q</c>, <c>Q</c>, a text object's, a marked-content one, an
+        /// XObject or inline image — ends the path unwrapped. Paths painted one after another with nothing
+        /// between them are one sequence. One inside a text object or inside an existing marked-content
+        /// sequence is left as it is.</para>
+        /// </remarks>
+        private static void CollectPathArtifactRuns(
+            IReadOnlyList<ContentToken> tokens,
+            List<TextObjectInfo> textObjects,
+            MarkedContentInventory existing,
+            List<TaggedRun> runs,
+            List<Insertion> insertions,
+            ref int sequence)
+        {
+            int pathStart = -1;        // index of the open path's first construction operator
+            TaggedRun last = null;     // the last path artifact, extended while paths follow it directly
+            int lastEndToken = -2;
+            Insertion lastClose = null;
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                int start;
+                switch (tokens[i].Operator)
+                {
+                    case PdfOperators.MoveTo:
+                    case PdfOperators.LineTo:
+                    case PdfOperators.CurveTo:
+                    case PdfOperators.CurveToV:
+                    case PdfOperators.CurveToY:
+                    case PdfOperators.ClosePath:
+                    case PdfOperators.Rectangle:
+                        if (pathStart < 0) pathStart = i;
+                        continue;
+                    case PdfOperators.Stroke:
+                    case PdfOperators.CloseStroke:
+                    case PdfOperators.Fill:
+                    case PdfOperators.FillObsolete:
+                    case PdfOperators.FillEvenOdd:
+                    case PdfOperators.FillStroke:
+                    case PdfOperators.FillStrokeEvenOdd:
+                    case PdfOperators.CloseFillStroke:
+                    case PdfOperators.CloseFillStrokeEvenOdd:
+                        if (pathStart < 0) continue;
+                        start = pathStart;
+                        pathStart = -1;
+                        break;
+                    case PdfOperators.ShadingFill:
+                        pathStart = -1;
+                        start = i;
+                        break;
+                    case PdfOperators.EndPath:
+                    case PdfOperators.Save:
+                    case PdfOperators.Restore:
+                    case PdfOperators.BeginText:
+                    case PdfOperators.EndText:
+                    case PdfOperators.BeginMarkedContent:
+                    case PdfOperators.BeginMarkedContentProps:
+                    case PdfOperators.EndMarkedContent:
+                    case PdfOperators.MarkedPoint:
+                    case PdfOperators.MarkedPointProps:
+                    case PdfOperators.InvokeXObject:
+                    case PdfOperators.BeginInlineImage:
+                        pathStart = -1;
+                        continue;
+                    default:
+                        continue;     // a clip or a state operator inside a path is carried along with it
+                }
+
+                int from = tokens[start].StartOffset;
+                if (IsInsideTextObject(textObjects, from)) continue;
+                if (existing != null && EnclosingSequence(existing, from) != null) continue;
+
+                if (last != null && lastEndToken == start - 1)
+                {
+                    // Directly after the last one: the same sequence, its close moved to this end.
+                    insertions.Remove(lastClose);
+                    last.TokenEnd = tokens[i].EndOffset;
+                    lastClose = new Insertion(last.TokenEnd, InsertionKind.Close, CloseSequence, sequence++);
+                    insertions.Add(lastClose);
+                    lastEndToken = i;
+                    continue;
+                }
+
+                last = new TaggedRun
+                {
+                    IsArtifact   = true,
+                    ArtifactType = "Layout",
+                    TokenStart   = from,
+                    TokenEnd     = tokens[i].EndOffset,
+                };
+                runs.Add(last);
+                insertions.Add(new Insertion(last.TokenStart, InsertionKind.Open, BuildOpenSequence(last), sequence++));
+                lastClose = new Insertion(last.TokenEnd, InsertionKind.Close, CloseSequence, sequence++);
+                insertions.Add(lastClose);
+                lastEndToken = i;
             }
         }
 

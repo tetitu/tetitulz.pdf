@@ -159,4 +159,57 @@ public class AutoTagUa2StructureTests
         Assert.Contains(report.Issues, i => i.Code != null
                                             && i.Code.StartsWith("UA2-", System.StringComparison.Ordinal));
     }
+
+    /// <summary>
+    /// §8.2.2 and §8.3.1 over a page holding text, two filled paths, a shading, and an image XObject the caller
+    /// describes: the tagged output leaves none of them outside the structure tree and outside an artifact —
+    /// the paths and the shading are layout artifacts, the image a figure. The input, untagged, has the paths
+    /// and the image reported: the control that the check reads this page.
+    /// </summary>
+    [Fact]
+    public void AutoTaggedOutput_LeavesNoPaintedContentUntagged()
+    {
+        byte[] pdf = PaintedPage();
+
+        string[] before = CodesStartingWith(PdfAccessibility.Audit(new MemoryStream(pdf), new AuditOptions { Target = PdfUaVersion.Ua2 }), "UA2-8.2.2");
+        Assert.Contains(before, f => f.Contains("a path"));
+        Assert.Contains(before, f => f.Contains("an image"));
+        Assert.Contains(before, f => f.Contains("a shading"));
+
+        using var input = new MemoryStream(pdf, writable: false);
+        using var tagged = new MemoryStream();
+        PdfAccessibility.AutoTag(input, tagged, new AutoTagOptions { Target = PdfUaVersion.Ua2, FigureAlternateText = _ => "A grey square" });
+        tagged.Position = 0;
+        string[] after = CodesStartingWith(PdfAccessibility.Audit(tagged, new AuditOptions { Target = PdfUaVersion.Ua2 }), "UA2-8.2.2");
+        Assert.True(after.Length == 0, string.Join("\n", after));
+    }
+
+    /// <summary>
+    /// An image the caller does not describe stays out of the tree, and is reported — the tagger does not call
+    /// a picture decoration on its own — while the page's paths and shading are artifacts all the same.
+    /// </summary>
+    [Fact]
+    public void AutoTaggedOutput_LeavesAnUndescribedImageReported_AndItsPathsArtifacts()
+    {
+        string[] after = CodesStartingWith(AutoTagThenAuditAsUa2(PaintedPage()), "UA2-8.2.2");
+        Assert.Contains(after, f => f.Contains("an image"));
+        Assert.DoesNotContain(after, f => f.Contains("a path") || f.Contains("a shading"));
+    }
+
+    /// <summary>Text, two paths painted one after the other, a shading under a clip, and an image XObject.</summary>
+    private static byte[] PaintedPage()
+    {
+        const string content = "BT /F1 12 Tf 20 150 Td (Hello world) Tj ET 20 20 60 40 re f 1 0 0 RG 0 0 m 200 0 l S "
+                             + "q 0 0 50 50 re W n /Sh0 sh Q "
+                             + "q 40 0 0 40 120 20 cm /Im0 Do Q";
+        return PdfUa2StructureCheckerTests.BuildPdf(new[]
+        {
+            "<< /Type /Catalog /Pages 2 0 R >>",
+            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Resources << /Font << /F1 4 0 R >> /XObject << /Im0 6 0 R >> >> /Contents 5 0 R >>",
+            "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+            "<< /Length " + content.Length.ToString(System.Globalization.CultureInfo.InvariantCulture) + " >>\nstream\n" + content + "\nendstream",
+            "<< /Type /XObject /Subtype /Image /Width 1 /Height 1 /ColorSpace /DeviceGray /BitsPerComponent 8 /Length 1 >>\nstream\na\nendstream",
+        });
+    }
 }

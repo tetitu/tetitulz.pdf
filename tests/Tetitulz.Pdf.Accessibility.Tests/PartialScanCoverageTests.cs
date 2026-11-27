@@ -173,7 +173,7 @@ public class PartialScanCoverageTests
         Assert.Contains("UA24 (image-only, probably scanned pages)", notice.Message,
             StringComparison.Ordinal);
         Assert.Contains("UA14's marked-content mapping", notice.Message, StringComparison.Ordinal);
-        Assert.Contains("UA17 (text drawn outside every marked-content sequence)", notice.Message,
+        Assert.Contains("UA17 (content drawn outside every marked-content sequence)", notice.Message,
             StringComparison.Ordinal);
         Assert.Contains("lower bounds", notice.Message, StringComparison.Ordinal);
     }

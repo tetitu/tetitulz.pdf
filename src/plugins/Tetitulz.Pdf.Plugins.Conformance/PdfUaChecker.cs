@@ -74,6 +74,11 @@ namespace Tetitulz.Pdf.Plugins.Conformance
     ///   <item>UA59 — An embedded file's specification without both /F and /UF (7.11, 7.18.7).</item>
     ///   <item>UA60 — A dynamic XFA form: its dynamicRender element says <c>required</c> (7.15).</item>
     ///   <item>UA61 — A media clip data dictionary without /CT and /Alt (7.18.6.2).</item>
+    ///   <item>UA62 — A composite font used for rendering whose CMap is not predefined and not embedded,
+    ///     whose embedded CMap's /WMode is not its program's, or which references a CMap that is not
+    ///     predefined (7.21.3.3, <see cref="CMapRules"/>).</item>
+    ///   <item>UA63 — A composite font used for rendering whose CIDFont's /CIDSystemInfo is not its CMap's
+    ///     registry and ordering at a supplement at least the CMap's (7.21.3.1, <see cref="CMapRules"/>).</item>
     ///   <item>UA99 — Reported when a check could not be completed: the document structure raised
     ///                an unexpected error, or the data the check needs is encrypted (the XMP
     ///                packet, which both UA03 and the title half of UA04 have to read; UA60's XFA
@@ -2313,6 +2318,39 @@ namespace Tetitulz.Pdf.Plugins.Conformance
             if (subsetUnjudged.Count > 0)
                 v.Add(new PdfUaViolation("UA99",
                     $"UA56 (ISO 14289-1 7.21.4.2) was not judged for a font subset: {string.Join("; ", subsetUnjudged)}."));
+
+            // UA62 — 7.21.3.3: a CMap that ISO 32000-1 Table 118 does not list is embedded, its /WMode is
+            // its program's, and it references no CMap Table 118 does not list — the reading PDF/UA-2's
+            // §8.4.5.4 shares (CMapRules). The composite fonts used for rendering.
+            var cmaps = new SortedSet<string>(StringComparer.Ordinal);
+            var cmapsUnjudged = new SortedSet<string>(StringComparer.Ordinal);
+            var collections = new SortedSet<string>(StringComparer.Ordinal);
+            var collectionsUnjudged = new SortedSet<string>(StringComparer.Ordinal);
+            foreach (var (font, label) in scan.Fonts)
+            {
+                string problem = CMapRules.WhatIsWrong(doc, font, out string unjudged);
+                string collection = CMapRules.CharacterCollectionProblem(doc, font, out string collectionUnjudged);
+                if (problem == null && unjudged == null && collection == null && collectionUnjudged == null) continue;
+                if (Painted() != null && !Painted().Contains(font)) continue;
+                if (problem != null) cmaps.Add($"{label}: {problem}");
+                if (unjudged != null) cmapsUnjudged.Add($"{label}: {unjudged}");
+                if (collection != null) collections.Add($"{label}: {collection}");
+                if (collectionUnjudged != null) collectionsUnjudged.Add($"{label}: {collectionUnjudged}");
+            }
+            if (cmaps.Count > 0)
+                v.Add(new PdfUaViolation("UA62",
+                    $"A composite font's CMap breaks ISO 14289-1 7.21.3.3: {string.Join("; ", cmaps)}."));
+            if (cmapsUnjudged.Count > 0)
+                v.Add(new PdfUaViolation("UA99",
+                    $"UA62 (ISO 14289-1 7.21.3.3) was not judged in full for a font: {string.Join("; ", cmapsUnjudged)}."));
+            // UA63 — 7.21.3.1: a CIDFont's character collection is its CMap's, at a supplement at least the
+            // CMap's (CMapRules; a predefined CMap's read from its registered program).
+            if (collections.Count > 0)
+                v.Add(new PdfUaViolation("UA63",
+                    $"A composite font's CIDFont and CMap break ISO 14289-1 7.21.3.1: {string.Join("; ", collections)}."));
+            if (collectionsUnjudged.Count > 0)
+                v.Add(new PdfUaViolation("UA99",
+                    $"UA63 (ISO 14289-1 7.21.3.1) was not judged for a font: {string.Join("; ", collectionsUnjudged)}."));
 
             // UA57 — 7.21.4.1: every glyph referenced for rendering is in the embedded program, through the
             // reading PDF/A's A84 shares, over the codes each font paints.

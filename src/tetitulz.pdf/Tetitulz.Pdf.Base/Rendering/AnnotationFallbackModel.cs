@@ -433,8 +433,8 @@ namespace Tetitulz.Pdf.Base.Rendering
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// The text a FreeText annotation shows: <c>/Contents</c>, else <c>/RC</c> stripped of its
-        /// XHTML-lite markup, else <c>null</c>.
+        /// The text a FreeText annotation shows: <c>/Contents</c>, else the plain text of its <c>/RC</c>
+        /// (<see cref="Core.Text.RichText.ToPlain(string)"/>), else <c>null</c>.
         /// </summary>
         internal static string FreeTextContents(PdfDictionary annot, PdfDocument doc)
         {
@@ -442,7 +442,7 @@ namespace Tetitulz.Pdf.Base.Rendering
             if (!string.IsNullOrEmpty(contents)) return contents;
 
             string rc = PdfResolve.Str(doc, annot, PdfName.RC)?.GetText();
-            return string.IsNullOrEmpty(rc) ? null : StripRichTextToPlain(rc);
+            return string.IsNullOrEmpty(rc) ? null : Core.Text.RichText.ToPlain(rc);
         }
 
         /// <summary>A FreeText line's height as a multiple of its font size — the renderers' fallback's and the appearance builder's leading alike.</summary>
@@ -457,53 +457,6 @@ namespace Tetitulz.Pdf.Base.Rendering
         {
             x = rx0 + 2f;
             y = ry1 - fontSize * FreeTextLineHeightFactor;
-        }
-
-        /// <summary>
-        /// Converts PDF <c>/RC</c> (XHTML-lite rich-text content, §12.5.6.4) to plain text by
-        /// stripping every tag and decoding the entity subset those payloads use.
-        /// </summary>
-        internal static string StripRichTextToPlain(string rc)
-        {
-            if (string.IsNullOrEmpty(rc)) return string.Empty;
-
-            var sb = new System.Text.StringBuilder(rc.Length);
-            bool inTag = false;
-            for (int i = 0; i < rc.Length; i++)
-            {
-                char c = rc[i];
-                if (c == '<') { inTag = true;  continue; }
-                if (c == '>') { inTag = false; continue; }
-                if (!inTag)   sb.Append(c);
-            }
-
-            string text = sb.ToString()
-                .Replace("&amp;",  "&")
-                .Replace("&lt;",   "<")
-                .Replace("&gt;",   ">")
-                .Replace("&quot;", "\"")
-                .Replace("&apos;", "'")
-                .Replace("&nbsp;", " ");
-
-            // Collapse consecutive whitespace (tags often introduce line breaks that look weird
-            // when rendered inline).
-            var collapsed = new System.Text.StringBuilder(text.Length);
-            bool prevSpace = false;
-            foreach (char c in text)
-            {
-                bool isSpace = char.IsWhiteSpace(c);
-                if (isSpace)
-                {
-                    if (!prevSpace) collapsed.Append(' ');
-                    prevSpace = true;
-                }
-                else
-                {
-                    collapsed.Append(c);
-                    prevSpace = false;
-                }
-            }
-            return collapsed.ToString().Trim();
         }
 
         // ------------------------------------------------------------------

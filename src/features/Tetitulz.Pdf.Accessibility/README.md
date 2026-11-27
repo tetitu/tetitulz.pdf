@@ -59,7 +59,9 @@ Six further constraints that change what these APIs can do for you:
 - **The auto-tagger is a heuristic.** It emits `P`, `H1`–`H3` and pagination artifacts, inferred
   from font-size ratios and margin bands, plus `L`/`LI`/`LBody` when `AutoTagOptions.InferLists` is
   set, `Table`/`TR`/`TH`/`TD` when `AutoTagOptions.InferTables` is, and `Figure` for each image
-  `AutoTagOptions.FigureAlternateText` supplies a description for. It infers no links.
+  `AutoTagOptions.FigureAlternateText` supplies a description for. Every path it paints and every
+  shading becomes a `/Layout` artifact — a rule, a border, a box, a background — so a page of drawings
+  is marked too (ISO 14289-1 7.1, ISO 14289-2 §8.2.2 and §8.3.1). It infers no links.
   (It *does* place every non-exempt annotation in the tree via `/OBJR`.)
 - **Pages that already carry marked content are skipped, never re-tagged**, as are pages whose
   decoded content stream exceeds 4 MiB and pages the scanner cannot reason about. Every skip is
@@ -126,7 +128,7 @@ IReadOnlyList<AccessibilityIssue> PdfDeepAccessibilityChecker.Check(
     Stream input,   int maxPageContentBytes, long maxDocumentContentBytes);
 ```
 
-Runs the plugin's `PdfUaChecker` (UA00–UA09, UA25–UA29, UA50–UA61, UA99) **and** this assembly's
+Runs the plugin's `PdfUaChecker` (UA00–UA09, UA25–UA29, UA50–UA63, UA99) **and** this assembly's
 `PdfDeepAccessibilityChecker` (UA10–UA24 and UA30–UA35, plus its own UA00/UA06/UA99) over the same bytes
 and merges the findings. Three of the plugin's codes are **dropped unconditionally** from the merge
 (`SupersededByDeepCheck`): **UA28/UA29** in favour of the deep checker's better-located UA14/UA16,
@@ -180,7 +182,10 @@ var options = new AuditOptions { Target = PdfUaVersion.Ua2 };   // Ua1 (default)
 - **`Ua2`** runs `PdfUa2Checker`'s Clause 5 plus the deep `PdfUa2StructureChecker`, and **no UA-1
   checker at all** — the two standards' rules differ, so mixing them would report a UA-1 violation
   against a document that never claimed UA-1. Findings arrive as `UA2-<clause>` codes through the
-  same report, with `UA2-99` mapped to **Info** for the same reason this side's `UA99` is.
+  same report, with `UA2-99` mapped to **Info** for the same reason this side's `UA99` is, and a
+  requirement whose condition a person confirms — §8.13.3's URI action with `/IsMap` true, conforming when
+  equivalent functionality is offered elsewhere — mapped to **Warning**
+  (`PdfUa2StructureResult.Advisories`, which `IsConforming` does not count).
 - **`Auto`** reads the document's declared `pdfuaid:part`: `2` selects UA-2, and anything else — `1`,
   no XMP packet, an unreadable one — selects UA-1, which is also what a caller naming no target gets.
 - `AccessibilityAuditReport.ConformanceTarget` names the part that **was** applied, so it is never
@@ -194,8 +199,8 @@ the auto-tagger tags for that part (`AutoTagOptions.Target`, the PDF 2.0 standar
 on every element and declared in `/Namespaces`), the identifier step writes `pdfuaid:rev` 2024 beside
 `pdfuaid:part` and the catalog's `/Version` 2.0 (a PDF/UA-2 file is a PDF 2.0 file), and the
 before/after audits judge PDF/UA-2 (`RemediationOptions.Target` follows the part unless set). An
-untagged page comes out conforming under the PDF/UA-2 audit given a title and a font program, as under
-PDF/UA-1. The roles PDF/UA-2 adds — `Aside`, `Title`, `FENote` — are not inferred: the tagger reads
+untagged page comes out conforming under the PDF/UA-2 audit given a title, a font program and a
+description for each image it draws, as under PDF/UA-1. The roles PDF/UA-2 adds — `Aside`, `Title`, `FENote` — are not inferred: the tagger reads
 geometry and type size, not meaning.
 
 ### AutoTag
@@ -624,7 +629,7 @@ Severity drives conformance: **Error** clears `IsConforming`, **Warning** clears
 `IsFullyConforming`, **Info** is advisory.
 
 **Which assembly owns which code, and the one trap.** The plugin owns `UA00`–`UA09`, `UA25`–`UA29`,
-`UA50`–`UA61` and its own `UA99`; this assembly's deep checker owns `UA10`–`UA24` and `UA30`–`UA35`, plus its
+`UA50`–`UA63` and its own `UA99`; this assembly's deep checker owns `UA10`–`UA24` and `UA30`–`UA35`, plus its
 own `UA00`, `UA06` and `UA99`. `UA35` is the deep checker's last code and new deep codes are allocated
 upward from there, leaving `UA36`–`UA49` free; the plugin allocates its own checks
 from `UA50` up, which is why `UA50` and not `UA30`. There is no gap-filler at `UA30` on the plugin
@@ -680,6 +685,8 @@ one construct. **Read a report carrying `UA99` as incomplete, whichever side rai
 | `UA59` | An embedded file's specification (one with `/EF`) without both `/F` and `/UF` (7.11), in the `/EmbeddedFiles` name tree or a file attachment annotation's `/FS` (7.18.7) — a hidden attachment too, since 7.11 is no annotation rule. The set PDF/A's A67 reads. |
 | `UA60` | A dynamic XFA form: the config packet's `dynamicRender` element (`config/acrobat/acrobat7`) says `required` (7.15). A static XFA form is permitted. A packet that cannot be read, an encrypted one among them, raises `UA99`. |
 | `UA61` | A media clip data dictionary (`/S /MCD`) without `/CT` and an `/Alt` multi-language text array (7.18.6.2: "In the media clip data dictionary, the optional CT and Alt keys … are required"). Every one the file holds is judged, whatever reaches it, by a bounded scan of its objects; dictionaries are never ciphertext, so an encrypted file is judged as a clear one is. |
+| `UA62` | A composite font used for rendering whose CMap is neither one of the 61 predefined CMaps of ISO 32000-1 Table 118 nor embedded, whose embedded CMap's `/WMode` is not the one its program declares, or that references — by `/UseCMap` or its program's `usecmap` — a CMap that is not predefined (7.21.3.3). The same three sentences as PDF/UA-2's §8.4.5.4, read from one place (`CMapRules`); a CMap program that will not decode is a `UA99`. |
+| `UA63` | A composite font used for rendering whose CIDFont's `/CIDSystemInfo` is not its CMap's registry and ordering at a supplement at least the CMap's (7.21.3.1). An embedded CMap's collection is its stream dictionary's; a predefined CMap's is the one its CMap program declares — ISO 32000-2 leaves Table 117 empty and points to the programs — read from the program registered under its name (`PredefinedCMapRegistry`, which `Plugins.CMap`'s `AdobeCMapPlugin` fills). A predefined CMap no program is registered for is a `UA99`. The same reading as PDF/UA-2's §8.4.5.3.1 (`CMapRules`). |
 | `UA99` | A check could not be completed; its findings are missing. |
 
 `UA28`, `UA29` and `UA50` are **dropped unconditionally** from a combined `Audit` — `UA28`/`UA29` in
@@ -701,7 +708,7 @@ from `PdfUaChecker.Validate` if you call the plugin standalone.
 | `UA14` | Error / Info | `/ParentTree` coverage: every page's `/StructParents` and every annotation's `/StructParent` must exist in the tree and resolve to the right kind of object. |
 | `UA15` | Warning | Figure alt-text *quality*: empty or placeholder `/Alt`. (Missing `/Alt` is UA07.) |
 | `UA16` | Error | A **leaf** structure element references no content at all — no child element, no MCID, no `/MCR`, no `/OBJR`. Purely local: it says nothing about an element that *has* an element child, however hollow that child's subtree is — that is `UA30`. `TD`, `TH`, `Lbl`, `Private` and `Artifact` are exempt here, because an empty cell is the standard way to keep a grid rectangular. |
-| `UA17` | Error | Text drawn inside **no** marked-content sequence — neither tagged nor marked as an artifact (§7.1). Counted per text-showing operator, not per page, so one artifact sequence cannot immunise a hundred untagged runs beside it. Follows Form XObjects. |
+| `UA17` | Error | Content drawn inside **no** marked-content sequence — neither tagged nor marked as an artifact (§7.1): text-showing operators, path and shading paints, and images (an image XObject drawn, an inline image), each kind counted in the finding. Counted per operator, not per page, so one artifact sequence cannot immunise a hundred untagged runs beside it. Follows Form XObjects. |
 | `UA18` | Error | A page with structural content items but no `/StructParents`, in a document that claims to be tagged. A page whose content is entirely artifacts correctly has none and is not reported. |
 | `UA19` | Error | `/MarkInfo /Suspects` is true — the document itself declares its tagging may not reflect the content. |
 | `UA20` | Error / Warning | Text that can produce no Unicode: no `/ToUnicode` and no usable encoding. Plugin counterpart: `UA26` (**not** UA25). |
@@ -824,7 +831,7 @@ Console.WriteLine(PdfAccessibility.Audit(ms3));
 
 | Operation | Encrypted input |
 |---|---|
-| `PdfUaChecker.Validate` (UA00–UA09, UA25–UA29, UA50–UA61, UA99) | **Runs every check but `UA50`, which is a known hole (GAPS.md §5c): it iterates `doc.Pages`, which is empty for an encrypted document, so it reports neither a finding nor a `UA99`.** Dictionary structure is never encrypted — only string and stream *contents* — so the structural checks stay meaningful. It raises `UA06` **only when the handler cannot be shown to permit accessibility extraction** (standard handler, `/P` bit 10; `/R` ≤ 2 and `/R` ≥ 6 are permitted by rule, and a non-standard `/Filter` or an unreadable `/P` is reported because it cannot be verified). An encrypted-but-accessible document gets **no** UA06 from this side. **UA03 and UA04 are both downgraded, on the same rule.** The XMP packet is ciphertext, so a check that cannot be decided from it is reported as `UA99` ("could not be verified") rather than as a violation. The exemption is deliberately narrow and identical for both: **only** a decode failure or an `XmlException` counts as unreadable. A missing `/Metadata` entry and an empty packet are facts about dictionary structure and length, which are never ciphertext, so they still yield a plain UA03/UA04 — encryption is not a blanket amnesty. The `/ViewerPreferences /DisplayDocTitle` half of UA04 is a boolean and is always asserted. UA58, UA59 and UA61 read dictionaries and run in full; UA60's XFA config packet is a stream, so on an encrypted document it is `UA99` ("could not be verified"). |
+| `PdfUaChecker.Validate` (UA00–UA09, UA25–UA29, UA50–UA63, UA99) | **Runs every check but `UA50`, which is a known hole (GAPS.md §5c): it iterates `doc.Pages`, which is empty for an encrypted document, so it reports neither a finding nor a `UA99`.** Dictionary structure is never encrypted — only string and stream *contents* — so the structural checks stay meaningful. It raises `UA06` **only when the handler cannot be shown to permit accessibility extraction** (standard handler, `/P` bit 10; `/R` ≤ 2 and `/R` ≥ 6 are permitted by rule, and a non-standard `/Filter` or an unreadable `/P` is reported because it cannot be verified). An encrypted-but-accessible document gets **no** UA06 from this side. **UA03 and UA04 are both downgraded, on the same rule.** The XMP packet is ciphertext, so a check that cannot be decided from it is reported as `UA99` ("could not be verified") rather than as a violation. The exemption is deliberately narrow and identical for both: **only** a decode failure or an `XmlException` counts as unreadable. A missing `/Metadata` entry and an empty packet are facts about dictionary structure and length, which are never ciphertext, so they still yield a plain UA03/UA04 — encryption is not a blanket amnesty. The `/ViewerPreferences /DisplayDocTitle` half of UA04 is a boolean and is always asserted. UA58, UA59 and UA61 read dictionaries and run in full, and UA62 reads a CMap program as the other font checks read theirs; UA60's XFA config packet is a stream, so on an encrypted document it is `UA99` ("could not be verified"). |
 | `Remediate` / `RemediateWithReport`, and every writer | **All nine steps run in place** when `RemediationOptions.EncryptedRevisionWriter` is set — one lambda mapping to `Encryption.PdfEncryptedIncrementalUpdate.Run`. This assembly still references no crypto and contains no occurrence of "password": the *operation* travels to Encryption, not the other way round. Without a writer the pipeline skips every step with a reason naming the option, exactly as before. **One pipeline, not two** — only the step *action* is substituted, so an encrypted run takes the same requested/applicable/superseded branches as a clear-text one, and the suite asserts the two agree on which steps applied. Each step is its own decrypt/append cycle: composing nine plans against one decrypted copy would need steps 2..9 to see changes that exist only as staged objects, and several revise the same catalog. |
 | `PdfDeepAccessibilityChecker.Check` (UA10–UA24, UA30–UA35) | **Runs every check that does not need plaintext.** It applies the **same `UA06` rule as the plugin, in the same order** — the two implementations are documented as "change together" — and continues the audit either way. Because `PdfDocument.Load` loads neither catalog nor pages for an encrypted file, it resolves the catalog from the trailer `/Root` and walks `/Pages` by hand (depth- and node-capped, cycle-guarded); without that every page-scoped check would silently have seen a zero-page document. UA33 and UA34 judge only that a Formula's `/Alt` and a Note's `/ID` are present, since an encrypted string's emptiness and equality depend on the cipher, and the report's encryption notice says so; UA35 reads booleans and names and runs in full. |
 | `AutoTag`, `MarkHeadersAndFooters`, `FixReadingOrder`, every `PdfStructureTreeEditor` method, `SetPdfUaIdentifier`, `EmbedMissingFonts`, `RemediateWithReport` | **Refused.** The document is passed through unchanged and the reason is recorded — in `Warnings`, in `RemediationReport.SkippedSteps`, and on the diagnostics sink. |
@@ -1012,7 +1019,9 @@ Beyond the six headline constraints at the top:
   - **Returning null or empty means "do not tag this image", and that is the designed answer.**
     ISO 14289-1 §7.3 requires a `/Figure` to carry an `/Alt`, and an empty one is its own UA15
     finding — so a tagger that emitted the element regardless would manufacture the violation it
-    exists to remove. An undescribed image stays untagged, which is where it started.
+    exists to remove. An undescribed image stays untagged, which is where it started. It is not made
+    an artifact either: whether a picture says something is the caller's to tell, so the audit reports
+    it as content in neither the tree nor an artifact until it is described.
   - **Asked once per occurrence, not once per resource.** The same logo in a header and a footer
     arrives twice, because those may want different text or one of them may want declining. Cache
     on the (`PageIndex`, `XObjectName`) pair if you want one answer per picture — the name alone is

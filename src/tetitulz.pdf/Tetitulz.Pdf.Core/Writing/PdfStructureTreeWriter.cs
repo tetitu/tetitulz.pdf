@@ -4,6 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using Tetitulz.Pdf.Core.Constants;
+using Tetitulz.Pdf.Core.Document;
 using Tetitulz.Pdf.Core.Objects;
 
 namespace Tetitulz.Pdf.Core.Writing
@@ -77,10 +81,12 @@ namespace Tetitulz.Pdf.Core.Writing
                     if (owners.TryGetValue(page, out var slots) && mcid >= 0 && mcid < slots.Length)
                         slots[mcid] = kv.Key;
 
+            Dictionary<PdfStructureElement, byte[]> ids = NoteIdentifiers(elementNums);
+
             // The element objects themselves.
             foreach (var kv in elementNums)
             {
-                var dict = BuildElement(kv.Key, rootNum, elementNums, parents, pageObjNums);
+                var dict = BuildElement(kv.Key, rootNum, elementNums, parents, pageObjNums, ids);
                 dict.ObjectNumber = kv.Value;
                 dict.GenerationNumber = 0;
                 result.Objects.Add((kv.Value, dict));
@@ -119,6 +125,7 @@ namespace Tetitulz.Pdf.Core.Writing
             structRoot.Set(PdfName.K, rootKids);
             structRoot.Set(PdfName.ParentTree, new PdfReference(parentTreeNum, 0));
             structRoot.Set(PdfName.ParentTreeNextKey, new PdfNumber(pagesWithContent.Count));
+            if (ids.Count > 0) structRoot.Set(PdfName.IDTree, IdTree(ids, elementNums));
             structRoot.ObjectNumber = rootNum;
             structRoot.GenerationNumber = 0;
             result.Objects.Add((rootNum, structRoot));
@@ -139,14 +146,58 @@ namespace Tetitulz.Pdf.Core.Writing
                 AllocateNumbers(child, el, ref nextObjNum, map, parents);
         }
 
+        /// <summary>
+        /// An <c>/ID</c> for every <c>Note</c> element, by element: <c>note-</c> and the element's object
+        /// number, so unique within the tree and the same on every build of the same document.
+        /// </summary>
+        /// <remarks>
+        /// ISO 14289-1 7.9 gives each Note "a unique entry in the ID key" — ISO 32000-1 Table 323's
+        /// element identifier, a byte string no other element of the tree carries, which the structure
+        /// tree root's <c>/IDTree</c> maps back to the element (§14.7.2). A note's citation is found from
+        /// it, so every producer writing through this tree gets one without asking.
+        /// </remarks>
+        private static Dictionary<PdfStructureElement, byte[]> NoteIdentifiers(
+            Dictionary<PdfStructureElement, int> elementNums)
+        {
+            var ids = new Dictionary<PdfStructureElement, byte[]>();
+            foreach (var kv in elementNums)
+                if (string.Equals(kv.Key.Role, PdfStructureTypes.Note, StringComparison.Ordinal))
+                    ids[kv.Key] = Encoding.ASCII.GetBytes("note-" + kv.Value.ToString(CultureInfo.InvariantCulture));
+            return ids;
+        }
+
+        /// <summary>
+        /// The structure tree root's <c>/IDTree</c> (ISO 32000-1 Table 322): a name tree from each
+        /// identifier to its element, one <c>/Names</c> array in key order (§7.9.6, <see cref="PdfNameTree.CompareKeys"/>).
+        /// </summary>
+        private static PdfDictionary IdTree(Dictionary<PdfStructureElement, byte[]> ids,
+            Dictionary<PdfStructureElement, int> elementNums)
+        {
+            var entries = new List<(byte[] Key, int ObjNum)>(ids.Count);
+            foreach (var kv in ids) entries.Add((kv.Value, elementNums[kv.Key]));
+            entries.Sort((a, b) => PdfNameTree.CompareKeys(a.Key, b.Key));
+
+            var names = new PdfArray();
+            foreach (var (key, objNum) in entries)
+            {
+                names.Add(new PdfString(key));
+                names.Add(new PdfReference(objNum, 0));
+            }
+            var tree = new PdfDictionary();
+            tree.Set(PdfName.Names, names);
+            return tree;
+        }
+
         private static PdfDictionary BuildElement(PdfStructureElement el, int rootNum,
             Dictionary<PdfStructureElement, int> elementNums,
             Dictionary<PdfStructureElement, PdfStructureElement> parents,
-            IReadOnlyDictionary<PdfContentStreamBuilder, int> pageObjNums)
+            IReadOnlyDictionary<PdfContentStreamBuilder, int> pageObjNums,
+            Dictionary<PdfStructureElement, byte[]> ids)
         {
             var dict = new PdfDictionary();
             dict.Set(PdfName.Type, PdfName.StructElem);
             dict.Set(PdfName.S, new PdfName(el.Role));
+            if (ids.TryGetValue(el, out byte[] id)) dict.Set(PdfName.ID, new PdfString(id));
 
             // /P is the parent; the root element's parent is the StructTreeRoot itself.
             int parentNum = rootNum;

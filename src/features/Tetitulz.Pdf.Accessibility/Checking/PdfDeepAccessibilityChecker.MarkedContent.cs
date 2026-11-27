@@ -25,9 +25,10 @@ namespace Tetitulz.Pdf.Accessibility.Checking
         // ================================================================
 
         /// <summary>
-        /// Reports text that is inside no marked-content sequence at all — neither tagged nor
-        /// marked as an artifact. ISO 14289-1 §7.1 requires <em>all</em> content to be one or the
-        /// other, so the test is per text-showing operator, not per page.
+        /// Reports content that is inside no marked-content sequence at all — neither tagged nor
+        /// marked as an artifact: text-showing operators, path and shading paints, and images (an
+        /// image XObject drawn, an inline image). ISO 14289-1 §7.1 requires <em>all</em> content to
+        /// be one or the other, so the test is per operator, not per page.
         ///
         /// <para>
         /// <b>Why not "the page contains no BDC".</b> That weaker condition is satisfied by a
@@ -59,25 +60,38 @@ namespace Tetitulz.Pdf.Accessibility.Checking
                 if (page.FormXObjectScanIncomplete)
                     NotePartialContentGap(ctx, page, CheckNameUa17, checkRan: true);
 
-                if (page.UnmarkedTextShowingOperators == 0) continue;
+                if (page.UnmarkedTextShowingOperators == 0 && page.UnmarkedPaintingOperators == 0
+                    && page.UnmarkedImages == 0) continue;
+
+                var parts = new List<string>();
+                if (page.UnmarkedTextShowingOperators > 0)
+                    parts.Add(page.UnmarkedTextShowingOperators.ToString(CultureInfo.InvariantCulture)
+                        + (page.Scan.HasMarkedContent
+                            ? " of " + page.TextShowingOperators.ToString(CultureInfo.InvariantCulture) +
+                              " text-showing operator(s)"
+                            : " text-showing operator(s)"));
+                if (page.UnmarkedPaintingOperators > 0)
+                    parts.Add(page.UnmarkedPaintingOperators.ToString(CultureInfo.InvariantCulture) +
+                              " path or shading paint(s)");
+                if (page.UnmarkedImages > 0)
+                    parts.Add(page.UnmarkedImages.ToString(CultureInfo.InvariantCulture) + " image(s)");
 
                 var occurrence = Occurrence.ForPage(page);
-                occurrence.Detail = page.UnmarkedTextShowingOperators.ToString(CultureInfo.InvariantCulture)
+                occurrence.Detail = string.Join(", ", parts)
                     + (page.Scan.HasMarkedContent
-                        ? " of " + page.TextShowingOperators.ToString(CultureInfo.InvariantCulture) +
-                          " text-showing operator(s) are outside every marked-content sequence"
-                        : " text-showing operator(s), and the page contains no marked content at all");
+                        ? " outside every marked-content sequence"
+                        : ", and the page contains no marked content at all");
                 unmarked.Add(occurrence);
             }
 
             EmitOccurrences(ctx, IssueSeverity.Error, "UA17", IssueCategory.Tagging, WcagLevel.A,
                 null, "1.3.1", unmarked,
-                o => "Page draws text that belongs to no marked-content sequence (" + o.Detail +
-                     "). That text is neither tagged nor marked as an artifact, so it is invisible to " +
+                o => "Page draws content that belongs to no marked-content sequence (" + o.Detail +
+                     "). That content is neither tagged nor marked as an artifact, so it is invisible to " +
                      "assistive technology whatever the structure tree claims.",
                 (count, objects) =>
-                    count.ToString(CultureInfo.InvariantCulture) + " page(s) draw text that belongs to no " +
-                    "marked-content sequence (e.g. " + objects + "). That text is neither tagged nor marked " +
+                    count.ToString(CultureInfo.InvariantCulture) + " page(s) draw content that belongs to no " +
+                    "marked-content sequence (e.g. " + objects + "). That content is neither tagged nor marked " +
                     "as an artifact, whatever the structure tree claims.",
                 "Wrap each run of real content in /P <</MCID n>> BDC … EMC (or the appropriate tag) and " +
                 "mark decorative content as /Artifact BMC … EMC, then point the structure tree at those MCIDs.");

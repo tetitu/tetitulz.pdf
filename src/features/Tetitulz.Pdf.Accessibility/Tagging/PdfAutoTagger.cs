@@ -2774,6 +2774,7 @@ namespace Tetitulz.Pdf.Accessibility.Tagging
                 ParagraphGapThreshold         = options.ParagraphGapThreshold,
                 InferLists                    = options.InferLists,
                 InferTables                   = options.InferTables,
+                MarkPathsAsArtifacts          = true,
                 FirstMcid                     = 0,   // MCIDs are per-page and start at 0
 
                 // Both memory ceilings come from the caller's AutoTagOptions rather than from the
