@@ -50,7 +50,9 @@ namespace Tetitulz.Pdf.Builder.Export
         /// one, matching how <c>ContentOperationCache</c> keeps its own.</para>
         ///
         /// <para>Refusing an entry never changes what <see cref="LoadFile"/> returns, so a full
-        /// cache costs a re-read on a future miss and nothing else.</para>
+        /// cache costs a re-read on a future miss and nothing else. A re-read is a new instance,
+        /// and the exporter embeds a font once per instance, so an export keeps the host programs it
+        /// accepted itself (<c>_acceptedHostPrograms</c>).</para>
         /// </summary>
         internal const long MaxCachedFontBytes = 32L * 1024 * 1024;
 
@@ -63,6 +65,14 @@ namespace Tetitulz.Pdf.Builder.Export
             new Dictionary<string, TrueTypeFontProgram?>(StringComparer.Ordinal);
         private readonly Dictionary<string, TrueTypeFontProgram?> _providerCache =
             new Dictionary<string, TrueTypeFontProgram?>(StringComparer.Ordinal);
+
+        // The host programs this export accepted, by file. The exporter embeds a font once per
+        // program instance (EmbeddedByProgram), and _resolveCache is keyed by code-point set, so each
+        // new set resolves again; FileCache may never hold a program (MaxCachedFontBytes), and a
+        // re-read is a second instance — the same face embedded once per set. Only accepted programs
+        // are kept: every candidate a scan touches would be the retention the ceiling exists to stop.
+        private readonly Dictionary<string, TrueTypeFontProgram> _acceptedHostPrograms =
+            new Dictionary<string, TrueTypeFontProgram>(StringComparer.OrdinalIgnoreCase);
 
         // Code points no installed font has a glyph for, learned on a failed host scan. A set that
         // contains one can never resolve (a covering font must cover every point), so a later set
@@ -297,11 +307,15 @@ namespace Tetitulz.Pdf.Builder.Export
         /// <param name="required">The code points the run draws.</param>
         private TrueTypeFontProgram? HostCandidate(string path, int[] required)
         {
-            var prog = LoadFile(path);
+            var prog = _acceptedHostPrograms.TryGetValue(path, out var accepted) ? accepted : LoadFile(path);
             if (prog == null || !Covers(prog, required)) return null;
 
             var licence = prog.EmbeddingLicense;
-            if (licence.PermitsOutlineEmbedding) return prog;
+            if (licence.PermitsOutlineEmbedding)
+            {
+                _acceptedHostPrograms[path] = prog;
+                return prog;
+            }
 
             ReportRejected(
                 $"the host font '{path}' was not embedded: {licence.Describe()}. Supply it through " +
